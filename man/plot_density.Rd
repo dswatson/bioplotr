@@ -8,32 +8,32 @@ plot_density(dat, group = NULL, type = NULL, xlab = NULL, main = NULL,
   legend = "outside")
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns 
+\item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
-\item{group}{Optional factor or character vector of length equal to sample size. 
+\item{group}{Optional factor or character vector of length equal to sample size.
 Levels are used to color density curves.}
 
-\item{type}{Optional string specifying omic data type. Currently supports 
+\item{type}{Optional string specifying omic data type. Currently supports
 \code{"microarray", "RNA-seq",} or \code{"methylation"}.}
 
-\item{xlab}{Label for x-axis. If left \code{NULL}, this defaults to 
-\eqn{log_2} expression for \code{type = "microarray"}, \eqn{log_2} CPM for
-\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least 
+\item{xlab}{Label for x-axis. If left \code{NULL}, this defaults to
+log expression for \code{type = "microarray"}, log CPM for
+\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least
 one of \code{type} or \code{xlab} must be specified.}
 
 \item{main}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", 
+\item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
 }
 \description{
 Create density plots by sample
 }
 \details{
-This function displays each sample's distribution of expression or methylation 
-values in a single plot. It is especially helpful when contrasting pre- and 
-post-normalization matrices. It may additionally be used to inspect for batch effects 
+This function displays each sample's distribution of expression or methylation
+values in a single plot. It is especially helpful when contrasting pre- and
+post-normalization matrices. It may additionally be used to inspect for batch effects
 or other associations with phenotypic categories by using the \code{group} argument.
 }
 \examples{
@@ -45,7 +45,7 @@ mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
 batch <- rep(c("A", "B"), each = 5)
-plot_density(mat, group = batch, type = "RNA-seq", 
+plot_density(mat, group = batch, type = "RNA-seq",
              main = "rlog Transformed Counts")
 
 }

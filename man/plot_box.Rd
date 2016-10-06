@@ -8,32 +8,32 @@ plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
   legend = "outside")
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns 
+\item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
-\item{group}{Optional factor or character vector of length equal to sample size. 
+\item{group}{Optional factor or character vector of length equal to sample size.
 Levels are used to color box plots.}
 
-\item{type}{Optional string specifying omic data type. Currently supports 
+\item{type}{Optional string specifying omic data type. Currently supports
 \code{"microarray", "RNA-seq",} and \code{"methylation"}.}
 
-\item{ylab}{Label for y-axis. If left \code{NULL}, this defaults to 
-\eqn{log_2} expression for \code{type = "microarray"}, \eqn{log_2} CPM for
-\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least 
+\item{ylab}{Label for y-axis. If left \code{NULL}, this defaults to
+log expression for \code{type = "microarray"}, log CPM for
+\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least
 one of \code{type} or \code{xlab} must be specified.}
 
 \item{main}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", 
+\item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
 }
 \description{
 Create box plots by sample
 }
 \details{
-This function displays each sample's distribution of expression or methylation 
-values in a single plot. It is especially helpful when contrasting pre- and 
-post-normalization matrices. It may additionally be used to inspect for batch effects 
+This function displays each sample's distribution of expression or methylation
+values in a single plot. It is especially helpful when contrasting pre- and
+post-normalization matrices. It may additionally be used to inspect for batch effects
 or other associations with phenotypic categories using the \code{group} argument.
 }
 \examples{
