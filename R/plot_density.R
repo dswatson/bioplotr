@@ -45,7 +45,7 @@ plot_density <- function(dat,
                          main   = NULL,
                          legend = 'outside') {
 
-  densities <- gather(as_tibble(dat), Sample, Expression) %>%
+  densities <- gather(as_data_frame(dat), Sample, Expression) %>%
     group_by(Sample) %>%
     do(Expression = density(.$Expression)$x,
        Density    = density(.$Expression)$y)
@@ -58,23 +58,27 @@ plot_density <- function(dat,
   if (!is.null(group)) {
     df <- mutate(df, Group = rep(group, each = 512))
   }
-  if (is.null(main) & is.null(group)) {
-    main <- 'Density By Sample'
+
+  if (is.null(main)) {
+    if (is.null(group)) {
+      main <- 'Density By Sample'
+    } else {
+      main <- 'Density By Group'
+    }
   }
-  if (is.null(main) & !is.null(group)) {
-    main <- 'Density By Group'
-  }
-  if (is.null(type) & is.null(xlab)) {
-    stop('Either data type or xlab must be provided')
-  }
+
   if (type == 'microarray') {
     xlab <- expression('log'[2]*' Expression')
   }
-  if (type == 'RNA-seq') {
+  else if (type == 'RNA-seq') {
     xlab <- expression('log'[2]*' Counts Per Million')
   }
-  if (type == 'methylation') {
+  else if (type == 'methylation') {
     xlab <- 'Beta'
+  }
+
+  if (is.null(type) & is.null(xlab)) {
+    stop('Either data type or xlab must be provided')
   }
 
   p <- ggplot(df, aes(Expression, Density, group = Sample)) +
