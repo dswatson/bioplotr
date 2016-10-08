@@ -23,6 +23,7 @@
 #' grp <- rep(c("A", "B"), each = 5)
 #' plot_sim_mat(mat, group = grp, main = "Somethin' Cookin'")
 #'
+#' @export
 #' @importFrom wordspace dist.matrix
 #' @importFrom NMF aheatmap
 #' @import RColorBrewer
