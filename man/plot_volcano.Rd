@@ -8,9 +8,9 @@ plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
   legend = "outside")
 }
 \arguments{
-\item{dat}{Data frame or matrix representing the results of a test for 
-differential expression or methylation, such as the output of a call to 
-limma::topTable, edgeR::topTags, or DESeq2::results. Alternatively, any object 
+\item{dat}{Data frame or matrix representing the results of a test for
+differential expression or methylation, such as the output of a call to
+limma::topTable, edgeR::topTags, or DESeq2::results. Alternatively, any object
 with columns for p-values, log fold changes, and FDR.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
@@ -19,15 +19,15 @@ with columns for p-values, log fold changes, and FDR.}
 
 \item{main}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", 
+\item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
 }
 \description{
 Create volcano plot of \eqn{log_2} fold changes against \eqn{-log_10 p}-values
 }
 \details{
-This function displays the results of a differential expression or methylation 
-test as a volcano plot, with colors distinguishing probes that meet the 
+This function displays the results of a differential expression or methylation
+test as a volcano plot, with colors distinguishing probes that meet the
 user-defined FDR threshold. These figures can be used to evaluate the symmetry,
 magnitude, and significance of fold changes for a given experiment.
 }
