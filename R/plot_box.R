@@ -45,33 +45,43 @@ plot_box <- function(dat,
                      main   = NULL,
                      legend = 'outside') {
 
-  df <- gather(as_tibble(dat), Sample, Expression) %>%
-    mutate(Sample = factor(Sample, levels = unique(Sample)))
+  df <- gather(as_data_frame(dat), Sample, Expression)
 
   if (!is.null(group)) {
-    df <- mutate(df, Group = rep(group, each = nrow(dat)))
+    df <- df %>% mutate(Group = rep(group, each = nrow(dat)))
+  } else {
+    df <- df %>% mutate(Group = rep(1, nrow(df)))
   }
-  if (is.null(main) & is.null(group)) {
-    main <- 'Expression By Sample'
+
+  df <- df %>% arrange(Group) %>%
+    mutate(Sample = factor(Sample, levels = unique(Sample)))
+
+  if (is.null(main)) {
+    if (is.null(group)) {
+      main <- 'Expression By Sample'
+    } else {
+      main <- 'Expresion By Group'
+    }
   }
-  if (is.null(main) & !is.null(group)) {
-    main <- 'Expresion By Group'
-  }
-  if (is.null(type) & is.null(ylab)) {
-    stop('Either data type or ylab must be provided')
-  }
-  if (type == 'microarray') {
-    ylab <- expression('log'[2]*' Expression')
-  }
-  if (type == 'RNA-seq') {
-    ylab <- expression('log'[2]*' Counts Per Million')
-  }
-  if (type == 'methylation') {
-    ylab <- 'Beta'
+
+  if (is.null(type)) {
+    if (is.null(ylab)) {
+      stop('Either data type or ylab must be provided.')
+    } else {
+      if (type == 'microarray') {
+        ylab <- expression('log'[2]*' Expression')
+      } else if (type == 'RNA-seq') {
+        ylab <- expression('log'[2]*' Counts Per Million')
+      } else if (type == 'methylation') {
+        ylab <- 'Beta'
+      } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
+      stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
+      }
+    }
   }
 
   p <- ggplot(df, aes(Sample, Expression)) +
-    labs(title = main, y = ylab) +
+    labs(title = main, x = 'Sample', y = ylab) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
