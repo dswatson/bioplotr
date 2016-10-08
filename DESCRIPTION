@@ -4,6 +4,19 @@ Version: 0.0.0.9000
 Authors@R: person("David", "Watson", email = "d.watson@qmul.ac.uk", role = c("aut", "cre"))
 Description: Convenient functions for generating common biostatistical figures
 Depends: R (>= 3.3.1)
+Imports: 
+  dplyr,
+  ggplot2,
+  tidyr,
+  purrr,
+  RColorBrewer
+Suggests:
+  NMF,
+  aheatmap,
+  PoiClaClu,
+  edgeR,
+  matrixStats,
+  wordspace
 License: GPL
 Encoding: UTF-8
 LazyData: true
