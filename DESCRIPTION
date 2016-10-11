@@ -9,8 +9,7 @@ Imports:
   ggplot2,
   tidyr,
   purrr,
-  RColorBrewer
-Suggests:
+  RColorBrewer,
   NMF,
   aheatmap,
   PoiClaClu,
