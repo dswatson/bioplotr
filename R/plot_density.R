@@ -49,7 +49,7 @@ plot_density <- function(dat,
     group_by(Sample) %>%
     do(Expression = density(.$Expression)$x,
        Density    = density(.$Expression)$y)
-  densities <- densities[match(colnames(as_tibble(dat)), densities$Sample), ]
+  densities <- densities[match(colnames(as_data_frame(dat)), densities$Sample), ]
 
   df <- data_frame(Sample     = rep(densities$Sample, each = 512),
                    Expression = unlist(densities$Expression),
