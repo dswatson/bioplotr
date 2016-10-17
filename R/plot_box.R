@@ -60,7 +60,7 @@ plot_box <- function(dat,
     if (is.null(group)) {
       main <- 'Expression By Sample'
     } else {
-      main <- 'Expresion By Group'
+      main <- 'Expression By Group'
     }
   }
 
