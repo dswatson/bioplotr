@@ -77,7 +77,7 @@ plot_md <- function(dat,
     dat <- dat %>% rename(AvgExpr = logCPM)
   }
   if ('baseMean' %in% colnames(dat)) {
-    dat <- dat %>% rename(AvgExpr = baseMean)
+    dat <- dat %>% mutate(AvgExpr = log2(baseMean))
   }
   if (!'AveExpr' %in% colnames(dat) &
       !'logCPM' %in% colnames(dat) &
