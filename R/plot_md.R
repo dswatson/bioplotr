@@ -1,9 +1,12 @@
 #' Create MD plot of \eqn{log_2} fold changes against mean expression or methylation
 #'
-#' @param dat Data frame or matrix representing the results of a test for
+#' @param res Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
 #'   limma::topTable, edgeR::topTags, or DESeq2::results. Alternatively, any
-#'   object with columns for p-values, log fold changes, and FDR.
+#'   object with columns for log fold changes, and FDR.
+#' @param dat A count
+#' @param type String specifying data type. Must be one of either
+#'   \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.
 #' @param fdr Threshold for declaring a probe differentially expressed or methylated.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -100,7 +103,7 @@ plot_md <- function(dat,
   }
 
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
-  df <- as_tibble(dat) %>%
+  df <- as_data_frame(dat) %>%
     mutate(is.DE = map_lgl(q.value, test)) %>%
     select(AvgExpr, logFC, is.DE)
 
@@ -120,8 +123,8 @@ plot_md <- function(dat,
   }
 
   p <- p + labs(title = main,
-    x = expression('log'[2]*' Fold Change'),
-    y = expression('-log'[10]*' '*italic(p))) +
+    x = 'Mean Expression',
+    y = expression('log'[2]*' Fold Change')) +
     theme_bw()
 
   if (legend == 'bottomleft') {
