@@ -66,7 +66,7 @@ plot_density <- function(dat,
       main <- 'Density By Group'
     }
   }
-  
+
   if (is.null(xlab)) {
     if (is.null(type)) {
       stop('Either data type or xlab must be provided')
@@ -76,6 +76,8 @@ plot_density <- function(dat,
       xlab <- expression('log'[2]*' Counts Per Million')
     } else if (type == 'methylation') {
       xlab <- 'Beta'
+    } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
+      stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
     }
   }
 
