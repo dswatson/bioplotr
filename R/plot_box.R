@@ -64,19 +64,17 @@ plot_box <- function(dat,
     }
   }
 
-  if (is.null(type)) {
-    if (is.null(ylab)) {
+  if (is.null(ylab)) {
+    if (is.null(type)) {
       stop('Either data type or ylab must be provided.')
-    } else {
-      if (type == 'microarray') {
-        ylab <- expression('log'[2]*' Expression')
-      } else if (type == 'RNA-seq') {
-        ylab <- expression('log'[2]*' Counts Per Million')
-      } else if (type == 'methylation') {
-        ylab <- 'Beta'
-      } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
+    } else if (type == 'microarray') {
+      ylab <- expression('log'[2]*' Expression')
+    } else if (type == 'RNA-seq') {
+      ylab <- expression('log'[2]*' Counts Per Million')
+    } else if (type == 'methylation') {
+      ylab <- 'Beta'
+    } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
       stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
-      }
     }
   }
 
