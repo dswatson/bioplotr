@@ -66,19 +66,17 @@ plot_density <- function(dat,
       main <- 'Density By Group'
     }
   }
-
-  if (type == 'microarray') {
-    xlab <- expression('log'[2]*' Expression')
-  }
-  else if (type == 'RNA-seq') {
-    xlab <- expression('log'[2]*' Counts Per Million')
-  }
-  else if (type == 'methylation') {
-    xlab <- 'Beta'
-  }
-
-  if (is.null(type) & is.null(xlab)) {
-    stop('Either data type or xlab must be provided')
+  
+  if (is.null(xlab)) {
+    if (is.null(type)) {
+      stop('Either data type or xlab must be provided')
+    } else if (type == 'microarray') {
+      xlab <- expression('log'[2]*' Expression')
+    } else if (type == 'RNA-seq') {
+      xlab <- expression('log'[2]*' Counts Per Million')
+    } else if (type == 'methylation') {
+      xlab <- 'Beta'
+    }
   }
 
   p <- ggplot(df, aes(Expression, Density, group = Sample)) +
