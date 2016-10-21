@@ -45,15 +45,12 @@ plot_volcano <- function(dat,
                          main   = NULL,
                          legend = 'outside') {
 
-  dat <- as_data_frame(na.omit(dat))
-  if ('P.Value' %in% colnames(dat)) {
-    dat <- dat %>% rename(p.value = P.Value)
-  }
-  if ('PValue' %in% colnames(dat)) {
-    dat <- dat %>% rename(p.value = PValue)
-  }
-  if ('pvalue' %in% colnames(dat)) {
-    dat <- dat %>% rename(p.value = pvalue)
+  dat <- as_data_frame(dat)
+  
+  for (p in c('P.Value', 'PValue', 'pvalue')) {
+    if (p %in% colnames(dat)) {
+      colnames(dat)[colnames(dat) == p] <- 'p.value'
+    }
   }
   if (!'P.Value' %in% colnames(dat) &
       !'pvalue'  %in% colnames(dat) &
@@ -62,14 +59,11 @@ plot_volcano <- function(dat,
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
-  if ('adj.P.Val' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = adj.P.Val)
-  }
-  if ('FDR' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = FDR)
-  }
-  if ('padj' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = padj)
+  
+  for (q in c('adj.P.Val', 'FDR', 'padj')) {
+    if (q %in% colnames(dat)) {
+      colnames(dat)[colnames(dat) == q] <- 'q.value'
+    }
   }
   if (!'adj.P.Val' %in% colnames(dat) &
       !'FDR' %in% colnames(dat) &
@@ -79,6 +73,7 @@ plot_volcano <- function(dat,
   for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
   Make sure that dat includes exactly one such colname.')
   }
+  
   if ('log2FoldChange' %in% colnames(dat)) {
     dat <- dat %>% rename(logFC = log2FoldChange)
   }
@@ -97,7 +92,8 @@ plot_volcano <- function(dat,
   df <- dat %>%
     mutate(is.DE = map_lgl(q.value, test),
            logP  = -log10(p.value)) %>%
-    select(logFC, logP, is.DE)
+    select(logFC, logP, is.DE) %>%
+    na.omit()
 
   if (sum(df$is.DE == TRUE) == 0) {
     warning('dat returned no differentially expressed/methylated probes at your
