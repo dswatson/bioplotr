@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 .Rbuildignore
+.Rapp.history
 bioplotr.Rproj
