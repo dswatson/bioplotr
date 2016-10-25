@@ -123,7 +123,7 @@ plot_md <- function(dat,
   }
 
   p <- p + labs(title = main,
-                x = expression('Mean log'[2]*' Normalised Expression'),
+                x = expression('Mean Expression'),
                 y = expression('log'[2]*' Fold Change')) +
     theme_bw()
 
