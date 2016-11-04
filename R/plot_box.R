@@ -53,7 +53,8 @@ plot_box <- function(dat,
     df <- df %>% mutate(Group = rep(1, nrow(df)))
   }
 
-  df <- df %>% arrange(Group) %>%
+  df <- df %>%
+    arrange(Group) %>%
     mutate(Sample = factor(Sample, levels = unique(Sample)))
 
   if (is.null(main)) {
