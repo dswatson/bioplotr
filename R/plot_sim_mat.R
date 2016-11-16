@@ -30,8 +30,8 @@
 #'
 
 plot_sim_mat <- function(dat,
-	                       group = NULL,
-	                       main  = NULL) {
+                         group = NULL,
+                         main  = NULL) {
 
   if (is.null(main)) {
     main <- 'Sample Similarity Matrix'
@@ -41,13 +41,12 @@ plot_sim_mat <- function(dat,
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
   if (is.null(group)) {
-    aheatmap(dm, col = rb, Rowv = FALSE,
-      distfun = function(x) as.dist(x), hclustfun = 'average',
-      main = main)
+    aheatmap(dm, col = rb, Rowv = FALSE, main = main,
+             distfun = function(x) as.dist(x), hclustfun = 'average')
   } else {
-    aheatmap(dm, col = rb, Rowv = FALSE, annCol = list(Group = group),
-      distfun = function(x) as.dist(x), hclustfun = 'average',
-      main = main)
+    aheatmap(dm, col = rb, Rowv = FALSE, main = main,
+             distfun = function(x) as.dist(x), hclustfun = 'average',
+             annCol = list(Group = group))
   }
 
 }
