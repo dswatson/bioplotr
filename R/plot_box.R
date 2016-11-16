@@ -82,7 +82,8 @@ plot_box <- function(dat,
   p <- ggplot(df, aes(Sample, Expression)) +
     labs(title = main, x = 'Sample', y = ylab) +
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    theme(plot.title = element_text(hjust = .5),
+          axis.text.x = element_text(angle = 45, hjust = 1))
 
   if (!is.null(group)) {
     p <- p + geom_boxplot(aes(fill = Group))

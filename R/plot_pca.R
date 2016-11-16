@@ -72,7 +72,8 @@ plot_pca <- function(dat,
     labs(title = main,
          x = paste0('PC1 (', var1, '%)'),
          y = paste0('PC2 (', var2, '%)')) +
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(hjust = .5))
 
   if (label == TRUE) {
     if (!is.numeric(df$Group)) {

@@ -46,7 +46,7 @@ plot_volcano <- function(dat,
                          legend = 'outside') {
 
   dat <- as_data_frame(dat)
-  
+
   for (p in c('P.Value', 'PValue', 'pvalue')) {
     if (p %in% colnames(dat)) {
       colnames(dat)[colnames(dat) == p] <- 'p.value'
@@ -59,7 +59,7 @@ plot_volcano <- function(dat,
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
-  
+
   for (q in c('adj.P.Val', 'FDR', 'padj')) {
     if (q %in% colnames(dat)) {
       colnames(dat)[colnames(dat) == q] <- 'q.value'
@@ -73,7 +73,7 @@ plot_volcano <- function(dat,
   for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
   Make sure that dat includes exactly one such colname.')
   }
-  
+
   if ('log2FoldChange' %in% colnames(dat)) {
     dat <- dat %>% rename(logFC = log2FoldChange)
   }
@@ -113,7 +113,8 @@ plot_volcano <- function(dat,
   p <- p + labs(title = main,
     x = expression('log'[2]*' Fold Change'),
     y = expression('-log'[10]*' '*italic(p))) +
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(hjust = .5))
 
   if (legend == 'bottomleft') {
     p <- p + theme(legend.justification = c(0, 0), legend.position = c(0, 0))

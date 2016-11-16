@@ -58,7 +58,8 @@ plot_mean_var <- function(dat,
     geom_point(aes(Mean, Var), size = 0.2, alpha = 0.25) +
     geom_smooth(aes(lo.x, lo.y), size = 0.5) +
     labs(title = main, x = expression(mu), y = ylab) +
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(hjust = .5))
 
   print(p)
 

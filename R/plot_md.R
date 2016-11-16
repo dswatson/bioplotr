@@ -125,7 +125,8 @@ plot_md <- function(dat,
   p <- p + labs(title = main,
                 x = expression('Mean Expression'),
                 y = expression('log'[2]*' Fold Change')) +
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(hjust = .5))
 
   if (legend == 'bottomleft') {
     p <- p + theme(legend.justification = c(0, 0), legend.position = c(0, 0))
