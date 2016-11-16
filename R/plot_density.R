@@ -83,7 +83,8 @@ plot_density <- function(dat,
 
   p <- ggplot(df, aes(Expression, Density, group = Sample)) +
     labs(title = main, x = xlab) +
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(hjust = .5))
 
   if (!is.null(group)) {
     p <- p + geom_path(aes(colour = Group))
