@@ -129,13 +129,17 @@ plot_md <- function(dat,
     theme(plot.title = element_text(hjust = .5))
 
   if (legend == 'bottomleft') {
-    p <- p + theme(legend.justification = c(0, 0), legend.position = c(0, 0))
+    p <- p + theme(legend.justification = c(0.01, 0.01),
+                   legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(1, 0), legend.position = c(1, 0))
+    p <- p + theme(legend.justification = c(1, 0.01),
+                   legend.position = c(0.99, 0.01))
   } else if (legend == 'topleft') {
-    p <- p + theme(legend.justification = c(0, 1), legend.position = c(0, 1))
+    p <- p + theme(legend.justification = c(0.01, 0.99),
+                   legend.position = c(0.01, 0.99))
   } else if (legend == 'topright') {
-    p <- p + theme(legend.justification = c(1, 1), legend.position = c(1, 1))
+    p <- p + theme(legend.justification = c(0.99, 0.99),
+                   legend.position = c(0.99, 0.99))
   }
 
   print(p)
