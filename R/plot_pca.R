@@ -83,6 +83,7 @@ plot_pca <- function(dat,
   pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
   var1 <- round(pca$sdev[1]^2 / sum(pca$sdev^2) * 100, 2)
   var2 <- round(pca$sdev[2]^2 / sum(pca$sdev^2) * 100, 2)
+  var3 <- round(pca$sdev[3]^2 / sum(pca$sdev^2) * 100, 2)
 
   # Tidy
   df <- data_frame(PC1    = pca$x[, 1],
