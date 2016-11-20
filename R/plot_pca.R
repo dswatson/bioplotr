@@ -11,12 +11,14 @@
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show sample name by hovering mouse over data point? Renders
-#'   the plot in HTML, which opens the graphic display in your browser. The plot can
-#'   also be embedded in an HTML doc using Rmarkdown so long as \code{knitr = TRUE}
-#'   and the code chunk option \code{plotly} is also set to \code{TRUE}.
-#' @param D3 Render the plot in three dimensions? Like \code{hover}, this creates a
-#'   plotly object that opens in your browser or can be embedded in an HTML doc.
+#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
+#'   the plot is rendered in HTML and will either open in your browser's graphic
+#'   display or appear in the RStudio viewer. The plot can also be embedded in an
+#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+#'   option \code{plotly} is also set to \code{TRUE}.
+#' @param D3 Render the plot in three dimensions? This creates an interactive plotly
+#'  object that opens in your browser if running R Console or command line. The plot
+#'  can also be embedded in an HTML doc using the same settings noted above.
 #' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
 #'   the \code{plot_pca} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
 #'   an HTML doc. Make sure to set \code{plotly = TRUE} in the corresponding code
@@ -46,6 +48,7 @@
 #' @importFrom purrr map_dbl
 #' @import ggplot2
 #' @import plotly
+#' @importFrom RColorBrewer brewer.pal
 #'
 
 plot_pca <- function(dat,
@@ -159,8 +162,12 @@ plot_pca <- function(dat,
       }
     }
   } else {
+      # symbls <- c(16, 17, 15, 3, 7, 8)  # This would be right if plotly worked
+      symbls <- c(16, 18, 15, 3, 7, 8)
       p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
                    text = ~Sample, color = ~Group, symbol = ~Group,
+                   colors = brewer.pal(length(unique(df$Group)), 'Set1'),
+                   symbols = symbls[1:length(unique(df$Group))],
                    type = 'scatter3d', mode = 'markers',
                    alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
         layout(title = main, hovermode = 'closest', scene = list(
