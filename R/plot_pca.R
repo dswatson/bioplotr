@@ -14,10 +14,10 @@
 #' @param hover Show sample name by hovering mouse over data point? Renders
 #'   the plot in HTML, which opens the graphic display in your browser. The plot can
 #'   also be embedded in an HTML doc using Rmarkdown so long as \code{knitr = TRUE}
-#'   and you set the code chunk option \code{plotly = TRUE}.
+#'   and the code chunk option \code{plotly} is also set to \code{TRUE}.
 #' @param D3 Render the plot in three dimensions? Like \code{hover}, this creates a
 #'   plotly object that opens in your browser or can be embedded in an HTML doc.
-#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (i.e.,
+#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
 #'   the \code{plot_pca} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
 #'   an HTML doc. Make sure to set \code{plotly = TRUE} in the corresponding code
 #'   chunk options.
@@ -27,7 +27,7 @@
 #' dimensional principal component subspace. The numbers printed along the axis
 #' labels indicate the percentage of variance explained by each component. PCA is an
 #' easy and popular method for unsupervised cluster detection. It can also aid in
-#' spotting potential outliers and generally  help to visualize the latent
+#' spotting potential outliers and generally helps to visualize the latent
 #' structure of a data set.
 #'
 #' @examples
@@ -43,6 +43,7 @@
 #'
 #' @export
 #' @import dplyr
+#' @importFrom purrr map_dbl
 #' @import ggplot2
 #' @import plotly
 #'
@@ -81,9 +82,8 @@ plot_pca <- function(dat,
 
   # PCA
   pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
-  var1 <- round(pca$sdev[1]^2 / sum(pca$sdev^2) * 100, 2)
-  var2 <- round(pca$sdev[2]^2 / sum(pca$sdev^2) * 100, 2)
-  var3 <- round(pca$sdev[3]^2 / sum(pca$sdev^2) * 100, 2)
+  ve <- function(pc) round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
+  vars <- map_dbl(1:3, ve)
 
   # Tidy
   df <- data_frame(PC1    = pca$x[, 1],
@@ -101,8 +101,8 @@ plot_pca <- function(dat,
     geom_hline(yintercept = 0, size = 0.2) +
     geom_vline(xintercept = 0, size = 0.2) +
     labs(title = main,
-         x = paste0('PC1 (', var1, '%)'),
-         y = paste0('PC2 (', var2, '%)')) +
+         x = paste0('PC1 (', vars[1], '%)'),
+         y = paste0('PC2 (', vars[2], '%)')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
@@ -164,9 +164,9 @@ plot_pca <- function(dat,
                    type = 'scatter3d', mode = 'markers',
                    alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
         layout(title = main, hovermode = 'closest', scene = list(
-          xaxis = list(title = paste0('PC1 (', var1, '%)')),
-          yaxis = list(title = paste0('PC2 (', var2, '%)')),
-          zaxis = list(title = paste0('PC3 (', var3, '%)'))
+          xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
+          yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
+          zaxis = list(title = paste0('PC3 (', vars[3], '%)'))
         ))
       print(p)
   }
