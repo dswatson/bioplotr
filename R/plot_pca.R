@@ -160,8 +160,6 @@ plot_pca <- function(dat,
   } else {
       p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
                    text = ~Sample, color = ~Group, symbol = ~Group,
-                   colors = c('#E41A1C', '#4DAF4A', '#377EB8'),
-                   symbols = c('circle', 'triangle-up', 'square'),
                    type = 'scatter3d', mode = 'markers',
                    alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
         layout(title = main, hovermode = 'closest', scene = list(
