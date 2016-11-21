@@ -12,6 +12,14 @@
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
+#'   the plot is rendered in HTML and will either open in your browser's graphic
+#'   display or appear in the RStudio viewer. The plot can also be embedded in an
+#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+#'   option \code{plotly} is also set to \code{TRUE}.
+#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+#'   the \code{plot_md} output when \code{hover = TRUE}) in an HTML doc. Make
+#'   sure to set \code{plotly = TRUE} in the corresponding code chunk options.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -47,42 +55,28 @@ plot_md <- function(dat,
                     fdr    = 0.05,
                     ptsize = 0.25,
                     main   = NULL,
-                    legend = 'outside') {
+                    legend = 'outside',
+                    hover  = FALSE,
+                    knitr  = FALSE) {
 
-  dat <- as_data_frame(na.omit(dat))
-  if ('adj.P.Val' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = adj.P.Val)
+  # Preliminaries
+  dat <- as_data_frame(dat)
+  q <- c('adj.P.Val', 'FDR', 'padj')
+  for (i in q) {
+    if (i %in% colnames(dat)) {
+      colnames(dat)[colnames(dat) == i] <- 'q.value'
+    }
   }
-  if ('FDR' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = FDR)
-  }
-  if ('padj' %in% colnames(dat)) {
-    dat <- dat %>% rename(q.value = padj)
-  }
-  if (!'adj.P.Val' %in% colnames(dat) &
-      !'FDR' %in% colnames(dat) &
-      !'padj' %in% colnames(dat) &
-      !'q.value' %in% colnames(dat)) {
+  if (all(!q %in% colnames(dat))) {
     stop('dat must include a column for adjusted p-values. Recognized colnames
-  for this vector include "adj.P.Val", "padj", "FDR", and "q.value". Make sure
-  that dat includes exactly one such colname.')
+         for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
+         Make sure that dat includes exactly one such colname.')
   }
-  if ('AvgMeth' %in% colnames(dat)) {
-    dat <- dat %>% rename(AvgExpr = AvgMeth)
+  avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean')
+  for (i in avg) {
+    colnames(dat)[colnames(dat) == i] <- 'AvgExpr'
   }
-  if ('AveExpr' %in% colnames(dat)) {
-    dat <- dat %>% rename(AvgExpr = AveExpr)
-  }
-  if ('logCPM' %in% colnames(dat)) {
-    dat <- dat %>% rename(AvgExpr = logCPM)
-  }
-  if ('baseMean' %in% colnames(dat)) {
-    dat <- dat %>% mutate(AvgExpr = log2(baseMean))
-  }
-  if (!'AveExpr' %in% colnames(dat) &
-      !'logCPM' %in% colnames(dat) &
-      !'baseMean' %in% colnames(dat) &
-      !'AvgExpr' %in% colnames(dat)) {
+  if (all(!avg %in% colnames(dat))) {
     stop('dat must include a column for average expression or methylation by
   probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth",
   "AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly one
@@ -97,42 +91,45 @@ plot_md <- function(dat,
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
   }
-
+  # Add a prelim for GeneSymbol
   if (is.null(main)) {
     main <- 'MD Plot'
   }
 
+  # Tidy
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- as_data_frame(dat) %>%
     mutate(is.DE = map_lgl(q.value, test)) %>%
-    select(AvgExpr, logFC, is.DE)
+    select(GeneSymbol, AvgExpr, logFC, is.DE) %>%
+    na.omit()
 
+  # Build plot
   if (sum(df$is.DE == TRUE) == 0) {
     warning('dat returned no differentially expressed/methylated probes at your
   selected fdr threshold. To color points by differential expression/methylation,
   consider raising your fdr cutoff.')
-    p <- ggplot(df, aes(AvgExpr, logFC)) +
-      geom_point(size = ptsize, alpha = 0.25)
+    p <- ggplot(df, aes(AvgExpr, logFC))
   } else {
-    p <- ggplot(df, aes(AvgExpr, logFC, color = is.DE)) +
-      geom_point(size = ptsize, alpha = 0.25) +
+    p <- ggplot(df, aes(AvgExpr, logFC, color = is.DE))
       scale_colour_manual(name   = expression(italic(q)*'-value'),
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
   }
-
-  p <- p + labs(title = main,
-                x = expression('Mean Expression'),
-                y = expression('log'[2]*' Fold Change')) +
+  p <- p + suppressWarnings(geom_point(aes(text = paste('Gene:', GeneSymbol)),
+                                       size = ptsize, alpha = 0.25)) +
+    labs(title = main,
+         x = expression('Mean Expression'),
+         y = expression('log'[2]*' Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
+  # Legend location
   if (legend == 'bottomleft') {
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(1, 0.01),
+    p <- p + theme(legend.justification = c(0.99, 0.01),
                    legend.position = c(0.99, 0.01))
   } else if (legend == 'topleft') {
     p <- p + theme(legend.justification = c(0.01, 0.99),
@@ -142,7 +139,19 @@ plot_md <- function(dat,
                    legend.position = c(0.99, 0.99))
   }
 
-  print(p)
+  # Output
+  if (hover == FALSE) {
+    print(p)
+  } else {
+    if (knitr == FALSE) {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
+      print(p)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
+                    session = 'knitr')
+      print(p)
+    }
+  }
 
 }
 
