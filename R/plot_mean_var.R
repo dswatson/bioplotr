@@ -4,6 +4,14 @@
 #' @param type String specifying data type. Must be one of either
 #'   \code{"microarray"} or \code{"RNA-seq"}.
 #' @param main Optional plot title.
+#' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
+#'   the plot is rendered in HTML and will either open in your browser's graphic
+#'   display or appear in the RStudio viewer. The plot can also be embedded in an
+#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+#'   option \code{plotly} is also set to \code{TRUE}.
+#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+#'   the \code{plot_mean_var} output when \code{hover = TRUE}) in an HTML doc. Make
+#'   sure to set \code{plotly = TRUE} in the corresponding code chunk options.
 #'
 #' @details
 #' This function plots each gene's mean expression against either the
@@ -23,11 +31,14 @@
 #' @importFrom matrixStats rowSds
 #' @import dplyr
 #' @import ggplot2
+#' @importFrom plotly ggplotly
 #'
 
 plot_mean_var <- function(dat,
                           type,
-                          main = NULL) {
+                          main  = NULL,
+                          hover = FALSE,
+                          knitr = FALSE) {
 
   if (is.null(type) |
       !type %in% c('microarray', 'RNA-seq')) {
@@ -48,20 +59,33 @@ plot_mean_var <- function(dat,
     }
   }
 
-  df <- data_frame(Mean = rowMeans(dat),
+  df <- data_frame(Gene = rownames(dat),
+                   Mean = rowMeans(dat),
                    Var  = vars)
   lo <- lowess(x = df$Mean, y = df$Var, f = 0.5)
   df <- df %>% mutate(lo.x = lo[['x']],
                       lo.y = lo[['y']])
 
   p <- ggplot(df) +
-    geom_point(aes(Mean, Var), size = 0.2, alpha = 0.25) +
+    suppressWarnings(geom_point(aes(Mean, Var, text = paste('Gene:', Gene)),
+                                size = 0.2, alpha = 0.25)) +
     geom_smooth(aes(lo.x, lo.y), size = 0.5) +
     labs(title = main, x = expression(mu), y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
-  print(p)
+  if (hover == FALSE) {
+    print(p)
+  } else {
+    if (knitr == FALSE) {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
+      print(p)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
+                    session = 'knitr')
+      print(p)
+    }
+  }
 
 }
 
