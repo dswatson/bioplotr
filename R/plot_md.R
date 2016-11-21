@@ -104,25 +104,26 @@ plot_md <- function(dat,
     na.omit()
 
   # Build plot
-  if (sum(df$is.DE == TRUE) == 0) {
-    warning('dat returned no differentially expressed/methylated probes at your
-  selected fdr threshold. To color points by differential expression/methylation,
-  consider raising your fdr cutoff.')
-    p <- ggplot(df, aes(AvgExpr, logFC))
-  } else {
-    p <- ggplot(df, aes(AvgExpr, logFC, color = is.DE))
-      scale_colour_manual(name   = expression(italic(q)*'-value'),
-                          labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                          values = c('black', 'red')) +
-      guides(col = guide_legend(reverse = TRUE))
-  }
-  p <- p + suppressWarnings(geom_point(aes(text = paste('Gene:', GeneSymbol)),
-                                       size = ptsize, alpha = 0.25)) +
+  p <- suppressWarnings(ggplot(df, aes(AvgExpr, logFC,
+                                       text = paste('Gene:', GeneSymbol)))) +
     labs(title = main,
          x = expression('Mean Expression'),
          y = expression('log'[2]*' Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
+
+  if (sum(df$is.DE == TRUE) == 0) {
+    warning('dat returned no differentially expressed/methylated probes at your
+  selected fdr threshold. To color points by differential expression/methylation,
+  consider raising your fdr cutoff.')
+    p <- p + geom_point(size = ptsize, alpha = 0.25)
+  } else {
+    p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
+      scale_colour_manual(name   = expression(italic(q)*'-value'),
+                          labels = c(paste('\u2265', fdr), paste('<', fdr)),
+                          values = c('black', 'red')) +
+      guides(col = guide_legend(reverse = TRUE))
+  }
 
   # Legend location
   if (legend == 'bottomleft') {
