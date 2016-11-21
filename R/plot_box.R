@@ -20,9 +20,8 @@
 #'   HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
 #'   option \code{plotly} is also set to \code{TRUE}.
 #' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-#'   the \code{plot_box} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
-#'   an HTML doc. Make sure to set \code{plotly = TRUE} in the corresponding code
-#'   chunk options.
+#'   the \code{plot_box} output when \code{hover = TRUE}) in an HTML doc. Make sure
+#'   to set \code{plotly = TRUE} in the corresponding code chunk options.
 #'
 #' @details
 #' This function displays each sample's omic data distribution in a single plot. It
@@ -127,7 +126,7 @@ plot_box <- function(dat,
 
   # Named list?
   if (!is.null(names(group))) {
-    p <- p + guides(color = guide_legend(title = names(group)))
+    p <- p + guides(fill = guide_legend(title = names(group)))
   }
 
   # Legend location
