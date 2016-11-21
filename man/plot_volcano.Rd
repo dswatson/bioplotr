@@ -5,7 +5,7 @@
 \title{Create volcano plot of \eqn{log_2} fold changes against \eqn{-log_10 p}-values}
 \usage{
 plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
-  legend = "outside")
+  legend = "outside", hover = FALSE, knitr = FALSE)
 }
 \arguments{
 \item{dat}{Data frame or matrix representing the results of a test for
@@ -21,6 +21,16 @@ with columns for p-values, log fold changes, and FDR.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+
+\item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
+the plot is rendered in HTML and will either open in your browser's graphic
+display or appear in the RStudio viewer. The plot can also be embedded in an
+HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+option \code{plotly} is also set to \code{TRUE}.}
+
+\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+the \code{plot_volcano} output when \code{hover = TRUE}) in an HTML doc. Make
+sure to set \code{plotly = TRUE} in the corresponding code chunk options.}
 }
 \description{
 Create volcano plot of \eqn{log_2} fold changes against \eqn{-log_10 p}-values

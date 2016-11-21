@@ -5,36 +5,47 @@
 \title{Create density plots by sample}
 \usage{
 plot_density(dat, group = NULL, type = NULL, xlab = NULL, main = NULL,
-  legend = "outside")
+  legend = "outside", hover = FALSE, knitr = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
 \item{group}{Optional factor or character vector of length equal to sample size.
-Levels are used to color density curves.}
+Levels are used to color density curves. If supplied, legend title defaults to
+"Group". Override this feature by passing a named list instead.}
 
 \item{type}{Optional string specifying omic data type. Currently supports
 \code{"microarray", "RNA-seq",} or \code{"methylation"}.}
 
 \item{xlab}{Label for x-axis. If left \code{NULL}, this defaults to
 log expression for \code{type = "microarray"}, log CPM for
-\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least
+\code{type = "RNA-seq"}, or Beta for \code{type = "methylation"}. At least
 one of \code{type} or \code{xlab} must be specified.}
 
 \item{main}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+
+\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
+the plot is rendered in HTML and will either open in your browser's graphic
+display or appear in the RStudio viewer. The plot can also be embedded in an
+HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+option \code{plotly} is also set to \code{TRUE}.}
+
+\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+the \code{plot_density} output when \code{hover = TRUE}) in an HTML doc. Make
+sure to set \code{plotly = TRUE} in the corresponding code chunk options.}
 }
 \description{
 Create density plots by sample
 }
 \details{
-This function displays each sample's distribution of expression or methylation
-values in a single plot. It is especially helpful when contrasting pre- and
-post-normalization matrices. It may additionally be used to inspect for batch effects
-or other associations with phenotypic categories by using the \code{group} argument.
+This function displays each sample's omic data distribution in a single plot. It
+is especially helpful when contrasting pre- and post-normalization matrices. It
+may additionally be used to inspect for batch effects or other associations with
+phenotypic variables by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)

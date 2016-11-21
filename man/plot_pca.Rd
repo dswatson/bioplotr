@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot_pca.R
 \name{plot_pca}
 \alias{plot_pca}
-\title{Plot the first two principal components of an omic data matrix}
+\title{Plot the principal components of an omic data matrix}
 \usage{
 plot_pca(dat, group = NULL, label = FALSE, main = NULL,
-  legend = "outside")
+  legend = "outside", hover = FALSE, D3 = FALSE, knitr = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
@@ -13,25 +13,41 @@ to samples. It is strongly recommended that data be filtered and
 normalized prior to running PCA.}
 
 \item{group}{Optional factor or character vector of length equal to sample size.
-Levels are used to color and shape points.}
+Levels are used to color and shape points. If supplied, legend title defaults to
+"Group". Override this feature by passing a named list instead.}
 
-\item{label}{Label data points by sample name? Defaults to FALSE unless
+\item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{group = NULL}.}
 
 \item{main}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+
+\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
+the plot is rendered in HTML and will either open in your browser's graphic
+display or appear in the RStudio viewer. The plot can also be embedded in an
+HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+option \code{plotly} is also set to \code{TRUE}.}
+
+\item{D3}{Render the plot in three dimensions? This creates an interactive plotly
+object that opens in your browser or the RStudio viewer. The plot can also be
+embedded in an HTML doc using the same settings described above.}
+
+\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+the \code{plot_pca} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
+an HTML doc. Make sure to set \code{plotly = TRUE} in the corresponding code
+chunk options.}
 }
 \description{
-Plot the first two principal components of an omic data matrix
+Plot the principal components of an omic data matrix
 }
 \details{
-This function plots the first two principal components of an omic data
-matrix. The numbers printed in the x- and y-axis labels indicate the
-percentage of variance explained by each component. PCA is an easy and
-popular method for unsupervised cluster detection. It can also aid in
-spotting potential outliers and generally  help to visualize the latent
+This function plots the samples of an omic data matrix in a two- or three-
+dimensional principal component subspace. The numbers printed along the axis
+labels indicate the percentage of variance explained by each component. PCA is an
+easy and popular method for unsupervised cluster detection. It can also aid in
+spotting potential outliers and generally helps to visualize the latent
 structure of a data set.
 }
 \examples{
