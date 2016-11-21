@@ -9,6 +9,14 @@
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
+#'   the plot is rendered in HTML and will either open in your browser's graphic
+#'   display or appear in the RStudio viewer. The plot can also be embedded in an
+#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
+#'   option \code{plotly} is also set to \code{TRUE}.
+#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
+#'   the \code{plot_volcano} output when \code{hover = TRUE}) in an HTML doc. Make
+#'   sure to set \code{plotly = TRUE} in the corresponding code chunk options.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -37,43 +45,41 @@
 #' @importFrom purrr map_lgl
 #' @import dplyr
 #' @import ggplot2
+#' @importFrom plotly ggplotly
 #'
 
 plot_volcano <- function(dat,
                          fdr    = 0.05,
                          ptsize = 0.25,
                          main   = NULL,
-                         legend = 'outside') {
+                         legend = 'outside',
+                         hover  = FALSE,
+                         knitr  = FALSE) {
 
+  # Preliminaries
   dat <- as_data_frame(dat)
-
-  for (p in c('P.Value', 'PValue', 'pvalue')) {
-    if (p %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == p] <- 'p.value'
+  p <- c('P.Value', 'PValue', 'pvalue')
+  for (i in p) {
+    if (i %in% colnames(dat)) {
+      colnames(dat)[colnames(dat) == i] <- 'p.value'
     }
   }
-  if (!'P.Value' %in% colnames(dat) &
-      !'pvalue'  %in% colnames(dat) &
-      !'p.value' %in% colnames(dat)) {
+  if (all(!p %in% colnames(dat))) {
     stop('dat must include a p-value column. Recognized colnames for this
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
-
-  for (q in c('adj.P.Val', 'FDR', 'padj')) {
-    if (q %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == q] <- 'q.value'
+  q <- c('adj.P.Val', 'FDR', 'padj')
+  for (i in q) {
+    if (i %in% colnames(dat)) {
+      colnames(dat)[colnames(dat) == i] <- 'q.value'
     }
   }
-  if (!'adj.P.Val' %in% colnames(dat) &
-      !'FDR' %in% colnames(dat) &
-      !'padj' %in% colnames(dat) &
-      !'q.value' %in% colnames(dat)) {
+  if (all(!q %in% colnames(dat))) {
     stop('dat must include a column for adjusted p-values. Recognized colnames
   for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
   Make sure that dat includes exactly one such colname.')
   }
-
   if ('log2FoldChange' %in% colnames(dat)) {
     dat <- dat %>% rename(logFC = log2FoldChange)
   }
@@ -83,44 +89,46 @@ plot_volcano <- function(dat,
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
   }
-
+  # Add a prelim for GeneSymbol
   if (is.null(main)) {
     main <- 'Volcano Plot'
   }
 
+  # Tidy
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- dat %>%
     mutate(is.DE = map_lgl(q.value, test),
            logP  = -log10(p.value)) %>%
-    select(logFC, logP, is.DE) %>%
+    select(GeneSymbol, logFC, logP, is.DE) %>%
     na.omit()
 
+  # Build plot
   if (sum(df$is.DE == TRUE) == 0) {
     warning('dat returned no differentially expressed/methylated probes at your
   selected fdr threshold. To color points by differential expression/methylation,
   consider raising your fdr cutoff.')
-    p <- ggplot(df, aes(logFC, logP)) +
-      geom_point(size = ptsize, alpha = 0.25)
+    p <- ggplot(df, aes(logFC, logP))
   } else {
     p <- ggplot(df, aes(logFC, logP, color = is.DE)) +
-      geom_point(size = ptsize, alpha = 0.25) +
       scale_colour_manual(name   = expression(italic(q)*'-value'),
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
   }
-
-  p <- p + labs(title = main,
+  p <- p + suppressWarnings(geom_point(aes(text = paste('Gene:', GeneSymbol)),
+                                       size = ptsize, alpha = 0.25)) +
+    labs(title = main,
     x = expression('log'[2]*' Fold Change'),
     y = expression('-log'[10]*' '*italic(p))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
+  # Legend location
   if (legend == 'bottomleft') {
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(1, 0.01),
+    p <- p + theme(legend.justification = c(0.99, 0.01),
                    legend.position = c(0.99, 0.01))
   } else if (legend == 'topleft') {
     p <- p + theme(legend.justification = c(0.01, 0.99),
@@ -130,7 +138,19 @@ plot_volcano <- function(dat,
                    legend.position = c(0.99, 0.99))
   }
 
-  print(p)
+  # Output
+  if (hover == FALSE) {
+    print(p)
+  } else {
+    if (knitr == FALSE) {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
+      print(p)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
+                    session = 'knitr')
+      print(p)
+    }
+  }
 
 }
 
