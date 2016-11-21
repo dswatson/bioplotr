@@ -103,11 +103,11 @@ plot_volcano <- function(dat,
     na.omit()
 
   # Build plot
-  p <- suppressWarnings(ggplot(df, aes(AvgExpr, logFC,
+  p <- suppressWarnings(ggplot(df, aes(logFC, logP,
                                        text = paste('Gene:', GeneSymbol)))) +
     labs(title = main,
-         x = expression('Mean Expression'),
-         y = expression('log'[2]*' Fold Change')) +
+         x = expression('log'[2]*' Fold Change'),
+         y = expression('-log'[10]*italic(p))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
