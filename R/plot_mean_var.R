@@ -36,9 +36,10 @@
 
 plot_mean_var <- function(dat,
                           type,
-                          main  = NULL,
-                          hover = FALSE,
-                          knitr = FALSE) {
+                          ptsize = 0.25,
+                          main   = NULL,
+                          hover  = FALSE,
+                          knitr  = FALSE) {
 
   if (is.null(type) |
       !type %in% c('microarray', 'RNA-seq')) {
@@ -68,7 +69,7 @@ plot_mean_var <- function(dat,
 
   p <- ggplot(df) +
     suppressWarnings(geom_point(aes(Mean, Var, text = paste('Gene:', Gene)),
-                                size = 0.2, alpha = 0.25)) +
+                                size = ptsize, alpha = 0.25)) +
     geom_smooth(aes(lo.x, lo.y), size = 0.5) +
     labs(title = main, x = expression(mu), y = ylab) +
     theme_bw() +
