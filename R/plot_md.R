@@ -61,7 +61,7 @@ plot_md <- function(dat,
 
   # Preliminaries
   dat <- as_data_frame(dat)
-  q <- c('adj.P.Val', 'FDR', 'padj')
+  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   for (i in q) {
     if (i %in% colnames(dat)) {
       colnames(dat)[colnames(dat) == i] <- 'q.value'
@@ -69,10 +69,10 @@ plot_md <- function(dat,
   }
   if (all(!q %in% colnames(dat))) {
     stop('dat must include a column for adjusted p-values. Recognized colnames
-         for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
-         Make sure that dat includes exactly one such colname.')
+  for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".
+  Make sure that dat includes exactly one such colname.')
   }
-  avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean')
+  avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
   for (i in avg) {
     colnames(dat)[colnames(dat) == i] <- 'AvgExpr'
   }

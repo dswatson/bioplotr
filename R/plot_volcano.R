@@ -58,7 +58,7 @@ plot_volcano <- function(dat,
 
   # Preliminaries
   dat <- as_data_frame(dat)
-  p <- c('P.Value', 'PValue', 'pvalue')
+  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
     if (i %in% colnames(dat)) {
       colnames(dat)[colnames(dat) == i] <- 'p.value'
@@ -69,7 +69,7 @@ plot_volcano <- function(dat,
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
-  q <- c('adj.P.Val', 'FDR', 'padj')
+  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   for (i in q) {
     if (i %in% colnames(dat)) {
       colnames(dat)[colnames(dat) == i] <- 'q.value'
