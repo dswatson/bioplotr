@@ -16,10 +16,7 @@
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. The plot can also be embedded in an
-#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE}.
-#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-#'   the \code{plot_box} output when \code{hover = TRUE}) in an HTML doc.
+#'   display or appear in the RStudio viewer.
 #'
 #' @details
 #' This function displays each sample's omic data distribution in a single plot. It
@@ -52,8 +49,7 @@ plot_box <- function(dat,
                      ylab   = NULL,
                      main   = NULL,
                      legend = 'outside',
-                     hover  = FALSE,
-                     knitr  = FALSE) {
+                     hover  = FALSE) {
 
   # Preliminaries
   if (is.null(group)) {
