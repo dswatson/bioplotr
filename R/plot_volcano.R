@@ -105,7 +105,7 @@ plot_volcano <- function(dat,
                                        text = paste('Gene:', GeneSymbol)))) +
     labs(title = main,
          x = expression('log'[2]*' Fold Change'),
-         y = expression('-log'[10]*italic(p))) +
+         y = expression('-log'[10](italic(p)))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
