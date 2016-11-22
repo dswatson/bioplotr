@@ -6,10 +6,7 @@
 #' @param main Optional plot title.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. The plot can also be embedded in an
-#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE}.
-#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-#'   the \code{plot_mean_var} output when \code{hover = TRUE}) in an HTML doc.
+#'   display or appear in the RStudio viewer.
 #'
 #' @details
 #' This function plots each gene's mean expression against either the
