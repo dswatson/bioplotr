@@ -1,9 +1,9 @@
-#' Create MD plot of \eqn{log_2} fold changes against mean expression or methylation
+#' Create MD plot of log2 fold changes against mean expression or methylation
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
-#'   limma::topTable, edgeR::topTags, or DESeq2::results. Alternatively, any
-#'   object with columns for log fold changes, and FDR.
+#'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
+#'   Alternatively, any object with columns for log fold changes, and FDR.
 #' @param type String specifying data type. Must be one of either
 #'   \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.
 #' @param fdr Threshold for declaring a probe differentially expressed or methylated.
@@ -13,10 +13,7 @@
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. The plot can also be embedded in an
-#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE}.
-#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-#'   the \code{plot_md} output when \code{hover = TRUE}) in an HTML doc.
+#'   display or appear in the RStudio viewer.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -25,8 +22,7 @@
 #' magnitude, and significance of fold changes for a given experiment.
 #'
 #' @examples
-#' library(dplyr)
-#' df <- data_frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
+#' df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
 #'                  AvgExpr = rowMeans(matrix(rnorm(5000), nrow = 5000, ncol = 10)),
 #'                  p.value = pnorm(-abs(logFC)),
 #'                  FDR     = p.adjust(p.value, method = "fdr"))
@@ -96,7 +92,7 @@ plot_md <- function(dat,
 
   # Tidy
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
-  df <- as_data_frame(dat) %>%
+  df <- dat %>%
     mutate(is.DE = map_lgl(q.value, test)) %>%
     select(GeneSymbol, AvgExpr, logFC, is.DE) %>%
     na.omit()
