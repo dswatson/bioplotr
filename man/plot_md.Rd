@@ -2,13 +2,16 @@
 % Please edit documentation in R/plot_md.R
 \name{plot_md}
 \alias{plot_md}
-\title{Create MD plot of \eqn{log_2} fold changes against mean expression or methylation}
+\title{Create MD plot of log2 fold changes against mean expression or methylation}
 \usage{
 plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
   hover = FALSE, knitr = FALSE)
 }
 \arguments{
-\item{dat}{A count}
+\item{dat}{Data frame or matrix representing the results of a test for
+differential expression or methylation, such as the output of a call to
+\code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
+Alternatively, any object with columns for log fold changes, and FDR.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed or methylated.}
 
@@ -21,24 +24,13 @@ plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. The plot can also be embedded in an
-HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
-option \code{plotly} is also set to \code{TRUE}.}
-
-\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-the \code{plot_md} output when \code{hover = TRUE}) in an HTML doc. Make
-sure to set \code{plotly = TRUE} in the corresponding code chunk options.}
-
-\item{res}{Data frame or matrix representing the results of a test for
-differential expression or methylation, such as the output of a call to
-limma::topTable, edgeR::topTags, or DESeq2::results. Alternatively, any
-object with columns for log fold changes, and FDR.}
+display or appear in the RStudio viewer.}
 
 \item{type}{String specifying data type. Must be one of either
 \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.}
 }
 \description{
-Create MD plot of \eqn{log_2} fold changes against mean expression or methylation
+Create MD plot of log2 fold changes against mean expression or methylation
 }
 \details{
 This function displays the results of a differential expression or methylation
@@ -47,8 +39,7 @@ user-defined FDR threshold. These figures can be used to evaluate the symmetry,
 magnitude, and significance of fold changes for a given experiment.
 }
 \examples{
-library(dplyr)
-df <- data_frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
+df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
                  AvgExpr = rowMeans(matrix(rnorm(5000), nrow = 5000, ncol = 10)),
                  p.value = pnorm(-abs(logFC)),
                  FDR     = p.adjust(p.value, method = "fdr"))

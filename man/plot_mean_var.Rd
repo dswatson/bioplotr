@@ -17,13 +17,7 @@ plot_mean_var(dat, type, ptsize = 0.25, main = NULL, hover = FALSE,
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. The plot can also be embedded in an
-HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
-option \code{plotly} is also set to \code{TRUE}.}
-
-\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-the \code{plot_mean_var} output when \code{hover = TRUE}) in an HTML doc. Make
-sure to set \code{plotly = TRUE} in the corresponding code chunk options.}
+display or appear in the RStudio viewer.}
 }
 \description{
 Plot the mean-variance trend of a gene expression matrix

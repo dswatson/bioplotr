@@ -5,7 +5,7 @@
 \title{Create box plots by sample}
 \usage{
 plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
-  legend = "outside", hover = FALSE, knitr = FALSE)
+  legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
@@ -30,13 +30,7 @@ one of \code{type} or \code{xlab} must be specified.}
 
 \item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. The plot can also be embedded in an
-HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
-option \code{plotly} is also set to \code{TRUE}.}
-
-\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-the \code{plot_box} output when \code{hover = TRUE}) in an HTML doc. Make sure
-to set \code{plotly = TRUE} in the corresponding code chunk options.}
+display or appear in the RStudio viewer.}
 }
 \description{
 Create box plots by sample

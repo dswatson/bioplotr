@@ -26,18 +26,9 @@ Levels are used to color and shape points. If supplied, legend title defaults to
 
 \item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. The plot can also be embedded in an
-HTML doc using Rmarkdown so long as \code{knitr = TRUE} and the code chunk
-option \code{plotly} is also set to \code{TRUE}.}
+display or appear in the RStudio viewer.}
 
-\item{D3}{Render the plot in three dimensions? This creates an interactive plotly
-object that opens in your browser or the RStudio viewer. The plot can also be
-embedded in an HTML doc using the same settings described above.}
-
-\item{knitr}{Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-the \code{plot_pca} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
-an HTML doc. Make sure to set \code{plotly = TRUE} in the corresponding code
-chunk options.}
+\item{D3}{Render the plot in three dimensions?}
 }
 \description{
 Plot the principal components of an omic data matrix
