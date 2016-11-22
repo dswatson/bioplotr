@@ -13,14 +13,8 @@
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. The plot can also be embedded in an
-#'   HTML doc using Rmarkdown so long as \code{knitr = TRUE}.
-#' @param D3 Render the plot in three dimensions? This creates an interactive plotly
-#'  object that opens in your browser or the RStudio viewer. The plot can also be
-#'  embedded in an HTML doc using the same settings described above.
-#' @param knitr Set this to \code{TRUE} if you want to embed a plotly object (viz.,
-#'   the \code{plot_pca} output when \code{hover = TRUE} or \code{D3 = TRUE}) in
-#'   an HTML doc.
+#'   display or appear in the RStudio viewer.
+#' @param D3 Render the plot in three dimensions?
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or three-
@@ -168,11 +162,10 @@ plot_pca <- function(dat,
                    symbols = symbls[1:length(unique(df$Group))],
                    type = 'scatter3d', mode = 'markers',
                    alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
-        layout(title = main, hovermode = 'closest', scene = list(
-          xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
-          yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
-          zaxis = list(title = paste0('PC3 (', vars[3], '%)'))
-        ))
+        layout(hovermode = 'closest', title = main,
+               xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
+               yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
+               zaxis = list(title = paste0('PC3 (', vars[3], '%)')))
       print(p)
   }
 
