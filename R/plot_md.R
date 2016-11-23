@@ -3,7 +3,7 @@
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
 #'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-#'   Alternatively, any object with columns for log fold changes, and FDR.
+#'   Alternatively, any object with columns for log fold changes and FDR.
 #' @param type String specifying data type. Must be one of either
 #'   \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.
 #' @param fdr Threshold for declaring a probe differentially expressed or methylated.
@@ -86,6 +86,10 @@ plot_md <- function(dat,
     stop('dat must include a log fold change column. Recognized colnames for
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
+  }
+  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright",
+  "topleft", or "topright".')
   }
   if (is.null(probes)) {
     dat <- dat %>% mutate(Probe = row_number())

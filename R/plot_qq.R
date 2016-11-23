@@ -61,6 +61,10 @@ plot_qq <- function(dat,
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
+  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright",
+  "topleft", or "topright".')
+  }
   if (is.null(probes)) {
     dat <- dat %>% mutate(Probe = row_number())
   } else {
@@ -111,8 +115,5 @@ plot_qq <- function(dat,
   }
 
 }
-
-# Add: norm, chisq, pois, nbinom, beta
-
 
 

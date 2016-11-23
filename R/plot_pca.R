@@ -66,8 +66,12 @@ plot_pca <- function(dat,
       }
     }
   }
+  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright",
+  "topleft", or "topright".')
+  }
   if (is.null(colnames(dat))) {
-    sample <- paste0('Sample', seq_along(1:ncol(dat)))
+    sample <- paste0('Sample', 1:ncol(dat))
   } else {
     sample <- colnames(dat)
   }

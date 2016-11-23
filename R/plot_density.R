@@ -78,6 +78,10 @@ plot_density <- function(dat,
       stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
     }
   }
+  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright",
+  "topleft", or "topright".')
+  }
   if (is.null(main)) {
     if (is.null(group)) {
       main <- 'Density By Sample'
