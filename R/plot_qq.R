@@ -1,4 +1,4 @@
-#' Create QQ plot of expected vs. observed \emph{p}-values
+#' Create QQ plot of expected vs. observed -log10 \emph{p}-values
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -11,19 +11,29 @@
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
-#' @param probes String specifying the colname in which to find the probe names.
-#'   Only relevant if \code{hover = TRUE}.
+#' @param probes String specifying the name of the column in which to find the probe
+#'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
 #' This function displays a scatterplot of the expected vs. observed quantiles
-#' of a \emph{p}-value distribution following a -log10 transform. If the black points
+#' of a \emph{p}-value distribution following -log10 transform. If the black points
 #' deviate too sharply from the red line, especially at low expected values of
-#' -log10(\emph{p}), then it suggests that one or several statistical assumptions
-#' upon which the test was based have probably been violated.
+#' -log10(\emph{p}), then it suggests a violation of the statistical assumptions
+#' upon which the test was based.
 #'
 #' @examples
 #' df <- data.frame(p.value = runif(10000))
 #' plot_qq(df)
+#'
+#' library(limma)
+#' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
+#'                   matrix(rnorm(250), nrow = 50, ncol = 5))
+#' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
+#' treat <- rep(c("A", "B"), each = 5)
+#' des <- model.matrix(~ treat)
+#' fit <- eBayes(lmFit(mat, des))
+#' top <- topTable(fit, number = Inf)
+#' plot_qq(top)
 #'
 #' @export
 #' @import dplyr
@@ -40,16 +50,6 @@ plot_qq <- function(dat,
 
   # Preliminaries
   dat <- as_data_frame(dat)
-  if (is.null(probes)) {
-    dat <- dat %>% mutate(Probe = row_number())
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop('dat must include a colname that matches the string specified in
-  the probes argument.')
-    } else {
-      colnames(dat)[colnames(dat) == probes] <- 'Probe'
-    }
-  }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
     if (i %in% colnames(dat)) {
@@ -60,6 +60,15 @@ plot_qq <- function(dat,
     stop('dat must include a p-value column. Recognized colnames for this
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
+  }
+  if (is.null(probes)) {
+    dat <- dat %>% mutate(Probe = row_number())
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found.'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
   }
 
   # Tidy
@@ -73,8 +82,8 @@ plot_qq <- function(dat,
     suppressWarnings(geom_point(aes(text = Probe), size = ptsize)) +
     geom_abline(intercept = 0, slope = 1, color = 'red') +
     labs(title = main,
-         x = expression('Expected -log'[10](italic(p))),
-         y = expression('Observed -log'[10](italic(p)))) +
+         x = expression('Expected'~-log[10](italic(p))),
+         y = expression('Observed'~-log[10](italic(p)))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
 
@@ -97,14 +106,8 @@ plot_qq <- function(dat,
   if (hover == FALSE) {
     print(p)
   } else {
-    if (knitr == FALSE) {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
-                    session = 'knitr')
-      print(p)
-    }
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    print(p)
   }
 
 }
