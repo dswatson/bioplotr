@@ -49,8 +49,7 @@ plot_pca <- function(dat,
                      main   = NULL,
                      legend = 'outside',
                      hover  = FALSE,
-                     D3     = FALSE,
-                     knitr  = FALSE) {
+                     D3     = FALSE) {
 
   # Preliminaries
   if (is.null(group)) {
