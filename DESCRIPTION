@@ -12,7 +12,6 @@ Imports:
   plotly,
   RColorBrewer,
   NMF,
-  PoiClaClu,
   edgeR,
   matrixStats,
   wordspace
