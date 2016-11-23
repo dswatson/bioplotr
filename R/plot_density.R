@@ -19,10 +19,10 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function displays each sample's omic data distribution in a single plot. It
-#' is especially helpful when contrasting pre- and post-normalization matrices. It
-#' may additionally be used to inspect for batch effects or other associations with
-#' phenotypic variables by using the \code{group} argument.
+#' This function displays each sample's omic data distribution as a density curve.
+#' It is especially helpful when contrasting pre- and post-normalization matrices.
+#' It may additionally be used to inspect for batch effects or other associations
+#' with phenotypic features by using the \code{group} argument.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -114,10 +114,9 @@ plot_density <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (!is.null(group)) {
-    p <- p + suppressWarnings(geom_path(aes(text = paste('Sample:', Sample),
-                                            colour = Group)))
+    p <- p + suppressWarnings(geom_path(aes(text = Sample, color = Group)))
   } else {
-    p <- p + geom_path(aes(colour = Sample))
+    p <- p + geom_path(aes(color = Sample))
   }
 
   # Named list?
@@ -144,13 +143,8 @@ plot_density <- function(dat,
   if (hover == FALSE) {
     print(p)
   } else {
-    if (knitr == FALSE) {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    }
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    print(p)
   }
 
 }
