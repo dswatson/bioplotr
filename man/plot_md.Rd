@@ -5,13 +5,13 @@
 \title{Create MD plot of log2 fold changes against mean expression or methylation}
 \usage{
 plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
-  hover = FALSE, knitr = FALSE)
+  hover = FALSE, probes = NULL)
 }
 \arguments{
 \item{dat}{Data frame or matrix representing the results of a test for
 differential expression or methylation, such as the output of a call to
 \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-Alternatively, any object with columns for log fold changes, and FDR.}
+Alternatively, any object with columns for log fold changes and FDR.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed or methylated.}
 
@@ -25,6 +25,9 @@ Alternatively, any object with columns for log fold changes, and FDR.}
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
+
+\item{probes}{String specifying the name of the column in which to find the probe
+identifiers. Only relevant if \code{hover = TRUE}.}
 
 \item{type}{String specifying data type. Must be one of either
 \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.}

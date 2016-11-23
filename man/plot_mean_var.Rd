@@ -2,13 +2,14 @@
 % Please edit documentation in R/plot_mean_var.R
 \name{plot_mean_var}
 \alias{plot_mean_var}
-\title{Plot the mean-variance trend of a gene expression matrix}
+\title{Plot the mean-variance trend of an omic data matrix}
 \usage{
 plot_mean_var(dat, type, ptsize = 0.25, main = NULL, hover = FALSE,
-  knitr = FALSE)
+  probes = NULL)
 }
 \arguments{
-\item{dat}{Matrix of log expression intensities or raw counts.}
+\item{dat}{Omic data matrix with rows corresponding to probes and columns
+to samples.}
 
 \item{type}{String specifying data type. Must be one of either
 \code{"microarray"} or \code{"RNA-seq"}.}
@@ -18,20 +19,23 @@ plot_mean_var(dat, type, ptsize = 0.25, main = NULL, hover = FALSE,
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
+
+\item{probes}{String specifying the name of the column in which to find the probe
+identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Plot the mean-variance trend of a gene expression matrix
+Plot the mean-variance trend of an omic data matrix
 }
 \details{
-This function plots each gene's mean expression against either the
-logarithm of its standard deviation (if \code{type = "microarray"}) or
-its square root (if \code{type = "RNA-seq"}). A lowess curve is additionally
-fit to the data.
+This function plots each probe's mean value against either the logarithm of
+its standard deviation (if \code{type = "microarray"}) or its square root
+(if \code{type = "RNA-seq"}). A lowess curve is additionally fit to the data.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
 plot_mean_var(mat, type = "microarray")
 
+library(edgeR)
 mat <- matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5)
 mat <- cpm(y, log = TRUE)
 plot_mean_var(mat, type = "RNA-seq")

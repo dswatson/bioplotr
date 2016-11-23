@@ -5,7 +5,7 @@
 \title{Plot the principal components of an omic data matrix}
 \usage{
 plot_pca(dat, group = NULL, label = FALSE, main = NULL,
-  legend = "outside", hover = FALSE, D3 = FALSE, knitr = FALSE)
+  legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns

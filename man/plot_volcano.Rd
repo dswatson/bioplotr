@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot_volcano.R
 \name{plot_volcano}
 \alias{plot_volcano}
-\title{Create volcano plot of log2 fold changes against -log10 \emph{p}-values}
+\title{Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values}
 \usage{
 plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
-  legend = "outside", hover = FALSE, knitr = FALSE)
+  legend = "outside", hover = FALSE, probes = NULL)
 }
 \arguments{
 \item{dat}{Data frame or matrix representing the results of a test for
@@ -26,9 +26,12 @@ and FDR.}
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
+
+\item{probes}{String specifying the name of the column in which to find the probe
+identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Create volcano plot of log2 fold changes against -log10 \emph{p}-values
+Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values
 }
 \details{
 This function displays the results of a differential expression or methylation
@@ -46,7 +49,7 @@ library(limma)
 DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
                   matrix(rnorm(250), nrow = 50, ncol = 5))
 mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-treat <- c(rep("A", 5), rep("B", 5))
+treat <- rep(c("A", "B"), each = 5)
 des <- model.matrix(~ treat)
 fit <- eBayes(lmFit(mat, des))
 top <- topTable(fit, number = Inf)

@@ -36,10 +36,10 @@ display or appear in the RStudio viewer.}
 Create density plots by sample
 }
 \details{
-This function displays each sample's omic data distribution in a single plot. It
-is especially helpful when contrasting pre- and post-normalization matrices. It
-may additionally be used to inspect for batch effects or other associations with
-phenotypic variables by using the \code{group} argument.
+This function displays each sample's omic data distribution as a density curve.
+It is especially helpful when contrasting pre- and post-normalization matrices.
+It may additionally be used to inspect for batch effects or other associations
+with phenotypic features by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)

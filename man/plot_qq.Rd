@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_qq.R
 \name{plot_qq}
 \alias{plot_qq}
-\title{Create QQ plot of expected vs. observed \emph{p}-values}
+\title{Create QQ plot of expected vs. observed -log10 \emph{p}-values}
 \usage{
 plot_qq(dat, ptsize = 0.25, main = NULL, legend = "outside",
   hover = FALSE, probes = NULL)
@@ -24,22 +24,32 @@ Alternatively, any object with a column for \emph{p}-values.}
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 
-\item{probes}{String specifying the colname in which to find the probe names.
-Only relevant if \code{hover = TRUE}.}
+\item{probes}{String specifying the name of the column in which to find the probe
+identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Create QQ plot of expected vs. observed \emph{p}-values
+Create QQ plot of expected vs. observed -log10 \emph{p}-values
 }
 \details{
 This function displays a scatterplot of the expected vs. observed quantiles
-of a \emph{p}-value distribution following a -log10 transform. If the black points
+of a \emph{p}-value distribution following -log10 transform. If the black points
 deviate too sharply from the red line, especially at low expected values of
--log10(\emph{p}), then it suggests that one or several statistical assumptions
-upon which the test was based have probably been violated.
+-log10(\emph{p}), then it suggests a violation of the statistical assumptions
+upon which the test was based.
 }
 \examples{
 df <- data.frame(p.value = runif(10000))
 plot_qq(df)
+
+library(limma)
+DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
+                  matrix(rnorm(250), nrow = 50, ncol = 5))
+mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
+treat <- rep(c("A", "B"), each = 5)
+des <- model.matrix(~ treat)
+fit <- eBayes(lmFit(mat, des))
+top <- topTable(fit, number = Inf)
+plot_qq(top)
 
 }
 
