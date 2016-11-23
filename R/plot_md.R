@@ -108,12 +108,11 @@ plot_md <- function(dat,
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- dat %>%
     mutate(is.DE = map_lgl(q.value, test)) %>%
-    select(GeneSymbol, AvgExpr, logFC, is.DE) %>%
+    select(Probe, AvgExpr, logFC, is.DE) %>%
     na.omit()
 
   # Build plot
-  p <- suppressWarnings(ggplot(df, aes(AvgExpr, logFC,
-                                       text = paste('Gene:', GeneSymbol)))) +
+  p <- suppressWarnings(ggplot(df, aes(AvgExpr, logFC, text = Probe))) +
     labs(title = main,
          x = expression('Mean Expression'),
          y = expression('log'[2]*' Fold Change')) +
