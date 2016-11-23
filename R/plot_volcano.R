@@ -1,4 +1,4 @@
-#' Create volcano plot of log2 fold changes against -log10 \emph{p}-values
+#' Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -13,6 +13,8 @@
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
+#' @param probes String specifying the name of the column in which to find the probe
+#'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -30,7 +32,7 @@
 #' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
 #'                   matrix(rnorm(250), nrow = 50, ncol = 5))
 #' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- c(rep("A", 5), rep("B", 5))
+#' treat <- rep(c("A", "B"), each = 5)
 #' des <- model.matrix(~ treat)
 #' fit <- eBayes(lmFit(mat, des))
 #' top <- topTable(fit, number = Inf)
@@ -49,7 +51,7 @@ plot_volcano <- function(dat,
                          main   = NULL,
                          legend = 'outside',
                          hover  = FALSE,
-                         knitr  = FALSE) {
+                         probes = NULL) {
 
   # Preliminaries
   dat <- as_data_frame(dat)
@@ -84,7 +86,15 @@ plot_volcano <- function(dat,
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
   }
-  # Add a prelim for GeneSymbol
+  if (is.null(probes)) {
+    dat <- dat %>% mutate(Probe = row_number())
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found.'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
+  }
   if (is.null(main)) {
     main <- 'Volcano Plot'
   }
@@ -94,22 +104,20 @@ plot_volcano <- function(dat,
   df <- dat %>%
     mutate(is.DE = map_lgl(q.value, test),
            logP  = -log10(p.value)) %>%
-    select(GeneSymbol, logFC, logP, is.DE) %>%
+    select(Probe, logFC, logP, is.DE) %>%
     na.omit()
 
   # Build plot
-  p <- suppressWarnings(ggplot(df, aes(logFC, logP,
-                                       text = paste('Gene:', GeneSymbol)))) +
+  p <- suppressWarnings(ggplot(df, aes(logFC, logP, text = Probe))) +
     labs(title = main,
-         x = expression('log'[2]*' Fold Change'),
-         y = expression('-log'[10](italic(p)))) +
+         x = expression(log[2]*' Fold Change'),
+         y = expression(~-log[10](italic(p)))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
-
   if (sum(df$is.DE == TRUE) == 0) {
     warning('dat returned no differentially expressed/methylated probes at your
-            selected fdr threshold. To color points by differential expression/methylation,
-            consider raising your fdr cutoff.')
+  selected fdr threshold. To color points by differential expression/methylation,
+  consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
@@ -117,7 +125,7 @@ plot_volcano <- function(dat,
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
-  }
+  }  # PROBLEM: legend doesn't work in PDF, plotly, etc.
 
   # Legend location
   if (legend == 'bottomleft') {
@@ -138,14 +146,8 @@ plot_volcano <- function(dat,
   if (hover == FALSE) {
     print(p)
   } else {
-    if (knitr == FALSE) {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
-                    session = 'knitr')
-      print(p)
-    }
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    print(p)
   }
 
 }
