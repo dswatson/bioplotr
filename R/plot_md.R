@@ -14,6 +14,8 @@
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
+#' @param probes String specifying the name of the column in which to find the probe
+#'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -51,7 +53,7 @@ plot_md <- function(dat,
                     main   = NULL,
                     legend = 'outside',
                     hover  = FALSE,
-                    knitr  = FALSE) {
+                    probes = NULL) {
 
   # Preliminaries
   dat <- as_data_frame(dat)
@@ -85,7 +87,15 @@ plot_md <- function(dat,
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
   }
-  # Add a prelim for GeneSymbol
+  if (is.null(probes)) {
+    dat <- dat %>% mutate(Probe = row_number())
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found.'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
+  }
   if (is.null(main)) {
     main <- 'MD Plot'
   }
@@ -105,7 +115,6 @@ plot_md <- function(dat,
          y = expression('log'[2]*' Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
-
   if (sum(df$is.DE == TRUE) == 0) {
     warning('dat returned no differentially expressed/methylated probes at your
   selected fdr threshold. To color points by differential expression/methylation,
@@ -117,7 +126,7 @@ plot_md <- function(dat,
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
-  }
+  } # PROBLEM: legend doesn't work in PDF, plotly, etc.
 
   # Legend location
   if (legend == 'bottomleft') {
@@ -138,14 +147,8 @@ plot_md <- function(dat,
   if (hover == FALSE) {
     print(p)
   } else {
-    if (knitr == FALSE) {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
-                    session = 'knitr')
-      print(p)
-    }
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    print(p)
   }
 
 }
