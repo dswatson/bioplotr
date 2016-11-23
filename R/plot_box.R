@@ -19,10 +19,10 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function displays each sample's omic data distribution in a single plot. It
-#' is especially helpful when contrasting pre- and post-normalization matrices. It
-#' may additionally be used to inspect for batch effects or other associations with
-#' phenotypic variables by using the \code{group} argument.
+#' This function displays each sample's omic data distribution as a box and whisker
+#' plot. This is especially helpful when contrasting pre- and post-normalization
+#' matrices. It may additionally be used to inspect for batch effects or other
+#' associations with phenotypic features by using the \code{group} argument.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -112,10 +112,10 @@ plot_box <- function(dat,
     theme(plot.title = element_text(hjust = .5),
           axis.text.x = element_text(angle = 45, hjust = 1))
   if (!is.null(group)) {
-    p <- p + suppressWarnings(geom_boxplot(aes(text = paste('Sample:', Sample),
+    p <- p + suppressWarnings(geom_boxplot(aes(text = Sample,
                                                fill = Group)))
   } else {
-    p <- p + suppressWarnings(geom_boxplot(text = paste('Sample:', Sample)))
+    p <- p + suppressWarnings(geom_boxplot(text = Sample))
   }
 
   # Named list?
@@ -142,16 +142,12 @@ plot_box <- function(dat,
   if (hover == FALSE) {
     print(p)
   } else {
-    if (knitr == FALSE) {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-      print(p)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
-                    session = 'knitr')
-      print(p)
-    }
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    print(p)
   }
 
 }
 
+# Fun fact: plotly won't display text for boxplots:
+# https://community.plot.ly/t/boxplot-hoverinfo-text-not-display/1959
 
