@@ -144,29 +144,23 @@ plot_pca <- function(dat,
     if (hover == FALSE) {
       print(p)
     } else {
-      if (knitr == FALSE) {
-        p <- ggplotly(p, tooltip = 'text', width = 600, height = 500)
-        print(p)
-      } else {
-        p <- ggplotly(p, tooltip = 'text', width = 600, height = 500,
-                      session = 'knitr')
-        print(p)
-      }
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+      print(p)
     }
   } else {
-      # symbls <- c(16, 17, 15, 3, 7, 8)  # This would be right if plotly worked
-      symbls <- c(16, 18, 15, 3, 7, 8)
-      p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
-                   text = ~Sample, color = ~Group, symbol = ~Group,
-                   colors = brewer.pal(length(unique(df$Group)), 'Set1'),
-                   symbols = symbls[1:length(unique(df$Group))],
-                   type = 'scatter3d', mode = 'markers',
-                   alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
-        layout(hovermode = 'closest', title = main,
-               xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
-               yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
-               zaxis = list(title = paste0('PC3 (', vars[3], '%)')))
-      print(p)
+    # symbls <- c(16, 17, 15, 3, 7, 8)  # This would be right if plotly worked
+    symbls <- c(16, 18, 15, 3, 7, 8)
+    p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
+                 text = ~Sample, color = ~Group, symbol = ~Group,
+                 colors = brewer.pal(length(unique(df$Group)), 'Set1'),
+                 symbols = symbls[1:length(unique(df$Group))],
+                 type = 'scatter3d', mode = 'markers',
+                 alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
+      layout(hovermode = 'closest', title = main,
+             xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
+             yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
+             zaxis = list(title = paste0('PC3 (', vars[3], '%)')))
+    print(p)
   }
 
 }
