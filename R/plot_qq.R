@@ -74,6 +74,9 @@ plot_qq <- function(dat,
       colnames(dat)[colnames(dat) == probes] <- 'Probe'
     }
   }
+  if (is.null(main)) {
+    main <- 'Q-Q Plot'
+  }
 
   # Tidy
   df <- dat %>%
