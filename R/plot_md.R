@@ -87,7 +87,7 @@ plot_md <- function(dat,
   this vector include "logFC" and "log2FoldChange". Make sure that dat includes
   exactly one such colname.')
   }
-  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
   "topleft", or "topright".')
   }

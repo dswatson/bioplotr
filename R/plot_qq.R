@@ -61,7 +61,7 @@ plot_qq <- function(dat,
   vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
   that dat includes exactly one such colname.')
   }
-  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
   "topleft", or "topright".')
   }

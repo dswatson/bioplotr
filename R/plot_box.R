@@ -78,7 +78,7 @@ plot_box <- function(dat,
       stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
     }
   }
-  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
   "topleft", or "topright".')
   }

@@ -65,7 +65,7 @@ plot_pca <- function(dat,
       }
     }
   }
-  if (!legend %in% c('bottomleft', 'bottomright', 'topleft', 'topright')) {
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
   "topleft", or "topright".')
   }
