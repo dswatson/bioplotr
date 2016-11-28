@@ -95,14 +95,14 @@ plot_density <- function(dat,
   }
 
   # Tidy
-  densities <- gather(as_data_frame(dat), Sample, Expression) %>%
+  densities <- gather(as_data_frame(dat), Sample, Value) %>%
     group_by(Sample) %>%
-    do(Expression = density(.$Expression)$x,
-       Density    = density(.$Expression)$y)
+    do(Value   = density(.$Value)$x,
+       Density = density(.$Value)$y)
   densities <- densities[match(colnames(as_data_frame(dat)), densities$Sample), ]
-  df <- data_frame(Sample     = rep(densities$Sample, each = 512),
-                   Expression = unlist(densities$Expression),
-                   Density    = unlist(densities$Density))
+  df <- data_frame(Sample  = rep(densities$Sample, each = 512),
+                   Value   = unlist(densities$Value),
+                   Density = unlist(densities$Density))
   if (!is.null(group)) {
     if (!is.list(group)) {
       df <- mutate(df, Group = rep(group, each = 512))
@@ -113,7 +113,7 @@ plot_density <- function(dat,
   }
 
   # Basic plot
-  p <- ggplot(df, aes(Expression, Density, group = Sample)) +
+  p <- ggplot(df, aes(Value, Density, group = Sample)) +
     labs(title = main, x = xlab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
