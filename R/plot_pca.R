@@ -107,9 +107,9 @@ plot_pca <- function(dat,
   # Sample labels
   if (label == TRUE) {
     if (!is.numeric(df$Group)) {
-      p <- p + geom_text(aes(label = Sample, color = Group, alpha = 0.85))
+      p <- p + geom_text(aes(label = Sample, color = Group), alpha = 0.85)
     } else {
-      p <- p + geom_text(aes(label = Sample, alpha = 0.85))
+      p <- p + geom_text(aes(label = Sample), alpha = 0.85)
     }
   } else {
     if (!is.numeric(df$Group)) {
