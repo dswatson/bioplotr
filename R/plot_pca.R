@@ -113,8 +113,9 @@ plot_pca <- function(dat,
     }
   } else {
     if (!is.numeric(df$Group)) {
-      suppressWarnings(p <- p + geom_point(aes(text  = paste('Sample:', Sample),
-                                               color = Group, shape = Group),
+      suppressWarnings(p <- p + geom_point(aes(text  = Sample,
+                                               color = Group,
+                                               shape = Group),
                                            alpha = 0.85))
     } else {
       p <- p + geom_text(aes(label = Sample))
