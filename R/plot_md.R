@@ -4,8 +4,6 @@
 #'   differential expression or methylation, such as the output of a call to
 #'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
 #'   Alternatively, any object with columns for log fold changes and FDR.
-#' @param type String specifying data type. Must be one of either
-#'   \code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.
 #' @param fdr Threshold for declaring a probe differentially expressed or methylated.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -129,7 +127,7 @@ plot_md <- function(dat,
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
-  } # PROBLEM: legend doesn't work in PDF, plotly, etc.
+  }
 
   # Legend location
   if (legend == 'bottomleft') {
