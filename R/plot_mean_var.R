@@ -1,9 +1,12 @@
 #' Plot the mean-variance trend of an omic data matrix
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples.
-#' @param type String specifying data type. Must be one of either
-#'   \code{"microarray"} or \code{"RNA-seq"}.
+#'   to samples. Presumed to be normalized prior to visualization.
+#' @param trans Data transformation to be applied to the probewise standard
+#'   deviations. Must be either \code{"log"} or \code{"sqrt"}. The former is
+#'   recommended for microarrays or any other platform in which data are
+#'   approximately log-normally distributed. The latter is recommended for
+#'   sequencing and count data.
 #' @param main Optional plot title.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
@@ -12,18 +15,18 @@
 #'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
-#' This function plots each probe's mean value against either the logarithm of
-#' its standard deviation (if \code{type = "microarray"}) or its square root
-#' (if \code{type = "RNA-seq"}). A lowess curve is additionally fit to the data.
+#' This function plots each probe's mean value against its standard deviation,
+#' following the appropriate data transformation. A lowess curve is additionally
+#' fit to the data.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_mean_var(mat, type = "microarray")
+#' plot_mean_var(mat, trans = "log")
 #'
 #' library(edgeR)
 #' mat <- matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5)
 #' mat <- cpm(y, log = TRUE)
-#' plot_mean_var(mat, type = "RNA-seq")
+#' plot_mean_var(mat, trans = "sqrt")
 #'
 #' @export
 #' @importFrom matrixStats rowSds
@@ -33,27 +36,27 @@
 #'
 
 plot_mean_var <- function(dat,
-                          type,
+                          trans,
                           ptsize = 0.25,
                           main   = NULL,
                           hover  = FALSE,
                           probes = NULL) {
 
   # Preliminaries
-  if (!type %in% c('microarray', 'RNA-seq')) {
-    stop('type must be specified as either "microarray" or "RNA-seq".')
+  if (!trans %in% c('log', 'sqrt')) {
+    stop('trans must be specified as either "log" or "sqrt".')
   }
-  if (type == 'microarray') {
+  if (trans == 'log') {
     vars <- log2(rowSds(dat))
     ylab <- expression('log'[2]*sigma)
     if (is.null(main)) {
       main <- expression('log'[2]*' Expression')
     }
-  } else  if (type == 'RNA-seq') {
+  } else if (trans == 'sqrt') {
     vars <- sqrt(rowSds(dat))
     ylab <- expression(sqrt(sigma))
     if (is.null(main)) {
-      main <- expression('log'[2]*' Counts Per Million') #MREH
+      main <- expression('Normalized Counts')
     }
   }
 
