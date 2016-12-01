@@ -5,12 +5,7 @@
 #' @param group Optional factor or character vector of length equal to sample size.
 #'   Levels are used to color box plots. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
-#' @param type Optional string specifying omic data type. Currently supports
-#'   \code{"microarray", "RNA-seq",} and \code{"methylation"}.
-#' @param ylab Label for y-axis. If left \code{NULL}, this defaults to
-#'   log expression for \code{type = "microarray"}, log CPM for
-#'   \code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least
-#'   one of \code{type} or \code{xlab} must be specified.
+#' @param ylab Optional label for y-axis.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
@@ -66,17 +61,7 @@ plot_box <- function(dat,
     }
   }
   if (is.null(ylab)) {
-    if (is.null(type)) {
-      stop('Either data type or ylab must be provided.')
-    } else if (type == 'microarray') {
-      ylab <- expression('log'[2]*' Expression')
-    } else if (type == 'RNA-seq') {
-      ylab <- expression('log'[2]*' Counts Per Million')
-    } else if (type == 'methylation') {
-      ylab <- 'Beta'
-    } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
-      stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
-    }
+    ylab <- 'Value'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
