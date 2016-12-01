@@ -28,9 +28,6 @@ display or appear in the RStudio viewer.}
 
 \item{probes}{String specifying the name of the column in which to find the probe
 identifiers. Only relevant if \code{hover = TRUE}.}
-
-\item{type}{String specifying data type. Must be one of either
-\code{"microarray"}, \code{"RNA-seq"}, or \code{"methylation"}.}
 }
 \description{
 Create MD plot of log2 fold changes against mean expression or methylation
