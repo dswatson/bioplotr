@@ -40,7 +40,7 @@
 #' @importFrom purrr map_dbl
 #' @import ggplot2
 #' @import plotly
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom scales hue_pal
 #'
 
 plot_pca <- function(dat,
@@ -156,7 +156,7 @@ plot_pca <- function(dat,
     symbls <- c(16, 18, 15, 3, 7, 8)
     p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
                  text = ~Sample, color = ~Group, symbol = ~Group,
-                 colors = brewer.pal(length(unique(df$Group)), 'Set1'),
+                 colors = hue_pal()(length(unique(df$Group))),
                  symbols = symbls[1:length(unique(df$Group))],
                  type = 'scatter3d', mode = 'markers',
                  alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%

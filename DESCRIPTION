@@ -10,7 +10,6 @@ Imports:
   tidyr,
   purrr,
   plotly,
-  RColorBrewer,
   NMF,
   edgeR,
   matrixStats,
