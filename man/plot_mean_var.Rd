@@ -4,15 +4,18 @@
 \alias{plot_mean_var}
 \title{Plot the mean-variance trend of an omic data matrix}
 \usage{
-plot_mean_var(dat, type, ptsize = 0.25, main = NULL, hover = FALSE,
+plot_mean_var(dat, trans, ptsize = 0.25, main = NULL, hover = FALSE,
   probes = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples.}
+to samples. Presumed to be normalized prior to visualization.}
 
-\item{type}{String specifying data type. Must be one of either
-\code{"microarray"} or \code{"RNA-seq"}.}
+\item{trans}{Data transformation to be applied to the probewise standard
+deviations. Must be either \code{"log"} or \code{"sqrt"}. The former is
+recommended for microarrays or any other platform in which data are
+approximately log-normally distributed. The latter is recommended for
+sequencing and count data.}
 
 \item{main}{Optional plot title.}
 
@@ -27,18 +30,18 @@ identifiers. Only relevant if \code{hover = TRUE}.}
 Plot the mean-variance trend of an omic data matrix
 }
 \details{
-This function plots each probe's mean value against either the logarithm of
-its standard deviation (if \code{type = "microarray"}) or its square root
-(if \code{type = "RNA-seq"}). A lowess curve is additionally fit to the data.
+This function plots each probe's mean value against its standard deviation,
+following the appropriate data transformation. A lowess curve is additionally
+fit to the data.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-plot_mean_var(mat, type = "microarray")
+plot_mean_var(mat, trans = "log")
 
 library(edgeR)
 mat <- matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5)
 mat <- cpm(y, log = TRUE)
-plot_mean_var(mat, type = "RNA-seq")
+plot_mean_var(mat, trans = "sqrt")
 
 }
 
