@@ -87,5 +87,5 @@ plot_mean_var <- function(dat,
 
 }
 
-
+# When shiny-ified: add slider for smoother span
 
