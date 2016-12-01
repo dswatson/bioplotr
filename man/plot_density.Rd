@@ -4,7 +4,7 @@
 \alias{plot_density}
 \title{Create density plots by sample}
 \usage{
-plot_density(dat, group = NULL, type = NULL, xlab = NULL, main = NULL,
+plot_density(dat, group = NULL, xlab = NULL, main = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
@@ -15,13 +15,7 @@ to samples.}
 Levels are used to color density curves. If supplied, legend title defaults to
 "Group". Override this feature by passing a named list instead.}
 
-\item{type}{Optional string specifying omic data type. Currently supports
-\code{"microarray", "RNA-seq",} or \code{"methylation"}.}
-
-\item{xlab}{Label for x-axis. If left \code{NULL}, this defaults to
-log expression for \code{type = "microarray"}, log CPM for
-\code{type = "RNA-seq"}, or Beta for \code{type = "methylation"}. At least
-one of \code{type} or \code{xlab} must be specified.}
+\item{xlab}{Optional label for x-axis.}
 
 \item{main}{Optional plot title.}
 

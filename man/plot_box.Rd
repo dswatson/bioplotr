@@ -15,13 +15,7 @@ to samples.}
 Levels are used to color box plots. If supplied, legend title defaults to
 "Group". Override this feature by passing a named list instead.}
 
-\item{type}{Optional string specifying omic data type. Currently supports
-\code{"microarray", "RNA-seq",} and \code{"methylation"}.}
-
-\item{ylab}{Label for y-axis. If left \code{NULL}, this defaults to
-log expression for \code{type = "microarray"}, log CPM for
-\code{type = "RNA-seq"}, and Beta for \code{type = "methylation"}. At least
-one of \code{type} or \code{xlab} must be specified.}
+\item{ylab}{Optional label for y-axis.}
 
 \item{main}{Optional plot title.}
 
