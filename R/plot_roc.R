@@ -163,7 +163,7 @@ plot_roc <- function(obs,
   if (hover == FALSE) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
     print(p)
   }
 
