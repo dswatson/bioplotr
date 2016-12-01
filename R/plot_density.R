@@ -5,12 +5,7 @@
 #' @param group Optional factor or character vector of length equal to sample size.
 #'   Levels are used to color density curves. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
-#' @param type Optional string specifying omic data type. Currently supports
-#'   \code{"microarray", "RNA-seq",} or \code{"methylation"}.
-#' @param xlab Label for x-axis. If left \code{NULL}, this defaults to
-#'   log expression for \code{type = "microarray"}, log CPM for
-#'   \code{type = "RNA-seq"}, or Beta for \code{type = "methylation"}. At least
-#'   one of \code{type} or \code{xlab} must be specified.
+#' @param xlab Optional label for x-axis.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
@@ -45,7 +40,6 @@
 
 plot_density <- function(dat,
                          group  = NULL,
-                         type   = NULL,
                          xlab   = NULL,
                          main   = NULL,
                          legend = 'outside',
@@ -66,17 +60,7 @@ plot_density <- function(dat,
     }
   }
   if (is.null(xlab)) {
-    if (is.null(type)) {
-      stop('Either data type or xlab must be provided')
-    } else if (type == 'microarray') {
-      xlab <- expression('log'[2]*' Expression')
-    } else if (type == 'RNA-seq') {
-      xlab <- expression('log'[2]*' Counts Per Million')
-    } else if (type == 'methylation') {
-      xlab <- 'Beta'
-    } else if (!type %in% c('microarray', 'RNA-seq', 'methylation')) {
-      stop('type must be one of "microarray", "RNA-seq",  "methylation", or NULL.')
-    }
+    xlab <- 'Value'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright",
