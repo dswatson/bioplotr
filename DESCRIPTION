@@ -15,6 +15,7 @@ Imports:
   matrixStats,
   scales,
   ModelMetrics,
+  PRROC,
   wordspace
 License: GPL (>= 3)
 Encoding: UTF-8
