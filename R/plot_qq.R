@@ -57,13 +57,13 @@ plot_qq <- function(dat,
     }
   }
   if (all(!p %in% colnames(dat))) {
-    stop('dat must include a p-value column. Recognized colnames for this
-  vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure
-  that dat includes exactly one such colname.')
+    stop('dat must include a p-value column. Recognized colnames for this',
+  'vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure',
+  'that dat includes exactly one such colname.')
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright",
-  "topleft", or "topright".')
+    stop('legend must be one of "outside", "bottomleft", "bottomright",',
+  '"topleft", or "topright".')
   }
   if (is.null(probes)) {
     dat <- dat %>% mutate(Probe = row_number())

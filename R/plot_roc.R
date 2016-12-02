@@ -67,9 +67,10 @@ plot_roc <- function(obs,
     if (length(levels(obs)) > 2) {
       stop('Response must be dichotomous.')
     } else {
-      warning(paste0('Response vector is character or factor. A positive outcome is
-    hereby defined as obs == "', levels(obs)[1], '". To change this to obs == "', levels(obs)[2],
-    '", either relevel the factor or recode response as numeric (1/0).'))
+      warning(paste0('Response vector is character or factor. A positive outcome',
+    'is hereby defined as obs == "', levels(obs)[1], '". To change this to obs == "',
+    levels(obs)[2], '", either relevel the factor or recode response as numeric',
+    '(1/0).'))
       obs <- ifelse(obs == levels(obs)[1], 1, 0)
     }
   }
@@ -83,8 +84,8 @@ plot_roc <- function(obs,
     stop('Response is invariant.')
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright",
-  "topleft", or "topright".')
+    stop('legend must be one of "outside", "bottomleft", "bottomright",',
+  '"topleft", or "topright".')
   }
   if (is.null(main)) {
     if (length(pred) == 1) {

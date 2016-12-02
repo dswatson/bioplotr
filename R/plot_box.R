@@ -64,8 +64,8 @@ plot_box <- function(dat,
     ylab <- 'Value'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright",
-  "topleft", or "topright".')
+    stop('legend must be one of "outside", "bottomleft", "bottomright"',
+  '"topleft", or "topright".')
   }
   if (is.null(main)) {
     if (is.null(group)) {
