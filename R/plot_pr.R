@@ -112,12 +112,10 @@ plot_pr <- function(obs,
   leg <- function(i) {
     pos <- df %>%
       filter(Classifier == names(pred)[i],
-             Y == 1) %>%
-      select(X)
+             Y == 1)
     neg <- df %>%
       filter(Classifier == names(pred)[i],
-             Y == 0) %>%
-      select(X)
+             Y == 0)
     txt <- paste0(names(pred)[i], ', AUC = ',
                   round(pr.curve(pos$X, neg$X)$auc.integral, 2))
     return(txt)
