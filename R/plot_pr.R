@@ -46,7 +46,7 @@ plot_pr <- function(obs,
 
   # Preliminaries
   if (is.list(pred)) {
-    for (i in seq_along(a)) {
+    for (i in seq_along(pred)) {
       if (length(obs) != length(pred[[i]])) {
         stop('obs and pred vectors must be of equal length.')
       }
