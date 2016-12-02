@@ -16,9 +16,10 @@
 #'
 #' @details
 #' This function plots one or several receiver operating characteristic (ROC) curves.
-#' ROC curves plot the false positive rate (1 - specificity) vs. the true positive
-#' rate (sensitivity) for a given classifier and vector of observations. The area
-#' under the ROC curve (AUC) is a common performance metric for binary classifiers.
+#' ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
+#' positive rate (i.e., sensitivity) for a given classifier and vector of observations.
+#' The area under the ROC curve (AUC) is a common performance metric for binary
+#' classifiers.
 #'
 #' @examples
 #' y <- rbinom(300, size = 1, prob = 0.5)
@@ -40,7 +41,7 @@
 plot_roc <- function(obs,
                      pred,
                      main   = NULL,
-                     legend = 'bottomright',
+                     legend = 'outside',
                      hover  = FALSE) {
 
   # Preliminaries
@@ -98,10 +99,10 @@ plot_roc <- function(obs,
     df <- data_frame(TPR = 0,
                      FPR = 0,
                      Classifier = tbl$Classifier[1]) %>%
-    rbind(tbl)
+    rbind(tbl) %>%
     return(df)
   }
-  prs <- function(i) {
+  rates <- function(i) {
     df <- data_frame(Y = obs,
                      X = pred[[i]],
                      Classifier = names(pred)[i]) %>%
@@ -113,7 +114,7 @@ plot_roc <- function(obs,
       orig()
     return(df)
   }
-  df <- map_df(seq_along(pred), prs)
+  df <- map_df(seq_along(pred), rates)
 
   # Plot
   leg <- function(i) {
