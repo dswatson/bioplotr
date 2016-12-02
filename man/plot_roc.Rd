@@ -4,7 +4,7 @@
 \alias{plot_roc}
 \title{Plot ROC curves for one or several classifiers}
 \usage{
-plot_roc(obs, pred, main = NULL, legend = "bottomright", hover = FALSE)
+plot_roc(obs, pred, main = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -30,9 +30,10 @@ Plot ROC curves for one or several classifiers
 }
 \details{
 This function plots one or several receiver operating characteristic (ROC) curves.
-ROC curves plot the false positive rate (1 - specificity) vs. the true positive
-rate (sensitivity) for a given classifier and vector of observations. The area
-under the ROC curve (AUC) is a common performance metric for binary classifiers.
+ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
+positive rate (i.e., sensitivity) for a given classifier and vector of observations.
+The area under the ROC curve (AUC) is a common performance metric for binary
+classifiers.
 }
 \examples{
 y <- rbinom(300, size = 1, prob = 0.5)
