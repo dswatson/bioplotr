@@ -101,7 +101,7 @@ plot_roc <- function(obs,
                      FPR = 0,
                      Classifier = tbl$Classifier[1]) %>%
     rbind(tbl) %>%
-    return(df)
+    return()
   }
   rates <- function(i) {
     df <- data_frame(Y = obs,
