@@ -62,32 +62,32 @@ plot_md <- function(dat,
     }
   }
   if (all(!q %in% colnames(dat))) {
-    stop('dat must include a column for adjusted p-values. Recognized colnames',
-  'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR".',
-  'Make sure that dat includes exactly one such colname.')
+    stop('dat must include a column for adjusted p-values. Recognized colnames ',
+         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and ',
+         '"FDR". Make sure that dat includes exactly one such colname.')
   }
   avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
   for (i in avg) {
     colnames(dat)[colnames(dat) == i] <- 'AvgExpr'
   }
   if (all(!avg %in% colnames(dat))) {
-    stop('dat must include a column for average expression or methylation by',
-  'probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth",',
-  '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly one',
-  'such colname.')
+    stop('dat must include a column for average expression or methylation by ',
+         'probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth", ',
+         '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly ',
+         'one such colname.')
   }
   if ('log2FoldChange' %in% colnames(dat)) {
     dat <- dat %>% rename(logFC = log2FoldChange)
   }
   if (!'log2FoldChange' %in% colnames(dat) &
       !'logFC' %in% colnames(dat)) {
-    stop('dat must include a log fold change column. Recognized colnames for
-  this vector include "logFC" and "log2FoldChange". Make sure that dat includes
-  exactly one such colname.')
+    stop('dat must include a log fold change column. Recognized colnames for this',
+         'vector include "logFC" and "log2FoldChange". Make sure that dat includes',
+         'exactly one such colname.')
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright",',
-  '"topleft", or "topright".')
+    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
+         '"topleft", or "topright".')
   }
   if (is.null(probes)) {
     dat <- dat %>% mutate(Probe = row_number())
@@ -117,9 +117,9 @@ plot_md <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (sum(df$is.DE == TRUE) == 0) {
-    warning('dat returned no differentially expressed/methylated probes at your',
-  'selected fdr threshold. To color points by differential expression/methylation,',
-  'consider raising your fdr cutoff.')
+    warning('dat returned no differentially expressed/methylated probes at your ',
+            'selected fdr threshold. To color points by differential expression/',
+            'methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
