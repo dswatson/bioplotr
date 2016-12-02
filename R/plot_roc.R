@@ -52,7 +52,7 @@ plot_roc <- function(obs,
       }
     }
     if (is.null(names(pred))) {
-      names(pred) <- paste0('M', seq_along(a))
+      names(pred) <- paste0('M', seq_along(pred))
     }
   } else {
     if (length(obs) != length(pred)) {
