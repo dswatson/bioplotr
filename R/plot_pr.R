@@ -15,14 +15,11 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function plots one or several precision-recall (PR) curves.
-#'
-#'
-#' PR curves plot the precision (i.e., positive predictive value) against the recall
-#' (i.e., true positive rate/sensitivity) for a given classifier and vector of
-#' observations. The area under the PR curve (AUC) is a useful performance metric for
-#' binary classifiers, especially when the prevalence of the outcome in question is
-#' relatively low.
+#' This function plots one or several precision-recall (PR) curves. PR curves plot the
+#' precision (i.e., positive predictive value) against the recall (i.e., true positive
+#' rate/sensitivity) for a given classifier and vector of observations. The area under
+#' the PR curve (AUC) is a useful performance metric for binary classifiers, especially
+#' when the prevalence of the outcome in question is relatively low.
 #'
 #' @examples
 #' y <- rbinom(300, size = 1, prob = 0.1)
