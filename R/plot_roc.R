@@ -96,24 +96,23 @@ plot_roc <- function(obs,
   }
 
   # Tidy
-  orig <- function(tbl) {
-    df <- data_frame(TPR = 0,
-                     FPR = 0,
-                     Classifier = tbl$Classifier[1]) %>%
-    rbind(tbl) %>%
-    return()
+  originate <- function(tbl) {
+    data_frame(TPR = 0,
+               FPR = 0,
+               Classifier = tbl$Classifier[1]) %>%
+      rbind(tbl) %>%
+      return()
   }
   rates <- function(i) {
-    df <- data_frame(Y = obs,
-                     X = pred[[i]],
-                     Classifier = names(pred)[i]) %>%
-      distinct() %>%
+    data_frame(Y = obs,
+               X = pred[[i]],
+               Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
              FPR = cumsum(Y == 0) / sum(Y == 0)) %>%
       select(TPR, FPR, Classifier) %>%
-      orig()
-    return(df)
+      originate() %>%
+      return()
   }
   df <- map_df(seq_along(pred), rates)
 
