@@ -97,14 +97,13 @@ plot_pr <- function(obs,
 
   # Tidy
   rates <- function(i) {
-    df <- data_frame(Y = obs,
-                     X = pred[[i]],
-                     Classifier = names(pred)[i]) %>%
-      distinct() %>%
+    data_frame(Y = obs,
+               X = pred[[i]],
+               Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
-             PPV = cumsum(Y == 1) / (cumsum(Y == 1) + cumsum(Y == 0)))
-    return(df)
+             PPV = cumsum(Y == 1) / (cumsum(Y == 1) + cumsum(Y == 0))) %>%
+      return()
   }
   df <- map_df(seq_along(pred), rates)
 
