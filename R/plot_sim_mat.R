@@ -2,8 +2,9 @@
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples.
-#' @param group Optional factor or character vector of length equal to sample size.
-#'   Levels are used to color an annotation track atop the heatmap.
+#' @param group Optional factor or character vector of length equal to sample size,
+#'   or a named list of such vectors. Levels are used to color an annotation track
+#'   atop the heatmap.
 #' @param main Optional plot title.
 #'
 #' @details
@@ -33,6 +34,17 @@ plot_sim_mat <- function(dat,
                          group = NULL,
                          main  = NULL) {
 
+  if (!is.list(group)){
+    group <- list('Group' = group)
+  } else {
+    if (is.null(names(group))) {
+      if (length(group) == 1) {
+        names(group) <- 'Group'
+      } else {
+        names(group) <- paste('Group', seq_along(group))
+      }
+    }
+  }
   if (is.null(main)) {
     main <- 'Sample Similarity Matrix'
   }
@@ -46,7 +58,7 @@ plot_sim_mat <- function(dat,
   } else {
     aheatmap(dm, col = rb, Rowv = FALSE, main = main,
              distfun = function(x) as.dist(x), hclustfun = 'average',
-             annCol = list(Group = group))
+             annCol = group)
   }
 
 }
