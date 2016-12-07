@@ -160,10 +160,10 @@ plot_pca <- function(dat,
                  symbols = symbls[1:length(unique(df$Group))],
                  type = 'scatter3d', mode = 'markers',
                  alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
-      layout(hovermode = 'closest', title = main,
+      layout(hovermode = 'closest', title = main, scene = list(
              xaxis = list(title = paste0('PC1 (', vars[1], '%)')),
              yaxis = list(title = paste0('PC2 (', vars[2], '%)')),
-             zaxis = list(title = paste0('PC3 (', vars[3], '%)')))
+             zaxis = list(title = paste0('PC3 (', vars[3], '%)'))))
     print(p)
   }
 
