@@ -10,8 +10,9 @@ plot_sim_mat(dat, group = NULL, main = NULL)
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
-\item{group}{Optional factor or character vector of length equal to sample size.
-Levels are used to color an annotation track atop the heatmap.}
+\item{group}{Optional factor or character vector of length equal to sample size,
+or a named list of such vectors. Levels are used to color an annotation track
+atop the heatmap.}
 
 \item{main}{Optional plot title.}
 }
