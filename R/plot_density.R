@@ -79,32 +79,28 @@ plot_density <- function(dat,
   }
 
   # Tidy
-  densities <- gather(as_data_frame(dat), Sample, Value) %>%
-    group_by(Sample) %>%
-    do(Value   = density(.$Value)$x,
-       Density = density(.$Value)$y)
-  densities <- densities[match(colnames(as_data_frame(dat)), densities$Sample), ]
-  df <- data_frame(Sample  = rep(densities$Sample, each = 512),
-                   Value   = unlist(densities$Value),
-                   Density = unlist(densities$Density))
+  df <- gather(as_data_frame(dat), Sample, Value)
   if (!is.null(group)) {
     if (!is.list(group)) {
-      df <- mutate(df, Group = rep(group, each = 512))
+      df <- mutate(df, Group = rep(group, each = nrow(dat)))
     } else {
-      df <- mutate(df, Group = rep(group[[1]], each = 512))
+      df <- mutate(df, Group = rep(group[[1]], each = nrow(dat)))
     }
-
   }
 
   # Basic plot
-  p <- ggplot(df, aes(Value, Density, group = Sample)) +
-    labs(title = main, x = xlab) +
+  p <- ggplot(df, aes(Value, group = Sample)) +
+    labs(title = main,
+         x = xlab,
+         y = 'Density') +
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (!is.null(group)) {
-    p <- p + suppressWarnings(geom_path(aes(text = Sample, color = Group)))
+    p <- p + suppressWarnings(geom_path(aes(stat = 'density',
+                                            text = Sample,
+                                            color = Group)))
   } else {
-    p <- p + geom_path(aes(color = Sample))
+    p <- p + geom_path(aes(stat = 'density', color = Sample))
   }
 
   # Named list?
