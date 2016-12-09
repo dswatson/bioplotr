@@ -96,8 +96,8 @@ plot_density <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (!is.null(group)) {
-    p <- p + suppressWarnings(geom_path(aes(stat = 'density',
-                                            text = Sample,
+    p <- p + suppressWarnings(geom_path(aes(text = Sample,
+                                            stat = 'density',
                                             color = Group)))
   } else {
     p <- p + geom_path(aes(stat = 'density', color = Sample))
