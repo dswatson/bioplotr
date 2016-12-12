@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_volcano.R
 \name{plot_volcano}
 \alias{plot_volcano}
-\title{Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values}
+\title{Create volcano plot of log2 fold changes against -log10 \emph{p}-values}
 \usage{
 plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
   legend = "outside", hover = FALSE, probes = NULL)
@@ -31,7 +31,7 @@ display or appear in the RStudio viewer.}
 identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values
+Create volcano plot of log2 fold changes against -log10 \emph{p}-values
 }
 \details{
 This function displays the results of a differential expression or methylation

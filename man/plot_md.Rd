@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_md.R
 \name{plot_md}
 \alias{plot_md}
-\title{Create MD plot of log2 fold changes against mean expression or methylation}
+\title{Create MD plot of log2 fold changes against mean expression/methylation}
 \usage{
 plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
   hover = FALSE, probes = NULL)
@@ -30,7 +30,7 @@ display or appear in the RStudio viewer.}
 identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Create MD plot of log2 fold changes against mean expression or methylation
+Create MD plot of log2 fold changes against mean expression/methylation
 }
 \details{
 This function displays the results of a differential expression or methylation
