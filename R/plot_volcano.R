@@ -1,4 +1,4 @@
-#' Create volcano plot of log2 fold changes vs. -log10 \emph{p}-values
+#' Create volcano plot of log2 fold changes against -log10 \emph{p}-values
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -119,9 +119,8 @@ plot_volcano <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (sum(df$is.DE == TRUE) == 0) {
-    warning('dat returned no differentially expressed/methylated probes at your ',
-            'selected fdr threshold. To color points by differential expression/',
-            'methylation, consider raising your fdr cutoff.')
+    warning('No probe meets your fdr threshold. To color data points by differential ',
+            'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
@@ -129,7 +128,7 @@ plot_volcano <- function(dat,
                           labels = c(paste('\u2265', fdr), paste('<', fdr)),
                           values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
-  }  # PROBLEM: legend doesn't work in PDF, plotly, etc.
+  }
 
   # Legend location
   if (legend == 'bottomleft') {
