@@ -1,4 +1,4 @@
-#' Create MD plot of log2 fold changes against mean expression or methylation
+#' Create MD plot of log2 fold changes against mean expression/methylation
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -117,9 +117,8 @@ plot_md <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (sum(df$is.DE == TRUE) == 0) {
-    warning('dat returned no differentially expressed/methylated probes at your ',
-            'selected fdr threshold. To color points by differential expression/',
-            'methylation, consider raising your fdr cutoff.')
+    warning('No probe meets your fdr threshold. To color data points by differential ',
+            'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
