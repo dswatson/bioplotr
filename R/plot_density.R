@@ -96,11 +96,11 @@ plot_density <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = .5))
   if (!is.null(group)) {
-    p <- p + suppressWarnings(geom_path(aes(text = Sample,
-                                            stat = 'density',
-                                            color = Group)))
+    p <- p + suppressWarnings(stat_density(geom = 'path', position = 'dodge',
+                                           aes(text = Sample, color = Group)))
   } else {
-    p <- p + geom_path(aes(stat = 'density', color = Sample))
+    p <- p + stat_density(geom = 'path', position = 'dodge',
+                          aes(color = Sample))
   }
 
   # Named list?
@@ -125,10 +125,10 @@ plot_density <- function(dat,
 
   # Output
   if (hover == FALSE) {
-    print(p)
+    suppressWarnings(print(p))
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
-    print(p)
+    suppressWarnings(print(p))
   }
 
 }
