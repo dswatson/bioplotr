@@ -21,15 +21,14 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_density(mat, type = "microarray")
+#' plot_density(mat, xlab = "Normalized Expression")
 #'
 #' library(DESeq2)
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
-#' batch <- rep(c("A", "B"), each = 5)
-#' plot_density(mat, group = batch, type = "RNA-seq",
-#'              main = "rlog Transformed Counts")
+#' batch <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' plot_density(mat, group = batch, xlab = "Normalized Counts")
 #'
 #' @export
 #' @importFrom tidyr gather
@@ -94,7 +93,7 @@ plot_density <- function(dat,
          x = xlab,
          y = 'Density') +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
   if (!is.null(group)) {
     p <- p + suppressWarnings(geom_path(stat = 'density',
                                         aes(text = Sample, color = Group)))

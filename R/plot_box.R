@@ -21,15 +21,15 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_box(mat, type = "microarray")
+#' plot_box(mat, ylab = "Normalized Expression")
 #'
 #' library(edgeR)
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- calcNormFactors(DGEList(mat))
-#' mat <- cpm(mat, log = TRUE, prior.count = 0.5)
-#' batch <- rep(c("A", "B"), each = 5)
-#' plot_box(mat, group = batch, type = "RNA-seq")
+#' mat <- cpm(mat, log = TRUE)
+#' batch <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' plot_box(mat, group = batch, ylab = "Normalized Counts")
 #'
 #' @export
 #' @importFrom tidyr gather
@@ -98,7 +98,7 @@ plot_box <- function(dat,
   p <- ggplot(df, aes(Sample, Expression)) +
     labs(title = main, x = 'Sample', y = ylab) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5),
+    theme(plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(angle = 45, hjust = 1))
   if (!is.null(group)) {
     p <- p + suppressWarnings(geom_boxplot(aes(text = Sample,
