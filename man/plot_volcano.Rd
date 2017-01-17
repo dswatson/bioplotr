@@ -42,14 +42,14 @@ magnitude, and significance of fold changes for a given experiment.
 \examples{
 df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
                  p.value = pnorm(-abs(logFC)),
-                 FDR     = p.adjust(p.value, method = 'fdr'))
+                 FDR     = p.adjust(p.value, method = "fdr"))
 plot_volcano(df)
 
 library(limma)
 DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
                   matrix(rnorm(250), nrow = 50, ncol = 5))
 mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-treat <- rep(c("A", "B"), each = 5)
+treat <- gl(n = 2, k = 5, labels = c("A", "B"))
 des <- model.matrix(~ treat)
 fit <- eBayes(lmFit(mat, des))
 top <- topTable(fit, number = Inf)

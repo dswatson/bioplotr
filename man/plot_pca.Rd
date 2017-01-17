@@ -49,7 +49,7 @@ library(DESeq2)
 mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
-grp <- rep(c("A", "B"), each = 5)
+grp <- gl(n = 2, k = 5, labels = c("A", "B"))
 plot_pca(mat, group = grp)
 
 }
