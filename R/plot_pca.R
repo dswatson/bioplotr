@@ -32,7 +32,7 @@
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
-#' grp <- rep(c("A", "B"), each = 5)
+#' grp <- gl(n = 2, k = 5, labels = c("A", "B"))
 #' plot_pca(mat, group = grp)
 #'
 #' @export
@@ -102,7 +102,7 @@ plot_pca <- function(dat,
          x = paste0('PC1 (', vars[1], '%)'),
          y = paste0('PC2 (', vars[2], '%)')) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
 
   # Sample labels
   if (label == TRUE) {

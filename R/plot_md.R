@@ -32,7 +32,7 @@
 #' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
 #'                   matrix(rnorm(250), nrow = 50, ncol = 5))
 #' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- rep(c("A", "B"), each = 5)
+#' treat <- gl(n = 2, k = 5, labels = c("A", "B"))
 #' des <- model.matrix(~ treat)
 #' fit <- eBayes(lmFit(mat, des))
 #' top <- topTable(fit, number = Inf)
@@ -115,7 +115,7 @@ plot_md <- function(dat,
          x = expression(mu),
          y = expression('log'[2]*' Fold Change')) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
   if (sum(df$is.DE == TRUE) == 0) {
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')

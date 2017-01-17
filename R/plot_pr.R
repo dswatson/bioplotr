@@ -124,7 +124,7 @@ plot_pr <- function(obs,
          x = 'Recall',
          y = 'Precision') +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {
     p <- p + geom_point(aes(color = Classifier), size = 0.1) +
       suppressWarnings(geom_line(aes(text  = Classifier,

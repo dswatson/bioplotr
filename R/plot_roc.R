@@ -128,7 +128,7 @@ plot_roc <- function(obs,
          x = 'False Positive Rate',
          y = 'True Positive Rate') +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {
     p <- p + geom_point(aes(color = Classifier), size = 0.1) +
       suppressWarnings(geom_step(aes(text  = Classifier,

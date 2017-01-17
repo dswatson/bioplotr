@@ -29,7 +29,7 @@
 #' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
 #'                   matrix(rnorm(250), nrow = 50, ncol = 5))
 #' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- rep(c("A", "B"), each = 5)
+#' treat <- gl(n = 2, k = 5, labels = c("A", "B"))
 #' des <- model.matrix(~ treat)
 #' fit <- eBayes(lmFit(mat, des))
 #' top <- topTable(fit, number = Inf)
@@ -92,7 +92,7 @@ plot_qq <- function(dat,
          x = expression('Expected'~-log[10](italic(p))),
          y = expression('Observed'~-log[10](italic(p)))) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
 
   # Legend location
   if (legend == 'bottomleft') {
