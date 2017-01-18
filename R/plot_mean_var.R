@@ -44,7 +44,7 @@ plot_mean_var <- function(dat,
 
   # Preliminaries
   if (!trans %in% c('log', 'sqrt')) {
-    stop('trans must be specified as either "log" or "sqrt".')
+    stop('trans must be specified as either "log" or "sqrt"')
   }
   if (trans == 'log') {
     vars <- log2(rowSds(dat))
@@ -59,9 +59,22 @@ plot_mean_var <- function(dat,
       main <- expression('Normalized Counts')
     }
   }
+  if (is.null(probes)) {
+    if (is.null(rownames(dat))) {
+      probes <- 1:nrow(dat)
+    } else {
+      probes <- rownames(dat)
+    }
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found'))
+    } else {
+      probes <- dat[, colnames(dat) == probes]
+    }
+  }
 
   # Tidy
-  df <- data_frame(Probe = rownames(dat),
+  df <- data_frame(Probe = probes,
                    Mean  = rowMeans(dat),
                    Var   = vars)
   lo <- lowess(x = df$Mean, y = df$Var, f = 0.5)
@@ -75,7 +88,7 @@ plot_mean_var <- function(dat,
     geom_smooth(aes(lo.x, lo.y), size = 0.5) +
     labs(title = main, x = expression(mu), y = ylab) +
     theme_bw() +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = 0.5))
 
   # Output
   if (hover == FALSE) {
