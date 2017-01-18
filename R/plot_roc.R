@@ -45,32 +45,16 @@ plot_roc <- function(obs,
                      hover  = FALSE) {
 
   # Preliminaries
-  if (is.list(pred)) {
-    for (i in seq_along(pred)) {
-      if (length(obs) != length(pred[[i]])) {
-        stop('obs and pred vectors must be of equal length.')
-      }
-    }
-    if (is.null(names(pred))) {
-      names(pred) <- paste0('M', seq_along(pred))
-    }
-  } else {
-    if (length(obs) != length(pred)) {
-      stop('obs and pred vectors must be of equal length.')
-    }
-    pred <- list('M1' = pred)
-  }
   if (is.character(obs)) {
     obs <- as.factor(obs)
   }
   if (is.factor(obs)) {
-    if (length(levels(obs)) > 2) {
-      stop('Response must be dichotomous.')
+    if (length(levels(obs)) != 2) {
+      stop('Response must be dichotomous')
     } else {
-      warning('Response vector is character or factor. A positive outcome is hereby ',
-              'defined as obs == "', levels(obs)[1], '". To change this to obs == "',
-              levels(obs)[2], '", either relevel the factor or recode response as ',
-              'numeric (1/0).')
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
+              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
+              'factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], 1, 0)
     }
   }
@@ -78,14 +62,28 @@ plot_roc <- function(obs,
     obs <- ifelse(obs, 1, 0)
   }
   if (!all(obs %in% c(0, 1))) {
-    stop('A numeric response can only take on values of 1 or 0.')
+    stop('A numeric response can only take on values of 1 or 0')
   }
   if (var(obs) == 0) {
-    stop('Response is invariant.')
+    stop('Response is invariant')
+  }
+  if (!is.list(pred)) {
+    pred <- list(pred)
+  }
+  if (is.null(names(pred))) {
+    names(pred) <- paste0('M', seq_along(pred))
+  }
+  for (i in seq_along(pred)) {
+    if (!is.numeric(pred[[i]])) {
+      stop('pred must be a numeric vector or a list of numeric vectors')
+    }
+    if (length(obs) != length(pred[[i]])) {
+      stop('obs and pred vectors must be of equal length')
+    }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+         '"topleft", or "topright"')
   }
   if (is.null(main)) {
     if (length(pred) == 1) {
