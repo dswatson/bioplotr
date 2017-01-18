@@ -53,30 +53,37 @@ plot_pca <- function(dat,
 
   # Preliminaries
   if (is.null(group)) {
-    group <- rep(1, ncol(dat))
+    group <- list(rep(1, times = ncol(dat)))
   } else {
     if (!is.list(group)) {
-      if (!is.character(group) & !is.factor(group)) {
-        stop('group must be a character or factor variable.')
-      }
-    } else {
-      if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-        stop('group must be a character or factor variable.')
-      }
+      group <- list(group)
     }
+    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
+      stop('group must be a character or factor variable')
+    }
+    if (length(group) > 1) {
+      stop('group cannot be a list of length > 1')
+    }
+    if (length(group[[1]]) != ncol(dat)) {
+      stop('group length must match number of samples in dat')
+    }
+    if (length(unique(group[[1]])) == 1) {
+      warning('group is invariant')
+    }
+  }
+  if (is.null(main)) {
+    main <- 'PCA'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+         '"topleft", or "topright"')
   }
   if (is.null(colnames(dat))) {
     sample <- paste0('Sample', 1:ncol(dat))
   } else {
     sample <- colnames(dat)
   }
-  if (is.null(main)) {
-    main <- 'PCA'
-  }
+
 
   # PCA
   pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
@@ -87,12 +94,8 @@ plot_pca <- function(dat,
   df <- data_frame(PC1    = pca$x[, 1],
                    PC2    = pca$x[, 2],
                    PC3    = pca$x[, 3],
-                   Sample = sample)
-  if (!is.list(group)) {
-    df <- df %>% mutate(Group = group)
-  } else {
-    df <- df %>% mutate(Group = group[[1]])
-  }
+                   Sample = sample,
+                   Group  = group[[1]])
 
   # Basic plot
   p <- ggplot(df, aes(PC1, PC2)) +
