@@ -89,7 +89,7 @@ plot_md <- function(dat,
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+         '"topleft", or "topright"')
   }
   if (is.null(probes)) {
     dat <- dat %>% mutate(Probe = row_number())
