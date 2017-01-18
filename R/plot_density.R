@@ -2,7 +2,7 @@
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples.
-#' @param group Optional factor or character vector of length equal to sample size.
+#' @param group Optional character or factor vector of length equal to sample size.
 #'   Levels are used to color density curves. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
 #' @param xlab Optional label for x-axis.
@@ -46,27 +46,33 @@ plot_density <- function(dat,
 
   # Preliminaries
   if (is.null(group)) {
-    group <- rep(1, ncol(dat))
+    group <- list(rep(1, times = ncol(dat)))
   } else {
     if (!is.list(group)) {
-      if (!is.character(group) & !is.factor(group)) {
-        stop('group must be a character or factor variable.')
-      }
-    } else {
-      if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-        stop('group must be a character or factor variable.')
-      }
+      group <- list(group)
+    }
+    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
+      stop('group must be a character or factor variable')
+    }
+    if (length(group) > 1) {
+      stop('group cannot be a list of length > 1')
+    }
+    if (length(group[[1]]) != ncol(dat)) {
+      stop('group length must match number of samples in dat')
+    }
+    if (length(unique(group[[1]])) == 1) {
+      warning('group is invariant')
     }
   }
   if (is.null(xlab)) {
     xlab <- 'Value'
-  }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright".')
+  } else {
+    if (!is.character(xlab) | length(xlab) != 1) {
+      stop('xlab must be NULL or a single string')
+    }
   }
   if (is.null(main)) {
-    if (is.null(group)) {
+    if (is.numeric(group[[1]])) {
       main <- 'Density By Sample'
     } else {
       if (is.null(names(group))) {
@@ -76,16 +82,14 @@ plot_density <- function(dat,
       }
     }
   }
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
+         '"topleft", or "topright"')
+  }
 
   # Tidy
-  df <- gather(as_data_frame(dat), Sample, Value)
-  if (!is.null(group)) {
-    if (!is.list(group)) {
-      df <- mutate(df, Group = rep(group, each = nrow(dat)))
-    } else {
-      df <- mutate(df, Group = rep(group[[1]], each = nrow(dat)))
-    }
-  }
+  df <- gather(as_data_frame(dat), Sample, Value) %>%
+    mutate(Group = rep(group[[1]], each = nrow(dat)))
 
   # Basic plot
   p <- ggplot(df, aes(Value, group = Sample)) +
@@ -94,7 +98,7 @@ plot_density <- function(dat,
          y = 'Density') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (!is.null(group)) {
+  if (!is.numeric(group)) {
     p <- p + suppressWarnings(geom_path(stat = 'density',
                                         aes(text = Sample, color = Group)))
   } else {

@@ -2,7 +2,7 @@
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples.
-#' @param group Optional factor or character vector of length equal to sample size.
+#' @param group Optional character or factor vector of length equal to sample size.
 #'   Levels are used to color box plots. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
 #' @param ylab Optional label for y-axis.
@@ -48,27 +48,33 @@ plot_box <- function(dat,
 
   # Preliminaries
   if (is.null(group)) {
-    group <- rep(1, ncol(dat))
+    group <- list(rep(1, times = ncol(dat)))
   } else {
     if (!is.list(group)) {
-      if (!is.character(group) & !is.factor(group)) {
-        stop('group must be a character or factor variable.')
-      }
-    } else {
-      if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-        stop('group must be a character or factor variable.')
-      }
+      group <- list(group)
+    }
+    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
+      stop('group must be a character or factor variable')
+    }
+    if (length(group) > 1) {
+      stop('group cannot be a list of length > 1')
+    }
+    if (length(group[[1]]) != ncol(dat)) {
+      stop('group length must match number of samples in dat')
+    }
+    if (length(unique(group[[1]])) == 1) {
+      warning('group is invariant')
     }
   }
   if (is.null(ylab)) {
     ylab <- 'Value'
-  }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright".')
+  } else {
+    if (!is.character(ylab) | length(ylab) != 1) {
+      stop('ylab must be NULL or a single string')
+    }
   }
   if (is.null(main)) {
-    if (is.null(group)) {
+    if (is.numeric(group[[1]])) {
       main <- 'Expression By Sample'
     } else {
       if (is.null(names(group))) {
@@ -78,19 +84,14 @@ plot_box <- function(dat,
       }
     }
   }
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
+         '"topleft", or "topright"')
+  }
 
   # Tidy
-  df <- gather(as_data_frame(dat), Sample, Expression)
-  if (!is.null(group)) {
-    if (!is.list(group)) {
-      df <- df %>% mutate(Group = rep(group, each = nrow(dat)))
-    } else {
-      df <- df %>% mutate(Group = rep(group[[1]], each = nrow(dat)))
-    }
-  } else {
-    df <- df %>% mutate(Group = rep(1, nrow(df)))
-  }
-  df <- df %>%
+  df <- gather(as_data_frame(dat), Sample, Expression) %>%
+    mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
     arrange(Group) %>%
     mutate(Sample = factor(Sample, levels = unique(Sample)))
 
@@ -100,7 +101,7 @@ plot_box <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(angle = 45, hjust = 1))
-  if (!is.null(group)) {
+  if (!is.numeric(group)) {
     p <- p + suppressWarnings(geom_boxplot(aes(text = Sample,
                                                fill = Group)))
   } else {
