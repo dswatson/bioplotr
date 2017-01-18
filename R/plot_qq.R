@@ -49,6 +49,19 @@ plot_qq <- function(dat,
                     probes = NULL) {
 
   # Preliminaries
+  if (is.null(probes)) {
+    if (is.null(rownames(dat))) {
+      probes <- 1:nrow(dat)
+    } else {
+      probes <- rownames(dat)
+    }
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found'))
+    } else {
+      probes <- dat[, colnames(dat) == probes]
+    }
+  }
   dat <- as_data_frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
@@ -59,28 +72,20 @@ plot_qq <- function(dat,
   if (all(!p %in% colnames(dat))) {
     stop('dat must include a p-value column. Recognized colnames for this ',
          'vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure ',
-         'that dat includes exactly one such colname.')
-  }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
-  }
-  if (is.null(probes)) {
-    dat <- dat %>% mutate(Probe = row_number())
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found.'))
-    } else {
-      colnames(dat)[colnames(dat) == probes] <- 'Probe'
-    }
+         'that dat includes exactly one such colname')
   }
   if (is.null(main)) {
     main <- 'Q-Q Plot'
   }
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
+         '"topleft", or "topright"')
+  }
 
   # Tidy
   df <- dat %>%
-    mutate(Observed = -log10(sort(p.value, decreasing = FALSE)),
+    mutate(Probe = probes,
+           Observed = -log10(sort(p.value, decreasing = FALSE)),
            Expected = -log10(ppoints(length(p.value)))) %>%
     select(Probe, Observed, Expected)
 
