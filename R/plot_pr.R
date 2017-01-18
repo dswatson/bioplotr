@@ -1,7 +1,7 @@
 #' Plot PR curves for one or several classifiers
 #'
 #' @param obs Vector of observed outcomes. Must be dichotomous. Can be numeric,
-#'   logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
+#'   character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
 #'   or \code{0}. If character or factor, a warning will be issued clarifying that
 #'   the first level is assumed to be the reference.
 #' @param pred Vector of predicted values or a list of such vectors, optionally named.
@@ -45,32 +45,16 @@ plot_pr <- function(obs,
                     hover  = FALSE) {
 
   # Preliminaries
-  if (is.list(pred)) {
-    for (i in seq_along(pred)) {
-      if (length(obs) != length(pred[[i]])) {
-        stop('obs and pred vectors must be of equal length.')
-      }
-    }
-    if (is.null(names(pred))) {
-      names(pred) <- paste0('M', seq_along(pred))
-    }
-  } else {
-    if (length(obs) != length(pred)) {
-      stop('obs and pred vectors must be of equal length.')
-    }
-    pred <- list('M1' = pred)
-  }
   if (is.character(obs)) {
     obs <- as.factor(obs)
   }
   if (is.factor(obs)) {
-    if (length(levels(obs)) > 2) {
-      stop('Response must be dichotomous.')
+    if (length(levels(obs)) != 2) {
+      stop('Response must be dichotomous')
     } else {
-      warning('Response vector is character or factor. A positive outcome is hereby ',
-              'defined as obs == "', levels(obs)[1], '". To change this to obs == "',
-              levels(obs)[2], '", either relevel the factor or recode response as ',
-              'numeric (1/0).')
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
+              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
+              'factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], 1, 0)
     }
   }
@@ -78,14 +62,28 @@ plot_pr <- function(obs,
     obs <- ifelse(obs, 1, 0)
   }
   if (!all(obs %in% c(0, 1))) {
-    stop('A numeric response can only take on values of 1 or 0.')
+    stop('A numeric response can only take on values of 1 or 0')
   }
   if (var(obs) == 0) {
-    stop('Response is invariant.')
+    stop('Response is invariant')
+  }
+  if (!is.list(pred)) {
+    pred <- list(pred)
+  }
+  if (is.null(names(pred))) {
+      names(pred) <- paste0('M', seq_along(pred))
+  }
+  for (i in seq_along(pred)) {
+    if (!is.numeric(pred[[i]])) {
+      stop('pred must be a numeric vector or a list of numeric vectors')
+    }
+    if (length(obs) != length(pred[[i]])) {
+      stop('obs and pred vectors must be of equal length')
+    }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+         '"topleft", or "topright"')
   }
   if (is.null(main)) {
     if (length(pred) == 1) {
@@ -110,19 +108,15 @@ plot_pr <- function(obs,
   # Plot
   leg <- function(i) {
     pos <- df %>%
-      filter(Classifier == names(pred)[i],
-             Y == 1)
+      filter(Classifier == names(pred)[i], Y == 1)
     neg <- df %>%
-      filter(Classifier == names(pred)[i],
-             Y == 0)
+      filter(Classifier == names(pred)[i], Y == 0)
     txt <- paste0(names(pred)[i], ', AUC = ',
                   round(pr.curve(pos$X, neg$X)$auc.integral, 2))
     return(txt)
   }
   p <- ggplot(df, aes(TPR, PPV)) +
-    labs(title = main,
-         x = 'Recall',
-         y = 'Precision') +
+    labs(title = main, x = 'Recall', y = 'Precision') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {
