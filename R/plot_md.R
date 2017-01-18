@@ -79,11 +79,13 @@ plot_md <- function(dat,
   if ('log2FoldChange' %in% colnames(dat)) {
     dat <- dat %>% rename(logFC = log2FoldChange)
   }
-  if (!'log2FoldChange' %in% colnames(dat) &
-      !'logFC' %in% colnames(dat)) {
+  if (!'log2FoldChange' %in% colnames(dat) & !'logFC' %in% colnames(dat)) {
     stop('dat must include a log fold change column. Recognized colnames for this',
          'vector include "logFC" and "log2FoldChange". Make sure that dat includes',
          'exactly one such colname.')
+  }
+  if (is.null(main)) {
+    main <- 'MD Plot'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -97,9 +99,6 @@ plot_md <- function(dat,
     } else {
       colnames(dat)[colnames(dat) == probes] <- 'Probe'
     }
-  }
-  if (is.null(main)) {
-    main <- 'MD Plot'
   }
 
   # Tidy
