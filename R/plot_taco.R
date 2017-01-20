@@ -10,11 +10,11 @@
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers.
+#'   identifiers, assuming they aren't \code{rownames(dat)}.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
-#' test as a taco plot, which is essentially a cross between a volcano plot and an MD
+#' test as a taco plot, which is essentially a combination of a volcano plot and an MD
 #' plot, with colors distinguishing probes that meet the user-defined FDR threshold.
 #' These figures can be used to evaluate the symmetry, magnitude, and significance of
 #' fold changes for a given experiment.
@@ -49,20 +49,7 @@ plot_taco <- function(dat,
                       probes = NULL) {
 
   # Preliminaries
-  if (is.null(probes)) {
-    if (is.null(rownames(dat))) {
-      probes <- 1:nrow(dat)
-    } else {
-      probes <- rownames(dat)
-    }
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found'))
-    } else {
-      probes <- dat[, colnames(dat) == probes]
-    }
-  }
-  dat <- as_data_frame(dat)
+  dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
     if (i %in% colnames(dat)) {
@@ -111,12 +98,24 @@ plot_taco <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (is.null(probes)) {
+    if (is.null(rownames(dat))) {
+      dat %>% mutate(Probe = row_number())
+    } else {
+      dat %>% mutate(Probe = rownames(dat))
+    }
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
+  }
 
   # Tidy
   test <- function(q) ifelse(q < fdr, paste('q <', fdr), paste('q >', fdr))
   df <- dat %>%
-    mutate(Probe = probes,
-           is.DE = map_chr(q.value, test),
+    mutate(is.DE = map_chr(q.value, test),
            logP  = -log10(p.value)) %>%
     select(Probe, AvgExpr, logFC, logP, is.DE) %>%
     na.omit()
@@ -131,7 +130,7 @@ plot_taco <- function(dat,
                type = 'scatter3d', mode = 'markers',
                alpha = 0.85, hoverinfo = 'text', marker = list(size = 1)) %>%
     layout(hovermode = 'closest', title = main, scene = list(
-      xaxis = list(title = 'Mean Expression'),  # expression() doesn't work here :(
+      xaxis = list(title = 'Mean Expression'),
       yaxis = list(title = 'log2 Fold Change'),
       zaxis = list(title = '-log10 p-value')))
   print(p)
@@ -139,3 +138,8 @@ plot_taco <- function(dat,
 }
 
 
+
+# Plotly doesn't play well with expression() text
+# According to their documentation, LaTeX formating should work, e.g.
+# xaxis = list(title = '$\\mu\\$')
+# Except it doesn't cuz plotly sucks
