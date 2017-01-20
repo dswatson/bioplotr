@@ -22,7 +22,7 @@ and FDR.}
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
 
 \item{probes}{String specifying the name of the column in which to find the probe
-identifiers.}
+identifiers, assuming they aren't \code{rownames(dat)}.}
 }
 \description{
 Create taco plot of log2 fold changes against -log10 \emph{p}-values against mean expression/methylation

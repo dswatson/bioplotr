@@ -8,7 +8,7 @@ plot_pr(obs, pred, main = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
-logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
+character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
 or \code{0}. If character or factor, a warning will be issued clarifying that
 the first level is assumed to be the reference.}
 

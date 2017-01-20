@@ -27,7 +27,8 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 
 \item{probes}{String specifying the name of the column in which to find the probe
-identifiers. Only relevant if \code{hover = TRUE}.}
+identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+\code{hover = TRUE}.}
 }
 \description{
 Create MD plot of log2 fold changes against mean expression/methylation

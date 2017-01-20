@@ -11,7 +11,7 @@ plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
-\item{group}{Optional factor or character vector of length equal to sample size.
+\item{group}{Optional character or factor vector of length equal to sample size.
 Levels are used to color box plots. If supplied, legend title defaults to
 "Group". Override this feature by passing a named list instead.}
 
