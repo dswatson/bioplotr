@@ -54,20 +54,7 @@ plot_volcano <- function(dat,
                          probes = NULL) {
 
   # Preliminaries
-  if (is.null(probes)) {
-    if (is.null(rownames(dat))) {
-      probes <- 1:nrow(dat)
-    } else {
-      probes <- rownames(dat)
-    }
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found'))
-    } else {
-      probes <- dat[, colnames(dat) == probes]
-    }
-  }
-  dat <- as_data_frame(dat)
+  dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
     if (i %in% colnames(dat)) {
@@ -106,12 +93,24 @@ plot_volcano <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (is.null(probes)) {
+    if (is.null(rownames(dat))) {
+      dat %>% mutate(Probe = row_number())
+    } else {
+      dat %>% mutate(Probe = rownames(dat))
+    }
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
+  }
 
   # Tidy
   test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- dat %>%
-    mutate(Probe = probes,
-           is.DE = map_lgl(q.value, test),
+    mutate(is.DE = map_lgl(q.value, test),
            logP  = -log10(p.value)) %>%
     select(Probe, logFC, logP, is.DE) %>%
     na.omit()
