@@ -93,9 +93,7 @@ plot_density <- function(dat,
 
   # Basic plot
   p <- ggplot(df, aes(Value, group = Sample)) +
-    labs(title = main,
-         x = xlab,
-         y = 'Density') +
+    labs(title = main, x = xlab, y = 'Density') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!is.numeric(group)) {
