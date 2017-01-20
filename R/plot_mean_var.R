@@ -12,7 +12,8 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers. Only relevant if \code{hover = TRUE}.
+#'   identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+#'   \code{hover = TRUE}.
 #'
 #' @details
 #' This function plots each probe's mean value against its standard deviation,
@@ -50,13 +51,13 @@ plot_mean_var <- function(dat,
     vars <- log2(rowSds(dat))
     ylab <- expression('log'[2]*sigma)
     if (is.null(main)) {
-      main <- expression('log'[2]*' Expression')
+      main <- 'Normalized Expression'
     }
   } else if (trans == 'sqrt') {
     vars <- sqrt(rowSds(dat))
     ylab <- expression(sqrt(sigma))
     if (is.null(main)) {
-      main <- expression('Normalized Counts')
+      main <- 'Normalized Counts'
     }
   }
   if (is.null(probes)) {
