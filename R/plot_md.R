@@ -13,7 +13,8 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers. Only relevant if \code{hover = TRUE}.
+#'   identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+#'   \code{hover = TRUE}.
 #'
 #' @details
 #' This function displays the results of a differential expression or methylation
@@ -54,7 +55,7 @@ plot_md <- function(dat,
                     probes = NULL) {
 
   # Preliminaries
-  dat <- as_data_frame(dat)
+  dat <- as.data.frame(dat)
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   for (i in q) {
     if (i %in% colnames(dat)) {
@@ -92,10 +93,14 @@ plot_md <- function(dat,
          '"topleft", or "topright"')
   }
   if (is.null(probes)) {
-    dat <- dat %>% mutate(Probe = row_number())
+    if (is.null(rownames(dat))) {
+      dat %>% mutate(Probe = row_number())
+    } else {
+      dat %>% mutate(Probe = rownames(dat))
+    }
   } else {
     if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found.'))
+      stop(paste0('Column "', probes, '" not found'))
     } else {
       colnames(dat)[colnames(dat) == probes] <- 'Probe'
     }
