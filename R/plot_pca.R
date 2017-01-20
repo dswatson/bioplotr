@@ -18,11 +18,10 @@
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or three-
-#' dimensional principal component subspace. The numbers printed along the axis
-#' labels indicate the percentage of variance explained by each component. PCA is an
-#' easy and popular method for unsupervised cluster detection. It can also aid in
-#' spotting potential outliers and generally helps to visualize the latent
-#' structure of a data set.
+#' dimensional principal component subspace. Axis labels include the percentage
+#' of variance explained by each component. PCA is an easy and popular method for
+#' unsupervised cluster detection. It can also aid in spotting potential outliers
+#' and generally helps to visualize the latent structure of a data set.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)

@@ -29,7 +29,7 @@ Create taco plot of log2 fold changes against -log10 \emph{p}-values against mea
 }
 \details{
 This function displays the results of a differential expression or methylation
-test as a taco plot, which is essentially a cross between a volcano plot and an MD
+test as a taco plot, which is essentially a combination of a volcano plot and an MD
 plot, with colors distinguishing probes that meet the user-defined FDR threshold.
 These figures can be used to evaluate the symmetry, magnitude, and significance of
 fold changes for a given experiment.
