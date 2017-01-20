@@ -79,7 +79,7 @@ plot_pca <- function(dat,
          '"topleft", or "topright"')
   }
   if (is.null(colnames(dat))) {
-    sample <- paste0('Sample', 1:ncol(dat))
+    sample <- paste0('Sample', seq_along(dat))
   } else {
     sample <- colnames(dat)
   }
