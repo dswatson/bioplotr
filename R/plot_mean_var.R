@@ -62,7 +62,7 @@ plot_mean_var <- function(dat,
   }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
-      probes <- 1:nrow(dat)
+      probes <- seq_along(nrow(dat))
     } else {
       probes <- rownames(dat)
     }
