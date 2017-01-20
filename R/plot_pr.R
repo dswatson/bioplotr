@@ -4,9 +4,9 @@
 #'   character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
 #'   or \code{0}. If character or factor, a warning will be issued clarifying that
 #'   the first level is assumed to be the reference.
-#' @param pred Vector of predicted values or a list of such vectors, optionally named.
-#'   Must be numeric. Common examples include the probabilities output by a logistic
-#'   model, or the expression levels of a particular biomarker.
+#' @param pred Vector of predicted values, or several such vectors organized into
+#'   a list or data frame. Must be numeric. Common examples include the probabilities
+#'   output by a logistic model, or the expression levels of a particular biomarker.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -67,7 +67,9 @@ plot_pr <- function(obs,
   if (var(obs) == 0) {
     stop('Response is invariant')
   }
-  if (!is.list(pred)) {
+  if (is.data.frame(pred)) {
+    pred <- as.list(pred)
+  } else if (!is.list(pred)) {
     pred <- list(pred)
   }
   if (is.null(names(pred))) {
@@ -75,7 +77,8 @@ plot_pr <- function(obs,
   }
   for (i in seq_along(pred)) {
     if (!is.numeric(pred[[i]])) {
-      stop('pred must be a numeric vector or a list of numeric vectors')
+      stop('pred must be a numeric vector, or several such vectors organized into ',
+           'a list or data frame')
     }
     if (length(obs) != length(pred[[i]])) {
       stop('obs and pred vectors must be of equal length')
