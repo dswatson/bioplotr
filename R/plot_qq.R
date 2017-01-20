@@ -12,7 +12,8 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers. Only relevant if \code{hover = TRUE}.
+#'   identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+#'   \code{hover = TRUE}.
 #'
 #' @details
 #' This function displays a scatterplot of the expected vs. observed quantiles
@@ -49,20 +50,7 @@ plot_qq <- function(dat,
                     probes = NULL) {
 
   # Preliminaries
-  if (is.null(probes)) {
-    if (is.null(rownames(dat))) {
-      probes <- 1:nrow(dat)
-    } else {
-      probes <- rownames(dat)
-    }
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found'))
-    } else {
-      probes <- dat[, colnames(dat) == probes]
-    }
-  }
-  dat <- as_data_frame(dat)
+  dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   for (i in p) {
     if (i %in% colnames(dat)) {
@@ -81,11 +69,23 @@ plot_qq <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (is.null(probes)) {
+    if (is.null(rownames(dat))) {
+      dat %>% mutate(Probe = row_number())
+    } else {
+      dat %>% mutate(Probe = rownames(dat))
+    }
+  } else {
+    if (!probes %in% colnames(dat)) {
+      stop(paste0('Column "', probes, '" not found'))
+    } else {
+      colnames(dat)[colnames(dat) == probes] <- 'Probe'
+    }
+  }
 
   # Tidy
   df <- dat %>%
-    mutate(Probe = probes,
-           Observed = -log10(sort(p.value, decreasing = FALSE)),
+    mutate(Observed = -log10(sort(p.value, decreasing = FALSE)),
            Expected = -log10(ppoints(length(p.value)))) %>%
     select(Probe, Observed, Expected)
 
