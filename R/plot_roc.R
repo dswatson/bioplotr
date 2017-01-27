@@ -40,9 +40,9 @@
 
 plot_roc <- function(obs,
                      pred,
-                     main   = NULL,
-                     legend = 'outside',
-                     hover  = FALSE) {
+                     main = NULL,
+                   legend = 'outside',
+                    hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -84,10 +84,6 @@ plot_roc <- function(obs,
       stop('obs and pred vectors must be of equal length')
     }
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
-  }
   if (is.null(main)) {
     if (length(pred) == 1) {
       main <- 'ROC Curve'
@@ -95,27 +91,33 @@ plot_roc <- function(obs,
       main <- 'ROC Curves'
     }
   }
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
+         '"topleft", or "topright"')
+  }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
 
   # Tidy
   originate <- function(tbl) {
     data_frame(TPR = 0,
                FPR = 0,
-               Classifier = tbl$Classifier[1]) %>%
+        Classifier = tbl$Classifier[1]) %>%
       rbind(tbl) %>%
       return()
   }
-  rates <- function(i) {
+  df <- map_df(seq_along(pred), function(i) {
     data_frame(Y = obs,
                X = pred[[i]],
-               Classifier = names(pred)[i]) %>%
+      Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
              FPR = cumsum(Y == 0) / sum(Y == 0)) %>%
       select(TPR, FPR, Classifier) %>%
       originate() %>%
       return()
-  }
-  df <- map_df(seq_along(pred), rates)
+  })
 
   # Plot
   leg <- function(i) {
@@ -126,24 +128,24 @@ plot_roc <- function(obs,
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0, slope = 1, color = 'grey') +
     labs(title = main,
-         x = 'False Positive Rate',
-         y = 'True Positive Rate') +
+             x = 'False Positive Rate',
+             y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {
-    p <- p + geom_point(aes(color = Classifier), size = 0.1) +
-      suppressWarnings(geom_step(aes(text  = Classifier,
-                                     group = Classifier,
-                                     color = Classifier))) +
-      scale_colour_manual(name   = 'Classifier',
-                          labels = map_chr(seq_along(pred), leg),
-                          values = hue_pal()(length(pred)))
+    suppressWarnings(
+      p <- p + geom_point(aes(color = Classifier), size = 0.1) +
+        geom_step(aes(text  = Classifier, group = Classifier, color = Classifier)) +
+        scale_colour_manual(name = 'Classifier',
+                            labels = map_chr(seq_along(pred), leg),
+                            values = hue_pal()(length(pred)))
+    )
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_step(aes(color = Classifier)) +
-      scale_colour_manual(name   = 'Classifier',
-                          labels = map_chr(seq_along(pred), leg),
-                          values = 'black')
+      scale_colour_manual(name = 'Classifier',
+                        labels = map_chr(seq_along(pred), leg),
+                        values = 'black')
   }
 
   # Legend location
@@ -162,7 +164,7 @@ plot_roc <- function(obs,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
