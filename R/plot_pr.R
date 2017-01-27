@@ -40,9 +40,9 @@
 
 plot_pr <- function(obs,
                     pred,
-                    main   = NULL,
-                    legend = 'outside',
-                    hover  = FALSE) {
+                    main = NULL,
+                  legend = 'outside',
+                   hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -84,10 +84,6 @@ plot_pr <- function(obs,
       stop('obs and pred vectors must be of equal length')
     }
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
-  }
   if (is.null(main)) {
     if (length(pred) == 1) {
       main <- 'Precision-Recall Curve'
@@ -95,25 +91,29 @@ plot_pr <- function(obs,
       main <- 'Precision-Recall Curves'
     }
   }
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
+         '"topleft", or "topright"')
+  }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
 
   # Tidy
-  rates <- function(i) {
+  df <- map_df(seq_along(pred), function(i) {
     data_frame(Y = obs,
                X = pred[[i]],
-               Classifier = names(pred)[i]) %>%
+      Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
              PPV = cumsum(Y == 1) / (cumsum(Y == 1) + cumsum(Y == 0))) %>%
       return()
-  }
-  df <- map_df(seq_along(pred), rates)
+  })
 
   # Plot
   leg <- function(i) {
-    pos <- df %>%
-      filter(Classifier == names(pred)[i], Y == 1)
-    neg <- df %>%
-      filter(Classifier == names(pred)[i], Y == 0)
+    pos <- df %>% filter(Classifier == names(pred)[i], Y == 1)
+    neg <- df %>% filter(Classifier == names(pred)[i], Y == 0)
     txt <- paste0(names(pred)[i], ', AUC = ',
                   round(pr.curve(pos$X, neg$X)$auc.integral, 2))
     return(txt)
@@ -123,19 +123,19 @@ plot_pr <- function(obs,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {
-    p <- p + geom_point(aes(color = Classifier), size = 0.1) +
-      suppressWarnings(geom_line(aes(text  = Classifier,
-                                     group = Classifier,
-                                     color = Classifier))) +
-      scale_colour_manual(name   = 'Classifier',
+    suppressWarnings(
+      p <- p + geom_point(aes(color = Classifier), size = 0.1) +
+        geom_line(aes(text = Classifier, group = Classifier, color = Classifier)) +
+        scale_colour_manual(name = 'Classifier',
                           labels = map_chr(seq_along(pred), leg),
                           values = hue_pal()(length(pred)))
+    )
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_line(aes(color = Classifier)) +
-      scale_colour_manual(name   = 'Classifier',
-                          labels = map_chr(seq_along(pred), leg),
-                          values = 'black')
+      scale_colour_manual(name = 'Classifier',
+                        labels = map_chr(seq_along(pred), leg),
+                        values = 'black')
   }
 
   # Legend location
@@ -154,7 +154,7 @@ plot_pr <- function(obs,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
