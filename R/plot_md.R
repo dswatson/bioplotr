@@ -47,12 +47,12 @@
 #'
 
 plot_md <- function(dat,
-                    fdr    = 0.05,
-                    ptsize = 0.25,
-                    main   = NULL,
-                    legend = 'outside',
-                    hover  = FALSE,
-                    probes = NULL) {
+                    fdr = 0.05,
+                 ptsize = 0.25,
+                   main = NULL,
+                 legend = 'outside',
+                  hover = FALSE,
+                 probes = NULL) {
 
   # Preliminaries
   dat <- as.data.frame(dat)
@@ -92,6 +92,9 @@ plot_md <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
       dat %>% mutate(Probe = row_number())
@@ -107,28 +110,31 @@ plot_md <- function(dat,
   }
 
   # Tidy
-  test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- dat %>%
-    mutate(is.DE = map_lgl(q.value, test)) %>%
+    mutate(is.DE = map_lgl(q.value, function(q) {
+      ifelse(q < fdr, TRUE, FALSE)
+    })) %>%
     select(Probe, AvgExpr, logFC, is.DE) %>%
     na.omit()
 
   # Build plot
-  p <- suppressWarnings(ggplot(df, aes(AvgExpr, logFC, text = Probe))) +
-    labs(title = main,
-         x = expression(mu),
-         y = expression('log'[2]*' Fold Change')) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df, aes(AvgExpr, logFC, text = Probe)) +
+      labs(title = main,
+               x = expression(mu),
+               y = expression('log'[2]*' Fold Change')) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   if (sum(df$is.DE == TRUE) == 0) {
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
-      scale_colour_manual(name   = expression(italic(q)*'-value'),
-                          labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                          values = c('black', 'red')) +
+      scale_colour_manual(name = expression(italic(q)*'-value'),
+                        labels = c(paste('\u2265', fdr), paste('<', fdr)),
+                        values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
   }
 
@@ -148,7 +154,7 @@ plot_md <- function(dat,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
