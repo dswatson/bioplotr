@@ -38,11 +38,11 @@
 #'
 
 plot_density <- function(dat,
-                         group  = NULL,
-                         xlab   = NULL,
-                         main   = NULL,
-                         legend = 'outside',
-                         hover  = FALSE) {
+                         group = NULL,
+                          xlab = NULL,
+                          main = NULL,
+                        legend = 'outside',
+                         hover = FALSE) {
 
   # Preliminaries
   if (is.null(group)) {
@@ -86,6 +86,9 @@ plot_density <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright"')
   }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
 
   # Tidy
   df <- gather(as_data_frame(dat), Sample, Value) %>%
@@ -97,8 +100,10 @@ plot_density <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!is.numeric(group)) {
-    p <- p + suppressWarnings(geom_path(stat = 'density',
-                                        aes(text = Sample, color = Group)))
+    suppressWarnings(
+      p <- p + geom_path(stat = 'density',
+                         aes(text = Sample, color = Group))
+    )
   } else {
     p <- p + geom_path(stat = 'density', aes(color = Sample))
   }
@@ -124,7 +129,7 @@ plot_density <- function(dat,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
