@@ -32,7 +32,7 @@
 
 plot_sim_mat <- function(dat,
                          group = NULL,
-                         main  = NULL) {
+                          main = NULL) {
 
   # Preliminaries
   if (!is.list(group)){
