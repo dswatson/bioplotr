@@ -39,12 +39,12 @@
 #'
 
 plot_box <- function(dat,
-                     group  = NULL,
-                     type   = NULL,
-                     ylab   = NULL,
-                     main   = NULL,
-                     legend = 'outside',
-                     hover  = FALSE) {
+                     group = NULL,
+                      type = NULL,
+                      ylab = NULL,
+                      main = NULL,
+                    legend = 'outside',
+                     hover = FALSE) {
 
   # Preliminaries
   if (is.null(group)) {
@@ -88,6 +88,9 @@ plot_box <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright"')
   }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
 
   # Tidy
   df <- gather(as_data_frame(dat), Sample, Expression) %>%
@@ -102,10 +105,13 @@ plot_box <- function(dat,
     theme(plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(angle = 45, hjust = 1))
   if (!is.numeric(group)) {
-    p <- p + suppressWarnings(geom_boxplot(aes(text = Sample,
-                                               fill = Group)))
+    suppressWarnings(
+      p <- p + geom_boxplot(aes(text = Sample, fill = Group))
+    )
   } else {
-    p <- p + suppressWarnings(geom_boxplot(text = Sample))
+    suppressWarnings(
+      p <- p + geom_boxplot(text = Sample)
+    )
   }
 
   # Named list?
@@ -129,7 +135,7 @@ plot_box <- function(dat,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
