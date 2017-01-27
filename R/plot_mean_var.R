@@ -39,8 +39,8 @@
 plot_mean_var <- function(dat,
                           trans,
                           ptsize = 0.25,
-                          main   = NULL,
-                          hover  = FALSE,
+                            main = NULL,
+                           hover = FALSE,
                           probes = NULL) {
 
   # Preliminaries
@@ -76,23 +76,25 @@ plot_mean_var <- function(dat,
 
   # Tidy
   df <- data_frame(Probe = probes,
-                   Mean  = rowMeans(dat),
-                   Var   = vars)
+                    Mean = rowMeans(dat),
+                     Var = vars)
   lo <- lowess(x = df$Mean, y = df$Var, f = 0.5)
   df <- df %>% mutate(lo.x = lo[['x']],
                       lo.y = lo[['y']])
 
   # Build plot
-  p <- ggplot(df) +
-    suppressWarnings(geom_point(aes(Mean, Var, text = Probe),
-                                size = ptsize, alpha = 0.25)) +
-    geom_smooth(aes(lo.x, lo.y), size = 0.5) +
-    labs(title = main, x = expression(mu), y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mean, Var, text = Probe),
+                 size = ptsize, alpha = 0.25) +
+      geom_smooth(aes(lo.x, lo.y), size = 0.5) +
+      labs(title = main, x = expression(mu), y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
