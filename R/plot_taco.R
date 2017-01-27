@@ -43,10 +43,10 @@
 #'
 
 plot_taco <- function(dat,
-                      fdr    = 0.05,
-                      main   = NULL,
-                      legend = 'outside',
-                      probes = NULL) {
+                      fdr = 0.05,
+                      main = NULL,
+                    legend = 'outside',
+                    probes = NULL) {
 
   # Preliminaries
   dat <- as.data.frame(dat)
@@ -116,7 +116,7 @@ plot_taco <- function(dat,
   test <- function(q) ifelse(q < fdr, paste('q <', fdr), paste('q >', fdr))
   df <- dat %>%
     mutate(is.DE = map_chr(q.value, test),
-           logP  = -log10(p.value)) %>%
+            logP = -log10(p.value)) %>%
     select(Probe, AvgExpr, logFC, logP, is.DE) %>%
     na.omit()
   if (sum(grepl('<', df$is.DE) == 0)) {
