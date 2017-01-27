@@ -94,7 +94,7 @@ plot_pca <- function(dat,
 
   # PCA
   pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
-  pva <- map_dbl(1:3, function(pc) {
+  pve <- map_dbl(1:3, function(pc) {
     round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
   })
 
@@ -110,8 +110,8 @@ plot_pca <- function(dat,
     geom_hline(yintercept = 0, size = 0.2) +
     geom_vline(xintercept = 0, size = 0.2) +
     labs(title = main,
-             x = paste0('PC1 (', pva[1], '%)'),
-             y = paste0('PC2 (', pva[2], '%)')) +
+             x = paste0('PC1 (', pve[1], '%)'),
+             y = paste0('PC2 (', pve[2], '%)')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
 
