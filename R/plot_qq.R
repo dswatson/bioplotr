@@ -44,9 +44,9 @@
 
 plot_qq <- function(dat,
                     ptsize = 0.25,
-                    main   = NULL,
+                      main = NULL,
                     legend = 'outside',
-                    hover  = FALSE,
+                     hover = FALSE,
                     probes = NULL) {
 
   # Preliminaries
@@ -69,6 +69,9 @@ plot_qq <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
       dat %>% mutate(Probe = row_number())
@@ -90,14 +93,16 @@ plot_qq <- function(dat,
     select(Probe, Observed, Expected)
 
   # Basic plot
-  p <- ggplot(df, aes(Expected, Observed)) +
-    suppressWarnings(geom_point(aes(text = Probe), size = ptsize)) +
-    geom_abline(intercept = 0, slope = 1, color = 'red') +
-    labs(title = main,
-         x = expression('Expected'~-log[10](italic(p))),
-         y = expression('Observed'~-log[10](italic(p)))) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df, aes(Expected, Observed)) +
+      geom_point(aes(text = Probe), size = ptsize) +
+      geom_abline(intercept = 0, slope = 1, color = 'red') +
+      labs(title = main,
+           x = expression('Expected'~-log[10](italic(p))),
+           y = expression('Observed'~-log[10](italic(p)))) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
 
   # Legend location
   if (legend == 'bottomleft') {
@@ -115,7 +120,7 @@ plot_qq <- function(dat,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
