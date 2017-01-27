@@ -46,12 +46,12 @@
 #'
 
 plot_volcano <- function(dat,
-                         fdr    = 0.05,
-                         ptsize = 0.25,
-                         main   = NULL,
-                         legend = 'outside',
-                         hover  = FALSE,
-                         probes = NULL) {
+                         fdr = 0.05,
+                      ptsize = 0.25,
+                        main = NULL,
+                      legend = 'outside',
+                       hover = FALSE,
+                      probes = NULL) {
 
   # Preliminaries
   dat <- as.data.frame(dat)
@@ -93,6 +93,9 @@ plot_volcano <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
+  }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
       dat %>% mutate(Probe = row_number())
@@ -116,21 +119,23 @@ plot_volcano <- function(dat,
     na.omit()
 
   # Build plot
-  p <- suppressWarnings(ggplot(df, aes(logFC, logP, text = Probe))) +
-    labs(title = main,
-         x = expression(log[2]*' Fold Change'),
-         y = expression(~-log[10](italic(p)))) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
-  if (sum(df$is.DE == TRUE) == 0) {
+  suppressWarnings(
+    p <- ggplot(df, aes(logFC, logP, text = Probe)) +
+      labs(title = main,
+               x = expression(log[2]*' Fold Change'),
+               y = expression(~-log[10](italic(p)))) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
+  if (!all(df$is.DE)) {
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
-      scale_colour_manual(name   = expression(italic(q)*'-value'),
-                          labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                          values = c('black', 'red')) +
+      scale_colour_manual(name = expression(italic(q)*'-value'),
+                        labels = c(paste('\u2265', fdr), paste('<', fdr)),
+                        values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
   }
 
@@ -150,7 +155,7 @@ plot_volcano <- function(dat,
   }
 
   # Output
-  if (hover == FALSE) {
+  if (!hover) {
     print(p)
   } else {
     p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
