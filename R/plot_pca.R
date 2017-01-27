@@ -1,8 +1,8 @@
 #' Plot the principal components of an omic data matrix
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples. It is strongly recommended that data be filtered and
-#'   normalized prior to running PCA.
+#'   to samples. It is strongly recommended that data be normalised and
+#'   filtered prior to running PCA.
 #' @param group Optional factor or character vector of length equal to sample size.
 #'   Levels are used to color and shape points. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
@@ -14,7 +14,7 @@
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
-#' @param D3 Render the plot in three dimensions?
+#' @param D3 Render plot in three dimensions?
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or three-
@@ -43,14 +43,19 @@
 #'
 
 plot_pca <- function(dat,
-                     group  = NULL,
-                     label  = FALSE,
-                     main   = NULL,
-                     legend = 'outside',
-                     hover  = FALSE,
-                     D3     = FALSE) {
+                     group = NULL,
+                     label = FALSE,
+                      main = NULL,
+                    legend = 'outside',
+                     hover = FALSE,
+                        D3 = FALSE) {
 
   # Preliminaries
+  if (is.null(colnames(dat))) {
+    sample <- paste0('Sample', seq_along(dat))
+  } else {
+    sample <- colnames(dat)
+  }
   if (is.null(group)) {
     group <- list(rep(1, times = ncol(dat)))
   } else {
@@ -70,6 +75,9 @@ plot_pca <- function(dat,
       warning('group is invariant')
     }
   }
+  if (!is.logical(label)) {
+    stop('label must be TRUE or FALSE')
+  }
   if (is.null(main)) {
     main <- 'PCA'
   }
@@ -77,55 +85,53 @@ plot_pca <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
-  if (is.null(colnames(dat))) {
-    sample <- paste0('Sample', seq_along(dat))
-  } else {
-    sample <- colnames(dat)
+  if (!is.logical(hover)) {
+    stop('hover must be TRUE or FALSE')
   }
-
+  if (!is.logical(D3)) {
+    stop('D3 must be TRUE or FALSE')
+  }
 
   # PCA
   pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
-  ve <- function(pc) round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
-  vars <- map_dbl(1:3, ve)
+  pva <- map_dbl(1:3, function(pc) {
+    round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
+  })
 
   # Tidy
-  df <- data_frame(PC1    = pca$x[, 1],
-                   PC2    = pca$x[, 2],
-                   PC3    = pca$x[, 3],
-                   Sample = sample,
-                   Group  = group[[1]])
+  df <- data_frame(PC1 = pca$x[, 1],
+                   PC2 = pca$x[, 2],
+                   PC3 = pca$x[, 3],
+                Sample = sample,
+                 Group = group[[1]])
 
   # Basic plot
   p <- ggplot(df, aes(PC1, PC2)) +
     geom_hline(yintercept = 0, size = 0.2) +
     geom_vline(xintercept = 0, size = 0.2) +
     labs(title = main,
-         x = paste0('PC1 (', vars[1], '%)'),
-         y = paste0('PC2 (', vars[2], '%)')) +
+             x = paste0('PC1 (', pva[1], '%)'),
+             y = paste0('PC2 (', pva[2], '%)')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
 
   # Sample labels
-  if (label == TRUE) {
-    if (!is.numeric(df$Group)) {
-      p <- p + geom_text(aes(label = Sample, color = Group), alpha = 0.85)
+  if (!is.numeric(df$Group)) {
+    if (label) {
+      p <- p + geom_text(aes(label = Sample, color = Group),
+                         alpha = 0.85)
     } else {
-      p <- p + geom_text(aes(label = Sample), alpha = 0.85)
+      suppressWarnings(
+        p <- p + geom_point(aes(text = Sample, color = Group, shape = Group),
+                            alpha = 0.85)
+      )
     }
   } else {
-    if (!is.numeric(df$Group)) {
-      suppressWarnings(p <- p + geom_point(aes(text  = Sample,
-                                               color = Group,
-                                               shape = Group),
-                                           alpha = 0.85))
-    } else {
-      p <- p + geom_text(aes(label = Sample))
-    }
+    p <- p + geom_text(aes(label = Sample), alpha = 0.85)
   }
 
   # Named list?
-  if (!is.null(names(group)) & !is.numeric(df$Group)) {
+  if (!is.null(names(group))) {
     p <- p + guides(color = guide_legend(title = names(group)),
                     shape = guide_legend(title = names(group)))
   }
@@ -146,8 +152,8 @@ plot_pca <- function(dat,
   }
 
   # Output
-  if (D3 == FALSE) {
-    if (hover == FALSE) {
+  if (!D3) {
+    if (!hover) {
       print(p)
     } else {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
