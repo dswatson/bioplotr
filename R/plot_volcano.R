@@ -111,10 +111,9 @@ plot_volcano <- function(dat,
   }
 
   # Tidy
-  test <- function(q) ifelse(q < fdr, TRUE, FALSE)
   df <- dat %>%
-    mutate(is.DE = map_lgl(q.value, test),
-           logP  = -log10(p.value)) %>%
+    mutate(logP = -log10(p.value),
+          is.DE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
     select(Probe, logFC, logP, is.DE) %>%
     na.omit()
 
