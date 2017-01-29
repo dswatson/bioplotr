@@ -111,9 +111,7 @@ plot_md <- function(dat,
 
   # Tidy
   df <- dat %>%
-    mutate(is.DE = map_lgl(q.value, function(q) {
-      ifelse(q < fdr, TRUE, FALSE)
-    })) %>%
+    mutate(is.DE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
     select(Probe, AvgExpr, logFC, is.DE) %>%
     na.omit()
 
