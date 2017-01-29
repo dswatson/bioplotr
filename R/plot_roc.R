@@ -137,8 +137,8 @@ plot_roc <- function(obs,
       p <- p + geom_point(aes(color = Classifier), size = 0.1) +
         geom_step(aes(text  = Classifier, group = Classifier, color = Classifier)) +
         scale_colour_manual(name = 'Classifier',
-                            labels = map_chr(seq_along(pred), leg),
-                            values = hue_pal()(length(pred)))
+                          labels = map_chr(seq_along(pred), leg),
+                          values = hue_pal()(length(pred)))
     )
   } else {
     p <- p + geom_point(size = 0.1) +
