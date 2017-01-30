@@ -44,59 +44,55 @@
 
 plot_taco <- function(dat,
                       fdr = 0.05,
-                      main = NULL,
-                    legend = 'outside',
-                    probes = NULL) {
+                     main = NULL,
+                   legend = 'outside',
+                   probes = NULL) {
 
   # Preliminaries
   dat <- as.data.frame(dat)
-  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  for (i in p) {
-    if (i %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == i] <- 'p.value'
-    }
-  }
-  if (all(!p %in% colnames(dat))) {
-    stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
-         'includes exactly one such colname')
-  }
-  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
-  for (i in q) {
-    if (i %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == i] <- 'q.value'
-    }
-  }
-  if (all(!q %in% colnames(dat))) {
-    stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
-         'Make sure that dat includes exactly one such colname')
+  lfc <- c('log2FoldChange', 'logFC')
+  if (any(lfc %in% colnames(dat))) {
+    j <- intersect(lfc, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'logFC'
+  } else {
+    stop('dat must include a log fold change column. Recognized colnames for this ',
+         'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
+         'exactly one such colname.')
   }
   avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
-  for (i in avg) {
-    colnames(dat)[colnames(dat) == i] <- 'AvgExpr'
-  }
-  if (all(!avg %in% colnames(dat))) {
+  if (any(avg %in% colnames(dat))) {
+    j <- intersect(avg, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'AvgExpr'
+  } else {
     stop('dat must include a column for average expression or methylation by ',
          'probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth", ',
          '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly ',
-         'one such colname')
+         'one such colname.')
   }
-  if ('log2FoldChange' %in% colnames(dat)) {
-    dat <- dat %>% rename(logFC = log2FoldChange)
+  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
+  if (any(p %in% colnames(dat))) {
+    j <- intersect(p, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'p.value'
+  } else {
+    stop('dat must include a p-value column. Recognized colnames for this vector ',
+         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+         'includes exactly one such colname.')
   }
-  if (!'log2FoldChange' %in% colnames(dat) &
-      !'logFC' %in% colnames(dat)) {
-    stop('dat must include a log fold change column. Recognized colnames for this ',
-         'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
-         'exactly one such colname')
+  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
+  if (any(q %in% colnames(dat))) {
+    j <- intersect(q, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'q.value'
+  } else {
+    stop('dat must include a column for adjusted p-values. Recognized colnames ',
+         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
+         'Make sure that dat includes exactly one such colname.')
   }
   if (is.null(main)) {
     main <- 'Taco Plot'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
+         '"topleft", or "topright".')
   }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
@@ -121,7 +117,7 @@ plot_taco <- function(dat,
     na.omit()
   if (sum(grepl('<', df$is.DE) == 0)) {
     warning('No probe meets your fdr threshold. To color data points by differential ',
-            'expression/methylation, consider raising your fdr cutoff')
+            'expression/methylation, consider raising your fdr cutoff.')
   }
 
   # Plot

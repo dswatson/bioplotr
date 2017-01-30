@@ -55,46 +55,39 @@ plot_volcano <- function(dat,
 
   # Preliminaries
   dat <- as.data.frame(dat)
-  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  for (i in p) {
-    if (i %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == i] <- 'p.value'
-    }
-  }
-  if (all(!p %in% colnames(dat))) {
-    stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
-         'includes exactly one such colname')
-  }
-  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
-  for (i in q) {
-    if (i %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == i] <- 'q.value'
-    }
-  }
-  if (all(!q %in% colnames(dat))) {
-    stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
-         'Make sure that dat includes exactly one such colname')
-  }
-  if ('log2FoldChange' %in% colnames(dat)) {
-    dat <- dat %>% rename(logFC = log2FoldChange)
-  }
-  if (!'log2FoldChange' %in% colnames(dat) &
-      !'logFC' %in% colnames(dat)) {
+  lfc <- c('log2FoldChange', 'logFC')
+  if (any(lfc %in% colnames(dat))) {
+    j <- intersect(lfc, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'logFC'
+  } else {
     stop('dat must include a log fold change column. Recognized colnames for this ',
          'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
-         'exactly one such colname')
+         'exactly one such colname.')
+  }
+  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
+  if (any(p %in% colnames(dat))) {
+    j <- intersect(p, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'p.value'
+  } else {
+    stop('dat must include a p-value column. Recognized colnames for this vector ',
+         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+         'includes exactly one such colname.')
+  }
+  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
+  if (any(q %in% colnames(dat))) {
+    j <- intersect(q, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'q.value'
+  } else {
+    stop('dat must include a column for adjusted p-values. Recognized colnames ',
+         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
+         'Make sure that dat includes exactly one such colname.')
   }
   if (is.null(main)) {
     main <- 'Volcano Plot'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
-  }
-  if (!is.logical(hover)) {
-    stop('hover must be TRUE or FALSE')
+         '"topleft", or "topright".')
   }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
@@ -104,7 +97,7 @@ plot_volcano <- function(dat,
     }
   } else {
     if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found'))
+      stop(paste0('Column "', probes, '" not found.'))
     } else {
       colnames(dat)[colnames(dat) == probes] <- 'Probe'
     }

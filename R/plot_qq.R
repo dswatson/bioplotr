@@ -52,25 +52,20 @@ plot_qq <- function(dat,
   # Preliminaries
   dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  for (i in p) {
-    if (i %in% colnames(dat)) {
-      colnames(dat)[colnames(dat) == i] <- 'p.value'
-    }
-  }
-  if (all(!p %in% colnames(dat))) {
-    stop('dat must include a p-value column. Recognized colnames for this ',
-         'vector include "p.value", "P.Value", "PValue", and "pvalue". Make sure ',
-         'that dat includes exactly one such colname')
+  if (any(p %in% colnames(dat))) {
+    j <- intersect(p, colnames(dat))
+    colnames(dat)[colnames(dat) == j] <- 'p.value'
+  } else {
+    stop('dat must include a p-value column. Recognized colnames for this vector ',
+         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+         'includes exactly one such colname.')
   }
   if (is.null(main)) {
     main <- 'Q-Q Plot'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
-  }
-  if (!is.logical(hover)) {
-    stop('hover must be TRUE or FALSE')
+         '"topleft", or "topright".')
   }
   if (is.null(probes)) {
     if (is.null(rownames(dat))) {
@@ -80,7 +75,7 @@ plot_qq <- function(dat,
     }
   } else {
     if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found'))
+      stop(paste0('Column "', probes, '" not found.'))
     } else {
       colnames(dat)[colnames(dat) == probes] <- 'Probe'
     }
