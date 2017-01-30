@@ -54,23 +54,23 @@ plot_box <- function(dat,
       group <- list(group)
     }
     if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-      stop('group must be a character or factor variable')
+      stop('group must be a character or factor variable.')
     }
     if (length(group) > 1) {
-      stop('group cannot be a list of length > 1')
+      stop('group cannot be a list of length > 1.')
     }
     if (length(group[[1]]) != ncol(dat)) {
-      stop('group length must match number of samples in dat')
+      stop('group length must match number of samples in dat.')
     }
     if (length(unique(group[[1]])) == 1) {
-      warning('group is invariant')
+      warning('group is invariant.')
     }
   }
   if (is.null(ylab)) {
     ylab <- 'Value'
   } else {
     if (!is.character(ylab) | length(ylab) != 1) {
-      stop('ylab must be NULL or a single string')
+      stop('ylab must be NULL or a single string.')
     }
   }
   if (is.null(main)) {
@@ -86,14 +86,11 @@ plot_box <- function(dat,
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright"')
-  }
-  if (!is.logical(hover)) {
-    stop('hover must be TRUE or FALSE')
+         '"topleft", or "topright".')
   }
 
   # Tidy
-  df <- gather(as_data_frame(dat), Sample, Expression) %>%
+  df <- gather(tbl_df(dat), Sample, Expression) %>%
     mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
     arrange(Group) %>%
     mutate(Sample = factor(Sample, levels = unique(Sample)))
