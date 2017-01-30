@@ -47,13 +47,13 @@ plot_sim_mat <- function(dat,
     }
   }
   if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-    stop('group must be a character or factor variable')
+    stop('group must be a character or factor variable.')
   }
   if (length(group[[1]]) != ncol(dat)) {
-    stop('group length must match number of samples in dat')
+    stop('group length must match number of samples in dat.')
   }
   if (length(unique(group[[1]])) == 1) {
-    warning('group is invariant')
+    warning('group is invariant.')
   }
   if (is.null(main)) {
     main <- 'Sample Similarity Matrix'

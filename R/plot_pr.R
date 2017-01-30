@@ -50,7 +50,7 @@ plot_pr <- function(obs,
   }
   if (is.factor(obs)) {
     if (length(levels(obs)) != 2) {
-      stop('Response must be dichotomous')
+      stop('Response must be dichotomous.')
     } else {
       warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
               'To change this to obs == "', levels(obs)[2], '", either relevel the ',
@@ -62,10 +62,10 @@ plot_pr <- function(obs,
     obs <- ifelse(obs, 1, 0)
   }
   if (!all(obs %in% c(0, 1))) {
-    stop('A numeric response can only take on values of 1 or 0')
+    stop('A numeric response can only take on values of 1 or 0.')
   }
   if (var(obs) == 0) {
-    stop('Response is invariant')
+    stop('Response is invariant.')
   }
   if (is.data.frame(pred)) {
     pred <- as.list(pred)
@@ -78,10 +78,10 @@ plot_pr <- function(obs,
   for (i in seq_along(pred)) {
     if (!is.numeric(pred[[i]])) {
       stop('pred must be a numeric vector, or several such vectors organized into ',
-           'a list or data frame')
+           'a list or data frame.')
     }
     if (length(obs) != length(pred[[i]])) {
-      stop('obs and pred vectors must be of equal length')
+      stop('obs and pred vectors must be of equal length.')
     }
   }
   if (is.null(main)) {
@@ -93,10 +93,7 @@ plot_pr <- function(obs,
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright"')
-  }
-  if (!is.logical(hover)) {
-    stop('hover must be TRUE or FALSE')
+         '"topleft", or "topright".')
   }
 
   # Tidy
