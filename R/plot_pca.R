@@ -1,7 +1,7 @@
 #' Plot the principal components of an omic data matrix
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples. It is strongly recommended that data be normalised and
+#'   to samples. It is strongly recommended that data be normalized and
 #'   filtered prior to running PCA.
 #' @param group Optional factor or character vector of length equal to sample size.
 #'   Levels are used to color and shape points. If supplied, legend title defaults to

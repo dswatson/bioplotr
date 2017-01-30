@@ -9,8 +9,8 @@ plot_pca(dat, group = NULL, label = FALSE, main = NULL,
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples. It is strongly recommended that data be filtered and
-normalized prior to running PCA.}
+to samples. It is strongly recommended that data be normalized and
+filtered prior to running PCA.}
 
 \item{group}{Optional factor or character vector of length equal to sample size.
 Levels are used to color and shape points. If supplied, legend title defaults to
@@ -28,7 +28,7 @@ Levels are used to color and shape points. If supplied, legend title defaults to
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 
-\item{D3}{Render the plot in three dimensions?}
+\item{D3}{Render plot in three dimensions?}
 }
 \description{
 Plot the principal components of an omic data matrix
