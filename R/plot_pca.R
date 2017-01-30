@@ -75,21 +75,12 @@ plot_pca <- function(dat,
       warning('group is invariant')
     }
   }
-  if (!is.logical(label)) {
-    stop('label must be TRUE or FALSE')
-  }
   if (is.null(main)) {
     main <- 'PCA'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
-  }
-  if (!is.logical(hover)) {
-    stop('hover must be TRUE or FALSE')
-  }
-  if (!is.logical(D3)) {
-    stop('D3 must be TRUE or FALSE')
   }
 
   # PCA
