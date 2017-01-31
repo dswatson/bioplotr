@@ -115,14 +115,14 @@ plot_covar <- function(dat,
     p <- round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
     paste0('\n(', p, '%)')
   })
-  sig <- function(var, pc) {                           # p-vals
+  sig <- function(var, pc) {                           # p-val fn
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[, var])
       ifelse(is.numeric(clin[, var]),
              -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
     } else {
       mod <- lm(pca$x[, pc] ~ clin[, var] + clin[[block]])
-      if (clin[, var] == clin[[block]]) {
+      if (identical(clin[, var], clin[[block]])) {
         -log10(anova(mod)[1, 5])
       } else {
         ifelse(is.numeric(clin[, var]),
