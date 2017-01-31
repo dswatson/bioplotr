@@ -108,7 +108,7 @@ plot_taco <- function(dat,
     }
   }
 
-  # Tidy
+  # Tidy data
   test <- function(q) ifelse(q < fdr, paste('q <', fdr), paste('q >', fdr))
   df <- dat %>%
     mutate(is.DE = map_chr(q.value, test),
@@ -120,7 +120,7 @@ plot_taco <- function(dat,
             'expression/methylation, consider raising your fdr cutoff.')
   }
 
-  # Plot
+  # Build Plot
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
                text = ~Probe, color = ~is.DE, colors = c('red', 'black'),
                type = 'scatter3d', mode = 'markers',

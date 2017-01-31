@@ -89,35 +89,29 @@ plot_box <- function(dat,
          '"topleft", or "topright".')
   }
 
-  # Tidy
+  # Tidy data
   df <- gather(tbl_df(dat), Sample, Expression) %>%
     mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
     arrange(Group) %>%
     mutate(Sample = factor(Sample, levels = unique(Sample)))
 
-  # Basic plot
-  p <- ggplot(df, aes(Sample, Expression)) +
-    labs(title = main, x = 'Sample', y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(angle = 45, hjust = 1))
-  if (!is.numeric(group)) {
-    suppressWarnings(
-      p <- p + geom_boxplot(aes(text = Sample, fill = Group))
-    )
+  # Build plot
+  suppressWarnings(
+    p <- ggplot(df, aes(Sample, Expression, text = Sample)) +
+      labs(title = main, x = 'Sample', y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5),
+            axis.text.x = element_text(angle = 45, hjust = 1))
+  )
+  if (!is.numeric(group)) {      # Fill by group?
+    p <- p + geom_boxplot(aes(fill = Group))
   } else {
-    suppressWarnings(
-      p <- p + geom_boxplot(text = Sample)
-    )
+    p <- p + geom_boxplot()
   }
-
-  # Named list?
-  if (!is.null(names(group))) {
+  if (!is.null(names(group))) {  # Named list?
     p <- p + guides(fill = guide_legend(title = names(group)))
   }
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

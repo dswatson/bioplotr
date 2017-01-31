@@ -105,7 +105,7 @@ plot_md <- function(dat,
     }
   }
 
-  # Tidy
+  # Tidy data
   df <- dat %>%
     mutate(is.DE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
     select(Probe, AvgExpr, logFC, is.DE) %>%
@@ -120,7 +120,7 @@ plot_md <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (sum(df$is.DE == TRUE) == 0) {
+  if (sum(df$is.DE == TRUE) == 0) {  # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
@@ -131,9 +131,7 @@ plot_md <- function(dat,
                         values = c('black', 'red')) +
       guides(col = guide_legend(reverse = TRUE))
   }
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {      # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

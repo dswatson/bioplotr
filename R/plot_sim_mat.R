@@ -63,7 +63,7 @@ plot_sim_mat <- function(dat,
   dm <- dist.matrix(scale(t(dat)), method = 'euclidean')
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
-  # Plot
+  # Build plot
   if (is.null(group)) {
     aheatmap(dm, col = rb, Rowv = FALSE, main = main,
              distfun = function(x) as.dist(x), hclustfun = 'average')

@@ -96,7 +96,7 @@ plot_pr <- function(obs,
          '"topleft", or "topright".')
   }
 
-  # Tidy
+  # Tidy data
   df <- map_df(seq_along(pred), function(i) {
     data_frame(Y = obs,
                X = pred[[i]],
@@ -107,8 +107,8 @@ plot_pr <- function(obs,
       return()
   })
 
-  # Plot
-  leg <- function(i) {
+  # Build plot
+  leg <- function(i) {           # Print AUC
     pos <- df %>% filter(Classifier == names(pred)[i], Y == 1)
     neg <- df %>% filter(Classifier == names(pred)[i], Y == 0)
     txt <- paste0(names(pred)[i], ', AUC = ',
@@ -119,7 +119,7 @@ plot_pr <- function(obs,
     labs(title = main, x = 'Recall', y = 'Precision') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1) {
+  if (length(pred) > 1) {        # Multiple curves?
     suppressWarnings(
       p <- p + geom_point(aes(color = Classifier), size = 0.1) +
         geom_line(aes(text = Classifier, group = Classifier, color = Classifier)) +
@@ -134,9 +134,7 @@ plot_pr <- function(obs,
                         labels = map_chr(seq_along(pred), leg),
                         values = 'black')
   }
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

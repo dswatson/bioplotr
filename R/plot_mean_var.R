@@ -74,7 +74,7 @@ plot_mean_var <- function(dat,
     }
   }
 
-  # Tidy
+  # Tidy data
   df <- data_frame(Probe = probes,
                     Mean = rowMeans(dat),
                      Var = vars)

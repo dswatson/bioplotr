@@ -87,7 +87,7 @@ plot_qq <- function(dat,
            Expected = -log10(ppoints(length(p.value)))) %>%
     select(Probe, Observed, Expected)
 
-  # Basic plot
+  # Build plot
   suppressWarnings(
     p <- ggplot(df, aes(Expected, Observed)) +
       geom_point(aes(text = Probe), size = ptsize) +
@@ -98,9 +98,7 @@ plot_qq <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

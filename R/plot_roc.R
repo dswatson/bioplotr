@@ -96,7 +96,7 @@ plot_roc <- function(obs,
          '"topleft", or "topright".')
   }
 
-  # Tidy
+  # Tidy data
   originate <- function(tbl) {
     data_frame(TPR = 0,
                FPR = 0,
@@ -117,7 +117,7 @@ plot_roc <- function(obs,
   })
 
   # Plot
-  leg <- function(i) {
+  leg <- function(i) {           # Print AUC
     txt <- paste0(names(pred)[i], ', AUC = ',
                   round(ModelMetrics::auc(obs, pred[[i]]), 2))
     return(txt)
@@ -129,7 +129,7 @@ plot_roc <- function(obs,
              y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1) {
+  if (length(pred) > 1) {        # Multiple curves?
     suppressWarnings(
       p <- p + geom_point(aes(color = Classifier), size = 0.1) +
         geom_step(aes(text  = Classifier, group = Classifier, color = Classifier)) +
@@ -144,9 +144,7 @@ plot_roc <- function(obs,
                         labels = map_chr(seq_along(pred), leg),
                         values = 'black')
   }
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

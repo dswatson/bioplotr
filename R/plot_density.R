@@ -87,31 +87,26 @@ plot_density <- function(dat,
          '"topleft", or "topright".')
   }
 
-  # Tidy
+  # Tidy data
   df <- gather(tbl_df(dat), Sample, Value) %>%
     mutate(Group = rep(group[[1]], each = nrow(dat)))
 
-  # Basic plot
-  p <- ggplot(df, aes(Value, group = Sample)) +
-    labs(title = main, x = xlab, y = 'Density') +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
-  if (!is.numeric(group)) {
-    suppressWarnings(
-      p <- p + geom_path(stat = 'density',
-                         aes(text = Sample, color = Group))
-    )
+  # Build plot
+  suppressWarnings(
+    p <- ggplot(df, aes(Value, group = Sample, text = Sample)) +
+      labs(title = main, x = xlab, y = 'Density') +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
+  if (!is.numeric(group)) {      # Color by group?
+    p <- p + geom_path(stat = 'density', aes(color = Group))
   } else {
-    p <- p + geom_path(stat = 'density', aes(color = Sample))
+    p <- p + geom_path(stat = 'density')
   }
-
-  # Named list?
-  if (!is.null(names(group))) {
+  if (!is.null(names(group))) {  # Named list?
     p <- p + guides(color = guide_legend(title = names(group)))
   }
-
-  # Legend location
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

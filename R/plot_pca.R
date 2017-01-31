@@ -83,20 +83,18 @@ plot_pca <- function(dat,
          '"topleft", or "topright"')
   }
 
-  # PCA
-  pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)
+  # Tidy data
+  pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)  # PCA
   pve <- map_dbl(1:3, function(pc) {
     round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
   })
-
-  # Tidy
-  df <- data_frame(PC1 = pca$x[, 1],
+  df <- data_frame(PC1 = pca$x[, 1],                   # Melt
                    PC2 = pca$x[, 2],
                    PC3 = pca$x[, 3],
                 Sample = sample,
                  Group = group[[1]])
 
-  # Basic plot
+  # Build plot
   p <- ggplot(df, aes(PC1, PC2)) +
     geom_hline(yintercept = 0, size = 0.2) +
     geom_vline(xintercept = 0, size = 0.2) +
@@ -105,9 +103,7 @@ plot_pca <- function(dat,
              y = paste0('PC2 (', pve[2], '%)')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-
-  # Sample labels
-  if (!is.numeric(df$Group)) {
+  if (!is.numeric(df$Group)) {   # Sample labels
     if (label) {
       p <- p + geom_text(aes(label = Sample, color = Group),
                          alpha = 0.85)
@@ -120,15 +116,11 @@ plot_pca <- function(dat,
   } else {
     p <- p + geom_text(aes(label = Sample), alpha = 0.85)
   }
-
-  # Named list?
-  if (!is.null(names(group))) {
+  if (!is.null(names(group))) {  # Named list?
     p <- p + guides(color = guide_legend(title = names(group)),
                     shape = guide_legend(title = names(group)))
   }
-
-  # Locate legend
-  if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
