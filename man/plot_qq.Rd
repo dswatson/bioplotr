@@ -29,7 +29,7 @@ identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
 \code{hover = TRUE}.}
 }
 \description{
-Create QQ plot of expected vs. observed -log10 \emph{p}-values
+\eqn{-log[10]}
 }
 \details{
 This function displays a scatterplot of the expected vs. observed quantiles
@@ -53,4 +53,3 @@ top <- topTable(fit, number = Inf)
 plot_qq(top)
 
 }
-
