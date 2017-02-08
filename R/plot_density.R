@@ -1,4 +1,6 @@
-#' Create density plots by sample
+#' Density Plots by Sample
+#'
+#' This function displays each sample's omic data distribution as a density curve.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples.
@@ -14,10 +16,10 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function displays each sample's omic data distribution as a density curve.
-#' It is especially helpful when contrasting pre- and post-normalization matrices.
-#' It may additionally be used to inspect for batch effects or other associations
-#' with phenotypic features by using the \code{group} argument.
+#' Density curves are an intuitive way to visualize an omic data distribution. They
+#' are especially helpful when contrasting pre- and post-normalization matrices.
+#' \code{plot_density} may additionally be used to inspect for batch effects
+#' or other associations with phenotypic features by using the \code{group} argument.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -27,7 +29,7 @@
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
-#' batch <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' batch <- rep(c("A", "B"), each = 5)
 #' plot_density(mat, group = batch, xlab = "Normalized Counts")
 #'
 #' @export

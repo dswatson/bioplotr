@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_box.R
 \name{plot_box}
 \alias{plot_box}
-\title{Create box plots by sample}
+\title{Box Plots by Sample}
 \usage{
 plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
   legend = "outside", hover = FALSE)
@@ -27,13 +27,14 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-Create box plots by sample
+This function displays each sample's omic data distribution as a box and
+whicker plot.
 }
 \details{
-This function displays each sample's omic data distribution as a box and whisker
-plot. This is especially helpful when contrasting pre- and post-normalization
-matrices. It may additionally be used to inspect for batch effects or other
-associations with phenotypic features by using the \code{group} argument.
+Box plots are an intuitive way to visualize an omic data distribution. They are
+especially helpful when contrasting pre- and post-normalization matrices.
+\code{plot_box} may additionally be used to inspect for batch effects
+or other associations with phenotypic features by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -44,8 +45,7 @@ mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- calcNormFactors(DGEList(mat))
 mat <- cpm(mat, log = TRUE)
-batch <- gl(n = 2, k = 5, labels = c("A", "B"))
+batch <- rep(c("A", "B"), each = 5)
 plot_box(mat, group = batch, ylab = "Normalized Counts")
 
 }
-

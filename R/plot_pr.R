@@ -1,4 +1,6 @@
-#' Plot PR curves for one or several classifiers
+#' Precision-Recall Curve(s)
+#'
+#' This function plots PR curves for one or several classifiers.
 #'
 #' @param obs Vector of observed outcomes. Must be dichotomous. Can be numeric,
 #'   character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
@@ -15,11 +17,11 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function plots one or several precision-recall (PR) curves. PR curves plot the
-#' precision (i.e., positive predictive value) against the recall (i.e., true positive
-#' rate/sensitivity) for a given classifier and vector of observations. The area under
-#' the PR curve (AUC) is a useful performance metric for binary classifiers, especially
-#' when the prevalence of the outcome in question is relatively low.
+#' PR curves plot the precision (i.e., positive predictive value) against the recall
+#' (i.e., true positive rate/sensitivity) for a given classifier and vector of
+#' observations. The area under the PR curve (AUC) is a useful performance metric for
+#' binary classifiers, especially when the prevalence of the outcome in question is
+#' relatively low.
 #'
 #' @examples
 #' y <- rbinom(300, size = 1, prob = 0.1)

@@ -1,4 +1,6 @@
-#' Plot the principal components of an omic data matrix
+#' PCA Plot
+#'
+#' This function plots the principal components of an omic data matrix.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples. It is strongly recommended that data be normalized and
@@ -159,5 +161,9 @@ plot_pca <- function(dat,
   }
 
 }
+
+
+
+# Allow for continuous covariate
 
 

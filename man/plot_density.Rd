@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_density.R
 \name{plot_density}
 \alias{plot_density}
-\title{Create density plots by sample}
+\title{Density Plots by Sample}
 \usage{
 plot_density(dat, group = NULL, xlab = NULL, main = NULL,
   legend = "outside", hover = FALSE)
@@ -27,13 +27,13 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-Create density plots by sample
+This function displays each sample's omic data distribution as a density curve.
 }
 \details{
-This function displays each sample's omic data distribution as a density curve.
-It is especially helpful when contrasting pre- and post-normalization matrices.
-It may additionally be used to inspect for batch effects or other associations
-with phenotypic features by using the \code{group} argument.
+Density curves are an intuitive way to visualize an omic data distribution. They
+are especially helpful when contrasting pre- and post-normalization matrices.
+\code{plot_density} may additionally be used to inspect for batch effects
+or other associations with phenotypic features by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -43,8 +43,7 @@ library(DESeq2)
 mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
-batch <- gl(n = 2, k = 5, labels = c("A", "B"))
+batch <- rep(c("A", "B"), each = 5)
 plot_density(mat, group = batch, xlab = "Normalized Counts")
 
 }
-

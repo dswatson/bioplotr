@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_pca.R
 \name{plot_pca}
 \alias{plot_pca}
-\title{Plot the principal components of an omic data matrix}
+\title{PCA Plot}
 \usage{
 plot_pca(dat, group = NULL, label = FALSE, main = NULL,
   legend = "outside", hover = FALSE, D3 = FALSE)
@@ -31,7 +31,7 @@ display or appear in the RStudio viewer.}
 \item{D3}{Render plot in three dimensions?}
 }
 \description{
-Plot the principal components of an omic data matrix
+This function plots the principal components of an omic data matrix.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or three-
@@ -52,4 +52,3 @@ grp <- gl(n = 2, k = 5, labels = c("A", "B"))
 plot_pca(mat, group = grp)
 
 }
-

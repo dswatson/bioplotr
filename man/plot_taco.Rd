@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_taco.R
 \name{plot_taco}
 \alias{plot_taco}
-\title{Create taco plot of log2 fold changes against -log10 \emph{p}-values against mean expression/methylation}
+\title{Taco Plot}
 \usage{
 plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside",
   probes = NULL)
@@ -25,14 +25,14 @@ and FDR.}
 identifiers, assuming they aren't \code{rownames(dat)}.}
 }
 \description{
-Create taco plot of log2 fold changes against -log10 \emph{p}-values against mean expression/methylation
+This function plots log2 fold changes against -log10 \emph{p}-values against
+probewise means for a given test of differential expression/methylation.
 }
 \details{
-This function displays the results of a differential expression or methylation
-test as a taco plot, which is essentially a combination of a volcano plot and an MD
-plot, with colors distinguishing probes that meet the user-defined FDR threshold.
-These figures can be used to evaluate the symmetry, magnitude, and significance of
-fold changes for a given experiment.
+A taco plot combines the elements of a volcano plot and an MD plot into a single
+three-dimensional figure. Probes are colored to distinguish between those that
+do and do not meet a user-defined FDR threshold. These figures help to evaluate
+the symmetry, magnitude, and significance of effects for a given experiment.
 }
 \examples{
 df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
@@ -52,4 +52,3 @@ top <- topTable(fit, number = Inf)
 plot_taco(top)
 
 }
-

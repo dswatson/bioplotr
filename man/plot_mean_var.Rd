@@ -2,18 +2,18 @@
 % Please edit documentation in R/plot_mean_var.R
 \name{plot_mean_var}
 \alias{plot_mean_var}
-\title{Plot the mean-variance trend of an omic data matrix}
+\title{Mean-Variance Plot}
 \usage{
 plot_mean_var(dat, trans, ptsize = 0.25, main = NULL, hover = FALSE,
   probes = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples. Presumed to be normalized prior to visualization.}
+to samples. Data are presumed to be normalized prior to visualization.}
 
 \item{trans}{Data transformation to be applied to the probewise standard
-deviations. Must be either \code{"log"} or \code{"sqrt"}. The former is
-recommended for microarrays or any other platform in which data are
+deviations. Must be one of either \code{"log"} or \code{"sqrt"}. The former
+is recommended for microarrays or any other platform in which data are
 approximately log-normally distributed. The latter is recommended for
 sequencing and count data.}
 
@@ -28,12 +28,13 @@ identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
 \code{hover = TRUE}.}
 }
 \description{
-Plot the mean-variance trend of an omic data matrix
+This function plots probewise means vs. standard deviations, following
+the appropriate data transformation.
 }
 \details{
-This function plots each probe's mean value against its standard deviation,
-following the appropriate data transformation. A lowess curve is additionally
-fit to the data.
+Mean-variance plots are a quick and easy way to visualize distributions
+of probewise expression or methylation values across samples. A lowess curve
+is additionally fit to the data.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -45,4 +46,3 @@ mat <- cpm(y, log = TRUE)
 plot_mean_var(mat, trans = "sqrt")
 
 }
-

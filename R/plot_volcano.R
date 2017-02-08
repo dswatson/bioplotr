@@ -1,4 +1,7 @@
-#' Create volcano plot of log2 fold changes against -log10 \emph{p}-values
+#' Volcano Plot
+#'
+#' This function plots the log2 fold changes against the -log10 \emph{p}-values
+#' for a given test of differential expression/methylation.
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -17,10 +20,11 @@
 #'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
-#' This function displays the results of a differential expression or methylation
-#' test as a volcano plot, with colors distinguishing probes that meet the
-#' user-defined FDR threshold. These figures can be used to evaluate the symmetry,
-#' magnitude, and significance of fold changes for a given experiment.
+#' Volcano plots visualize the relationship between a probe's log2 fold change and
+#' its -log10 \emph{p}-value for a given test of differential expression/methylation.
+#' Probes are colored to distinguish between those that do and do not meet a
+#' user-defined FDR threshold. These figures help to evaluate the symmetry,
+#' magnitude, and significance of effects for a given experiment.
 #'
 #' @examples
 #' df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),

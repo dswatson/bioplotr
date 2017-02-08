@@ -1,4 +1,7 @@
-#' Create taco plot of log2 fold changes against -log10 \emph{p}-values against mean expression/methylation
+#' Taco Plot
+#'
+#' This function plots log2 fold changes against -log10 \emph{p}-values against
+#' probewise means for a given test of differential expression/methylation.
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -13,11 +16,10 @@
 #'   identifiers, assuming they aren't \code{rownames(dat)}.
 #'
 #' @details
-#' This function displays the results of a differential expression or methylation
-#' test as a taco plot, which is essentially a combination of a volcano plot and an MD
-#' plot, with colors distinguishing probes that meet the user-defined FDR threshold.
-#' These figures can be used to evaluate the symmetry, magnitude, and significance of
-#' fold changes for a given experiment.
+#' A taco plot combines the elements of a volcano plot and an MD plot into a single
+#' three-dimensional figure. Probes are colored to distinguish between those that
+#' do and do not meet a user-defined FDR threshold. These figures help to evaluate
+#' the symmetry, magnitude, and significance of effects for a given experiment.
 #'
 #' @examples
 #' df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),

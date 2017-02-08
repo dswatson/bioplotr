@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_roc.R
 \name{plot_roc}
 \alias{plot_roc}
-\title{Plot ROC curves for one or several classifiers}
+\title{Reicever Operating Characteristic Curve(s)}
 \usage{
 plot_roc(obs, pred, main = NULL, legend = "outside", hover = FALSE)
 }
@@ -26,10 +26,9 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-Plot ROC curves for one or several classifiers
+This functions plots ROC curves for one or several classifiers.
 }
 \details{
-This function plots one or several receiver operating characteristic (ROC) curves.
 ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
 positive rate (i.e., sensitivity) for a given classifier and vector of observations.
 The area under the ROC curve (AUC) is a common performance metric for binary
@@ -44,4 +43,3 @@ x2 <- rnorm(300, mean = y, sd = 2)
 plot_roc(obs = y, pred = list("x1" = x, "x2" = x2))
 
 }
-

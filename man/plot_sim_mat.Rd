@@ -2,28 +2,29 @@
 % Please edit documentation in R/plot_sim_mat.R
 \name{plot_sim_mat}
 \alias{plot_sim_mat}
-\title{Visualize a similarity matrix}
+\title{Similarity Matrix Heatmap}
 \usage{
-plot_sim_mat(dat, group = NULL, main = NULL)
+plot_sim_mat(dat, feat = NULL, main = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
 to samples.}
 
-\item{group}{Optional character or factor vector of length equal to sample size,
-or a list of such vectors, optionally named. Levels are used to color an annotation
-track atop the heatmap.}
+\item{feat}{Optional character, factor, numeric, or logical vector of length
+equal to sample size. Alternatively, a data frame or list of such vectors,
+optionally named. Values are used to color one or several annotation tracks
+atop the heatmap.}
 
 \item{main}{Optional plot title.}
 }
 \description{
-Visualize a similarity matrix
+This function displays the pairwise scaled Euclidean distance between samples
+as a heatmap.
 }
 \details{
-This function displays the pairwise scaled Euclidean distance between samples
-in the form of a heatmap. A hierarchical clustering dendrogram is added
-atop the figure to help identify potential outliers and/or clusters in
-the data.
+Similarity matrices are a valuable tool for exploratory data analysis. A
+hierarchical clustering dendrogram atop the figure helps identify potential
+outliers and/or clusters in the data.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -33,8 +34,7 @@ library(DESeq2)
 mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
-grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-plot_sim_mat(mat, group = grp, main = "Somethin' Cookin'")
+grp <- rep(c("A", "B"), each = 5)
+plot_sim_mat(mat, feat = grp, main = "Somethin' Cookin'")
 
 }
-

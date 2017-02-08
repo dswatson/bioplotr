@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_pr.R
 \name{plot_pr}
 \alias{plot_pr}
-\title{Plot PR curves for one or several classifiers}
+\title{Precision-Recall Curve(s)}
 \usage{
 plot_pr(obs, pred, main = NULL, legend = "outside", hover = FALSE)
 }
@@ -26,14 +26,14 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-Plot PR curves for one or several classifiers
+This function plots PR curves for one or several classifiers.
 }
 \details{
-This function plots one or several precision-recall (PR) curves. PR curves plot the
-precision (i.e., positive predictive value) against the recall (i.e., true positive
-rate/sensitivity) for a given classifier and vector of observations. The area under
-the PR curve (AUC) is a useful performance metric for binary classifiers, especially
-when the prevalence of the outcome in question is relatively low.
+PR curves plot the precision (i.e., positive predictive value) against the recall
+(i.e., true positive rate/sensitivity) for a given classifier and vector of
+observations. The area under the PR curve (AUC) is a useful performance metric for
+binary classifiers, especially when the prevalence of the outcome in question is
+relatively low.
 }
 \examples{
 y <- rbinom(300, size = 1, prob = 0.1)
@@ -44,4 +44,3 @@ x2 <- rnorm(300, mean = y, sd = 2)
 plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
 
 }
-

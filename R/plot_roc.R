@@ -1,4 +1,6 @@
-#' Plot ROC curves for one or several classifiers
+#' Reicever Operating Characteristic Curve(s)
+#'
+#' This functions plots ROC curves for one or several classifiers.
 #'
 #' @param obs Vector of observed outcomes. Must be dichotomous. Can be numeric,
 #'   logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
@@ -15,7 +17,6 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function plots one or several receiver operating characteristic (ROC) curves.
 #' ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
 #' positive rate (i.e., sensitivity) for a given classifier and vector of observations.
 #' The area under the ROC curve (AUC) is a common performance metric for binary

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_md.R
 \name{plot_md}
 \alias{plot_md}
-\title{Create MD plot of log2 fold changes against mean expression/methylation}
+\title{Mean-Difference Plot}
 \usage{
 plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
   hover = FALSE, probes = NULL)
@@ -31,13 +31,16 @@ identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
 \code{hover = TRUE}.}
 }
 \description{
-Create MD plot of log2 fold changes against mean expression/methylation
+This function plots probewise means against the log2 fold changes of a
+differential expression or methylation test.
 }
 \details{
-This function displays the results of a differential expression or methylation
-test as an MD plot, with colors distinguishing probes that meet the
-user-defined FDR threshold. These figures can be used to evaluate the symmetry,
-magnitude, and significance of fold changes for a given experiment.
+MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
+relationship between a probe's mean value and its log2 fold change for a given
+test of differential expression/methylation. Probes are colored to distinguish
+between those that do and do not meet a user-defined FDR threshold. These
+figures help to evaluate the symmetry, magnitude, and significance of effects
+for a given experiment.
 }
 \examples{
 df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
@@ -57,4 +60,3 @@ top <- topTable(fit, number = Inf)
 plot_md(top)
 
 }
-

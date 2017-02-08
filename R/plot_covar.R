@@ -1,5 +1,9 @@
 #' Plot associations between omic and clinical data
 #'
+#' This function creates a heatmap visualizing the strength of associations
+#' between the principal components of an omic data matrix and a set of
+#' technical and/or biological covariates.
+#'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples. For best results, data should be normalized and filtered in
 #'   preparation for PCA.
@@ -17,25 +21,27 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' This function plots the strength of associations between the principal components
-#' of an omic data matrix and a set of technical and/or biological covariates as a
-#' heatmap. Significance is measured using -log10 \emph{p}-values of either Pearson
-#' correlation tests (for continuous features) or one-way ANOVA \emph{F}-tests (for
-#' categorical features).
+#' Strength of association is measured using -log10 \emph{p}-values. When
+#' \code{block = NULL}, significance is derived from either Pearson correlation
+#' tests (for continuous features) or one-way ANOVA \emph{F}-tests (for categorical
+#' features).
 #'
-#' An optional blocking variable may be provided for data with technical or
-#' biological replicates, e.g. for studies in which subjects are observed at multiple
-#' time points. If a blocking variable is identified, then it is factored into all
+#' An optional blocking variable may be provided if samples violate the assumption
+#' of independence, e.g. for studies in which subjects are observed at multiple
+#' time points. If a blocking variable is identified, it will be factored into all
 #' subsequent measures of association. Significance is then evaluated using Pearson
 #' partial correlation tests (for continuous features) or repeated measures ANOVA
-#' \emph{F}-tests (for categorical features), with the blocking variable included
-#' as a covariate. When supplying a blocking variable, be sure to check that it is
-#' not confounded with other features. Biological covariates like sex and age are
-#' usually nested within subject, while subject may be nested within technical
-#' features like batch.
+#' \emph{F}-tests (for categorical features). When supplying a blocking variable,
+#' be sure to check that it is not confounded with other features. For instance,
+#' biological covariates like sex and age are usually nested within subject, while
+#' subject may be nested within other features like batch or treatment group.
 #'
 #' @examples
-#'
+#' data(Nevins)
+#' mat <- exprs(Nevins)
+#' clin <- pData(Nevins)
+#' clin$Sample <- rownames(clin)
+#' plot_covar(mat, clin)
 #'
 #' @export
 #' @importFrom purrr map_chr

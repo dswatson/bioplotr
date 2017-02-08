@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_volcano.R
 \name{plot_volcano}
 \alias{plot_volcano}
-\title{Create volcano plot of log2 fold changes against -log10 \emph{p}-values}
+\title{Volcano Plot}
 \usage{
 plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
   legend = "outside", hover = FALSE, probes = NULL)
@@ -31,13 +31,15 @@ display or appear in the RStudio viewer.}
 identifiers. Only relevant if \code{hover = TRUE}.}
 }
 \description{
-Create volcano plot of log2 fold changes against -log10 \emph{p}-values
+This function plots the log2 fold changes against the -log10 \emph{p}-values
+for a given test of differential expression/methylation.
 }
 \details{
-This function displays the results of a differential expression or methylation
-test as a volcano plot, with colors distinguishing probes that meet the
-user-defined FDR threshold. These figures can be used to evaluate the symmetry,
-magnitude, and significance of fold changes for a given experiment.
+Volcano plots visualize the relationship between a probe's log2 fold change and
+its -log10 \emph{p}-value for a given test of differential expression/methylation.
+Probes are colored to distinguish between those that do and do not meet a
+user-defined FDR threshold. These figures help to evaluate the symmetry,
+magnitude, and significance of effects for a given experiment.
 }
 \examples{
 df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
@@ -56,4 +58,3 @@ top <- topTable(fit, number = Inf)
 plot_volcano(top)
 
 }
-
