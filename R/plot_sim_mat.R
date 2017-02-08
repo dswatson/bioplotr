@@ -1,17 +1,20 @@
-#' Visualize a similarity matrix
+#' Similarity Matrix Heatmap
+#'
+#' This function displays the pairwise scaled Euclidean distance between samples
+#' as a heatmap.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples.
-#' @param group Optional character or factor vector of length equal to sample size,
-#'   or a list of such vectors, optionally named. Levels are used to color an annotation
-#'   track atop the heatmap.
+#' @param feat Optional character, factor, numeric, or logical vector of length
+#'   equal to sample size. Alternatively, a data frame or list of such vectors,
+#'   optionally named. Values are used to color one or several annotation tracks
+#'   atop the heatmap.
 #' @param main Optional plot title.
 #'
 #' @details
-#' This function displays the pairwise scaled Euclidean distance between samples
-#' in the form of a heatmap. A hierarchical clustering dendrogram is added
-#' atop the figure to help identify potential outliers and/or clusters in
-#' the data.
+#' Similarity matrices are a valuable tool for exploratory data analysis. A
+#' hierarchical clustering dendrogram atop the figure helps identify potential
+#' outliers and/or clusters in the data.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -21,39 +24,47 @@
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
-#' grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-#' plot_sim_mat(mat, group = grp, main = "Somethin' Cookin'")
+#' grp <- rep(c("A", "B"), each = 5)
+#' plot_sim_mat(mat, feat = grp, main = "Somethin' Cookin'")
 #'
 #' @export
+#' @importFrom purrr map_lgl
 #' @importFrom wordspace dist.matrix
 #' @importFrom NMF aheatmap
 #' @import RColorBrewer
 #'
 
 plot_sim_mat <- function(dat,
-                         group = NULL,
-                          main = NULL) {
+                         feat = NULL,
+                         main = NULL) {
 
   # Preliminaries
-  if (!is.list(group)){
-    group <- list('Group' = group)
+  if (is.data.frame(feat)) {
+    feat <- as.list(feat)
+  } else if (!is.list(feat)) {
+    feat <- list('Variable' = feat)
   } else {
-    if (is.null(names(group))) {
-      if (length(group) == 1) {
-        names(group) <- 'Group'
+    if (is.null(names(feat))) {
+      if (length(feat) == 1) {
+        names(feat) <- 'Variable'
       } else {
-        names(group) <- paste('Group', seq_along(group))
+        names(feat) <- paste('Variable', seq_along(feat))
       }
     }
   }
-  if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-    stop('group must be a character or factor variable.')
+  if (any(map_lgl(seq_along(feat), function(j) {
+    length(feat[[j]]) != ncol(dat)
+  }))) {
+    stop('feat length must match number of samples in dat.')
   }
-  if (length(group[[1]]) != ncol(dat)) {
-    stop('group length must match number of samples in dat.')
-  }
-  if (length(unique(group[[1]])) == 1) {
-    warning('group is invariant.')
+  if (any(map_lgl(seq_along(feat), function(j) {
+    if (is.numeric(feat[[j]])) {
+      var(feat[[j]]) == 0
+    } else {
+      length(unique(feat[[j]])) == 1
+    }
+  }))) {
+    stop('feat is invariant.')
   }
   if (is.null(main)) {
     main <- 'Sample Similarity Matrix'
@@ -63,14 +74,14 @@ plot_sim_mat <- function(dat,
   dm <- dist.matrix(scale(t(dat)), method = 'euclidean')
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
-  # Build plot
-  if (is.null(group)) {
+  # Plot
+  if (is.null(feat)) {
     aheatmap(dm, col = rb, Rowv = FALSE, main = main,
              distfun = function(x) as.dist(x), hclustfun = 'average')
   } else {
     aheatmap(dm, col = rb, Rowv = FALSE, main = main,
              distfun = function(x) as.dist(x), hclustfun = 'average',
-             annCol = group)
+             annCol = feat)
   }
 
 }
