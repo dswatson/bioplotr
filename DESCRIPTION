@@ -1,8 +1,13 @@
 Package: bioplotr
-Title: Pretty, simple, optionally interactive plots for bioinformatics analysis pipelines
+Title: Pretty, simple, optionally interactive plots for bioinformatics analysis 
+  pipelines
 Version: 0.0.0.9000
-Authors@R: person("David", "Watson", email = "d.watson@qmul.ac.uk", role = c("aut", "cre"))
-Description: Convenient functions for generating common biostatistical figures
+Authors@R: person("David", "Watson", email = "d.watson@qmul.ac.uk", 
+  role = c("aut", "cre"))
+Description: This package provides functions to build many common (and some not 
+  so common) figures for omic data analysis. Most plots employ a "Grammar of 
+  Graphics" framework, with optional plotly and shiny add-ons for interactive
+  functionality and HTML output. 
 Depends: R (>= 3.3.2)
 Imports: 
   dplyr,
