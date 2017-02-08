@@ -1,10 +1,13 @@
-#' Plot the mean-variance trend of an omic data matrix
+#' Mean-Variance Plot
+#'
+#' This function plots probewise means vs. standard deviations, following
+#' the appropriate data transformation.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples. Presumed to be normalized prior to visualization.
+#'   to samples. Data are presumed to be normalized prior to visualization.
 #' @param trans Data transformation to be applied to the probewise standard
-#'   deviations. Must be either \code{"log"} or \code{"sqrt"}. The former is
-#'   recommended for microarrays or any other platform in which data are
+#'   deviations. Must be one of either \code{"log"} or \code{"sqrt"}. The former
+#'   is recommended for microarrays or any other platform in which data are
 #'   approximately log-normally distributed. The latter is recommended for
 #'   sequencing and count data.
 #' @param main Optional plot title.
@@ -16,9 +19,9 @@
 #'   \code{hover = TRUE}.
 #'
 #' @details
-#' This function plots each probe's mean value against its standard deviation,
-#' following the appropriate data transformation. A lowess curve is additionally
-#' fit to the data.
+#' Mean-variance plots are a quick and easy way to visualize distributions
+#' of probewise expression or methylation values across samples. A lowess curve
+#' is additionally fit to the data.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -45,11 +48,14 @@ plot_mean_var <- function(dat,
 
   # Preliminaries
   if (!trans %in% c('log', 'sqrt')) {
-    stop('trans must be specified as either "log" or "sqrt"')
+    stop('trans must be specified as either "log" or "sqrt". The former is ',
+         'recommended for microarrays or any other platform in which data are ',
+         'approximately log-normally distributed. The latter is recommended for ',
+         'sequencing and count data.')
   }
   if (trans == 'log') {
     vars <- log2(rowSds(dat))
-    ylab <- expression('log'[2]*sigma)
+    ylab <- expression('log'[2]*(sigma))
     if (is.null(main)) {
       main <- 'Normalized Expression'
     }
