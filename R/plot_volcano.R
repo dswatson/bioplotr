@@ -20,25 +20,20 @@
 #'   identifiers. Only relevant if \code{hover = TRUE}.
 #'
 #' @details
-#' Volcano plots visualize the relationship between a probe's log2 fold change and
-#' its -log10 \emph{p}-value for a given test of differential expression/methylation.
+#' Volcano plots visualize the relationship between each probe's log2 fold change and
+#' -log10 \emph{p}-value for a given test of differential expression/methylation.
 #' Probes are colored to distinguish between those that do and do not meet a
 #' user-defined FDR threshold. These figures help to evaluate the symmetry,
 #' magnitude, and significance of effects for a given experiment.
 #'
 #' @examples
-#' df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
-#'                  p.value = pnorm(-abs(logFC)),
-#'                  FDR     = p.adjust(p.value, method = "fdr"))
-#' plot_volcano(df)
-#'
 #' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(250), nrow = 50, ncol = 5))
-#' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
+#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
+#' eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
+#' treat <- rep(c("A", "B"), each = 5)
 #' des <- model.matrix(~ treat)
-#' fit <- eBayes(lmFit(mat, des))
+#' fit <- eBayes(lmFit(eset, des))
 #' top <- topTable(fit, number = Inf)
 #' plot_volcano(top)
 #'
@@ -60,27 +55,24 @@ plot_volcano <- function(dat,
   # Preliminaries
   dat <- as.data.frame(dat)
   lfc <- c('log2FoldChange', 'logFC')
-  if (any(lfc %in% colnames(dat))) {
-    j <- intersect(lfc, colnames(dat))
-    colnames(dat)[colnames(dat) == j] <- 'logFC'
+  if (sum(lfc %in% colnames(dat)) == 1) {
+    colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
   } else {
     stop('dat must include a log fold change column. Recognized colnames for this ',
          'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
          'exactly one such colname.')
   }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  if (any(p %in% colnames(dat))) {
-    j <- intersect(p, colnames(dat))
-    colnames(dat)[colnames(dat) == j] <- 'p.value'
+  if (sum(p %in% colnames(dat)) == 1) {
+    colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
     stop('dat must include a p-value column. Recognized colnames for this vector ',
          'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
          'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
-  if (any(q %in% colnames(dat))) {
-    j <- intersect(q, colnames(dat))
-    colnames(dat)[colnames(dat) == j] <- 'q.value'
+  if (sum(q %in% colnames(dat)) == 1) {
+    colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
          'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
@@ -94,10 +86,11 @@ plot_volcano <- function(dat,
          '"topleft", or "topright".')
   }
   if (is.null(probes)) {
-    if (is.null(rownames(dat))) {
-      dat %>% mutate(Probe = row_number())
+    if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
+        is.null(rownames(dat))) {
+      dat <- dat %>% mutate(Probe = row_number())
     } else {
-      dat %>% mutate(Probe = rownames(dat))
+      dat <- dat %>% mutate(Probe = rownames(dat))
     }
   } else {
     if (!probes %in% colnames(dat)) {

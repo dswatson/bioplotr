@@ -1,4 +1,7 @@
-#' Create QQ plot of expected vs. observed -log10 \emph{p}-values
+#' Q-Q Plot
+#'
+#' This function plots expected vs. observed quantiles of a \emph{p}-value
+#' distribution following -log10 transform.
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
@@ -16,23 +19,22 @@
 #'   \code{hover = TRUE}.
 #'
 #' @details
-#' This function displays a scatterplot of the expected vs. observed quantiles
-#' of a \emph{p}-value distribution following -log10 transform. If the black points
-#' deviate too sharply from the red line, especially at low expected values of
-#' -log10(\emph{p}), then it suggests a violation of the statistical assumptions
-#' upon which the test was based.
+#' Q-Q plots are a common way to visually assess the applicability of a statistical
+#' test to a given data set. If the black points deviate too sharply from the red
+#' line, especially at low expected values of -log10(\emph{p}), then it suggests a
+#' violation of the assumptions upon which the test was based.
 #'
 #' @examples
 #' df <- data.frame(p.value = runif(10000))
 #' plot_qq(df)
 #'
 #' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(250), nrow = 50, ncol = 5))
-#' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
+#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
+#' eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
+#' treat <- rep(c("A", "B"), each = 5)
 #' des <- model.matrix(~ treat)
-#' fit <- eBayes(lmFit(mat, des))
+#' fit <- eBayes(lmFit(eset, des))
 #' top <- topTable(fit, number = Inf)
 #' plot_qq(top)
 #'
@@ -52,9 +54,8 @@ plot_qq <- function(dat,
   # Preliminaries
   dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  if (any(p %in% colnames(dat))) {
-    j <- intersect(p, colnames(dat))
-    colnames(dat)[colnames(dat) == j] <- 'p.value'
+  if (sum(p %in% colnames(dat)) == 1) {
+    colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
     stop('dat must include a p-value column. Recognized colnames for this vector ',
          'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
@@ -68,10 +69,11 @@ plot_qq <- function(dat,
          '"topleft", or "topright".')
   }
   if (is.null(probes)) {
-    if (is.null(rownames(dat))) {
-      dat %>% mutate(Probe = row_number())
+    if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
+        is.null(rownames(dat))) {
+      dat <- dat %>% mutate(Probe = row_number())
     } else {
-      dat %>% mutate(Probe = rownames(dat))
+      dat <- dat %>% mutate(Probe = rownames(dat))
     }
   } else {
     if (!probes %in% colnames(dat)) {
@@ -83,7 +85,7 @@ plot_qq <- function(dat,
 
   # Tidy
   df <- dat %>%
-    mutate(Observed = -log10(sort(p.value, decreasing = FALSE)),
+    mutate(Observed = -log10(sort(p.value)),
            Expected = -log10(ppoints(length(p.value)))) %>%
     select(Probe, Observed, Expected)
 
@@ -93,8 +95,8 @@ plot_qq <- function(dat,
       geom_point(aes(text = Probe), size = ptsize) +
       geom_abline(intercept = 0, slope = 1, color = 'red') +
       labs(title = main,
-           x = expression('Expected'~-log[10](italic(p))),
-           y = expression('Observed'~-log[10](italic(p)))) +
+               x = expression('Expected'~-log[10](italic(p))),
+               y = expression('Observed'~-log[10](italic(p)))) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
@@ -122,4 +124,7 @@ plot_qq <- function(dat,
 
 }
 
+
+
+# Extend to other distributions?
 
