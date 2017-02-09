@@ -33,7 +33,7 @@ This function displays each sample's omic data distribution as a density curve.
 Density curves are an intuitive way to visualize an omic data distribution. They
 are especially helpful when contrasting pre- and post-normalization matrices.
 \code{plot_density} may additionally be used to inspect for batch effects
-or other associations with phenotypic features by using the \code{group} argument.
+or associations with phenotypic factors by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -41,7 +41,7 @@ plot_density(mat, xlab = "Normalized Expression")
 
 library(DESeq2)
 mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-             matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
+             matrix(rnbinom(5000, mu = 4, size = 5), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
 batch <- rep(c("A", "B"), each = 5)
 plot_density(mat, group = batch, xlab = "Normalized Counts")

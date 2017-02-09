@@ -43,12 +43,12 @@ df <- data.frame(p.value = runif(10000))
 plot_qq(df)
 
 library(limma)
-DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
-                  matrix(rnorm(250), nrow = 50, ncol = 5))
-mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
+DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
+                  matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
+eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
 treat <- rep(c("A", "B"), each = 5)
 des <- model.matrix(~ treat)
-fit <- eBayes(lmFit(mat, des))
+fit <- eBayes(lmFit(eset, des))
 top <- topTable(fit, number = Inf)
 plot_qq(top)
 

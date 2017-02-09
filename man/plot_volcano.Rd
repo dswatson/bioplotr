@@ -35,25 +35,20 @@ This function plots the log2 fold changes against the -log10 \emph{p}-values
 for a given test of differential expression/methylation.
 }
 \details{
-Volcano plots visualize the relationship between a probe's log2 fold change and
-its -log10 \emph{p}-value for a given test of differential expression/methylation.
+Volcano plots visualize the relationship between each probe's log2 fold change and
+-log10 \emph{p}-value for a given test of differential expression/methylation.
 Probes are colored to distinguish between those that do and do not meet a
 user-defined FDR threshold. These figures help to evaluate the symmetry,
 magnitude, and significance of effects for a given experiment.
 }
 \examples{
-df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
-                 p.value = pnorm(-abs(logFC)),
-                 FDR     = p.adjust(p.value, method = "fdr"))
-plot_volcano(df)
-
 library(limma)
-DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
-                  matrix(rnorm(250), nrow = 50, ncol = 5))
-mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-treat <- gl(n = 2, k = 5, labels = c("A", "B"))
+DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
+                  matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
+eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
+treat <- rep(c("A", "B"), each = 5)
 des <- model.matrix(~ treat)
-fit <- eBayes(lmFit(mat, des))
+fit <- eBayes(lmFit(eset, des))
 top <- topTable(fit, number = Inf)
 plot_volcano(top)
 
