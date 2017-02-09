@@ -19,7 +19,7 @@
 #' Density curves are an intuitive way to visualize an omic data distribution. They
 #' are especially helpful when contrasting pre- and post-normalization matrices.
 #' \code{plot_density} may additionally be used to inspect for batch effects
-#' or other associations with phenotypic features by using the \code{group} argument.
+#' or associations with phenotypic factors by using the \code{group} argument.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -27,7 +27,7 @@
 #'
 #' library(DESeq2)
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-#'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
+#'              matrix(rnbinom(5000, mu = 4, size = 5), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
 #' batch <- rep(c("A", "B"), each = 5)
 #' plot_density(mat, group = batch, xlab = "Normalized Counts")
@@ -100,15 +100,15 @@ plot_density <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (!is.numeric(group)) {      # Color by group?
+  if (!is.numeric(group[[1]])) {  # Color by group?
     p <- p + geom_path(stat = 'density', aes(color = Group))
   } else {
     p <- p + geom_path(stat = 'density')
   }
-  if (!is.null(names(group))) {  # Named list?
+  if (!is.null(names(group))) {   # Named list?
     p <- p + guides(color = guide_legend(title = names(group)))
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {   # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
