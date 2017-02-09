@@ -63,7 +63,7 @@ plot_roc <- function(obs,
     obs <- ifelse(obs, 1, 0)
   }
   if (!all(obs %in% c(0, 1))) {
-    stop('A numeric response can only take on values of 1 or 0.')
+    stop('A numeric response can only take on values of 0 or 1.')
   }
   if (var(obs) == 0) {
     stop('Response is invariant.')
