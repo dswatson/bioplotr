@@ -5,8 +5,9 @@
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
-#'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-#'   Alternatively, any object with columns for log fold changes and FDR.
+#'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
+#'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
+#'   fold changes, probewise means, and FDR.
 #' @param fdr Threshold for declaring a probe differentially expressed or methylated.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -22,23 +23,17 @@
 #' @details
 #' MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
 #' relationship between a probe's mean value and its log2 fold change for a given
-#' test of differential expression/methylation. Probes are colored to distinguish
+#' test of differential expression/methylation. Points are colored to distinguish
 #' between those that do and do not meet a user-defined FDR threshold. These
 #' figures help to evaluate the symmetry, magnitude, and significance of effects
 #' for a given experiment.
 #'
 #' @examples
-#' df <- data.frame(logFC   = c(rnorm(50, 0, 10), rnorm(4950)),
-#'                  AvgExpr = rowMeans(matrix(rnorm(5000), nrow = 5000, ncol = 10)),
-#'                  p.value = pnorm(-abs(logFC)),
-#'                  FDR     = p.adjust(p.value, method = "fdr"))
-#' plot_md(df)
-#'
 #' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(250, 5, 1), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(250), nrow = 50, ncol = 5))
-#' mat <- rbind(DE_genes, matrix(rnorm(45500), nrow = 4550, ncol = 10))
-#' treat <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
+#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
+#' mat <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
+#' treat <- rep(c("A", "B"), each = 5)
 #' des <- model.matrix(~ treat)
 #' fit <- eBayes(lmFit(mat, des))
 #' top <- topTable(fit, number = Inf)

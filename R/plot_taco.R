@@ -5,9 +5,9 @@
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
-#'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-#'   Alternatively, any object with columns for \emph{p}-values, log fold changes,
-#'   and FDR.
+#'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
+#'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
+#'   fold changes, probewise means, \emph{p}-values, and FDR.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
@@ -17,7 +17,7 @@
 #'
 #' @details
 #' A taco plot combines the elements of a volcano plot and an MD plot into a single
-#' three-dimensional figure. Probes are colored to distinguish between those that
+#' three-dimensional figure. Points are colored to distinguish between those that
 #' do and do not meet a user-defined FDR threshold. These figures help to evaluate
 #' the symmetry, magnitude, and significance of effects for a given experiment.
 #'

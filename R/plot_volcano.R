@@ -5,9 +5,9 @@
 #'
 #' @param dat Data frame or matrix representing the results of a test for
 #'   differential expression or methylation, such as the output of a call to
-#'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-#'   Alternatively, any object with columns for \emph{p}-values, log fold changes,
-#'   and FDR.
+#'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
+#'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for
+#'   \emph{p}-values, log fold changes, and FDR.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -22,7 +22,7 @@
 #' @details
 #' Volcano plots visualize the relationship between each probe's log2 fold change and
 #' -log10 \emph{p}-value for a given test of differential expression/methylation.
-#' Probes are colored to distinguish between those that do and do not meet a
+#' Points are colored to distinguish between those that do and do not meet a
 #' user-defined FDR threshold. These figures help to evaluate the symmetry,
 #' magnitude, and significance of effects for a given experiment.
 #'
