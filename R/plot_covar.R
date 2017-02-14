@@ -85,7 +85,7 @@ plot_covar <- function(dat,
   is.fullrank <- function(x) {
     x <- as.matrix(x)
     e <- eigen(crossprod(x), symmetric = TRUE, only.values = TRUE)$values
-    e[1] > 0 && abs(e[length(e)]/e[1]) > 1e-13
+    e[1] > 0 && abs(e[length(e)] / e[1]) > 1e-13
   }
   if (!is.null(block)) {
     if (!block %in% colnames(clin)) {
