@@ -116,12 +116,12 @@ plot_covar <- function(dat,
   }
 
   # Tidy data
-  pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)  # PCA
+  pca <- prcomp(t(dat))                        # PCA
   pve <- map_chr(seq_len(n.pc), function(pc) {
     p <- round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
     paste0('\n(', p, '%)')
   })
-  sig <- function(var, pc) {                           # p-val fn
+  sig <- function(var, pc) {                   # p-val fn
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[, var])
       ifelse(is.numeric(clin[, var]),
@@ -136,10 +136,10 @@ plot_covar <- function(dat,
       }
     }
   }
-  df <- expand.grid(Feature = colnames(clin),          # Melt
+  df <- expand.grid(Feature = colnames(clin),  # Melt
                     PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise() %>%
-    mutate(Association = sig(Feature, PC))             # Populate
+    mutate(Association = sig(Feature, PC))     # Populate
 
   # Build plot
   suppressWarnings(

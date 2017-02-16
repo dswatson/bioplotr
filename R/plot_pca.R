@@ -86,11 +86,11 @@ plot_pca <- function(dat,
   }
 
   # Tidy data
-  pca <- prcomp(t(dat), center = TRUE, scale. = TRUE)  # PCA
+  pca <- prcomp(t(dat))               # PCA
   pve <- map_dbl(1:3, function(pc) {
     round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
   })
-  df <- data_frame(PC1 = pca$x[, 1],                   # Melt
+  df <- data_frame(PC1 = pca$x[, 1],  # Melt
                    PC2 = pca$x[, 2],
                    PC3 = pca$x[, 3],
                 Sample = sample,
@@ -105,7 +105,7 @@ plot_pca <- function(dat,
              y = paste0('PC2 (', pve[2], '%)')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (!is.numeric(df$Group)) {   # Sample labels
+  if (!is.numeric(df$Group)) {        # Sample labels
     if (label) {
       p <- p + geom_text(aes(label = Sample, color = Group),
                          alpha = 0.85)
@@ -118,11 +118,11 @@ plot_pca <- function(dat,
   } else {
     p <- p + geom_text(aes(label = Sample), alpha = 0.85)
   }
-  if (!is.null(names(group))) {  # Named list?
+  if (!is.null(names(group))) {       # Named list?
     p <- p + guides(color = guide_legend(title = names(group)),
                     shape = guide_legend(title = names(group)))
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {       # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
