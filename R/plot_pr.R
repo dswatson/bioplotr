@@ -43,7 +43,7 @@
 plot_pr <- function(obs,
                     pred,
                     main = NULL,
-                  legend = 'outside',
+                  legend = 'bottomright',
                    hover = FALSE) {
 
   # Preliminaries

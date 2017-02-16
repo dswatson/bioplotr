@@ -42,7 +42,7 @@
 plot_roc <- function(obs,
                      pred,
                      main = NULL,
-                   legend = 'outside',
+                   legend = 'bottomright',
                     hover = FALSE) {
 
   # Preliminaries
