@@ -4,7 +4,7 @@
 \alias{plot_pr}
 \title{Precision-Recall Curve(s)}
 \usage{
-plot_pr(obs, pred, main = NULL, legend = "outside", hover = FALSE)
+plot_pr(obs, pred, main = NULL, legend = "bottomright", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -36,11 +36,11 @@ binary classifiers, especially when the prevalence of the outcome in question is
 relatively low.
 }
 \examples{
-y <- rbinom(300, size = 1, prob = 0.1)
-x <- rnorm(300, mean = y, sd = 0.5)
+y <- rbinom(100, size = 1, prob = 0.1)
+x <- rnorm(100, mean = y, sd = 0.5)
 plot_pr(obs = y, pred = x)
 
-x2 <- rnorm(300, mean = y, sd = 2)
+x2 <- rnorm(100, mean = y, sd = 2)
 plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
 
 }

@@ -4,7 +4,7 @@
 \alias{plot_roc}
 \title{Reicever Operating Characteristic Curve(s)}
 \usage{
-plot_roc(obs, pred, main = NULL, legend = "outside", hover = FALSE)
+plot_roc(obs, pred, main = NULL, legend = "bottomright", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -35,11 +35,11 @@ The area under the ROC curve (AUC) is a common performance metric for binary
 classifiers.
 }
 \examples{
-y <- rbinom(300, size = 1, prob = 0.5)
-x <- rnorm(300, mean = y, sd = 0.5)
+y <- rbinom(100, size = 1, prob = 0.5)
+x <- rnorm(100, mean = y, sd = 0.5)
 plot_roc(obs = y, pred = x)
 
-x2 <- rnorm(300, mean = y, sd = 2)
+x2 <- rnorm(100, mean = y, sd = 2)
 plot_roc(obs = y, pred = list("x1" = x, "x2" = x2))
 
 }
