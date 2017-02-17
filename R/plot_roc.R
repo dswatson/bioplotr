@@ -23,11 +23,11 @@
 #' classifiers.
 #'
 #' @examples
-#' y <- rbinom(300, size = 1, prob = 0.5)
-#' x <- rnorm(300, mean = y, sd = 0.5)
+#' y <- rbinom(100, size = 1, prob = 0.5)
+#' x <- rnorm(100, mean = y, sd = 0.5)
 #' plot_roc(obs = y, pred = x)
 #'
-#' x2 <- rnorm(300, mean = y, sd = 2)
+#' x2 <- rnorm(100, mean = y, sd = 2)
 #' plot_roc(obs = y, pred = list("x1" = x, "x2" = x2))
 #'
 #' @export
@@ -132,15 +132,15 @@ plot_roc <- function(obs,
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1) {        # Multiple curves?
     suppressWarnings(
-      p <- p + geom_point(aes(color = Classifier), size = 0.1) +
-        geom_step(aes(text  = Classifier, group = Classifier, color = Classifier)) +
+      p <- p + geom_step(aes(text = Classifier,
+                            group = Classifier,
+                            color = Classifier)) +
         scale_colour_manual(name = 'Classifier',
                           labels = map_chr(seq_along(pred), leg),
                           values = hue_pal()(length(pred)))
     )
   } else {
-    p <- p + geom_point(size = 0.1) +
-      geom_step(aes(color = Classifier)) +
+    p <- p + geom_step(aes(color = Classifier)) +
       scale_colour_manual(name = 'Classifier',
                         labels = map_chr(seq_along(pred), leg),
                         values = 'black')
