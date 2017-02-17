@@ -2,11 +2,10 @@
 #'
 #' This functions plots empirical Lorenz curves for one or several vectors.
 #'
-#' @param dat Numeric vector, or several such vectors organized into a list
-#'   (optionally named). May also be a data frame of such vectors, however in that
-#'   case each must be of equal length. Lorenz curves may be plotted and Gini
-#'   coefficients calculated for vectors with negative values, but results are
-#'   easiest to interpret when data are exclusively positive.
+#' @param dat Numeric vector, or several such vectors organized into a list,
+#'   optionally named. May also be a data frame of such vectors, however in that
+#'   case each must be of equal length. Data may include negative values, but if so
+#'   a warning will be issued to proceed with caution.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
 #' @param main Optional plot title.
@@ -19,14 +18,14 @@
 #' @details
 #' The Lorenz curve of a distribution plots its cumulative proportion of observations
 #' against its cumulative proportion of values. The extent to which the curve sags
-#' below the straight diagonal line indicates variable's degree of inequality. This
-#' is measured by the Gini coefficient, which represents the ratio of the area between
-#' the line of perfect equality and the distribution's Lorenz curve to the total area
-#' under the diagonal line. The statistic has range [0, 1] for non-negative data, with
-#' higher coefficients corresponding to more unequal distributions.
+#' below the straight diagonal line indicates the variable's degree of inequality.
+#' This is measured by the Gini coefficient, which represents the ratio of the area
+#' between the line of perfect equality and the distribution's Lorenz curve to the
+#' total area under the diagonal line. The statistic has range [0, 1] for non-negative
+#' data, with higher coefficients corresponding to more unequal distributions.
 #'
-#' Lorenz curves are common in economics, where Gini coefficients are used to measure
-#' the inequality of national income distributions. They also have sevel omic
+#' Lorenz curves are common in economics, where Gini coefficients are often used to
+#' measure the inequality of national income distributions. They also have sevel omic
 #' applications, e.g. to visualize the degree of biodiversity in a microbiome, or the
 #' spread of RNA-sequencing counts across libraries.
 #'
