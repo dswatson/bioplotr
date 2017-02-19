@@ -9,13 +9,11 @@
 #'   Alternatively, any object with a column for \emph{p}-values.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+#'   identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
 #'   \code{hover = TRUE}.
 #'
 #' @details
@@ -64,10 +62,6 @@ plot_qq <- function(dat,
   if (is.null(main)) {
     main <- 'Q-Q Plot'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
-  }
   if (is.null(probes)) {
     if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
         is.null(rownames(dat))) {
@@ -100,19 +94,6 @@ plot_qq <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (legend == 'bottomleft') {  # Locate legend
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                   legend.position = c(0.01, 0.01))
-  } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                   legend.position = c(0.99, 0.01))
-  } else if (legend == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                   legend.position = c(0.01, 0.99))
-  } else if (legend == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                   legend.position = c(0.99, 0.99))
-  }
 
   # Output
   if (!hover) {
