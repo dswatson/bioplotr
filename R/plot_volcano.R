@@ -17,7 +17,8 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers. Only relevant if \code{hover = TRUE}.
+#'   identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
+#'   \code{hover = TRUE}.
 #'
 #' @details
 #' Volcano plots visualize the relationship between each probe's log2 fold change and
@@ -116,7 +117,7 @@ plot_volcano <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (!all(df$is.DE)) {          # Color pts by differential expression?
+  if (all(!df$is.DE)) {          # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
