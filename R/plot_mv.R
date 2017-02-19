@@ -5,10 +5,10 @@
 #'
 #' @param dat Either an omic data matrix with rows corresponding to probes and
 #'   columns to samples, or an object of class \code{\link[limma]{MArrayLM}} as
-#'   created by a call to \code{\link[limma]{lmFit}} or \code{\link[limma]{eBayes}}.
-#'   If \code{dat} is a matrix, then data are presumed to be normalized prior to
-#'   visualization. Any matrix-like object that can be processed by
-#'   \code{\link[limma]{getEAWP}} is also acceptable.
+#'   created by a call to \code{limma}'s \code{\link[limma]{lmFit}} or
+#'   \code{\link[limma]{eBayes}} functions. If \code{dat} is a matrix, then data
+#'   are presumed to be normalized prior to visualization. Any matrix-like object
+#'   that can be processed by \code{\link[limma]{getEAWP}} is also acceptable.
 #' @param trans Data transformation to be applied to probewise standard deviations
 #'   if \code{dat} is a matrix. Must be one of either \code{"log"} or \code{"sqrt"}.
 #'   See Details.
@@ -26,7 +26,7 @@
 #'
 #' @details
 #' Mean-variance plots are a quick and easy way to visualize the relationship
-#' between the first two moments of an omic data distribution. When used prior to
+#' between the first two moments of probewise data distributions. When used prior to
 #' modeling, they may help better understand the internal structure of the data
 #' and inspect for potential outliers. When used after modeling, they can be
 #' useful in evaluating the assumptions of the regression. \code{plot_mv} fits
@@ -53,6 +53,9 @@
 #' des <- model.matrix(~ grp)
 #' fit <- eBayes(lmFit(mat, des))
 #' plot_mv(fit)
+#'
+#' @seealso
+#' \code{\link[limma]{plotSA}}
 #'
 #' @export
 #' @importFrom limma getEAWP
