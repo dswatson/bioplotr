@@ -60,10 +60,13 @@ intensity-dependent prior was used. See \code{\link[limma]{squeezeVar}} for more
 details.
 }
 \examples{
-mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
+mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
 plot_mv(mat, trans = "log")
 
 library(limma)
-
+grp <- rep(c("ctl", "trt"), each = 5)
+des <- model.matrix(~ grp)
+fit <- eBayes(lmFit(mat, des))
+plot_mv(fit)
 
 }

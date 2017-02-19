@@ -45,11 +45,14 @@
 #' details.
 #'
 #' @examples
-#' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
+#' mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
 #' plot_mv(mat, trans = "log")
 #'
 #' library(limma)
-#'
+#' grp <- rep(c("ctl", "trt"), each = 5)
+#' des <- model.matrix(~ grp)
+#' fit <- eBayes(lmFit(mat, des))
+#' plot_mv(fit)
 #'
 #' @export
 #' @importFrom limma getEAWP
@@ -104,7 +107,7 @@ plot_mv <- function(dat,
   }
 
   # Tidy data
-  if (is.matrix(dat)) {
+  if (is.matrix(dat)) {             # Unmodeled data
     if (trans == 'log') {
       Sigma <- log2(rowSds(dat))
       ylab <- expression('log'[2]*(sigma))
@@ -115,7 +118,7 @@ plot_mv <- function(dat,
     df <- data_frame(Probe = probes,
                         Mu = rowMeans(dat),
                      Sigma = Sigma)
-  } else {
+  } else {                          # Modeled data
     df <- data_frame(Probe = probes,
                         Mu = dat$Amean,
                      Sigma = log2(dat$sigma))
@@ -151,8 +154,8 @@ plot_mv <- function(dat,
                           size = ptsize, alpha = 0.25)
     )
   }
-  if ('Prior' %in% colnames(df)) {
-    p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM'),
+  if ('Prior' %in% colnames(df)) {  # Plot prior
+    p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM fit'),
                          method = 'gam', size = 0.5, se = FALSE)
     if (length(dat$s2.prior) == 1) {
       p <- p + geom_abline(aes(color = 'Prior'), slope = 0, intercept = dat$s2.prior)
@@ -165,7 +168,7 @@ plot_mv <- function(dat,
   } else {
     p <- p + geom_smooth(aes(Mu, Sigma), method = 'gam', size = 0.5, se = FALSE)
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {     # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
