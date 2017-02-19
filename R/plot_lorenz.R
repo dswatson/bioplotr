@@ -111,10 +111,10 @@ plot_lorenz <- function(dat,
     x <- sort(na.omit(x))
     n <- length(x)
     g <- (2 * sum(x * seq_len(n)) / sum(x) - (n + 1)) / n
-    return(g)
+    return(round(g, 2))
   }
   leg <- function(i) {           # Print Gini coefficient
-    paste0(names(dat)[i], ', Gini = ', round(gini(dat[[i]]), 2))
+    paste0(names(dat)[i], ', Gini = ', gini(dat[[i]]))
   }
   p <- ggplot() +
     geom_abline(intercept = 0, slope = 1) +
