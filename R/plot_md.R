@@ -17,7 +17,7 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers, assuming they aren't \code{rownames(dat)}. Only relevant if
+#'   identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
 #'   \code{hover = TRUE}.
 #'
 #' @details
