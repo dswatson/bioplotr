@@ -1,7 +1,7 @@
 #' Mean-Variance Plot
 #'
 #' This function visualizes the mean-variance relationship of omic data before
-#' or after linear modeling.
+#' or after modeling.
 #'
 #' @param dat Either an omic data matrix with rows corresponding to probes and
 #'   columns to samples, or an object of class \code{\link[limma]{MArrayLM}} as
@@ -30,7 +30,8 @@
 #' modeling, they may help better understand the internal structure of the data
 #' and inspect for potential outliers. When used after modeling, they can be
 #' useful in evaluating the assumptions of the regression. \code{plot_mv} fits
-#' a smooth curve to the points using a generalized additive model.
+#' a smooth curve to the points using a generalized additive model with a cubic
+#' regression spline. See \code{mgcv::\link[mgcv]{gam}} for more details.
 #'
 #' If \code{dat} is a matrix, then the appropriate data transformation for probewise
 #' standard deviations must be specified. \code{trans = "log"} is recommended for
@@ -55,7 +56,7 @@
 #' plot_mv(fit)
 #'
 #' @seealso
-#' \code{\link[limma]{plotSA}}
+#' \code{\link[limma]{plotSA}} \code{\link[vsn]{meanSdPlot}}
 #'
 #' @export
 #' @importFrom limma getEAWP
@@ -159,17 +160,20 @@ plot_mv <- function(dat,
   }
   if ('Prior' %in% colnames(df)) {  # Plot prior
     p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM fit'),
-                         method = 'gam', size = 0.5, se = FALSE)
+                         method = 'gam', formula = y ~ s(x, bs = 'cs'),
+                         size = 0.5, se = FALSE)
     if (length(dat$s2.prior) == 1) {
       p <- p + geom_abline(aes(color = 'Prior'), slope = 0, intercept = dat$s2.prior)
     } else {
       p <- p + geom_smooth(aes(Mu, Prior, color = 'Prior'),
-                           method = 'gam', size = 0.5, se = FALSE)
+                           method = 'gam', formula = y ~ s(x, bs = 'cs'),
+                           size = 0.5, se = FALSE)
     }
     p <- p + scale_color_manual(name = 'Curves', values = c('red', 'blue')) +
       guides(col = guide_legend(reverse = TRUE))
   } else {
-    p <- p + geom_smooth(aes(Mu, Sigma), method = 'gam', size = 0.5, se = FALSE)
+    p <- p + geom_smooth(aes(Mu, Sigma), method = 'gam', formula = y ~ s(x, bs = 'cs'),
+                         size = 0.5, se = FALSE)
   }
   if (legend == 'bottomleft') {     # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
@@ -195,4 +199,6 @@ plot_mv <- function(dat,
 
 }
 
+
+# Extend to DESeq2 model objects?
 
