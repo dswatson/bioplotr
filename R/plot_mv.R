@@ -200,5 +200,6 @@ plot_mv <- function(dat,
 }
 
 
-# Extend to DESeq2 model objects?
+# Extend to DESeq2 model objects
+# Add option for sigma ~ rank(mu)
 
