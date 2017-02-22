@@ -4,7 +4,7 @@
 #' as a heatmap.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples.
+#'   to samples. \code{NA} values are silently removed.
 #' @param feat Optional character, factor, numeric, or logical vector of length
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
@@ -39,6 +39,7 @@ plot_sim_mat <- function(dat,
                          main = NULL) {
 
   # Preliminaries
+  dat <- na.omit(dat)
   if (is.data.frame(feat)) {
     feat <- as.list(feat)
   } else if (!is.list(feat)) {

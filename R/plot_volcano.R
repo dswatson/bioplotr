@@ -7,7 +7,8 @@
 #'   differential expression or methylation, such as the output of a call to
 #'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
 #'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for
-#'   \emph{p}-values, log fold changes, and FDR.
+#'   \emph{p}-values, log fold changes, and FDR. \code{NA} values are silently
+#'   removed.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -54,7 +55,7 @@ plot_volcano <- function(dat,
                       probes = NULL) {
 
   # Preliminaries
-  dat <- as.data.frame(dat)
+  dat <- as.data.frame(dat) %>% na.omit()
   lfc <- c('log2FoldChange', 'logFC')
   if (sum(lfc %in% colnames(dat)) == 1) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
