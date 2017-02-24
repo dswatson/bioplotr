@@ -48,6 +48,8 @@ plot_density <- function(dat,
 
   # Preliminaries
   dat <- na.omit(dat)
+  dat <- getEAWP(dat)
+  dat <- dat$expr
   if (is.null(group)) {
     group <- list(rep(1, times = ncol(dat)))
   } else {
