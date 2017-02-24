@@ -127,7 +127,7 @@ plot_volcano <- function(dat,
       scale_colour_manual(name = expression(italic(q)*'-value'),
                         labels = c(paste('\u2265', fdr), paste('<', fdr)),
                         values = c('black', 'red')) +
-      guides(col = guide_legend(reverse = TRUE))
+      guides(color = guide_legend(reverse = TRUE))
   }
   if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
