@@ -12,7 +12,8 @@ plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
 differential expression or methylation, such as the output of a call to
 \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
 \code{\link[DESeq2]{results}}. Alternatively, any object with columns for
-\emph{p}-values, log fold changes, and FDR.}
+\emph{p}-values, log fold changes, and FDR. \code{NA} values are silently
+removed.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
 

@@ -4,20 +4,23 @@
 \alias{plot_pca}
 \title{PCA Plot}
 \usage{
-plot_pca(dat, group = NULL, label = FALSE, main = NULL,
+plot_pca(dat, covar = NULL, top = NULL, label = FALSE, main = NULL,
   legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples. It is strongly recommended that data be normalized and
-filtered prior to running PCA.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. It is strongly recommended that data be
+normalized and filtered prior to running PCA.}
 
-\item{group}{Optional factor or character vector of length equal to sample size.
-Levels are used to color and shape points. If supplied, legend title defaults to
-"Group". Override this feature by passing a named list instead.}
+\item{covar}{Optional vector of length equal to sample size, or up to two such
+vectors organized into a list or data frame. If passing two covariates, only one
+may be continuous. Supply legend title(s) by passing a named list or data frame.}
+
+\item{top}{Optional number (if > 1) or proportion (if < 1) of most variable probes
+to be used for PCA.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
-\code{group = NULL}.}
+\code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
 
 \item{main}{Optional plot title.}
 
@@ -39,6 +42,10 @@ dimensional principal component subspace. Axis labels include the percentage
 of variance explained by each component. PCA is an easy and popular method for
 unsupervised cluster detection. It can also aid in spotting potential outliers
 and generally helps to visualize the latent structure of a data set.
+
+By default, \code{plot_pca} performs singular value decomposition on the complete
+\code{dat} matrix. Limit the PCA to only the most variable probes by using the
+\code{top} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -49,6 +56,9 @@ mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
 grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-plot_pca(mat, group = grp)
+plot_pca(mat, covar = grp)
 
+}
+\seealso{
+\code{\link{plot_mds}} \code{\link[DESeq2]{plotPCA}}
 }

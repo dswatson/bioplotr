@@ -8,7 +8,7 @@ plot_sim_mat(dat, feat = NULL, main = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples.}
+to samples. \code{NA} values are silently removed.}
 
 \item{feat}{Optional character, factor, numeric, or logical vector of length
 equal to sample size. Alternatively, a data frame or list of such vectors,

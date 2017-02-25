@@ -12,7 +12,8 @@ plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside",
 differential expression or methylation, such as the output of a call to
 \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
 \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-fold changes, probewise means, \emph{p}-values, and FDR.}
+fold changes, probewise means, \emph{p}-values, and FDR. \code{NA} values are
+silently removed.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
 
