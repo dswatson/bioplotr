@@ -3,7 +3,7 @@
 #' This function displays each sample's omic data distribution as a density curve.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples. NA values are silently removed.
+#'   to samples.
 #' @param group Optional character or factor vector of length equal to sample size.
 #'   Levels are used to color density curves. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
@@ -47,9 +47,12 @@ plot_density <- function(dat,
                          hover = FALSE) {
 
   # Preliminaries
-  dat <- na.omit(dat)
   dat <- getEAWP(dat)
   dat <- dat$expr
+  bad <- rowSums(is.finite(dat)) < ncol(dat)
+  if (any(bad)) {
+    dat <- dat[!bad, , drop = FALSE]
+  }
   if (is.null(group)) {
     group <- list(rep(1, times = ncol(dat)))
   } else {

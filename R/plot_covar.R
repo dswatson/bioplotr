@@ -59,6 +59,12 @@ plot_covar <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
+  dat <- getEAWP(dat)
+  dat <- dat$expr
+  bad <- rowSums(is.finite(dat)) < ncol(dat)
+  if (any(bad)) {
+    dat <- dat[!bad, , drop = FALSE]
+  }
   clin <- as.data.frame(clin)
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
