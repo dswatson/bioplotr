@@ -39,7 +39,12 @@ plot_sim_mat <- function(dat,
                          main = NULL) {
 
   # Preliminaries
-  dat <- na.omit(dat)
+  dat <- getEAWP(dat)
+  dat <- dat$expr
+  bad <- rowSums(is.finite(dat)) < ncol(dat)
+  if (any(bad)) {
+    dat <- dat[!bad, , drop = FALSE]
+  }
   if (is.data.frame(feat)) {
     feat <- as.list(feat)
   } else if (!is.list(feat)) {
