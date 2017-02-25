@@ -28,11 +28,11 @@
 #'
 #' The \code{top} argument filters probes using the leading fold change method of
 #' Smyth et al. (See \code{\link[limma]{plotMDS}}. Pairwise Euclidean distances are
-#' calculated using the \code{top} most differentially expressed probes between the
-#' two samples. This method is appropriate when different molecular pathways are
-#' relevant for distinguishing different pairs of samples. To run MDS on the complete
-#' data, set \code{top = NULL}. This is functionally equivalent to running PCA
-#' on the full matrix. See \code{\link{plot_pca}}.
+#' calculated using the most differentially expressed probes between the two samples.
+#' This method is appropriate when different molecular pathways are relevant for
+#' distinguishing different pairs of samples. To run MDS on the complete data, set
+#' \code{top = NULL}. This is functionally equivalent to running PCA on the full
+#' matrix. See \code{\link{plot_pca}}.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -138,8 +138,6 @@ plot_mds <- function(dat,
     } else {
       top <- round(top * nrow(dat))
     }
-  } else {
-    top <- nrow(dat)
   }
   if (label && length(covars) == 2) {
     stop('If label is TRUE, then plot can render at most one covariate.')
