@@ -94,7 +94,7 @@ plot_lorenz <- function(dat,
 
   # Tidy data
   dfs <- map(seq_along(dat), function(i) {
-    x <- sort(na.omit(dat[[i]]))
+    x <- sort(dat[[i]][is.finite(dat[[i]])])
     n <- rep(1, length(x))
     p <- cumsum(n) / sum(n)
     L <- cumsum(x) / sum(x)
@@ -108,7 +108,7 @@ plot_lorenz <- function(dat,
 
   # Plot
   gini <- function(x) {          # Calculate Gini coefficient
-    x <- sort(na.omit(x))
+    x <- sort(x[is.finite(x)])
     n <- length(x)
     g <- (2 * sum(x * seq_len(n)) / sum(x) - (n + 1)) / n
     return(round(g, 2))

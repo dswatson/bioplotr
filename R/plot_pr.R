@@ -33,7 +33,7 @@
 #'
 #' @export
 #' @import dplyr
-#' @importFrom purrr map_df map_chr
+#' @importFrom purrr map map_df map_chr
 #' @import ggplot2
 #' @importFrom PRROC pr.curve
 #' @importFrom scales hue_pal
@@ -99,6 +99,9 @@ plot_pr <- function(obs,
   }
 
   # Tidy data
+  pred <- map(pred, function(x) {
+    x <- x[is.finite(x)]
+  })
   df <- map_df(seq_along(pred), function(i) {
     data_frame(Y = obs,
                X = pred[[i]],

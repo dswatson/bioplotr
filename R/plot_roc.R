@@ -32,7 +32,7 @@
 #'
 #' @export
 #' @import dplyr
-#' @importFrom purrr map_df map_chr
+#' @importFrom purrr map map_df map_chr
 #' @import ggplot2
 #' @importFrom ModelMetrics auc
 #' @importFrom scales hue_pal
@@ -98,6 +98,9 @@ plot_roc <- function(obs,
   }
 
   # Tidy data
+  pred <- map(pred, function(x) {
+    x <- x[is.finite(x)]
+  })
   originate <- function(tbl) {
     data_frame(TPR = 0,
                FPR = 0,
