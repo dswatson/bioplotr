@@ -16,10 +16,8 @@
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
-#' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
-#'   \code{hover = TRUE}.
+#'   display or appear in the RStudio viewer. Probe names are extracted from
+#'   \code{dat}.
 #'
 #' @details
 #' Volcano plots visualize the relationship between each probe's log2 fold change and
@@ -51,8 +49,7 @@ plot_volcano <- function(dat,
                       ptsize = 0.25,
                         main = NULL,
                       legend = 'outside',
-                       hover = FALSE,
-                      probes = NULL) {
+                       hover = FALSE) {
 
   # Preliminaries
   dat <- as.data.frame(dat) %>% na.omit()
@@ -87,19 +84,11 @@ plot_volcano <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
   }
-  if (is.null(probes)) {
-    if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
-        is.null(rownames(dat))) {
-      dat <- dat %>% mutate(Probe = row_number())
-    } else {
-      dat <- dat %>% mutate(Probe = rownames(dat))
-    }
+  if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
+      is.null(rownames(dat))) {
+    dat <- dat %>% mutate(Probe = row_number())
   } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found.'))
-    } else {
-      colnames(dat)[colnames(dat) == probes] <- 'Probe'
-    }
+    dat <- dat %>% mutate(Probe = rownames(dat))
   }
 
   # Tidy data
