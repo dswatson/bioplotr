@@ -71,7 +71,7 @@ plot_pca <- function(dat,
   if (any(bad)) {
     dat <- dat[!bad, , drop = FALSE]
   }
-  if (ncol(dat) < 3) {
+  if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
   if (is.null(rownames(dat))) {
@@ -86,27 +86,27 @@ plot_pca <- function(dat,
     } else if (!is.list(covar)) {
       covar <- list(covar)
     }
-    if (length(covar) > 2) {
+    if (length(covar) > 2L) {
       stop('covar cannot contain more than two covariates.')
     }
     for (i in seq_along(covar)) {
       if (length(covar[[i]]) != ncol(dat)) {
         stop('Covariate(s) must be of length equal to sample size.')
       }
-      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0) {
+      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0L) {
         warning('Continuous feature is invariant.')
-      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1) {
+      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1L) {
         warning('Grouping factor is invariant.')
       }
     }
     nums <- as.logical(map(covar, is.numeric))
-    if (sum(nums) == 2) {
+    if (sum(nums) == 2L) {
       stop('Only one continuous covariate can be plotted at a time.')
     }
     if (any(nums)) {
       cont_cov <- TRUE
-      if (which(nums) == 2) {
-        covar <- covar[c(2, 1)]
+      if (which(nums) == 2L) {
+        covar <- covar[c(2L, 1L)]
       }
     } else {
       cont_cov <- FALSE
@@ -117,7 +117,7 @@ plot_pca <- function(dat,
       if (cont_cov) {
         covars <- c('Feature', 'Group')
       } else {
-        if (length(covar) == 1) {
+        if (length(covar) == 1L) {
           covars <- 'Group'
         } else {
           covars <- c('Factor 1', 'Factor 2')
@@ -128,7 +128,7 @@ plot_pca <- function(dat,
     covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
   }
   if (!is.null(top)) {
-    if (top > 1) {
+    if (top > 1L) {
       if (top > nrow(dat)) {
         warning('top exceeds nrow(dat), at least after removing probes with infinite ',
                 'or missing values. Proceeding with the complete matrix.')
@@ -139,7 +139,7 @@ plot_pca <- function(dat,
     vars <- rowVars(dat)
     dat <- dat[rev(order(vars))[seq_len(top)], , drop = FALSE]
   }
-  if (label && length(covars) == 2) {
+  if (label && length(covars) == 2L) {
     stop('If label is TRUE, then plot can render at most one covariate.')
   }
   if (is.null(main)) {
@@ -152,26 +152,26 @@ plot_pca <- function(dat,
 
   # Tidy data
   pca <- prcomp(t(dat))                     # PCA
-  pve <- map_chr(seq_len(3), function(pc) {
-    p <- round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
+  pve <- map_chr(seq_len(3L), function(pc) {
+    p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('PC', pc, ' (', p, '%)')
   })
   df <- data_frame(Sample = colnames(dat),  # Melt
-                      PC1 = pca$x[, 1],
-                      PC2 = pca$x[, 2],
-                      PC3 = pca$x[, 3])
+                      PC1 = pca$x[, 1L],
+                      PC2 = pca$x[, 2L],
+                      PC3 = pca$x[, 3L])
   if (!is.null(covar)) {
     df <- inner_join(df, covar, by = 'Sample')
   }
 
   # Build plot
   p <- ggplot(df, aes(PC1, PC2)) +
-    geom_hline(yintercept = 0, size = 0.2) +
-    geom_vline(xintercept = 0, size = 0.2) +
-    labs(title = main, x = pve[1], y = pve[2]) +
+    geom_hline(yintercept = 0L, size = 0.2) +
+    geom_vline(xintercept = 0L, size = 0.2) +
+    labs(title = main, x = pve[1L], y = pve[2L]) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (ncol(covar) == 2) {
+  if (ncol(covar) == 2L) {
     if (label) {
       p <- p + geom_text(aes(label = Sample, color = Feature1),
                          alpha = 0.85)
@@ -188,14 +188,14 @@ plot_pca <- function(dat,
         )
       }
     }
-    p <- p + guides(color = guide_legend(title = covars[1]),
-                    shape = guide_legend(title = covars[1]))
+    p <- p + guides(color = guide_legend(title = covars[1L]),
+                    shape = guide_legend(title = covars[1L]))
   } else {
     suppressWarnings(
       p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
                           alpha = 0.85) +
-        guides(color = guide_legend(title = covars[1]),
-               shape = guide_legend(title = covars[2]))
+        guides(color = guide_legend(title = covars[1L]),
+               shape = guide_legend(title = covars[2L]))
     )
   }
   if (legend == 'bottomleft') {             # Locate legend
