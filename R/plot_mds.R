@@ -73,7 +73,7 @@ plot_mds <- function(dat,
   if (any(bad)) {
     dat <- dat[!bad, , drop = FALSE]
   }
-  if (ncol(dat) < 3) {
+  if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for MDS.'))
   }
   if (is.null(rownames(dat))) {
@@ -88,26 +88,26 @@ plot_mds <- function(dat,
     } else if (!is.list(covar)) {
       covar <- list(covar)
     }
-    if (length(covar) > 2) {
+    if (length(covar) > 2L) {
       stop('covar cannot contain more than two covariates.')
     }
     for (i in seq_along(covar)) {
       if (length(covar[[i]]) != ncol(dat)) {
         stop('Covariate(s) must be of length equal to sample size.')
       }
-      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0) {
+      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0L) {
         warning('Continuous feature is invariant.')
-      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1) {
+      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1L) {
         warning('Grouping factor is invariant.')
       }
     }
     nums <- as.logical(map(covar, is.numeric))
-    if (sum(nums) == 2) {
+    if (sum(nums) == 2L) {
       stop('Only one continuous covariate can be plotted at a time.')
     }
     if (any(nums)) {
       cont_cov <- TRUE
-      if (which(nums) == 2) {
+      if (which(nums) == 2L) {
         covar <- covar[c(2, 1)]
       }
     } else {
@@ -119,7 +119,7 @@ plot_mds <- function(dat,
       if (cont_cov) {
         covars <- c('Feature', 'Group')
       } else {
-        if (length(covar) == 1) {
+        if (length(covar) == 1L) {
           covars <- 'Group'
         } else {
           covars <- c('Factor 1', 'Factor 2')
@@ -130,7 +130,7 @@ plot_mds <- function(dat,
     covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
   }
   if (!is.null(top)) {
-    if (top > 1) {
+    if (top > 1L) {
       if (top > nrow(dat)) {
         warning('top exceeds nrow(dat), at least after removing probes with infinite ',
                 'or missing values. Proceeding with the complete matrix.')
@@ -139,7 +139,7 @@ plot_mds <- function(dat,
       top <- round(top * nrow(dat))
     }
   }
-  if (label && length(covars) == 2) {
+  if (label && length(covars) == 2L) {
     stop('If label is TRUE, then plot can render at most one covariate.')
   }
   if (is.null(main)) {
@@ -151,35 +151,33 @@ plot_mds <- function(dat,
   }
 
   # Tidy data
-  if (is.null(top)) {                                      # Distance matrix
+  if (is.null(top)) {                                       # Distance matrix
     dm <- dist.matrix(t(dat), method = 'euclidean')
     dimnames(dm) <- list(colnames(dat), colnames(dat))
   } else {
     dm <- matrix(0, nrow = ncol(dat), ncol = ncol(dat),
                  dimnames = list(colnames(dat), colnames(dat)))
-    top_idx <- nrow(dat) - top + 1
-    for (i in 2:ncol(dat)) {
-      for (j in 1:(i - 1)) {
-        if (is.null(top)) {
-          dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2,
-                                        partial = top_idx)[top_idx:nrow(dat)]))
-        }
+    top_idx <- nrow(dat) - top + 1L
+    for (i in 2L:ncol(dat)) {
+      for (j in 1L:(i - 1L)) {
+        dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
+                                      partial = top_idx)[top_idx:nrow(dat)]))
       }
     }
   }
-  mds <- suppressWarnings(cmdscale(as.dist(dm), k = 3))    # MDS
-  df <- data_frame(Sample = colnames(dat),                 # Melt
-                   PC1 = mds[, 1],
-                   PC2 = mds[, 2],
-                   PC3 = mds[, 3])
+  mds <- suppressWarnings(cmdscale(as.dist(dm), k = 3L))    # MDS
+  df <- data_frame(Sample = colnames(dat),                  # Melt
+                   PC1 = mds[, 1L],
+                   PC2 = mds[, 2L],
+                   PC3 = mds[, 3L])
   if (!is.null(covar)) {
     df <- inner_join(df, covar, by = 'Sample')
   }
 
   # Build plot
   p <- ggplot(df, aes(PC1, PC2)) +
-    geom_hline(yintercept = 0, size = 0.2) +
-    geom_vline(xintercept = 0, size = 0.2) +
+    geom_hline(yintercept = 0L, size = 0.2) +
+    geom_vline(xintercept = 0L, size = 0.2) +
     labs(title = main, x = 'PC1', y = 'PC2') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
@@ -200,14 +198,14 @@ plot_mds <- function(dat,
         )
       }
     }
-    p <- p + guides(color = guide_legend(title = covars[1]),
-                    shape = guide_legend(title = covars[1]))
+    p <- p + guides(color = guide_legend(title = covars[1L]),
+                    shape = guide_legend(title = covars[1L]))
   } else {
     suppressWarnings(
       p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
                           alpha = 0.85) +
-        guides(color = guide_legend(title = covars[1]),
-               shape = guide_legend(title = covars[2]))
+        guides(color = guide_legend(title = covars[1L]),
+               shape = guide_legend(title = covars[2L]))
     )
   }
   if (legend == 'bottomleft') {                            # Locate legend
