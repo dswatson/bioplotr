@@ -3,47 +3,77 @@
 #' This function visualizes the mean-variance relationship of omic data before
 #' or after modeling.
 #'
-#' @param dat Either an omic data matrix with rows corresponding to probes and
-#'   columns to samples, or an object of class \code{\link[limma]{MArrayLM}} as
-#'   created by a call to \code{limma}'s \code{\link[limma]{lmFit}} or
-#'   \code{\link[limma]{eBayes}} functions. If \code{dat} is a matrix, then data
-#'   are presumed to be normalized prior to visualization. Any matrix-like object
-#'   that can be processed by \code{\link[limma]{getEAWP}} is also acceptable.
-#' @param trans Data transformation to be applied to probewise standard deviations
-#'   if \code{dat} is a matrix. Must be one of either \code{"log"} or \code{"sqrt"}.
+#' @param dat An omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples. Data are presumed to be normalized prior to
+#'   visualization. Alternatively, a fitted model object of class \code{\link
+#'   [limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.
+#' @param trans Data transformation to be applied to probewise means
+#'   (if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
+#'   \code{"sqrt"}). Not all transformations are appropriate for all data types.
 #'   See Details.
-#' @param zero.weights Should spots with zero or negative weights be plotted?
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}. Only relevant if \code{dat}
-#'   is an \code{MArrayLM} object created by a call to \code{eBayes} with
-#'   \code{trend = TRUE}.
+#'   is an \code{MArrayLM} object created by a call to \code{\link[limma]{eBayes}}
+#'   with \code{trend = TRUE}. See \code{\link[limma]{squeezeVar}} for more details.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer. Probe names are extracted from
 #'   \code{dat}.
 #'
 #' @details
-#' Mean-variance plots are a quick and easy way to visualize the relationship
+#' Mean-variance (MV) plots are a quick and easy way to visualize the relationship
 #' between the first two moments of probewise data distributions. When used prior to
 #' modeling, they may help better understand the internal structure of the data
-#' and inspect for potential outliers. When used after modeling, they can be
-#' useful in evaluating the assumptions of the regression. \code{plot_mv} fits
-#' a smooth curve to the points using a generalized additive model with a cubic
-#' regression spline. See \code{mgcv::\link[mgcv]{gam}} for more details.
+#' and inspect for potential outliers. The effects of filtering and transformations
+#' can also be readily evaluated. When applied after modeling, MV plots help assess
+#' the assumptions of the regression.
 #'
-#' If \code{dat} is a matrix, then the appropriate data transformation for probewise
-#' standard deviations must be specified. \code{trans = "log"} is recommended for
-#' microarrays or any other platform in which data are approximately log-normally
-#' distributed. \code{trans = "sqrt"} is recommended for sequencing and count data.
+#' If \code{dat} is a matrix, then it is presumed to be filtered and normalized prior
+#' to plotting. For count data, this means undergoing some sort of variance
+#' stabilizing transformation (see, e.g., \code{\link[edgeR]{cpm}, \link[DESeq2]{vst},
+#' \link[DESeq2]{rlog}}, etc.). If \code{dat} is of class \code{MArrayLM} or
+#' \code{DESeqDataSet}, then the y-axis will represent the standard deviations of the
+#' model residuals. For the latter class of objects, a residual matrix is generated
+#' by subtracting the RLE-normalized signal matrix from the RLE-normalized counts
+#' on the log2-counts per million scale. An error message will be generated if
+#' \code{dat} is a \code{DESeqDataSet} that has not been through the complete
+#' modeling pipeline.
 #'
-#' If \code{dat} is an \code{MArrayLM} object, then the y-axis will be log2
-#' transformed probewise residual standard deviations. If standard errors were
-#' moderated with \code{eBayes}, then prior variance will also be plotted as either
-#' a horizontal line or a smooth curve, depending on whether a global or
-#' intensity-dependent prior was used. See \code{\link[limma]{squeezeVar}} for more
-#' details.
+#' By default, rank-transformed means are plotted against standard deviations for
+#' each probe. This is a reasonable choice for most data types. It is also common in
+#' the microarray literature to plot probewise means against log-transformed standard
+#' deviations, while the authors of \code{limma} recommend the square-root transform
+#' for count data on the log2-counts per million scale. The latter transformation is
+#' not recommended for modeled data and will generate a warning if passed in
+#' conjunction with an \code{MArrayLM} or \code{DESeqDataSet} object.
+#'
+#' \code{plot_mv} fits a smooth curve to the points using a generalized additive
+#' model with a cubic regression spline. (See \code{mgcv::\link[mgcv]{gam}} for more
+#' details.) If standard errors were moderated with \code{eBayes}, then prior variance
+#' will also be plotted as either a horizontal line or a smooth curve, depending on
+#' whether a global or intensity-dependent prior was used. If robust empirical Bayes
+#' was used to create \code{dat}, then outlier variances are highlighted. See
+#' \code{\link[limma]{squeezeVar}} for more details.
+#'
+#' @references
+#' Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
+#' "Variance Stabilization Applied to Microarray Data Calibration and to the
+#' Quantification of Differential Expression." \emph{Bioinformatics}, \emph{18}:1,
+#' S96-2104.
+#' \url{}
+#'
+#' Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
+#' & Medvedovic, M. (2006). "Intensity-based hierarchical Bayes method improves
+#' testing for differentially expressed genes in microarray experiments." \emph{BMC
+#' Bioinformatics}, \strong{7}:538.
+#' \url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}
+#'
+#' Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). "voom: precision weights unlock
+#' linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
+#' \strong{15}:R29.
+#' \url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
@@ -52,14 +82,16 @@
 #' library(limma)
 #' grp <- rep(c("ctl", "trt"), each = 5)
 #' des <- model.matrix(~ grp)
-#' fit <- eBayes(lmFit(mat, des))
+#' fit <- eBayes(lmFit(mat, des), trend = TRUE)
 #' plot_mv(fit)
 #'
 #' @seealso
-#' \code{\link[limma]{plotSA}} \code{\link[vsn]{meanSdPlot}}
+#' \code{\link[vsn]{meanSdPlot} \link[limma]{plotSA} \link[limma]{voom}}
 #'
 #' @export
 #' @importFrom limma getEAWP
+#' @importFrom DESeq2 counts assays
+#' @importFrom edgeR DGEList calcNormFactors cpm
 #' @importFrom matrixStats rowSds
 #' @import dplyr
 #' @importFrom purrr map_lgl
@@ -68,39 +100,38 @@
 #'
 
 plot_mv <- function(dat,
-                    trans = NULL,
-             zero.weights = FALSE,
-                   ptsize = 0.25,
-                     main = NULL,
-                   legend = 'outside',
-                    hover = FALSE) {
+                  trans = 'rank',
+                 ptsize = 0.25,
+                   main = NULL,
+                 legend = 'outside',
+                  hover = FALSE) {
 
   # Preliminaries
-  if (!is(dat, 'MArrayLM')) {
-    dat <- getEAWP(dat)
-    wts <- dat$weights
-    dat <- dat$expr
-    if (is.null(trans) || !trans %in% c('log', 'sqrt')) {
-      stop('trans must be specified as either "log" or "sqrt". The former is ',
-           'recommended for microarrays or any other platform in which data are ',
-           'approximately log-normally distributed. The latter is recommended for ',
-           'sequencing and count data.')
-    }
-  } else {
-    wts <- dat$weights
-    if (!is.null(trans)) {
-      warning('trans is not evaluated when dat is of class MArrayLM. Residual standard ',
-              'deviations are always plotted under log2 transform.')
-    }
+  if (ncol(dat) < 3L) {
+    stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for',
+               'plot_mv.'))
   }
-  if (!is.null(rownames(dat))) {
-    probes <- rownames(dat)
-  } else {
-    probes <- seq_len(nrow(dat))
+  if (is.null(rownames(dat))) {
+    rownames(dat) <- seq_len(nrow(dat))
   }
-  if (!zero.weights && !is.null(wts)) {
-    allzero <- rowSums(wts > 0, na.rm = TRUE) == 0
-    dat <- dat[!allzero, ]
+  if (is(dat, 'MArrayLM') && is.null(dat$t) && is.null(dat$F)) {
+    warning('Standard errors for dat have not been moderated. Consider re-running ',
+            'plot_mv after shrinking residual variance with eBayes. See ?eBayes ',
+            'and ?squeezeVar for more info.')
+  } else if (is(dat, 'DESeqDataSet') && is.null(assays(dat)[['mu']])) {
+    stop('If dat is a DESeqData set, then it must be fit with a negative binomial ',
+         'GLM in order to extract residual variance. If seeking to plot the ',
+         'mean-variance trend of unmodeled count data, then perform some variance',
+         'stabilizing transformation on the count matrix, e.g. vst or rlog, and ',
+         'pass the resulting matrix to dat. See ?plot_mv for more details.')
+  }
+  if (!trans %in% c('rank', 'log', 'sqrt')) {
+    stop('trans must be one of "rank", "log", or "sqrt".')
+  }
+  if (trans == 'sqrt' && (is(dat, 'MArrayLM') || is(dat, 'DESeqDataSet'))) {
+    warning('The square root transform is only recommended for unmodeled count data. ',
+            'Consider using trans = "rank" or "log" when passing an object of class ',
+            'MArrayLM or DESeqDataSet.')
   }
   if (is.null(main)) {
     main <- 'Mean-Variance Plot'
@@ -111,40 +142,72 @@ plot_mv <- function(dat,
   }
 
   # Tidy data
-  if (is.matrix(dat)) {             # Unmodeled data
-    if (trans == 'log') {
-      Sigma <- log2(rowSds(dat))
-      ylab <- expression('log'[2]*(sigma))
-    } else {
-      Sigma <- sqrt(rowSds(dat))
-      ylab <- expression(sqrt(sigma))
-    }
-    df <- data_frame(Probe = probes,
-                        Mu = rowMeans(dat),
-                     Sigma = Sigma)
-  } else {                          # Modeled data
-    df <- data_frame(Probe = probes,
-                        Mu = dat$Amean,
-                     Sigma = log2(dat$sigma))
+  if (!is(dat, 'MArrayLM') && !is(dat, 'DESeqDataSet')) {
+    dat <- getEAWP(dat)
+    dat <- dat$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
+    mu <- rowMeans(dat)
+    sigma <- rowSds(dat)
+  } else if (is(dat, 'MArrayLM')) {
+    mu <- dat$Amean
+    sigma <- dat$sigma
     if ('s2.prior' %in% names(dat)) {
-      df <- df %>% mutate(Prior = log2(dat$s2.prior))
+      prior <- sqrt(dat$s2.prior)
     }
-    if (length(dat$s2.prior) > 1) {
-      df2 <- max(dat$df.prior)
-      s2 <- dat$sigma^2 / dat$s2.prior
-      pdn <- pf(s2, df1 = dat$df.residual, df2 = df2)
-      pup <- pf(s2, df1 = dat$df.residual, df2 = df2, lower.tail = FALSE)
-      FDR <- p.adjust(2 * pmin(pdn, pup), method = 'BH')
-      df <- df %>% mutate(Outlier = map_lgl(seq_len(nrow(dat)), function(i) {
-        ifelse(FDR[i] <= 0.05, TRUE, FALSE)
-      }))
+  } else if (is(dat, 'DESeqDataSet')) {
+    lcpm <- function(x) {
+      x <- DGEList(x)
+      x <- calcNormFactors(x, method = 'RLE')
+      x <- cpm(x, log = TRUE, prior.count = 1)
     }
+    fit <- assays(dat)[['mu']]
+    keep <- rowSums(is.finite(fit)) == ncol(fit)
+    fit <- lcpm(fit[keep, , drop = FALSE])
+    dat <- dat[keep, , drop = FALSE]
+    cnts <- lcpm(counts(dat))
+    resids <- cnts - fit
+    mu <- rowMeans(cnts)
+    sigma <- rowSds(resids)
+  }
+  if (trans == 'rank') {                    # Apply transformations
+    mu <- rank(mu, ties.method = 'random')
+    xlab <- expression('Rank'*(mu))
+    ylab <- expression(sigma)
+  } else if (trans == 'log') {
+    sigma <- log2(sigma)
+    if ('s2.prior' %in% names(dat)) {
+      prior <- log2(prior)
+    }
+    xlab <- expression(mu)
     ylab <- expression('log'[2]*(sigma))
+  } else if (trans == 'sqrt') {
+    sigma <- sqrt(sigma)
+    if ('s2.prior' %in% names(dat)) {
+      prior <- sqrt(prior)
+    }
+    xlab <- expression(mu)
+    ylab <- expression(sqrt(sigma))
+  }
+  df <- data_frame(Probe = rownames(dat),
+                      Mu = mu,
+                   Sigma = sigma)
+  if ('s2.prior' %in% names(dat)) {         # Optional prior curve
+    df <- df %>% mutate(Prior = prior)
+  }
+  if (length(dat$s2.prior) > 1L) {          # Check for outliers
+    s2 <- dat$sigma^2L / dat$s2.prior
+    pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
+    pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
+    FDR <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
+    df <- df %>% mutate(Outlier = map_lgl(seq_len(nrow(dat)), function(i) {
+      ifelse(FDR[i] <= 0.05, TRUE, FALSE)
+    }))
   }
 
   # Build plot
   p <- ggplot(df) +
-    labs(title = main, x = expression(mu), y = ylab) +
+    labs(title = main, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if ('Outlier' %in% colnames(df) && any(df$Outlier)) {
@@ -158,7 +221,7 @@ plot_mv <- function(dat,
                           size = ptsize, alpha = 0.25)
     )
   }
-  if ('Prior' %in% colnames(df)) {  # Plot prior
+  if ('Prior' %in% colnames(df)) {          # Plot prior
     p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM fit'),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
@@ -175,7 +238,7 @@ plot_mv <- function(dat,
     p <- p + geom_smooth(aes(Mu, Sigma), method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
   }
-  if (legend == 'bottomleft') {     # Locate legend
+  if (legend == 'bottomleft') {             # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
@@ -199,7 +262,5 @@ plot_mv <- function(dat,
 
 }
 
-
-# Extend to DESeq2 model objects
-# Add option for sigma ~ rank(mu)
+# Add ggrepel functionality?
 

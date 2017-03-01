@@ -4,22 +4,19 @@
 \alias{plot_mv}
 \title{Mean-Variance Plot}
 \usage{
-plot_mv(dat, trans = NULL, zero.weights = FALSE, ptsize = 0.25,
-  main = NULL, legend = "outside", hover = FALSE)
+plot_mv(dat, trans = "rank", ptsize = 0.25, main = NULL,
+  legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{Either an omic data matrix with rows corresponding to probes and
-columns to samples, or an object of class \code{\link[limma]{MArrayLM}} as
-created by a call to \code{\link[limma]{lmFit}} or \code{\link[limma]{eBayes}}.
-If \code{dat} is a matrix, then data are presumed to be normalized prior to
-visualization. Any matrix-like object that can be processed by
-\code{\link[limma]{getEAWP}} is also acceptable.}
+\item{dat}{An omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. Data are presumed to be normalized prior to
+visualization. Alternatively, a fitted model object of class \code{\link
+[limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.}
 
-\item{trans}{Data transformation to be applied to probewise standard deviations
-if \code{dat} is a matrix. Must be one of either \code{"log"} or \code{"sqrt"}.
+\item{trans}{Data transformation to be applied to probewise means
+(if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
+\code{"sqrt"}). Not all transformations are appropriate for all data types.
 See Details.}
-
-\item{zero.weights}{Should spots with zero or negative weights be plotted?}
 
 \item{ptsize}{Size of data points in the plot.}
 
@@ -27,8 +24,8 @@ See Details.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}. Only relevant if \code{dat}
-is an \code{MArrayLM} object created by a call to \code{eBayes} with
-\code{trend = TRUE}.}
+is an \code{MArrayLM} object created by a call to \code{\link[limma]{eBayes}}
+with \code{trend = TRUE}. See \code{\link[limma]{squeezeVar}} for more details.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
@@ -37,27 +34,42 @@ display or appear in the RStudio viewer. Probe names are extracted from
 }
 \description{
 This function visualizes the mean-variance relationship of omic data before
-or after linear modeling.
+or after modeling.
 }
 \details{
-Mean-variance plots are a quick and easy way to visualize the relationship
-between the first two moments of an omic data distribution. When used prior to
+Mean-variance (MV) plots are a quick and easy way to visualize the relationship
+between the first two moments of probewise data distributions. When used prior to
 modeling, they may help better understand the internal structure of the data
-and inspect for potential outliers. When used after modeling, they can be
-useful in evaluating the assumptions of the regression. \code{plot_mv} fits
-a smooth curve to the points using a generalized additive model.
+and inspect for potential outliers. The effects of filtering and transformations
+can also be readily evaluated. When applied after modeling, MV plots help assess
+the assumptions of the regression.
 
-If \code{dat} is a matrix, then the appropriate data transformation for probewise
-standard deviations must be specified. \code{trans = "log"} is recommended for
-microarrays or any other platform in which data are approximately log-normally
-distributed. \code{trans = "sqrt"} is recommended for sequencing and count data.
+If \code{dat} is a matrix, then it is presumed to be filtered and normalized prior
+to plotting. For count data, this means undergoing some sort of variance
+stabilizing transformation (see, e.g., \code{\link[edgeR]{cpm}, \link[DESeq2]{vst},
+\link[DESeq2]{rlog}}, etc.). If \code{dat} is of class \code{MArrayLM} or
+\code{DESeqDataSet}, then the y-axis will represent the standard deviations of the
+model residuals. For the latter class of objects, a residual matrix is generated
+by subtracting the RLE-normalized signal matrix from the RLE-normalized counts
+on the log2-counts per million scale. An error message will be generated if
+\code{dat} is a \code{DESeqDataSet} that has not been through the complete
+modeling pipeline.
 
-If \code{dat} is an \code{MArrayLM} object, then the y-axis will be log2
-transformed probewise residual standard deviations. If standard errors were
-moderated with \code{eBayes}, then prior variance will also be plotted as either
-a horizontal line or a smooth curve, depending on whether a global or
-intensity-dependent prior was used. See \code{\link[limma]{squeezeVar}} for more
-details.
+By default, rank-transformed means are plotted against standard deviations for
+each probe. This is a reasonable choice for most data types. It is also common in
+the microarray literature to plot probewise means against log-transformed standard
+deviations, while the authors of \code{limma} recommend the square-root transform
+for count data on the log2-counts per million scale. The latter transformation is
+not recommended for modeled data and will generate a warning if passed in
+conjunction with an \code{MArrayLM} or \code{DESeqDataSet} object.
+
+\code{plot_mv} fits a smooth curve to the points using a generalized additive
+model with a cubic regression spline. (See \code{mgcv::\link[mgcv]{gam}} for more
+details.) If standard errors were moderated with \code{eBayes}, then prior variance
+will also be plotted as either a horizontal line or a smooth curve, depending on
+whether a global or intensity-dependent prior was used. If robust empirical Bayes
+was used to create \code{dat}, then outlier variances are highlighted. See
+\code{\link[limma]{squeezeVar}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
@@ -66,7 +78,28 @@ plot_mv(mat, trans = "log")
 library(limma)
 grp <- rep(c("ctl", "trt"), each = 5)
 des <- model.matrix(~ grp)
-fit <- eBayes(lmFit(mat, des))
+fit <- eBayes(lmFit(mat, des), trend = TRUE)
 plot_mv(fit)
 
+}
+\references{
+Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
+"Variance Stabilization Applied to Microarray Data Calibration and to the
+Quantification of Differential Expression." \emph{Bioinformatics}, \emph{18}:1,
+S96-2104.
+\url{}
+
+Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
+& Medvedovic, M. (2006). "Intensity-based hierarchical Bayes method improves
+testing for differentially expressed genes in microarray experiments." \emph{BMC
+Bioinformatics}, \strong{7}:538.
+\url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}
+
+Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). "voom: precision weights unlock
+linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
+\strong{15}:R29.
+\url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
+}
+\seealso{
+\code{\link[vsn]{meanSdPlot} \link[limma]{plotSA} \link[limma]{voom}}
 }
