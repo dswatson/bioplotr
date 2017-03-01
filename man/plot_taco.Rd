@@ -4,16 +4,14 @@
 \alias{plot_taco}
 \title{Taco Plot}
 \usage{
-plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside",
-  probes = NULL)
+plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside")
 }
 \arguments{
 \item{dat}{Data frame or matrix representing the results of a test for
 differential expression or methylation, such as the output of a call to
 \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
 \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-fold changes, probewise means, \emph{p}-values, and FDR. \code{NA} values are
-silently removed.}
+fold changes, probewise means, \emph{p}-values, and FDR.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
 
@@ -21,9 +19,6 @@ silently removed.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
-
-\item{probes}{String specifying the name of the column in which to find the probe
-identifiers, assuming they aren't \code{rownames(dat)}.}
 }
 \description{
 This function plots log2 fold changes against -log10 \emph{p}-values against
