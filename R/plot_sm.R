@@ -39,21 +39,12 @@ plot_sm <- function(dat,
                     main = NULL) {
 
   # Preliminaries
-  dat <- getEAWP(dat)
-  dat <- dat$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
-  if (is.data.frame(feat)) {
-    feat <- as.list(feat)
-  } else if (!is.list(feat)) {
-    feat <- list('Variable' = feat)
-  } else {
+  if (is.data.frame(feat)) feat <- as.list(feat)
+  else if (!is.list(feat)) feat <- list('Variable' = feat)
+  else {
     if (is.null(names(feat))) {
-      if (length(feat) == 1) {
-        names(feat) <- 'Variable'
-      } else {
-        names(feat) <- paste('Variable', seq_along(feat))
-      }
+      if (length(feat) == 1) names(feat) <- 'Variable'
+      else names(feat) <- paste('Variable', seq_along(feat))
     }
   }
   if (any(map_lgl(seq_along(feat), function(j) {
@@ -62,19 +53,17 @@ plot_sm <- function(dat,
     stop('feat length must match number of samples in dat.')
   }
   if (any(map_lgl(seq_along(feat), function(j) {
-    if (is.numeric(feat[[j]])) {
-      var(feat[[j]]) == 0
-    } else {
-      length(unique(feat[[j]])) == 1
-    }
+    if (is.numeric(feat[[j]])) var(feat[[j]]) == 0L
+    else length(unique(feat[[j]])) == 1L
   }))) {
     stop('feat is invariant.')
   }
-  if (is.null(main)) {
-    main <- 'Sample Similarity Matrix'
-  }
+  if (is.null(main)) main <- 'Sample Similarity Matrix'
 
   # Tidy data
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   dm <- dist.matrix(scale(t(dat)), method = 'euclidean')
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
