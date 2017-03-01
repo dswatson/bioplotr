@@ -50,41 +50,28 @@ plot_box <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  dat <- getEAWP(dat)
-  dat <- dat$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
-  if (is.null(group)) {
-    group <- list(rep(1, times = ncol(dat)))
-  } else {
-    if (!is.list(group)) {
-      group <- list(group)
-    }
-    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
+  if (is.null(group)) group <- list(rep(1L, times = ncol(dat)))
+  else {
+    if (!is.list(group)) group <- list(group)
+    if (!is.character(group[[1L]]) & !is.factor(group[[1L]])) {
       stop('group must be a character or factor variable.')
     }
-    if (length(group) > 1) {
+    if (length(group) > 1L) {
       stop('group cannot be a list of length > 1.')
     }
-    if (length(group[[1]]) != ncol(dat)) {
+    if (length(group[[1L]]) != ncol(dat)) {
       stop('group length must match number of samples in dat.')
     }
-    if (length(unique(group[[1]])) == 1) {
+    if (length(unique(group[[1L]])) == 1L) {
       warning('group is invariant.')
     }
   }
-  if (is.null(ylab)) {
-    ylab <- 'Value'
-  }
+  if (is.null(ylab)) ylab <- 'Value'
   if (is.null(main)) {
-    if (is.numeric(group[[1]])) {
-      main <- 'Expression By Sample'
-    } else {
-      if (is.null(names(group))) {
-        main <- 'Expression By Group'
-      } else {
-        main <- paste('Expression By', names(group))
-      }
+    if (is.numeric(group[[1L]])) main <- 'Expression By Sample'
+    else {
+      if (is.null(names(group))) main <- 'Expression By Group'
+      else main <- paste('Expression By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -93,6 +80,9 @@ plot_box <- function(dat,
   }
 
   # Tidy data
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   df <- gather(tbl_df(dat), Sample, Expression) %>%
     mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
     arrange(Group) %>%
@@ -132,7 +122,11 @@ plot_box <- function(dat,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 
