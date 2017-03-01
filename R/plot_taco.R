@@ -7,14 +7,11 @@
 #'   differential expression or methylation, such as the output of a call to
 #'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
 #'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-#'   fold changes, probewise means, \emph{p}-values, and FDR. \code{NA} values are
-#'   silently removed.
+#'   fold changes, probewise means, \emph{p}-values, and FDR.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
-#' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers, assuming they aren't \code{rownames(dat)}.
 #'
 #' @details
 #' A taco plot combines the elements of a volcano plot and an MD plot into a single
@@ -42,21 +39,31 @@
 plot_taco <- function(dat,
                       fdr = 0.05,
                      main = NULL,
-                   legend = 'outside',
-                   probes = NULL) {
+                   legend = 'outside') {
 
   # Preliminaries
   dat <- as.data.frame(dat) %>% na.omit()
   lfc <- c('log2FoldChange', 'logFC')
-  if (sum(lfc %in% colnames(dat)) == 1) {
+  if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
   } else {
     stop('dat must include a log fold change column. Recognized colnames for this ',
          'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
          'exactly one such colname.')
   }
+  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
+  if (sum(p %in% colnames(dat)) == 1L) {
+    colnames(dat)[colnames(dat) %in% p] <- 'p.value'
+  } else {
+    stop('dat must include a p-value column. Recognized colnames for this vector ',
+         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+         'includes exactly one such colname.')
+  }
+  if ('baseMean' %in% colnames(dat)) {
+    dat$baseMean <- log2(dat$baseMean)
+  }
   avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
-  if (sum(avg %in% colnames(dat)) == 1) {
+  if (sum(avg %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% avg] <- 'AvgExpr'
   } else {
     stop('dat must include a column for average expression or methylation by ',
@@ -64,52 +71,32 @@ plot_taco <- function(dat,
          '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly ',
          'one such colname.')
   }
-  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  if (sum(p %in% colnames(dat)) == 1) {
-    colnames(dat)[colnames(dat) %in% p] <- 'p.value'
-  } else {
-    stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
-         'includes exactly one such colname.')
-  }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
-  if (sum(q %in% colnames(dat)) == 1) {
+  if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
          'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (is.null(main)) {
-    main <- 'Taco Plot'
-  }
+  if (is.null(main)) main <- 'Taco Plot'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
   }
-  if (is.null(probes)) {
-    if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
-        is.null(rownames(dat))) {
-      dat <- dat %>% mutate(Probe = row_number())
-    } else {
-      dat <- dat %>% mutate(Probe = rownames(dat))
-    }
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found.'))
-    } else {
-      colnames(dat)[colnames(dat) == probes] <- 'Probe'
-    }
-  }
 
   # Tidy data
+  if (is.null(rownames(dat))) {
+    dat <- dat %>% mutate(Probe = row_number())
+  } else {
+    dat <- dat %>% mutate(Probe = rownames(dat))
+  }
   test <- function(q) ifelse(q < fdr, paste('q <', fdr), paste('q >', fdr))
   df <- dat %>%
     mutate(is.DE = map_chr(q.value, test),
-            logP = -log10(p.value)) %>%
-    select(Probe, AvgExpr, logFC, logP, is.DE) %>%
-    na.omit()
-  if (sum(grepl('<', df$is.DE) == 0)) {
+           logP = -log10(p.value)) %>%
+    select(Probe, AvgExpr, logFC, logP, is.DE)
+  if (sum(grepl('<', df$is.DE) == 0L)) {
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
   }
