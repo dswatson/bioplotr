@@ -49,10 +49,8 @@ plot_density <- function(dat,
   # Preliminaries
   dat <- getEAWP(dat)
   dat <- dat$expr
-  bad <- rowSums(is.finite(dat)) < ncol(dat)
-  if (any(bad)) {
-    dat <- dat[!bad, , drop = FALSE]
-  }
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   if (is.null(group)) {
     group <- list(rep(1, times = ncol(dat)))
   } else {
