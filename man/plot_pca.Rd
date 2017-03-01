@@ -4,8 +4,8 @@
 \alias{plot_pca}
 \title{PCA Plot}
 \usage{
-plot_pca(dat, covar = NULL, top = NULL, label = FALSE, main = NULL,
-  legend = "outside", hover = FALSE, D3 = FALSE)
+plot_pca(dat, covar = NULL, top = NULL, pcs = c(1, 2), label = FALSE,
+  main = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -18,6 +18,9 @@ may be continuous. Supply legend title(s) by passing a named list or data frame.
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable probes
 to be used for PCA.}
+
+\item{pcs}{Vector specifying which principal components to plot. Must be of length
+2 unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}

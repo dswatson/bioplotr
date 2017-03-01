@@ -4,17 +4,23 @@
 \alias{plot_md}
 \title{Mean-Difference Plot}
 \usage{
-plot_md(dat, fdr = 0.05, ptsize = 0.25, main = NULL, legend = "outside",
-  hover = FALSE, probes = NULL)
+plot_md(dat, fdr = 0.05, sample = NULL, control = NULL, ptsize = 0.25,
+  main = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{Data frame or matrix representing the results of a test for
-differential expression or methylation, such as the output of a call to
-\code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
-\code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-fold changes, probewise means, and FDR.}
+\item{dat}{Either a data frame representing the results of a test for differential
+expression, or an omic data matrix with rows corresponding to probes and columns
+to samples. The former will render a study-wide MD plot, the latter a
+between-sample MD plot. See Details.}
 
-\item{fdr}{Threshold for declaring a probe differentially expressed or methylated.}
+\item{fdr}{Threshold for declaring a probe differentially expressed. Only
+relevant for study-wide MD plots.}
+
+\item{sample}{Column number or name specifying which sample in \code{dat} to
+compare with the others. Only relevant for between-sample MD plots.}
+
+\item{control}{Optional vector of length equal to \code{nrow(dat)} indicating the
+control status of each probe. Only relevant for between-sample MD plots.}
 
 \item{ptsize}{Size of data points in the plot.}
 
@@ -25,23 +31,38 @@ fold changes, probewise means, and FDR.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
-
-\item{probes}{String specifying the name of the column in which to find the probe
-identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
-\code{hover = TRUE}.}
+display or appear in the RStudio viewer. Probe names are extracted from
+\code{dat}.}
 }
 \description{
-This function plots probewise means against the log2 fold changes of a
-differential expression or methylation test.
+This function plots probewise means vs. log2 fold changes for a between-sample
+comparison or a test of differential expression.
 }
 \details{
 MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
-relationship between a probe's mean value and its log2 fold change for a given
-test of differential expression/methylation. Points are colored to distinguish
+relationship between a probe's mean value and its log2 fold change versus
+some relevant reference group. These figures help to evaluate the symmetry,
+magnitude, and significance of differential effects across the full omic range.
+
+If \code{dat} is probe by sample matrix, then \code{sample} must \code{sampe = NULL}, then \code{dat} is
+
+
+its log2 fold change for a given
+test of differential expression. Points are colored to distinguish
 between those that do and do not meet a user-defined FDR threshold. These
 figures help to evaluate the symmetry, magnitude, and significance of effects
 for a given experiment.
+
+If passing a numeric matrix, then \code{sample} must be specified. An artificial
+sample will then be created by averaging probewise values for all other samples in
+the data.
+  \code{plot_md} will plot probewise sample means vs. log ratios of
+  \code{sample} must be specified
+
+  Output from \code{limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}},
+  or \code{DESeq2::\link[DESeq2]{results}} are all acceptable.
+  Alternatively, any object with columns for log fold changes, probewise means, and FDR.
+  If \code{hover = TRUE}, then probe names will be extracted from \code{dat}.
 }
 \examples{
 library(limma)
@@ -54,4 +75,8 @@ fit <- eBayes(lmFit(mat, des))
 top <- topTable(fit, number = Inf)
 plot_md(top)
 
+}
+\seealso{
+\code{\link[limma]{plotMD}} \code{\link[DESeq2]{plotMA}}
+\code{\link[Glimma]{glMDPlot}}
 }

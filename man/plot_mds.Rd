@@ -4,8 +4,8 @@
 \alias{plot_mds}
 \title{MDS Plot}
 \usage{
-plot_mds(dat, covar = NULL, top = 500, label = FALSE, main = NULL,
-  legend = "outside", hover = FALSE, D3 = FALSE)
+plot_mds(dat, covar = NULL, top = 500, pcs = c(1, 2), label = FALSE,
+  main = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -18,6 +18,9 @@ may be continuous. Supply legend title(s) by passing a named list or data frame.
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
 for MDS. See Details.}
+
+\item{pcs}{Vector specifying which principal coordinates to plot. Must be of length
+2 unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
