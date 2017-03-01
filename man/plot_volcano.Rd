@@ -5,7 +5,7 @@
 \title{Volcano Plot}
 \usage{
 plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
-  legend = "outside", hover = FALSE, probes = NULL)
+  legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{dat}{Data frame or matrix representing the results of a test for
@@ -26,11 +26,8 @@ removed.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
-
-\item{probes}{String specifying the name of the column in which to find the probe
-identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
-\code{hover = TRUE}.}
+display or appear in the RStudio viewer. Probe names are extracted from
+\code{dat}.}
 }
 \description{
 This function plots the log2 fold changes against the -log10 \emph{p}-values
