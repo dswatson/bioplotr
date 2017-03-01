@@ -10,6 +10,8 @@
 #'   may be continuous. Supply legend title(s) by passing a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable probes
 #'   to be used for PCA.
+#' @param pcs Vector specifying which principal components to plot. Must be of length
+#'   2 unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE} unless
 #'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
 #' @param main Optional plot title.
@@ -58,6 +60,7 @@
 plot_pca <- function(dat,
                      covar = NULL,
                        top = NULL,
+                       pcs = c(1, 2),
                      label = FALSE,
                       main = NULL,
                     legend = 'outside',
@@ -65,25 +68,12 @@ plot_pca <- function(dat,
                         D3 = FALSE) {
 
   # Preliminaries
-  dat <- getEAWP(dat)
-  dat <- dat$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
-  if (is.null(rownames(dat))) {
-    rownames(dat) <- seq_len(nrow(dat))
-  }
-  if (is.null(colnames(dat))) {
-    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
-  }
   if (!is.null(covar)) {
-    if (is.data.frame(covar)) {
-      covar <- as.list(covar)
-    } else if (!is.list(covar)) {
-      covar <- list(covar)
-    }
+    if (is.data.frame(covar)) covar <- as.list(covar)
+    else if (!is.list(covar)) covar <- list(covar)
     if (length(covar) > 2L) {
       stop('covar cannot contain more than two covariates.')
     }
@@ -103,27 +93,18 @@ plot_pca <- function(dat,
     }
     if (any(nums)) {
       cont_cov <- TRUE
-      if (which(nums) == 2L) {
-        covar <- covar[c(2L, 1L)]
-      }
-    } else {
-      cont_cov <- FALSE
+      if (which(nums) == 2L) covar <- covar[c(2L, 1L)]
+      else cont_cov <- FALSE
     }
-    if (!is.null(names(covar))) {
-      covars <- names(covar)
-    } else {
-      if (cont_cov) {
-        covars <- c('Feature', 'Group')
-      } else {
-        if (length(covar) == 1L) {
-          covars <- 'Group'
-        } else {
-          covars <- c('Factor 1', 'Factor 2')
-        }
+    if (!is.null(names(covar))) covars <- names(covar)
+    else {
+      if (cont_cov) covars <- c('Feature', 'Group')
+      else {
+        if (length(covar) == 1L) covars <- 'Group'
+        else covars <- c('Factor 1', 'Factor 2')
       }
     }
     names(covar) <- paste0('Feature', seq_along(covar))
-    covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
   }
   if (!is.null(top)) {
     if (top > 1L) {
@@ -131,90 +112,104 @@ plot_pca <- function(dat,
         warning('top exceeds nrow(dat), at least after removing probes with infinite ',
                 'or missing values. Proceeding with the complete matrix.')
       }
-    } else {
-      top <- round(top * nrow(dat))
-    }
+    } else top <- round(top * nrow(dat))
     vars <- rowVars(dat)
     dat <- dat[rev(order(vars))[seq_len(top)], , drop = FALSE]
+  }
+  if (length(pcs) > 2L && !D3) {
+    stop('pcs must be of length 2 when D3 = FALSE.')
+  } else if (length(pcs) > 3L) {
+    stop('pcs must be a vector of length <= 3.')
   }
   if (label && length(covars) == 2L) {
     stop('If label is TRUE, then plot can render at most one covariate.')
   }
-  if (is.null(main)) {
-    main <- 'PCA'
-  }
+  if (is.null(main)) main <- 'PCA'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
   }
 
   # Tidy data
-  pca <- prcomp(t(dat))                     # PCA
-  pve <- map_chr(seq_len(3L), function(pc) {
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
+  if (is.null(rownames(dat))) {
+    rownames(dat) <- seq_len(nrow(dat))
+  }
+  if (is.null(colnames(dat))) {
+    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
+  }
+  pca <- prcomp(t(dat))                          # PCA
+  pve <- map_chr(seq_len(max(pcs)), function(pc) {
     p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('PC', pc, ' (', p, '%)')
   })
-  df <- data_frame(Sample = colnames(dat),  # Melt
-                      PC1 = pca$x[, 1L],
-                      PC2 = pca$x[, 2L],
-                      PC3 = pca$x[, 3L])
+  df <- data_frame(Sample = colnames(dat))       # Melt
+  if (length(pcs) == 2L) {
+    df <- df %>% mutate(PC1 = pca$x[, min(pcs)],
+                        PC2 = pca$x[, max(pcs)])
+  } else {
+    other <- setdiff(pcs, c(min(pcs), max(pcs)))
+    df <- df %>% mutate(PC1 = pca$x[, min(pcs)],
+                        PC2 = pca$x[, other],
+                        PC3 = pca$x[, max(pcs)])
+  }
   if (!is.null(covar)) {
+    covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
     df <- inner_join(df, covar, by = 'Sample')
   }
 
   # Build plot
-  p <- ggplot(df, aes(PC1, PC2)) +
-    geom_hline(yintercept = 0L, size = 0.2) +
-    geom_vline(xintercept = 0L, size = 0.2) +
-    labs(title = main, x = pve[1L], y = pve[2L]) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
-  if (ncol(covar) == 2L) {
-    if (label) {
-      p <- p + geom_text(aes(label = Sample, color = Feature1),
-                         alpha = 0.85)
-    } else {
-      if (cont_cov) {
-        suppressWarnings(
-          p <- p + geom_point(aes(text = Sample, color = Feature1),
-                              alpha = 0.85)
-        )
-      } else {
-        suppressWarnings(
-          p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
-                              alpha = 0.85)
-        )
-      }
-    }
-    p <- p + guides(color = guide_legend(title = covars[1L]),
-                    shape = guide_legend(title = covars[1L]))
-  } else {
-    suppressWarnings(
-      p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
-                          alpha = 0.85) +
-        guides(color = guide_legend(title = covars[1L]),
-               shape = guide_legend(title = covars[2L]))
-    )
-  }
-  if (legend == 'bottomleft') {             # Locate legend
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                   legend.position = c(0.01, 0.01))
-  } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                   legend.position = c(0.99, 0.01))
-  } else if (legend == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                   legend.position = c(0.01, 0.99))
-  } else if (legend == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                   legend.position = c(0.99, 0.99))
-  }
-
-  # Output
   if (!D3) {
-    if (!hover) {
-      print(p)
+    p <- ggplot(df, aes(PC1, PC2)) +
+      geom_hline(yintercept = 0L, size = 0.2) +
+      geom_vline(xintercept = 0L, size = 0.2) +
+      labs(title = main, x = pve[min(pcs)], y = pve[max(pcs)]) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+    if (ncol(covar) == 2L) {
+      if (label) {
+        p <- p + geom_text(aes(label = Sample, color = Feature1),
+                           alpha = 0.85)
+      } else {
+        if (cont_cov) {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1),
+                                alpha = 0.85)
+          )
+        } else {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
+                                alpha = 0.85)
+          )
+        }
+      }
+      p <- p + guides(color = guide_legend(title = covars[1L]),
+                      shape = guide_legend(title = covars[1L]))
     } else {
+      suppressWarnings(
+        p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
+                            alpha = 0.85) +
+          guides(color = guide_legend(title = covars[1L]),
+                 shape = guide_legend(title = covars[2L]))
+      )
+    }
+    if (legend == 'bottomleft') {             # Locate legend
+      p <- p + theme(legend.justification = c(0.01, 0.01),
+                     legend.position = c(0.01, 0.01))
+    } else if (legend == 'bottomright') {
+      p <- p + theme(legend.justification = c(0.99, 0.01),
+                     legend.position = c(0.99, 0.01))
+    } else if (legend == 'topleft') {
+      p <- p + theme(legend.justification = c(0.01, 0.99),
+                     legend.position = c(0.01, 0.99))
+    } else if (legend == 'topright') {
+      p <- p + theme(legend.justification = c(0.99, 0.99),
+                     legend.position = c(0.99, 0.99))
+    }
+    if (!hover) print(p)
+    else {
       if (legend == 'outside') {
         p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
       } else {
@@ -233,12 +228,11 @@ plot_pca <- function(dat,
                  type = 'scatter3d', mode = 'markers',
                  alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
       layout(hovermode = 'closest', title = main, scene = list(
-             xaxis = list(title = pve[1]),
-             yaxis = list(title = pve[2]),
-             zaxis = list(title = pve[3])))
+        xaxis = list(title = pve[min(pcs)]),
+        yaxis = list(title = pve[other]),
+        zaxis = list(title = pve[max(pcs)])))
     print(p)
   }
-
 }
 
-# Argument to pick which PCs to plot
+
