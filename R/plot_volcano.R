@@ -54,7 +54,7 @@ plot_volcano <- function(dat,
   # Preliminaries
   dat <- as.data.frame(dat) %>% na.omit()
   lfc <- c('log2FoldChange', 'logFC')
-  if (sum(lfc %in% colnames(dat)) == 1) {
+  if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
   } else {
     stop('dat must include a log fold change column. Recognized colnames for this ',
@@ -62,7 +62,7 @@ plot_volcano <- function(dat,
          'exactly one such colname.')
   }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
-  if (sum(p %in% colnames(dat)) == 1) {
+  if (sum(p %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
     stop('dat must include a p-value column. Recognized colnames for this vector ',
@@ -70,33 +70,29 @@ plot_volcano <- function(dat,
          'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
-  if (sum(q %in% colnames(dat)) == 1) {
+  if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
          'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (is.null(main)) {
-    main <- 'Volcano Plot'
-  }
+  if (is.null(main)) main <- 'Volcano Plot'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
   }
-  if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
-      is.null(rownames(dat))) {
+
+  # Tidy data
+  if (is.null(rownames(dat))) {
     dat <- dat %>% mutate(Probe = row_number())
   } else {
     dat <- dat %>% mutate(Probe = rownames(dat))
   }
-
-  # Tidy data
   df <- dat %>%
     mutate(logP = -log10(p.value),
           is.DE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
-    select(Probe, logFC, logP, is.DE) %>%
-    na.omit()
+    select(Probe, logFC, logP, is.DE)
 
   # Build plot
   suppressWarnings(
@@ -136,7 +132,11 @@ plot_volcano <- function(dat,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 
