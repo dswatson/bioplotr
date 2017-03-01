@@ -50,22 +50,22 @@ plot_roc <- function(obs,
     obs <- as.factor(obs)
   }
   if (is.factor(obs)) {
-    if (length(levels(obs)) != 2) {
+    if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
     } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
-              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1L], '". ',
+              'To change this to obs == "', levels(obs)[2L], '", either relevel the ',
               'factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1], 1, 0)
+      obs <- ifelse(obs == levels(obs)[1L], 1L, 0L)
     }
   }
   if (is.logical(obs)) {
-    obs <- ifelse(obs, 1, 0)
+    obs <- ifelse(obs, 1L, 0L)
   }
-  if (!all(obs %in% c(0, 1))) {
+  if (!all(obs %in% c(0L, 1L))) {
     stop('A numeric response can only take on values of 0 or 1.')
   }
-  if (var(obs) == 0) {
+  if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
   if (is.data.frame(pred)) {
@@ -86,7 +86,7 @@ plot_roc <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1) {
+    if (length(pred) == 1L) {
       main <- 'ROC Curve'
     } else {
       main <- 'ROC Curves'
@@ -102,8 +102,8 @@ plot_roc <- function(obs,
     x <- x[is.finite(x)]
   })
   originate <- function(tbl) {
-    data_frame(TPR = 0,
-               FPR = 0,
+    data_frame(TPR = 0L,
+               FPR = 0L,
         Classifier = tbl$Classifier[1]) %>%
       rbind(tbl) %>%
       return()
@@ -113,8 +113,8 @@ plot_roc <- function(obs,
                X = pred[[i]],
       Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
-      mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
-             FPR = cumsum(Y == 0) / sum(Y == 0)) %>%
+      mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
+             FPR = cumsum(Y == 0L) / sum(Y == 0L)) %>%
       select(TPR, FPR, Classifier) %>%
       originate() %>%
       return()
@@ -123,11 +123,11 @@ plot_roc <- function(obs,
   # Plot
   leg <- function(i) {           # Print AUC
     txt <- paste0(names(pred)[i], ', AUC = ',
-                  round(ModelMetrics::auc(obs, pred[[i]]), 2))
+                  round(ModelMetrics::auc(obs, pred[[i]]), 2L))
     return(txt)
   }
   p <- ggplot(df, aes(FPR, TPR)) +
-    geom_abline(intercept = 0, slope = 1, color = 'grey') +
+    geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
     labs(title = main,
              x = 'False Positive Rate',
              y = 'True Positive Rate') +
@@ -166,7 +166,11 @@ plot_roc <- function(obs,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 

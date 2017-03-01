@@ -24,11 +24,11 @@
 #' relatively low.
 #'
 #' @examples
-#' y <- rbinom(100, size = 1, prob = 0.1)
-#' x <- rnorm(100, mean = y, sd = 0.5)
+#' y <- rbinom(1000, size = 1, prob = 0.1)
+#' x <- rnorm(1000, mean = y, sd = 0.5)
 #' plot_pr(obs = y, pred = x)
 #'
-#' x2 <- rnorm(100, mean = y, sd = 2)
+#' x2 <- rnorm(1000, mean = y, sd = 2)
 #' plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
 #'
 #' @export
@@ -51,22 +51,22 @@ plot_pr <- function(obs,
     obs <- as.factor(obs)
   }
   if (is.factor(obs)) {
-    if (length(levels(obs)) != 2) {
+    if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
     } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
-              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1L], '". ',
+              'To change this to obs == "', levels(obs)[2L], '", either relevel the ',
               'factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], 1, 0)
     }
   }
   if (is.logical(obs)) {
-    obs <- ifelse(obs, 1, 0)
+    obs <- ifelse(obs, 1L, 0L)
   }
-  if (!all(obs %in% c(0, 1))) {
+  if (!all(obs %in% c(0L, 1L))) {
     stop('A numeric response can only take on values of 0 or 1.')
   }
-  if (var(obs) == 0) {
+  if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
   if (is.data.frame(pred)) {
@@ -87,7 +87,7 @@ plot_pr <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1) {
+    if (length(pred) == 1L) {
       main <- 'Precision-Recall Curve'
     } else {
       main <- 'Precision-Recall Curves'
@@ -107,24 +107,24 @@ plot_pr <- function(obs,
                X = pred[[i]],
       Classifier = names(pred)[i]) %>%
       arrange(desc(X)) %>%
-      mutate(TPR = cumsum(Y == 1) / sum(Y == 1),
-             PPV = cumsum(Y == 1) / (cumsum(Y == 1) + cumsum(Y == 0))) %>%
+      mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
+             PPV = cumsum(Y == 1L) / (cumsum(Y == 1L) + cumsum(Y == 0L))) %>%
       return()
   })
 
   # Build plot
   leg <- function(i) {           # Print AUC
-    pos <- df %>% filter(Classifier == names(pred)[i], Y == 1)
-    neg <- df %>% filter(Classifier == names(pred)[i], Y == 0)
+    pos <- df %>% filter(Classifier == names(pred)[i], Y == 1L)
+    neg <- df %>% filter(Classifier == names(pred)[i], Y == 0L)
     txt <- paste0(names(pred)[i], ', AUC = ',
-                  round(pr.curve(pos$X, neg$X)$auc.integral, 2))
+                  round(pr.curve(pos$X, neg$X)$auc.integral, 2L))
     return(txt)
   }
   p <- ggplot(df, aes(TPR, PPV)) +
     labs(title = main, x = 'Recall', y = 'Precision') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1) {        # Multiple curves?
+  if (length(pred) > 1L) {        # Multiple curves?
     suppressWarnings(
       p <- p + geom_line(aes(text = Classifier,
                             group = Classifier,
@@ -158,7 +158,11 @@ plot_pr <- function(obs,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 
