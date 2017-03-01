@@ -111,9 +111,6 @@ plot_mv <- function(dat,
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for',
                'plot_mv.'))
   }
-  if (is.null(rownames(dat))) {
-    rownames(dat) <- seq_len(nrow(dat))
-  }
   if (is(dat, 'MArrayLM') && is.null(dat$t) && is.null(dat$F)) {
     warning('Standard errors for dat have not been moderated. Consider re-running ',
             'plot_mv after shrinking residual variance with eBayes. See ?eBayes ',
@@ -142,9 +139,11 @@ plot_mv <- function(dat,
   }
 
   # Tidy data
+  if (is.null(rownames(dat))) {
+    rownames(dat) <- seq_len(nrow(dat))
+  }
   if (!is(dat, 'MArrayLM') && !is(dat, 'DESeqDataSet')) {
-    dat <- getEAWP(dat)
-    dat <- dat$expr
+    dat <- getEAWP(dat)$expr
     keep <- rowSums(is.finite(dat)) == ncol(dat)
     dat <- dat[keep, , drop = FALSE]
     mu <- rowMeans(dat)
@@ -156,11 +155,6 @@ plot_mv <- function(dat,
       prior <- sqrt(dat$s2.prior)
     }
   } else if (is(dat, 'DESeqDataSet')) {
-    lcpm <- function(x) {
-      x <- DGEList(x)
-      x <- calcNormFactors(x, method = 'RLE')
-      x <- cpm(x, log = TRUE, prior.count = 1)
-    }
     fit <- assays(dat)[['mu']]
     keep <- rowSums(is.finite(fit)) == ncol(fit)
     fit <- lcpm(fit[keep, , drop = FALSE])
@@ -225,8 +219,8 @@ plot_mv <- function(dat,
     p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM fit'),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
-    if (length(dat$s2.prior) == 1) {
-      p <- p + geom_abline(aes(color = 'Prior'), slope = 0, intercept = dat$s2.prior)
+    if (length(dat$s2.prior) == 1L) {
+      p <- p + geom_abline(aes(color = 'Prior'), slope = 0, intercept = prior)
     } else {
       p <- p + geom_smooth(aes(Mu, Prior, color = 'Prior'),
                            method = 'gam', formula = y ~ s(x, bs = 'cs'),
@@ -256,7 +250,11 @@ plot_mv <- function(dat,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    if (legend == 'outside' && 'Prior' %in% colnames(df)) {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 
