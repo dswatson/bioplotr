@@ -44,6 +44,7 @@
 #' plot_covar(mat, clin)
 #'
 #' @export
+#' @importFrom limma getEAWP is.fullrank
 #' @importFrom purrr map_chr
 #' @import dplyr
 #' @import ggplot2
@@ -59,11 +60,7 @@ plot_covar <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
-  dat <- getEAWP(dat)
-  dat <- dat$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
-  clin <- as.data.frame(clin)
+  clin <- tbl_df(clin)
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
   }
@@ -86,11 +83,6 @@ plot_covar <- function(dat,
   }
   dat <- dat[, match(clin[[index]], colnames(dat))]
   clin <- clin[, -which(colnames(clin) == index)]
-  is.fullrank <- function(x) {
-    x <- as.matrix(x)
-    e <- eigen(crossprod(x), symmetric = TRUE, only.values = TRUE)$values
-    e[1] > 0 && abs(e[length(e)] / e[1]) > 1e-13
-  }
   if (!is.null(block)) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -115,28 +107,29 @@ plot_covar <- function(dat,
                  ifelse(is.numeric(clin[, j]), 'numeric', 'factor')
              })) %>%
     print()
-  if (is.null(main)) {
-    main <- 'Variation by Feature'
-  }
+  if (is.null(main)) main <- 'Variation by Feature'
 
   # Tidy data
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   pca <- prcomp(t(dat))                        # PCA
   pve <- map_chr(seq_len(n.pc), function(pc) {
-    p <- round(pca$sdev[pc]^2 / sum(pca$sdev^2) * 100, 2)
+    p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('\n(', p, '%)')
   })
   sig <- function(var, pc) {                   # p-val fn
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[, var])
       ifelse(is.numeric(clin[, var]),
-             -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
+             -log10(summary(mod)$coef[2L, 4L]), -log10(anova(mod)[1L, 5L]))
     } else {
       mod <- lm(pca$x[, pc] ~ clin[, var] + clin[[block]])
       if (identical(clin[, var], clin[[block]])) {
-        -log10(anova(mod)[1, 5])
+        -log10(anova(mod)[1L, 5L])
       } else {
         ifelse(is.numeric(clin[, var]),
-               -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
+               -log10(summary(mod)$coef[2L, 4L]), -log10(anova(mod)[1L, 5L]))
       }
     }
   }
