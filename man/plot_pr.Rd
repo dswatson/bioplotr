@@ -36,11 +36,11 @@ binary classifiers, especially when the prevalence of the outcome in question is
 relatively low.
 }
 \examples{
-y <- rbinom(100, size = 1, prob = 0.1)
-x <- rnorm(100, mean = y, sd = 0.5)
+y <- rbinom(1000, size = 1, prob = 0.1)
+x <- rnorm(1000, mean = y, sd = 0.5)
 plot_pr(obs = y, pred = x)
 
-x2 <- rnorm(100, mean = y, sd = 2)
+x2 <- rnorm(1000, mean = y, sd = 2)
 plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
 
 }
