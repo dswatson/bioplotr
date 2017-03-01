@@ -87,7 +87,7 @@ Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
 "Variance Stabilization Applied to Microarray Data Calibration and to the
 Quantification of Differential Expression." \emph{Bioinformatics}, \emph{18}:1,
 S96-2104.
-\url{}
+\url{https://www.ncbi.nlm.nih.gov/pubmed/12169536}
 
 Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
 & Medvedovic, M. (2006). "Intensity-based hierarchical Bayes method improves
