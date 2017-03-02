@@ -90,7 +90,7 @@
 #'
 #' @export
 #' @importFrom limma getEAWP
-#' @importFrom DESeq2 counts assays
+#' @importFrom DESeq2 counts assay
 #' @importFrom edgeR DGEList calcNormFactors cpm
 #' @importFrom matrixStats rowSds
 #' @import dplyr
@@ -169,18 +169,14 @@ plot_mv <- function(dat,
     ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if ('s2.prior' %in% names(dat)) {
-      prior <- sqrt(prior)
-    }
+    if ('s2.prior' %in% names(dat)) prior <- sqrt(prior)
     xlab <- expression(mu)
     ylab <- expression(sqrt(sigma))
   }
   df <- data_frame(Probe = rownames(dat),
                       Mu = mu,
                    Sigma = sigma)
-  if ('s2.prior' %in% names(dat)) {         # Optional prior curve
-    df <- df %>% mutate(Prior = prior)
-  }
+  if ('s2.prior' %in% names(dat)) df <- df %>% mutate(Prior = prior)
   if (length(dat$s2.prior) > 1L) {          # Check for outliers
     s2 <- dat$sigma^2L / dat$s2.prior
     pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
