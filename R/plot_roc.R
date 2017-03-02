@@ -34,7 +34,7 @@
 #' @import dplyr
 #' @importFrom purrr map map_df map_chr
 #' @import ggplot2
-#' @importFrom ModelMetrics auc
+#' @importFrom limma auROC
 #' @importFrom scales hue_pal
 #' @importFrom plotly ggplotly
 #'
@@ -110,8 +110,7 @@ plot_roc <- function(obs,
 
   # Plot
   p_auc <- function(i) {           # Print AUC
-    paste0(names(pred)[i], ', AUC = ',
-           round(ModelMetrics::auc(obs, pred[[i]]), 2L))
+    paste0(names(pred)[i], ', AUC = ', round(auROC(obs, pred[[i]]), 2L))
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
