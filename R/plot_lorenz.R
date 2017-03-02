@@ -52,11 +52,8 @@ plot_lorenz <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
-  if (is.data.frame(dat)) {
-    dat <- as.list(dat)
-  } else if (!is.list(dat)) {
-    dat <- list(dat)
-  }
+  if (is.data.frame(dat)) dat <- as.list(dat)
+  else if (!is.list(dat)) dat <- list(dat)
   if (is.null(names(dat))) {
     names(dat) <- paste0('x', seq_along(dat))
   }
@@ -65,27 +62,20 @@ plot_lorenz <- function(dat,
       stop('dat must be a numeric vector, or several such vectors organized into ',
            'a list or data frame.')
     }
-    if (min(dat[[i]] < 0)) {
+    if (min(dat[[i]] < 0L)) {
       warning('Lorenz curves and Gini coefficients for data with negative values ',
               'should be interpreted with caution.')
     }
-    if (length(na.omit(dat[[i]])) <= 2) {
+    if (length(na.omit(dat[[i]])) <= 2L) {
       warning('Lorenz curves and Gini coefficients for vectors of length <= 2 ',
               'should be interpreted with caution.')
     }
   }
-  if (is.null(xlab)) {
-    xlab <- 'Cumulative Proportion of Observations'
-  }
-  if (is.null(ylab)) {
-    ylab <- 'Cumulative Proportion of Values'
-  }
+  if (is.null(xlab)) xlab <- 'Cumulative Proportion of Observations'
+  if (is.null(ylab)) ylab <- 'Cumulative Proportion of Values'
   if (is.null(main)) {
-    if (length(dat) == 1) {
-      main <- 'Lorenz Curve'
-    } else {
-      main <- 'Lorenz Curves'
-    }
+    if (length(dat) == 1L) main <- 'Lorenz Curve'
+    else main <- 'Lorenz Curves'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -95,49 +85,49 @@ plot_lorenz <- function(dat,
   # Tidy data
   dfs <- map(seq_along(dat), function(i) {
     x <- sort(dat[[i]][is.finite(dat[[i]])])
-    n <- rep(1, length(x))
+    n <- rep(1L, length(x))
     p <- cumsum(n) / sum(n)
     L <- cumsum(x) / sum(x)
-    p <- c(0, p)
-    L <- c(0, L)
+    p <- c(0L, p)
+    L <- c(0L, L)
     df <- data_frame(Title = names(dat)[i],
                 Proportion = p,
                     Lorenz = L)
     return(df)
   })
 
-  # Plot
-  gini <- function(x) {          # Calculate Gini coefficient
+  # Build plot
+  gini <- function(x) {                     # Calculate Gini coefficient
     x <- sort(x[is.finite(x)])
     n <- length(x)
-    g <- (2 * sum(x * seq_len(n)) / sum(x) - (n + 1)) / n
-    return(round(g, 2))
+    g <- (2 * sum(x * seq_len(n)) / sum(x) - (n + 1L)) / n
+    return(round(g, 2L))
   }
-  leg <- function(i) {           # Print Gini coefficient
+  p_gin <- function(i) {                    # Print Gini coefficient
     paste0(names(dat)[i], ', Gini = ', gini(dat[[i]]))
   }
   p <- ggplot() +
-    geom_abline(intercept = 0, slope = 1) +
+    geom_abline(intercept = 0L, slope = 1L) +
     labs(title = main, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(dat) > 1) {         # Multiple curves?
+  if (length(dat) > 1L) {                   # Multiple curves?
     for (i in seq_along(dat)) {
       suppressWarnings(
         p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
                                                 text = Title, color = Title)) +
           scale_colour_manual(name = 'Data',
-                            labels = map_chr(seq_along(dat), leg),
+                            labels = map_chr(seq_along(dat), p_gin),
                             values = hue_pal()(length(dat)))
       )
     }
   } else {
-    p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz)) +
+    p <- p + geom_path(data = dfs[[1L]], aes(Proportion, Lorenz)) +
       scale_colour_manual(name = 'Data',
-                        labels = map_chr(seq_along(dat), leg),
+                        labels = map_chr(seq_along(dat), p_gin),
                         values = hue_pal()(length(dat)))
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {             # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
@@ -155,7 +145,11 @@ plot_lorenz <- function(dat,
   if (!hover) {
     print(p)
   } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
     print(p)
   }
 
