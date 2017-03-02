@@ -3,8 +3,8 @@
 #' This function displays each sample's omic data distribution as a box and
 #' whicker plot.
 #'
-#' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
 #' @param group Optional character or factor vector of length equal to sample size.
 #'   Levels are used to color box plots. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
