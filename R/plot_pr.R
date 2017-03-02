@@ -47,9 +47,7 @@ plot_pr <- function(obs,
                    hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) {
-    obs <- as.factor(obs)
-  }
+  if (is.character(obs)) obs <- as.factor(obs)
   if (is.factor(obs)) {
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
@@ -57,7 +55,7 @@ plot_pr <- function(obs,
       warning('A positive outcome is hereby defined as obs == "', levels(obs)[1L], '". ',
               'To change this to obs == "', levels(obs)[2L], '", either relevel the ',
               'factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1], 1, 0)
+      obs <- ifelse(obs == levels(obs)[1L], 1L, 0L)
     }
   }
   if (is.logical(obs)) {
@@ -69,11 +67,8 @@ plot_pr <- function(obs,
   if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
-  if (is.data.frame(pred)) {
-    pred <- as.list(pred)
-  } else if (!is.list(pred)) {
-    pred <- list(pred)
-  }
+  if (is.data.frame(pred)) pred <- as.list(pred)
+  else if (!is.list(pred)) pred <- list(pred)
   if (is.null(names(pred))) {
       names(pred) <- paste0('M', seq_along(pred))
   }
@@ -96,9 +91,7 @@ plot_pr <- function(obs,
   }
 
   # Tidy data
-  pred <- map(pred, function(x) {
-    x <- x[is.finite(x)]
-  })
+  pred <- map(pred, function(x) x <- x[is.finite(x)])
   df <- map_df(seq_along(pred), function(i) {
     data_frame(Y = obs,
                X = pred[[i]],
@@ -110,7 +103,7 @@ plot_pr <- function(obs,
   })
 
   # Build plot
-  leg <- function(i) {                      # Print AUC
+  p_auc <- function(i) {                    # Print AUC
     pos <- df %>% filter(Classifier == names(pred)[i], Y == 1L)
     neg <- df %>% filter(Classifier == names(pred)[i], Y == 0L)
     txt <- paste0(names(pred)[i], ', AUC = ',
@@ -127,14 +120,14 @@ plot_pr <- function(obs,
                             group = Classifier,
                             color = Classifier)) +
         scale_colour_manual(name = 'Classifier',
-                          labels = map_chr(seq_along(pred), leg),
+                          labels = map_chr(seq_along(pred), p_auc),
                           values = hue_pal()(length(pred)))
     )
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_line(aes(color = Classifier)) +
       scale_colour_manual(name = 'Classifier',
-                        labels = map_chr(seq_along(pred), leg),
+                        labels = map_chr(seq_along(pred), p_auc),
                         values = 'black')
   }
   if (legend == 'bottomleft') {             # Locate legend
