@@ -87,11 +87,8 @@ plot_pr <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1L) {
-      main <- 'Precision-Recall Curve'
-    } else {
-      main <- 'Precision-Recall Curves'
-    }
+    if (length(pred) == 1L) main <- 'Precision-Recall Curve'
+    else main <- 'Precision-Recall Curves'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -113,7 +110,7 @@ plot_pr <- function(obs,
   })
 
   # Build plot
-  leg <- function(i) {           # Print AUC
+  leg <- function(i) {                      # Print AUC
     pos <- df %>% filter(Classifier == names(pred)[i], Y == 1L)
     neg <- df %>% filter(Classifier == names(pred)[i], Y == 0L)
     txt <- paste0(names(pred)[i], ', AUC = ',
@@ -124,7 +121,7 @@ plot_pr <- function(obs,
     labs(title = main, x = 'Recall', y = 'Precision') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1L) {        # Multiple curves?
+  if (length(pred) > 1L) {                  # Multiple curves?
     suppressWarnings(
       p <- p + geom_line(aes(text = Classifier,
                             group = Classifier,
@@ -140,7 +137,7 @@ plot_pr <- function(obs,
                         labels = map_chr(seq_along(pred), leg),
                         values = 'black')
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {             # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

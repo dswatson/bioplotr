@@ -46,9 +46,7 @@ plot_roc <- function(obs,
                     hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) {
-    obs <- as.factor(obs)
-  }
+  if (is.character(obs)) obs <- as.factor(obs)
   if (is.factor(obs)) {
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
@@ -59,20 +57,15 @@ plot_roc <- function(obs,
       obs <- ifelse(obs == levels(obs)[1L], 1L, 0L)
     }
   }
-  if (is.logical(obs)) {
-    obs <- ifelse(obs, 1L, 0L)
-  }
+  if (is.logical(obs)) obs <- ifelse(obs, 1L, 0L)
   if (!all(obs %in% c(0L, 1L))) {
     stop('A numeric response can only take on values of 0 or 1.')
   }
   if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
-  if (is.data.frame(pred)) {
-    pred <- as.list(pred)
-  } else if (!is.list(pred)) {
-    pred <- list(pred)
-  }
+  if (is.data.frame(pred)) pred <- as.list(pred)
+  else if (!is.list(pred)) pred <- list(pred)
   if (is.null(names(pred))) {
     names(pred) <- paste0('M', seq_along(pred))
   }
@@ -86,11 +79,8 @@ plot_roc <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1L) {
-      main <- 'ROC Curve'
-    } else {
-      main <- 'ROC Curves'
-    }
+    if (length(pred) == 1L) main <- 'ROC Curve'
+    else main <- 'ROC Curves'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -98,9 +88,7 @@ plot_roc <- function(obs,
   }
 
   # Tidy data
-  pred <- map(pred, function(x) {
-    x <- x[is.finite(x)]
-  })
+  pred <- map(pred, function(x) x <- x[is.finite(x)])
   originate <- function(tbl) {
     data_frame(TPR = 0L,
                FPR = 0L,
@@ -121,10 +109,9 @@ plot_roc <- function(obs,
   })
 
   # Plot
-  leg <- function(i) {           # Print AUC
-    txt <- paste0(names(pred)[i], ', AUC = ',
-                  round(ModelMetrics::auc(obs, pred[[i]]), 2L))
-    return(txt)
+  p_auc <- function(i) {           # Print AUC
+    paste0(names(pred)[i], ', AUC = ',
+           round(ModelMetrics::auc(obs, pred[[i]]), 2L))
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
@@ -133,19 +120,19 @@ plot_roc <- function(obs,
              y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1) {        # Multiple curves?
+  if (length(pred) > 1L) {        # Multiple curves?
     suppressWarnings(
       p <- p + geom_step(aes(text = Classifier,
                             group = Classifier,
                             color = Classifier)) +
         scale_colour_manual(name = 'Classifier',
-                          labels = map_chr(seq_along(pred), leg),
+                          labels = map_chr(seq_along(pred), p_auc),
                           values = hue_pal()(length(pred)))
     )
   } else {
     p <- p + geom_step(aes(color = Classifier)) +
       scale_colour_manual(name = 'Classifier',
-                        labels = map_chr(seq_along(pred), leg),
+                        labels = map_chr(seq_along(pred), p_auc),
                         values = 'black')
   }
   if (legend == 'bottomleft') {  # Locate legend
