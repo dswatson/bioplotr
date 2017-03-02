@@ -8,7 +8,7 @@ plot_mv(dat, trans = "rank", ptsize = 0.25, main = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{An omic data matrix or matrix-like object with rows corresponding to
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples. Data are presumed to be normalized prior to
 visualization. Alternatively, a fitted model object of class \code{\link
 [limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.}
