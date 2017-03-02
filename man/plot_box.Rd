@@ -8,8 +8,8 @@ plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples.}
 
 \item{group}{Optional character or factor vector of length equal to sample size.
 Levels are used to color box plots. If supplied, legend title defaults to
