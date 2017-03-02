@@ -3,7 +3,7 @@
 #' This function visualizes the mean-variance relationship of omic data before
 #' or after modeling.
 #'
-#' @param dat An omic data matrix or matrix-like object with rows corresponding to
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples. Data are presumed to be normalized prior to
 #'   visualization. Alternatively, a fitted model object of class \code{\link
 #'   [limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.
@@ -130,18 +130,14 @@ plot_mv <- function(dat,
             'Consider using trans = "rank" or "log" when passing an object of class ',
             'MArrayLM or DESeqDataSet.')
   }
-  if (is.null(main)) {
-    main <- 'Mean-Variance Plot'
-  }
+  if (is.null(main)) main <- 'Mean-Variance Plot'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright".')
   }
 
   # Tidy data
-  if (is.null(rownames(dat))) {
-    rownames(dat) <- seq_len(nrow(dat))
-  }
+  if (is.null(rownames(dat))) rownames(dat) <- seq_len(nrow(dat))
   if (!is(dat, 'MArrayLM') && !is(dat, 'DESeqDataSet')) {
     dat <- getEAWP(dat)$expr
     keep <- rowSums(is.finite(dat)) == ncol(dat)
@@ -151,9 +147,7 @@ plot_mv <- function(dat,
   } else if (is(dat, 'MArrayLM')) {
     mu <- dat$Amean
     sigma <- dat$sigma
-    if ('s2.prior' %in% names(dat)) {
-      prior <- sqrt(dat$s2.prior)
-    }
+    if ('s2.prior' %in% names(dat)) prior <- sqrt(dat$s2.prior)
   } else if (is(dat, 'DESeqDataSet')) {
     fit <- assays(dat)[['mu']]
     keep <- rowSums(is.finite(fit)) == ncol(fit)
@@ -170,9 +164,7 @@ plot_mv <- function(dat,
     ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if ('s2.prior' %in% names(dat)) {
-      prior <- log2(prior)
-    }
+    if ('s2.prior' %in% names(dat)) prior <- log2(prior)
     xlab <- expression(mu)
     ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
