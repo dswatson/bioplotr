@@ -91,8 +91,8 @@ plot_volcano <- function(dat,
   }
   df <- dat %>%
     mutate(logP = -log10(p.value),
-          is.DE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
-    select(Probe, logFC, logP, is.DE)
+           isDE = map_lgl(q.value, function(q) ifelse(q < fdr, TRUE, FALSE))) %>%
+    select(Probe, logFC, logP, isDE)
 
   # Build plot
   suppressWarnings(
@@ -103,12 +103,12 @@ plot_volcano <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (all(!df$is.DE)) {          # Color pts by differential expression?
+  if (all(!df$isDE)) {          # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression/methylation, consider raising your fdr cutoff.')
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
-    p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
+    p <- p + geom_point(aes(color = isDE), size = ptsize, alpha = 0.25) +
       scale_colour_manual(name = expression(italic(q)*'-value'),
                         labels = c(paste('\u2265', fdr), paste('<', fdr)),
                         values = c('black', 'red')) +
