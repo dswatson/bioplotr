@@ -11,6 +11,7 @@
 #'   (if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
 #'   \code{"sqrt"}). Not all transformations are appropriate for all data types.
 #'   See Details.
+#' @param span Width of the LOWESS smoothing window as a proportion.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
@@ -49,13 +50,13 @@
 #' not recommended for modeled data and will generate a warning if passed in
 #' conjunction with an \code{MArrayLM} or \code{DESeqDataSet} object.
 #'
-#' \code{plot_mv} fits a smooth curve to the points using a generalized additive
-#' model with a cubic regression spline. (See \code{mgcv::\link[mgcv]{gam}} for more
-#' details.) If standard errors were moderated with \code{eBayes}, then prior variance
-#' will also be plotted as either a horizontal line or a smooth curve, depending on
-#' whether a global or intensity-dependent prior was used. If robust empirical Bayes
-#' was used to create \code{dat}, then outlier variances are highlighted. See
-#' \code{\link[limma]{squeezeVar}} for more details.
+#' \code{plot_mv} fits a smooth curve to the points using a LOWESS local regression
+#' model with a smoothing window given by \code{span}. If standard errors were
+#' moderated with \code{eBayes}, then prior variance will also be plotted as either
+#' a horizontal line or a smooth curve, depending on whether a global or
+#' intensity-dependent prior was used. If robust empirical Bayes was used to create
+#' \code{dat}, then outlier variances are highlighted. See \code{\link[limma]
+#' {squeezeVar}} for more details.
 #'
 #' @references
 #' Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
@@ -90,7 +91,7 @@
 #'
 #' @export
 #' @importFrom limma getEAWP
-#' @importFrom DESeq2 counts assay
+#' @importFrom DESeq2 counts assays
 #' @importFrom edgeR DGEList calcNormFactors cpm
 #' @importFrom matrixStats rowSds
 #' @import dplyr
@@ -101,15 +102,15 @@
 
 plot_mv <- function(dat,
                   trans = 'rank',
+                   span = 0.5,
                  ptsize = 0.25,
                    main = NULL,
                  legend = 'outside',
                   hover = FALSE) {
 
   # Preliminaries
-  if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for',
-               'plot_mv.'))
+  if (nrow(dat) < 2L) {
+    stop('plot_mv requires at least 2 probes to fit a mean-variance trend.')
   }
   if (is(dat, 'MArrayLM') && is.null(dat$t) && is.null(dat$F)) {
     warning('Standard errors for dat have not been moderated. Consider re-running ',
@@ -137,7 +138,8 @@ plot_mv <- function(dat,
   }
 
   # Tidy data
-  if (is.null(rownames(dat))) rownames(dat) <- seq_len(nrow(dat))
+  if (is.null(rownames(dat))) probes <- seq_len(nrow(dat))
+  else probes <- rownames(dat)
   if (!is(dat, 'MArrayLM') && !is(dat, 'DESeqDataSet')) {
     dat <- getEAWP(dat)$expr
     keep <- rowSums(is.finite(dat)) == ncol(dat)
@@ -173,18 +175,23 @@ plot_mv <- function(dat,
     xlab <- expression(mu)
     ylab <- expression(sqrt(sigma))
   }
-  df <- data_frame(Probe = rownames(dat),
+  lo <- lowess(mu, sigma, f = span)
+  df <- data_frame(Probe = probes,
                       Mu = mu,
-                   Sigma = sigma)
-  if ('s2.prior' %in% names(dat)) df <- df %>% mutate(Prior = prior)
-  if (length(dat$s2.prior) > 1L) {          # Check for outliers
-    s2 <- dat$sigma^2L / dat$s2.prior
-    pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
-    pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
-    FDR <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
-    df <- df %>% mutate(Outlier = map_lgl(seq_len(nrow(dat)), function(i) {
-      ifelse(FDR[i] <= 0.05, TRUE, FALSE)
-    }))
+                   Sigma = sigma,
+                   Mu_lo = lo[['x']],
+                Sigma_lo = lo[['y']])
+  if ('s2.prior' %in% names(dat)) {
+    df <- df %>% mutate(Prior = prior)
+    if (length(dat$s2.prior) > 1L) {          # Check for outliers
+      s2 <- dat$sigma^2L / dat$s2.prior
+      pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
+      pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
+      FDR <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
+      df <- df %>% mutate(Outlier = map_lgl(seq_len(nrow(dat)), function(i) {
+        ifelse(FDR[i] <= 0.05, TRUE, FALSE)
+      }))
+    }
   }
 
   # Build plot
@@ -204,7 +211,7 @@ plot_mv <- function(dat,
     )
   }
   if ('Prior' %in% colnames(df)) {          # Plot prior
-    p <- p + geom_smooth(aes(Mu, Sigma, color = 'GAM fit'),
+    p <- p + geom_smooth(aes(Mu_lo, Sigma_lo, color = 'LOWESS fit'),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
     if (length(dat$s2.prior) == 1L) {
@@ -217,7 +224,8 @@ plot_mv <- function(dat,
     p <- p + scale_color_manual(name = 'Curves', values = c('red', 'blue')) +
       guides(col = guide_legend(reverse = TRUE))
   } else {
-    p <- p + geom_smooth(aes(Mu, Sigma), method = 'gam', formula = y ~ s(x, bs = 'cs'),
+    p <- p + geom_smooth(aes(Mu_lo, Sigma_lo),
+                         method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
   }
   if (legend == 'bottomleft') {             # Locate legend
