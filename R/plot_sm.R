@@ -43,7 +43,7 @@ plot_sm <- function(dat,
   else if (!is.list(feat)) feat <- list('Variable' = feat)
   else {
     if (is.null(names(feat))) {
-      if (length(feat) == 1) names(feat) <- 'Variable'
+      if (length(feat) == 1L) names(feat) <- 'Variable'
       else names(feat) <- paste('Variable', seq_along(feat))
     }
   }
@@ -64,7 +64,7 @@ plot_sm <- function(dat,
   dat <- getEAWP(dat)$expr
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
-  dm <- dist.matrix(scale(t(dat)), method = 'euclidean')
+  dm <- dist.matrix(dat, method = 'euclidean', byrow = FALSE)
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
   # Plot
