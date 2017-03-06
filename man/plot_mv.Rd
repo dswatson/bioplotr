@@ -4,7 +4,7 @@
 \alias{plot_mv}
 \title{Mean-Variance Plot}
 \usage{
-plot_mv(dat, trans = "rank", ptsize = 0.25, main = NULL,
+plot_mv(dat, trans = "rank", span = 0.5, ptsize = 0.25, main = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
@@ -17,6 +17,8 @@ visualization. Alternatively, a fitted model object of class \code{\link
 (if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
 \code{"sqrt"}). Not all transformations are appropriate for all data types.
 See Details.}
+
+\item{span}{Width of the LOWESS smoothing window as a proportion.}
 
 \item{ptsize}{Size of data points in the plot.}
 
@@ -63,13 +65,13 @@ for count data on the log2-counts per million scale. The latter transformation i
 not recommended for modeled data and will generate a warning if passed in
 conjunction with an \code{MArrayLM} or \code{DESeqDataSet} object.
 
-\code{plot_mv} fits a smooth curve to the points using a generalized additive
-model with a cubic regression spline. (See \code{mgcv::\link[mgcv]{gam}} for more
-details.) If standard errors were moderated with \code{eBayes}, then prior variance
-will also be plotted as either a horizontal line or a smooth curve, depending on
-whether a global or intensity-dependent prior was used. If robust empirical Bayes
-was used to create \code{dat}, then outlier variances are highlighted. See
-\code{\link[limma]{squeezeVar}} for more details.
+\code{plot_mv} fits a smooth curve to the points using a LOWESS local regression
+model with a smoothing window given by \code{span}. If standard errors were
+moderated with \code{eBayes}, then prior variance will also be plotted as either
+a horizontal line or a smooth curve, depending on whether a global or
+intensity-dependent prior was used. If robust empirical Bayes was used to create
+\code{dat}, then outlier variances are highlighted. See \code{\link[limma]
+{squeezeVar}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
