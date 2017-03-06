@@ -7,8 +7,8 @@
 plot_sm(dat, feat = NULL, main = NULL)
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples. \code{NA} values are silently removed.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples.}
 
 \item{feat}{Optional character, factor, numeric, or logical vector of length
 equal to sample size. Alternatively, a data frame or list of such vectors,
@@ -18,13 +18,14 @@ atop the heatmap.}
 \item{main}{Optional plot title.}
 }
 \description{
-This function displays the pairwise scaled Euclidean distance between samples
-as a heatmap.
+This function displays pairwise Euclidean distances between samples as a
+heatmap.
 }
 \details{
 Similarity matrices are a valuable tool for exploratory data analysis. A
 hierarchical clustering dendrogram atop the figure helps identify potential
-outliers and/or clusters in the data.
+outliers and/or clusters in the data. Annotation tracks can help investigate
+associations with phenotypic features.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)

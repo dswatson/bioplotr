@@ -1,10 +1,10 @@
 #' Similarity Matrix Heatmap
 #'
-#' This function displays the pairwise scaled Euclidean distance between samples
-#' as a heatmap.
+#' This function displays pairwise Euclidean distances between samples as a
+#' heatmap.
 #'
-#' @param dat Omic data matrix with rows corresponding to probes and columns
-#'   to samples. \code{NA} values are silently removed.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
 #' @param feat Optional character, factor, numeric, or logical vector of length
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
@@ -14,7 +14,8 @@
 #' @details
 #' Similarity matrices are a valuable tool for exploratory data analysis. A
 #' hierarchical clustering dendrogram atop the figure helps identify potential
-#' outliers and/or clusters in the data.
+#' outliers and/or clusters in the data. Annotation tracks can help investigate
+#' associations with phenotypic features.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -29,6 +30,7 @@
 #'
 #' @export
 #' @importFrom purrr map_lgl
+#' @importFrom limma getEAWP
 #' @importFrom wordspace dist.matrix
 #' @importFrom NMF aheatmap
 #' @import RColorBrewer
@@ -65,9 +67,9 @@ plot_sm <- function(dat,
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   dm <- dist.matrix(dat, method = 'euclidean', byrow = FALSE)
-  rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
 
   # Plot
+  rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
   if (is.null(feat)) {
     aheatmap(dm, col = rb, Rowv = FALSE, main = main,
              distfun = function(x) as.dist(x), hclustfun = 'average')
