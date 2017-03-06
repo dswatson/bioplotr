@@ -6,9 +6,10 @@
 #'   logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
 #'   or \code{0}. If character or factor, a warning will be issued clarifying that
 #'   the first level is assumed to be the reference.
-#' @param pred Vector of predicted values, or several such vectors organized into
-#'   a list or data frame. Must be numeric. Common examples include the probabilities
-#'   output by a logistic model, or the expression levels of a particular biomarker.
+#' @param pred Vector of predicted values, or several such vectors organized into a
+#'   data frame or list, optionally named. Must be numeric. Common examples include
+#'   the probabilities output by a logistic model, or the expression levels of a
+#'   particular biomarker.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -66,15 +67,16 @@ plot_roc <- function(obs,
   }
   if (is.data.frame(pred)) pred <- as.list(pred)
   else if (!is.list(pred)) pred <- list(pred)
+  pred <- map(pred, function(x) x <- x[is.finite(x)])
   if (is.null(names(pred))) {
     names(pred) <- paste0('M', seq_along(pred))
   }
-  for (i in seq_along(pred)) {
-    if (!is.numeric(pred[[i]])) {
+  for (x in seq_along(pred)) {
+    if (!is.numeric(pred[[x]])) {
       stop('pred must be a numeric vector, or several such vectors organized into ',
            'a list or data frame.')
     }
-    if (length(obs) != length(pred[[i]])) {
+    if (length(obs) != length(pred[[x]])) {
       stop('obs and pred vectors must be of equal length.')
     }
   }
@@ -88,7 +90,6 @@ plot_roc <- function(obs,
   }
 
   # Tidy data
-  pred <- map(pred, function(x) x <- x[is.finite(x)])
   originate <- function(tbl) {
     data_frame(TPR = 0L,
                FPR = 0L,
@@ -96,10 +97,10 @@ plot_roc <- function(obs,
       rbind(tbl) %>%
       return()
   }
-  df <- map_df(seq_along(pred), function(i) {
+  df <- map_df(seq_along(pred), function(x) {
     data_frame(Y = obs,
-               X = pred[[i]],
-      Classifier = names(pred)[i]) %>%
+               X = pred[[x]],
+      Classifier = names(pred)[x]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
              FPR = cumsum(Y == 0L) / sum(Y == 0L)) %>%
@@ -108,9 +109,9 @@ plot_roc <- function(obs,
       return()
   })
 
-  # Plot
-  p_auc <- function(i) {           # Print AUC
-    paste0(names(pred)[i], ', AUC = ', round(auROC(obs, pred[[i]]), 2L))
+  # Build plot
+  p_auc <- function(x) {           # Print AUC
+    paste0(names(pred)[x], ', AUC = ', round(auROC(obs, pred[[x]]), 2L))
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +

@@ -12,9 +12,10 @@ character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
 or \code{0}. If character or factor, a warning will be issued clarifying that
 the first level is assumed to be the reference.}
 
-\item{pred}{Vector of predicted values, or several such vectors organized into
-a list or data frame. Must be numeric. Common examples include the probabilities
-output by a logistic model, or the expression levels of a particular biomarker.}
+\item{pred}{Vector of predicted values, or several such vectors organized into a
+data frame or list, optionally named. Must be numeric. Common examples include
+the probabilities output by a logistic model, or the expression levels of a
+particular biomarker.}
 
 \item{main}{Optional plot title.}
 

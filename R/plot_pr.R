@@ -6,9 +6,10 @@
 #'   character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
 #'   or \code{0}. If character or factor, a warning will be issued clarifying that
 #'   the first level is assumed to be the reference.
-#' @param pred Vector of predicted values, or several such vectors organized into
-#'   a list or data frame. Must be numeric. Common examples include the probabilities
-#'   output by a logistic model, or the expression levels of a particular biomarker.
+#' @param pred Vector of predicted values, or several such vectors organized into a
+#'   data frame or list, optionally named. Must be numeric. Common examples include
+#'   the probabilities output by a logistic model, or the expression levels of a
+#'   particular biomarker.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -69,15 +70,16 @@ plot_pr <- function(obs,
   }
   if (is.data.frame(pred)) pred <- as.list(pred)
   else if (!is.list(pred)) pred <- list(pred)
+  pred <- map(pred, function(x) x <- x[is.finite(x)])
   if (is.null(names(pred))) {
       names(pred) <- paste0('M', seq_along(pred))
   }
-  for (i in seq_along(pred)) {
-    if (!is.numeric(pred[[i]])) {
+  for (x in seq_along(pred)) {
+    if (!is.numeric(pred[[x]])) {
       stop('pred must be a numeric vector, or several such vectors organized into ',
            'a list or data frame.')
     }
-    if (length(obs) != length(pred[[i]])) {
+    if (length(obs) != length(pred[[x]])) {
       stop('obs and pred vectors must be of equal length.')
     }
   }
@@ -91,11 +93,10 @@ plot_pr <- function(obs,
   }
 
   # Tidy data
-  pred <- map(pred, function(x) x <- x[is.finite(x)])
-  df <- map_df(seq_along(pred), function(i) {
+  df <- map_df(seq_along(pred), function(x) {
     data_frame(Y = obs,
-               X = pred[[i]],
-      Classifier = names(pred)[i]) %>%
+               X = pred[[x]],
+      Classifier = names(pred)[x]) %>%
       arrange(desc(X)) %>%
       mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
              PPV = cumsum(Y == 1L) / (cumsum(Y == 1L) + cumsum(Y == 0L))) %>%
@@ -103,10 +104,10 @@ plot_pr <- function(obs,
   })
 
   # Build plot
-  p_auc <- function(i) {                    # Print AUC
-    pos <- df %>% filter(Classifier == names(pred)[i], Y == 1L)
-    neg <- df %>% filter(Classifier == names(pred)[i], Y == 0L)
-    txt <- paste0(names(pred)[i], ', AUC = ',
+  p_auc <- function(x) {                    # Print AUC
+    pos <- df %>% filter(Classifier == names(pred)[x], Y == 1L)
+    neg <- df %>% filter(Classifier == names(pred)[x], Y == 0L)
+    txt <- paste0(names(pred)[x], ', AUC = ',
                   round(pr.curve(pos$X, neg$X)$auc.integral, 2L))
     return(txt)
   }
