@@ -14,7 +14,7 @@ or \code{0}. If character or factor, a warning will be issued clarifying that
 the first level is assumed to be the reference.}
 
 \item{pred}{Vector of predicted probabilities, or several such vectors organized
-into a data frame or list, optionally named. Must be numeric on (0, 1).}
+into a data frame or list, optionally named. Must be numeric on \code{(0, 1)}.}
 
 \item{main}{Optional plot title.}
 
@@ -29,7 +29,10 @@ display or appear in the RStudio viewer.}
 This functions plots probability calibration curves for one or several classifiers.
 }
 \details{
-Calibration curves...
+Calibration curves are a quick and easy way to evaluate a classifier's fit to the
+data. This function allows one or several models to be plotted in the same figure,
+with points sized by the number of observations that fall within the corresponding
+bin.
 }
 \examples{
 x <- runif(1000)

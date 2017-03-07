@@ -17,7 +17,9 @@
 #'
 #' @details
 #' Calibration curves are a quick and easy way to evaluate a classifier's fit to the
-#' data.
+#' data. This function allows one or several models to be plotted in the same figure,
+#' with points sized by the number of observations that fall within the corresponding
+#' bin.
 #'
 #' @examples
 #' x <- runif(1000)
