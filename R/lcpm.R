@@ -9,5 +9,5 @@
 lcpm <- function(mat) {
   mat <- DGEList(mat)
   mat <- calcNormFactors(mat, method = 'RLE')
-  mat <- cpm(mat, log = TRUE, prior.count = 1L)
+  mat <- cpm(mat, log = TRUE, prior.count = 0.5)
 }
