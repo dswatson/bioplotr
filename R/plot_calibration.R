@@ -7,7 +7,7 @@
 #'   or \code{0}. If character or factor, a warning will be issued clarifying that
 #'   the first level is assumed to be the reference.
 #' @param pred Vector of predicted probabilities, or several such vectors organized
-#'   into a data frame or list, optionally named. Must be numeric on (0, 1).
+#'   into a data frame or list, optionally named. Must be numeric on \code{(0, 1)}.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -16,7 +16,8 @@
 #'   display or appear in the RStudio viewer.
 #'
 #' @details
-#' Calibration curves...
+#' Calibration curves are a quick and easy way to evaluate a classifier's fit to the
+#' data.
 #'
 #' @examples
 #' x <- runif(1000)
@@ -45,10 +46,10 @@ plot_calibration <- function(obs,
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
     } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1L], '". ',
-              'To change this to obs == "', levels(obs)[2L], '", either relevel the ',
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
+              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
               'factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1L], 1L, 0L)
+      obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
     }
   }
   if (is.logical(obs)) obs <- ifelse(obs, 1L, 0L)
@@ -90,10 +91,12 @@ plot_calibration <- function(obs,
   bin <- map(pred, function(x) {
     map_dbl(seq_along(x), function(i) which.max(x[i] <= breaks))
   })
-  exp_grps <- map(pred, function(x) split(x, bin))
-  obs_grps <- split(obs, bin)
+  exp_grps <- map(seq_along(pred), function(x) {
+    split(pred[[x]], bin[[x]])
+  })
+  obs_grps <- map(seq_along(bin), function(x) split(obs, bin[[x]]))
   df <- map_df(seq_along(pred), function(x) {
-    data_frame(Y = map_dbl(obs_grps, mean),
+    data_frame(Y = map_dbl(obs_grps[[x]], mean),
                X = map_dbl(exp_grps[[x]], mean),
                Freq = map_dbl(exp_grps[[x]], length),
                Classifier = names(pred)[x])
@@ -102,6 +105,7 @@ plot_calibration <- function(obs,
   # Build plot
   p <- ggplot(df, aes(X, Y)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
+    scale_size(range = c(1L, 5L)) +
     labs(title = main,
          x = 'Expected Probability',
          y = 'Observed Probability') +
@@ -109,12 +113,12 @@ plot_calibration <- function(obs,
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {
     suppressWarnings(
-      p <- geom_point(aes(Size = Freq, color = Classifier, text = Classifier)) +
-        geom_line(color = Classifier, text = Classifier)
+      p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
+        geom_path(aes(color = Classifier, text = Classifier))
     )
   } else {
-    p <- p + geom_point(aes(Size = Freq)) +
-      geom_line()
+    p <- p + geom_point(aes(size = Freq)) +
+      geom_path()
   }
   if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
