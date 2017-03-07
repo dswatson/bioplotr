@@ -100,7 +100,7 @@ plot_lorenz <- function(dat,
   gini <- function(x) {                     # Calculate Gini coefficient
     x <- sort(x[is.finite(x)])
     n <- length(x)
-    g <- (2 * sum(x * seq_len(n)) / sum(x) - (n + 1L)) / n
+    g <- (2L * sum(x * seq_len(n)) / sum(x) - (n + 1L)) / n
     return(round(g, 2L))
   }
   p_gin <- function(i) {                    # Print Gini coefficient
@@ -122,7 +122,7 @@ plot_lorenz <- function(dat,
       )
     }
   } else {
-    p <- p + geom_path(data = dfs[[1L]], aes(Proportion, Lorenz)) +
+    p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz)) +
       scale_colour_manual(name = 'Data',
                         labels = map_chr(seq_along(dat), p_gin),
                         values = hue_pal()(length(dat)))

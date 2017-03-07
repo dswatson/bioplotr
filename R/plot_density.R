@@ -50,22 +50,22 @@ plot_density <- function(dat,
   if (is.null(group)) group <- list(rep(1L, times = ncol(dat)))
   else {
     if (!is.list(group)) group <- list(group)
-    if (!is.character(group[[1L]]) & !is.factor(group[[1L]])) {
+    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
       stop('group must be a character or factor variable.')
     }
     if (length(group) > 1L) {
       stop('group cannot be a list of length > 1.')
     }
-    if (length(group[[1L]]) != ncol(dat)) {
+    if (length(group[[1]]) != ncol(dat)) {
       stop('group length must match number of samples in dat.')
     }
-    if (length(unique(group[[1L]])) == 1L) {
+    if (length(unique(group[[1]])) == 1L) {
       warning('group is invariant.')
     }
   }
   if (is.null(xlab)) xlab <- 'Value'
   if (is.null(main)) {
-    if (is.numeric(group[[1L]])) main <- 'Density By Sample'
+    if (is.numeric(group[[1]])) main <- 'Density By Sample'
     else {
       if (is.null(names(group))) main <- 'Density By Group'
       else main <- paste('Density By', names(group))

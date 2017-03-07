@@ -93,7 +93,7 @@ plot_pca <- function(dat,
     }
     if (any(nums)) {
       cont_cov <- TRUE
-      if (which(nums) == 2L) covar <- covar[c(2L, 1L)]
+      if (which(nums) == 2L) covar <- covar[c(2, 1)]
       else cont_cov <- FALSE
     }
     if (!is.null(names(covar))) covars <- names(covar)
@@ -185,14 +185,14 @@ plot_pca <- function(dat,
           )
         }
       }
-      p <- p + guides(color = guide_legend(title = covars[1L]),
-                      shape = guide_legend(title = covars[1L]))
+      p <- p + guides(color = guide_legend(title = covars[1]),
+                      shape = guide_legend(title = covars[1]))
     } else {
       suppressWarnings(
         p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
                             alpha = 0.85) +
-          guides(color = guide_legend(title = covars[1L]),
-                 shape = guide_legend(title = covars[2L]))
+          guides(color = guide_legend(title = covars[1]),
+                 shape = guide_legend(title = covars[2]))
       )
     }
     if (legend == 'bottomleft') {             # Locate legend

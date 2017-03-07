@@ -122,14 +122,14 @@ plot_covar <- function(dat,
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[, var])
       ifelse(is.numeric(clin[, var]),
-             -log10(summary(mod)$coef[2L, 4L]), -log10(anova(mod)[1L, 5L]))
+             -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
     } else {
       mod <- lm(pca$x[, pc] ~ clin[, var] + clin[[block]])
       if (identical(clin[, var], clin[[block]])) {
-        -log10(anova(mod)[1L, 5L])
+        -log10(anova(mod)[1, 5])
       } else {
         ifelse(is.numeric(clin[, var]),
-               -log10(summary(mod)$coef[2L, 4L]), -log10(anova(mod)[1L, 5L]))
+               -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
       }
     }
   }

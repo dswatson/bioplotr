@@ -96,7 +96,7 @@ plot_mds <- function(dat,
     }
     if (any(nums)) {
       cont_cov <- TRUE
-      if (which(nums) == 2L) covar <- covar[c(2L, 1L)]
+      if (which(nums) == 2L) covar <- covar[c(2, 1)]
       else cont_cov <- FALSE
     }
     if (!is.null(names(covar))) covars <- names(covar)
@@ -145,7 +145,7 @@ plot_mds <- function(dat,
     dm <- dist.matrix(t(dat), method = 'euclidean')
     dimnames(dm) <- list(colnames(dat), colnames(dat))
   } else {
-    dm <- matrix(0, nrow = ncol(dat), ncol = ncol(dat),
+    dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat),
                  dimnames = list(colnames(dat), colnames(dat)))
     top_idx <- nrow(dat) - top + 1L
     for (i in 2L:ncol(dat)) {
@@ -178,7 +178,7 @@ plot_mds <- function(dat,
       labs(title = main, x = paste('PC', min(pcs)), y = paste0('PC', max(pcs))) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
-    if (ncol(covar) == 2) {
+    if (ncol(covar) == 2L) {
       if (label) {
         p <- p + geom_text(aes(label = Sample, color = Feature1),
                            alpha = 0.85)
@@ -195,14 +195,14 @@ plot_mds <- function(dat,
           )
         }
       }
-      p <- p + guides(color = guide_legend(title = covars[1L]),
-                      shape = guide_legend(title = covars[1L]))
+      p <- p + guides(color = guide_legend(title = covars[1]),
+                      shape = guide_legend(title = covars[1]))
     } else {
       suppressWarnings(
         p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
                             alpha = 0.85) +
-          guides(color = guide_legend(title = covars[1L]),
-                 shape = guide_legend(title = covars[2L]))
+          guides(color = guide_legend(title = covars[1]),
+                 shape = guide_legend(title = covars[2]))
       )
     }
     if (legend == 'bottomleft') {                            # Locate legend

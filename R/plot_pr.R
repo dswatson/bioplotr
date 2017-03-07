@@ -53,10 +53,10 @@ plot_pr <- function(obs,
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
     } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1L], '". ',
-              'To change this to obs == "', levels(obs)[2L], '", either relevel the ',
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
+              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
               'factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1L], 1L, 0L)
+      obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
     }
   }
   if (is.logical(obs)) {
