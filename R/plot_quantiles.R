@@ -28,14 +28,13 @@
 #' @import ggplot2
 #'
 
-
 plot_quantiles <- function(x,
                            y,
                            method = 'QQ',
-                           pts = 1e3L,
-                           main = NULL,
-                           xlab = NULL,
-                           ylab = NULL) {
+                              pts = 1e3L,
+                             main = NULL,
+                             xlab = NULL,
+                             ylab = NULL) {
 
   # Preliminaries
   x <- x[is.finite(x)]
