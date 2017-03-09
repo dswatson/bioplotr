@@ -68,9 +68,7 @@ plot_roc <- function(obs,
   if (is.data.frame(pred)) pred <- as.list(pred)
   else if (!is.list(pred)) pred <- list(pred)
   pred <- map(pred, function(x) x <- x[is.finite(x)])
-  if (is.null(names(pred))) {
-    names(pred) <- paste0('M', seq_along(pred))
-  }
+  if (is.null(names(pred))) names(pred) <- paste0('M', seq_along(pred))
   for (x in seq_along(pred)) {
     if (!is.numeric(pred[[x]])) {
       stop('pred must be a numeric vector, or several such vectors organized into ',
