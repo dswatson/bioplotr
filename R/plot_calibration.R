@@ -113,7 +113,7 @@ plot_calibration <- function(obs,
          y = 'Observed Probability') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1L) {
+  if (length(pred) > 1L) {      # Multiple curves?
     suppressWarnings(
       p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
         geom_path(aes(color = Classifier, text = Classifier))
