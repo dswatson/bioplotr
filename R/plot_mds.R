@@ -45,7 +45,7 @@
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
 #' grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-#' plot_pca(mat, covar = grp)
+#' plot_mds(mat, covar = grp)
 #'
 #' @seealso
 #' \code{\link{plot_pca}} \code{\link[limma]{plotMDS}}
@@ -97,8 +97,7 @@ plot_mds <- function(dat,
     if (any(nums)) {
       cont_cov <- TRUE
       if (which(nums) == 2L) covar <- covar[c(2, 1)]
-      else cont_cov <- FALSE
-    }
+    } else cont_cov <- FALSE
     if (!is.null(names(covar))) covars <- names(covar)
     else {
       if (cont_cov) covars <- c('Feature', 'Group')
@@ -145,7 +144,7 @@ plot_mds <- function(dat,
     dm <- dist.matrix(t(dat), method = 'euclidean')
     dimnames(dm) <- list(colnames(dat), colnames(dat))
   } else {
-    dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat),
+    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat),
                  dimnames = list(colnames(dat), colnames(dat)))
     top_idx <- nrow(dat) - top + 1L
     for (i in 2L:ncol(dat)) {
@@ -156,7 +155,8 @@ plot_mds <- function(dat,
     }
   }
   mds <- suppressWarnings(cmdscale(as.dist(dm), k = max(pcs)))    # MDS
-  if (length(pcs) == 2L) {                                        # Melt
+  df <- data_frame(Sample = colnames(dat))                        # Melt
+  if (length(pcs) == 2L) {
     df <- df %>% mutate(PC1 = mds[, min(pcs)],
                         PC2 = mds[, max(pcs)])
   } else {
@@ -175,9 +175,17 @@ plot_mds <- function(dat,
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, size = 0.2) +
       geom_vline(xintercept = 0L, size = 0.2) +
-      labs(title = main, x = paste('PC', min(pcs)), y = paste0('PC', max(pcs))) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
+    if (is.null(top)) {
+      p <- p + labs(title = main,
+                    x = paste('PC', min(pcs)),
+                    y = paste0('PC', max(pcs)))
+    } else {
+      p <- p + labs(title = main,
+                    x = 'Leading logFC Dim 1',
+                    y = 'Leading logFC Dim 2')
+    }
     if (ncol(covar) == 2L) {
       if (label) {
         p <- p + geom_text(aes(label = Sample, color = Feature1),
