@@ -94,8 +94,7 @@ plot_pca <- function(dat,
     if (any(nums)) {
       cont_cov <- TRUE
       if (which(nums) == 2L) covar <- covar[c(2, 1)]
-      else cont_cov <- FALSE
-    }
+    } else cont_cov <- FALSE
     if (!is.null(names(covar))) covars <- names(covar)
     else {
       if (cont_cov) covars <- c('Feature', 'Group')
