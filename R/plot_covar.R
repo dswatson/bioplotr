@@ -89,7 +89,7 @@ plot_covar <- function(dat,
     } else {
       i <- which(colnames(clin) == block)
       for (j in seq_along(clin)[-i]) {
-        mm <- model.matrix(~ clin[, i] + clin[, j])
+        mm <- model.matrix(~ clin[[i]] + clin[[j]])
         if (!is.fullrank(mm)) {
           stop(paste(colnames(clin)[i], 'and', colnames(clin)[j], 'are perfectly',
                      'confounded. Nested covariates generate rank deficient models,',
@@ -104,10 +104,10 @@ plot_covar <- function(dat,
   }
   data.frame(Feature = colnames(clin),
                Class = map_chr(seq_along(clin), function(j) {
-                 ifelse(is.numeric(clin[, j]), 'numeric', 'factor')
+                 ifelse(is.numeric(clin[[j]]), 'numeric', 'factor')
              })) %>%
     print()
-  if (is.null(main)) main <- 'Variation by Feature'
+  if (is.null(main)) main <- 'Variation By Feature'
 
   # Tidy data
   dat <- getEAWP(dat)$expr
@@ -120,15 +120,15 @@ plot_covar <- function(dat,
   })
   sig <- function(var, pc) {                   # p-val fn
     if (is.null(block)) {
-      mod <- lm(pca$x[, pc] ~ clin[, var])
-      ifelse(is.numeric(clin[, var]),
+      mod <- lm(pca$x[, pc] ~ clin[[var]])
+      ifelse(is.numeric(clin[[var]]),
              -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
     } else {
-      mod <- lm(pca$x[, pc] ~ clin[, var] + clin[[block]])
-      if (identical(clin[, var], clin[[block]])) {
+      mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
+      if (identical(clin[[var]], clin[[block]])) {
         -log10(anova(mod)[1, 5])
       } else {
-        ifelse(is.numeric(clin[, var]),
+        ifelse(is.numeric(clin[[var]]),
                -log10(summary(mod)$coef[2, 4]), -log10(anova(mod)[1, 5]))
       }
     }
