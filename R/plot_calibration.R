@@ -39,8 +39,8 @@
 plot_calibration <- function(obs,
                              pred,
                              main = NULL,
-                             legend = 'outside',
-                             hover = FALSE) {
+                           legend = 'outside',
+                            hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) obs <- as.factor(obs)
@@ -100,8 +100,8 @@ plot_calibration <- function(obs,
   df <- map_df(seq_along(pred), function(x) {
     data_frame(Y = map_dbl(obs_grps[[x]], mean),
                X = map_dbl(exp_grps[[x]], mean),
-               Freq = map_dbl(exp_grps[[x]], length),
-               Classifier = names(pred)[x])
+            Freq = map_dbl(exp_grps[[x]], length),
+      Classifier = names(pred)[x])
   })
 
   # Build plot
@@ -113,7 +113,7 @@ plot_calibration <- function(obs,
          y = 'Observed Probability') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1L) {      # Multiple curves?
+  if (length(pred) > 1L) {       # Multiple curves?
     suppressWarnings(
       p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
         geom_path(aes(color = Classifier, text = Classifier))
