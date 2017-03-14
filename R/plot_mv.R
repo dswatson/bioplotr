@@ -91,7 +91,7 @@
 #'
 #' @export
 #' @importFrom limma getEAWP
-#' @importFrom DESeq2 counts assays
+#' @importFrom DESeq2 counts
 #' @importFrom edgeR DGEList calcNormFactors cpm
 #' @importFrom matrixStats rowSds
 #' @import dplyr
