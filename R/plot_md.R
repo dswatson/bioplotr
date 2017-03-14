@@ -11,7 +11,7 @@
 #'   relevant for study-wide MD plots.
 #' @param sample Column number or name specifying which sample in \code{dat} to
 #'   compare with the others. Only relevant for between-sample MD plots.
-#' @param control Optional vector of length equal to \code{nrow(dat)} indicating the
+#' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating the
 #'   control status of each probe. Only relevant for between-sample MD plots.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
@@ -74,7 +74,7 @@
 plot_md <- function(dat,
                     fdr = 0.05,
                  sample = NULL,
-                control = NULL,
+                  ctrls = NULL,
                  ptsize = 0.25,
                    main = NULL,
                  legend = 'outside',
@@ -111,8 +111,8 @@ plot_md <- function(dat,
            'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
            'Make sure that dat includes exactly one such colname.')
     }
-    if (!is.null(control)) {
-      warning('control is ignored when dat is a data.frame or object of any class ',
+    if (!is.null(ctrls)) {
+      warning('ctrls is ignored when dat is a data.frame or object of any class ',
               'inheriting from data.frame.')
     }
     if (!is.null(sample)) {
@@ -164,14 +164,14 @@ plot_md <- function(dat,
     df <- data_frame(Probe = probes,
                       Mean = (other + dat[, sample]) / 2L,
                       Diff = dat[, sample] - other)
-    if (!is.null(control)) {
+    if (!is.null(ctrls)) {
       type <- function(p) {   ### THIS IS GONNA NEED WORK ###
-        if (probe > 0) 'Positive'
-        else if (probe < 0) 'Negative'
+        if (probe > 0L) 'Positive'
+        else if (probe < 0L) 'Negative'
         else 'Zero'
       }
-      df <- df %>% mutate(Ctrl = map_chr(control, type),
-                          Size = ifelse(control == 0L, 1L, 2L))
+      df <- df %>% mutate(Ctrl = map_chr(ctrls, type),
+                          Size = ifelse(ctrls == 0L, 1L, 2L))
     }
   }
 
