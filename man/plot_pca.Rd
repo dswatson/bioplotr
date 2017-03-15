@@ -10,7 +10,10 @@ plot_pca(dat, covar = NULL, top = NULL, pcs = c(1, 2), label = FALSE,
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples. It is strongly recommended that data be
-normalized and filtered prior to running PCA.}
+normalized and filtered prior to running PCA. For count data, this means
+undergoing some sort of variance stabilizing transformation, such as
+\code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
+\link[DESeq2]{rlog}}, etc.}
 
 \item{covar}{Optional vector of length equal to sample size, or up to two such
 vectors organized into a list or data frame. If passing two covariates, only one
@@ -20,7 +23,7 @@ may be continuous. Supply legend title(s) by passing a named list or data frame.
 to be used for PCA.}
 
 \item{pcs}{Vector specifying which principal components to plot. Must be of length
-2 unless \code{D3 = TRUE}.}
+two unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
@@ -40,8 +43,8 @@ display or appear in the RStudio viewer.}
 This function plots the principal components of an omic data matrix.
 }
 \details{
-This function plots the samples of an omic data matrix in a two- or three-
-dimensional principal component subspace. Axis labels include the percentage
+This function plots the samples of an omic data matrix in a two- or
+three-dimensional principal component subspace. Axis labels include the percentage
 of variance explained by each component. PCA is an easy and popular method for
 unsupervised cluster detection. It can also aid in spotting potential outliers
 and generally helps to visualize the latent structure of a data set.

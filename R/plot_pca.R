@@ -4,14 +4,17 @@
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples. It is strongly recommended that data be
-#'   normalized and filtered prior to running PCA.
+#'   normalized and filtered prior to running PCA. For count data, this means
+#'   undergoing some sort of variance stabilizing transformation, such as
+#'   \code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
+#'   \link[DESeq2]{rlog}}, etc.
 #' @param covar Optional vector of length equal to sample size, or up to two such
 #'   vectors organized into a list or data frame. If passing two covariates, only one
 #'   may be continuous. Supply legend title(s) by passing a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable probes
 #'   to be used for PCA.
 #' @param pcs Vector specifying which principal components to plot. Must be of length
-#'   2 unless \code{D3 = TRUE}.
+#'   two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE} unless
 #'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
 #' @param main Optional plot title.
@@ -23,8 +26,8 @@
 #' @param D3 Render plot in three dimensions?
 #'
 #' @details
-#' This function plots the samples of an omic data matrix in a two- or three-
-#' dimensional principal component subspace. Axis labels include the percentage
+#' This function plots the samples of an omic data matrix in a two- or
+#' three-dimensional principal component subspace. Axis labels include the percentage
 #' of variance explained by each component. PCA is an easy and popular method for
 #' unsupervised cluster detection. It can also aid in spotting potential outliers
 #' and generally helps to visualize the latent structure of a data set.
@@ -156,7 +159,7 @@ plot_pca <- function(dat,
   }
   if (!is.null(covar)) {
     covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
-    df <- inner_join(df, covar, by = 'Sample')
+    df <- df %>% inner_join(covar, by = 'Sample')
   }
 
   # Build plot
