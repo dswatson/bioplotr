@@ -32,6 +32,9 @@
 #' batch <- rep(c("A", "B"), each = 5)
 #' plot_density(mat, group = batch, xlab = "Normalized Counts")
 #'
+#' @seealso
+#' \code{\link[limma]{plotDensities}}
+#'
 #' @export
 #' @importFrom tidyr gather
 #' @import dplyr
