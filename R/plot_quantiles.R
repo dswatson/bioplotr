@@ -31,7 +31,7 @@
 plot_quantiles <- function(x,
                            y,
                            method = 'QQ',
-                              pts = 1e3L,
+                              pts = 1000,
                              main = NULL,
                              xlab = NULL,
                              ylab = NULL) {

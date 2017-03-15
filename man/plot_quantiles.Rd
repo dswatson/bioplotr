@@ -4,7 +4,7 @@
 \alias{plot_quantiles}
 \title{Plot Quantiles}
 \usage{
-plot_quantiles(x, y, method = "QQ", pts = 1000L, main = NULL,
+plot_quantiles(x, y, method = "QQ", pts = 1000, main = NULL,
   xlab = NULL, ylab = NULL)
 }
 \arguments{
