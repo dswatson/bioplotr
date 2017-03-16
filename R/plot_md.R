@@ -157,7 +157,8 @@ plot_md <- function(dat,
   if (!is.matrix(dat)) {
     test <- function(q) ifelse(q < fdr, TRUE, FALSE)
     df <- dat %>%
-      mutate(is.DE = map_lgl(q.value, test)) %>%
+      mutate(Probe = probes,
+             is.DE = map_lgl(q.value, test)) %>%
       select(Probe, Mean, Diff, is.DE)
   } else {
     other <- rowMeans(dat[, -sample])
