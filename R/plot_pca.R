@@ -123,7 +123,7 @@ plot_pca <- function(dat,
   } else if (length(pcs) > 3L) {
     stop('pcs must be a vector of length <= 3.')
   }
-  if (label && length(covars) == 2L) {
+  if (label && !is.null(covar) && length(covar) == 2L) {
     stop('If label is TRUE, then plot can render at most one covariate.')
   }
   if (is.null(main)) main <- 'PCA'
@@ -170,7 +170,10 @@ plot_pca <- function(dat,
       labs(title = main, x = pve[min(pcs)], y = pve[max(pcs)]) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
-    if (ncol(covar) == 2L) {
+    if (is.null(covar)) {
+      if (label) p <- p + geom_text(aes(label = Sample), alpha = 0.85)
+      else suppressWarnings(p <- p + geom_point(aes(text = Sample)))
+    } else if (ncol(covar) == 2L) {
       if (label) {
         p <- p + geom_text(aes(label = Sample, color = Feature1),
                            alpha = 0.85)
