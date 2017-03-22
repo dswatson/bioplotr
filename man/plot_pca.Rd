@@ -66,5 +66,5 @@ plot_pca(mat, covar = grp)
 
 }
 \seealso{
-\code{\link{plot_mds}} \code{\link[DESeq2]{plotPCA}}
+\code{\link{plot_mds}}, \code{\link[DESeq2]{plotPCA}}
 }
