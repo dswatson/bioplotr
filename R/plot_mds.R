@@ -57,7 +57,6 @@
 #' @import dplyr
 #' @importFrom purrr map
 #' @importFrom limma getEAWP
-#' @importFrom wordspace dist.matrix
 #' @import ggplot2
 #' @import plotly
 #' @importFrom scales hue_pal
@@ -144,7 +143,7 @@ plot_mds <- function(dat,
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
   if (is.null(top)) {                                            # Distance matrix
-    dm <- dist.matrix(t(dat), method = 'euclidean')
+    dm <- as.matrix(dist(t(dat), method = 'euclidean'))
     dimnames(dm) <- list(colnames(dat), colnames(dat))
   } else {
     dm <- matrix(nrow = ncol(dat), ncol = ncol(dat),
