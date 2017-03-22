@@ -44,7 +44,7 @@
 plot_pr <- function(obs,
                     pred,
                     main = NULL,
-                  legend = 'bottomright',
+                  legend = 'topright',
                    hover = FALSE) {
 
   # Preliminaries
