@@ -88,22 +88,12 @@ plot_roc <- function(obs,
   }
 
   # Tidy data
-  originate <- function(tbl) {
-    data_frame(TPR = 0L,
-               FPR = 0L,
-        Classifier = tbl$Classifier[1]) %>%
-      rbind(tbl) %>%
-      return()
-  }
   df <- map_df(seq_along(pred), function(x) {
-    data_frame(Y = obs,
-               X = pred[[x]],
-      Classifier = names(pred)[x]) %>%
-      arrange(desc(X)) %>%
-      mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
-             FPR = cumsum(Y == 0L) / sum(Y == 0L)) %>%
-      select(TPR, FPR, Classifier) %>%
-      originate() %>%
+    xy <- data_frame(X = pred[[x]], Y = obs) %>%
+      arrange(desc(X))
+    data_frame(TPR = c(0L, cumsum(xy$Y == 1L) / sum(xy$Y == 1L)),
+               FPR = c(0L, cumsum(xy$Y == 0L) / sum(xy$Y == 0L)),
+        Classifier = names(pred)[x]) %>%
       return()
   })
 
@@ -113,9 +103,7 @@ plot_roc <- function(obs,
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
-    labs(title = main,
-             x = 'False Positive Rate',
-             y = 'True Positive Rate') +
+    labs(title = main, x = 'False Positive Rate', y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {        # Multiple curves?
