@@ -4,7 +4,7 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, main = NULL, xlab = NULL, ylab = NULL,
+plot_lorenz(dat, main = NULL, xlab = NULL, ylab = NULL, leg.txt = NULL,
   legend = "topleft", hover = FALSE)
 }
 \arguments{
@@ -18,6 +18,8 @@ a warning will be issued to proceed with caution.}
 \item{xlab}{Optional label for x-axis.}
 
 \item{ylab}{Optional label for y-axis.}
+
+\item{leg.txt}{Optional title for legend.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}

@@ -6,9 +6,10 @@
 #'   optionally named. May also be a data frame of such vectors, however in that
 #'   case each must be of equal length. Data may include negative values, but if so
 #'   a warning will be issued to proceed with caution.
+#' @param main Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
-#' @param main Optional plot title.
+#' @param leg.txt Optional title for legend.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show vector name by hovering mouse over Lorenz curve? If \code{TRUE},
@@ -48,6 +49,7 @@ plot_lorenz <- function(dat,
                         main = NULL,
                         xlab = NULL,
                         ylab = NULL,
+                     leg.txt = NULL,
                       legend = 'topleft',
                        hover = FALSE) {
 
@@ -71,12 +73,13 @@ plot_lorenz <- function(dat,
               'should be interpreted with caution.')
     }
   }
-  if (is.null(xlab)) xlab <- 'Cumulative Proportion of Observations'
-  if (is.null(ylab)) ylab <- 'Cumulative Proportion of Values'
   if (is.null(main)) {
     if (length(dat) == 1L) main <- 'Lorenz Curve'
     else main <- 'Lorenz Curves'
   }
+  if (is.null(xlab)) xlab <- 'Cumulative Proportion of Observations'
+  if (is.null(ylab)) ylab <- 'Cumulative Proportion of Values'
+  if (is.null(leg.txt)) leg.txt <- 'Data'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -86,10 +89,8 @@ plot_lorenz <- function(dat,
   dfs <- map(seq_along(dat), function(i) {
     x <- sort(dat[[i]][is.finite(dat[[i]])])
     n <- rep(1L, length(x))
-    p <- cumsum(n) / sum(n)
-    L <- cumsum(x) / sum(x)
-    p <- c(0L, p)
-    L <- c(0L, L)
+    p <- c(0L, cumsum(n) / sum(n))
+    L <- c(0L, cumsum(x) / sum(x))
     df <- data_frame(Title = names(dat)[i],
                 Proportion = p,
                     Lorenz = L)
@@ -107,7 +108,7 @@ plot_lorenz <- function(dat,
     paste0(names(dat)[i], ', Gini = ', gini(dat[[i]]))
   }
   p <- ggplot() +
-    geom_abline(intercept = 0L, slope = 1L) +
+    geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
     labs(title = main, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
@@ -115,17 +116,17 @@ plot_lorenz <- function(dat,
     for (i in seq_along(dat)) {
       suppressWarnings(
         p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
-                                                text = Title, color = Title)) +
-          scale_colour_manual(name = 'Data',
-                            labels = map_chr(seq_along(dat), p_gin),
-                            values = hue_pal()(length(dat)))
+                                                text = Title, color = Title))
       )
     }
+    p <- p + scale_colour_manual(name = leg.txt,
+                               labels = map_chr(seq_along(dat), p_gin),
+                               values = hue_pal()(length(dat)))
   } else {
-    p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz)) +
-      scale_colour_manual(name = 'Data',
+    p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
+      scale_colour_manual(name = leg.txt,
                         labels = map_chr(seq_along(dat), p_gin),
-                        values = hue_pal()(length(dat)))
+                        values = 'black')
   }
   if (legend == 'bottomleft') {             # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
