@@ -37,7 +37,7 @@
 #' \code{top} argument.
 #'
 #' @examples
-#' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+#' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_pca(mat)
 #'
 #' library(DESeq2)
@@ -165,8 +165,8 @@ plot_pca <- function(dat,
   # Build plot
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
-      geom_hline(yintercept = 0L, size = 0.2) +
-      geom_vline(xintercept = 0L, size = 0.2) +
+      geom_hline(yintercept = 0L, color = 'grey') +
+      geom_vline(xintercept = 0L, color = 'grey') +
       labs(title = main, x = pve[min(pcs)], y = pve[max(pcs)]) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))

@@ -54,7 +54,7 @@ By default, \code{plot_pca} performs singular value decomposition on the complet
 \code{top} argument.
 }
 \examples{
-mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 plot_pca(mat)
 
 library(DESeq2)

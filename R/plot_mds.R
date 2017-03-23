@@ -40,7 +40,7 @@
 #' matrix. See \code{\link{plot_pca}}.
 #'
 #' @examples
-#' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+#' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_mds(mat)
 #'
 #' library(DESeq2)
@@ -175,8 +175,8 @@ plot_mds <- function(dat,
   # Build plot
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
-      geom_hline(yintercept = 0L, size = 0.2) +
-      geom_vline(xintercept = 0L, size = 0.2) +
+      geom_hline(yintercept = 0L, color = 'grey') +
+      geom_vline(xintercept = 0L, color = 'grey') +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
     if (is.null(top)) {

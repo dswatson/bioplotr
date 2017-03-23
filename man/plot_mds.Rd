@@ -57,7 +57,7 @@ distinguishing different pairs of samples. To run MDS on the complete data, set
 matrix. See \code{\link{plot_pca}}.
 }
 \examples{
-mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 plot_mds(mat)
 
 library(DESeq2)
