@@ -11,6 +11,7 @@
 #'   the probabilities output by a logistic model, or the expression levels of a
 #'   particular biomarker.
 #' @param main Optional plot title.
+#' @param leg.txt Optional title for legend.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
@@ -43,6 +44,7 @@
 plot_roc <- function(obs,
                      pred,
                      main = NULL,
+                  leg.txt = NULL,
                    legend = 'bottomright',
                     hover = FALSE) {
 
@@ -82,6 +84,7 @@ plot_roc <- function(obs,
     if (length(pred) == 1L) main <- 'ROC Curve'
     else main <- 'ROC Curves'
   }
+  if (is.null(leg.txt)) leg.txt <- 'Classifier'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -89,10 +92,9 @@ plot_roc <- function(obs,
 
   # Tidy data
   df <- map_df(seq_along(pred), function(x) {
-    xy <- data_frame(X = pred[[x]], Y = obs) %>%
-      arrange(desc(X))
-    data_frame(TPR = c(0L, cumsum(xy$Y == 1L) / sum(xy$Y == 1L)),
-               FPR = c(0L, cumsum(xy$Y == 0L) / sum(xy$Y == 0L)),
+    y <- obs[rev(order(pred[[x]]))]
+    data_frame(TPR = c(0L, cumsum(y == 1L) / sum(y == 1L)),
+               FPR = c(0L, cumsum(y == 0L) / sum(y == 0L)),
         Classifier = names(pred)[x]) %>%
       return()
   })
@@ -111,13 +113,13 @@ plot_roc <- function(obs,
       p <- p + geom_step(aes(text = Classifier,
                             group = Classifier,
                             color = Classifier)) +
-        scale_colour_manual(name = 'Classifier',
+        scale_colour_manual(name = leg.txt,
                           labels = map_chr(seq_along(pred), p_auc),
                           values = hue_pal()(length(pred)))
     )
   } else {
     p <- p + geom_step(aes(color = Classifier)) +
-      scale_colour_manual(name = 'Classifier',
+      scale_colour_manual(name = leg.txt,
                         labels = map_chr(seq_along(pred), p_auc),
                         values = 'black')
   }

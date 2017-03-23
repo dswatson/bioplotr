@@ -4,7 +4,8 @@
 \alias{plot_roc}
 \title{Reicever Operating Characteristic Curve(s)}
 \usage{
-plot_roc(obs, pred, main = NULL, legend = "bottomright", hover = FALSE)
+plot_roc(obs, pred, main = NULL, leg.txt = NULL, legend = "bottomright",
+  hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -18,6 +19,8 @@ the probabilities output by a logistic model, or the expression levels of a
 particular biomarker.}
 
 \item{main}{Optional plot title.}
+
+\item{leg.txt}{Optional title for legend.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}
