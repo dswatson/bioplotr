@@ -11,6 +11,7 @@
 #'   the probabilities output by a logistic model, or the expression levels of a
 #'   particular biomarker.
 #' @param main Optional plot title.
+#' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show predictor name by hovering mouse over PR curve? If \code{TRUE},
@@ -44,6 +45,7 @@
 plot_pr <- function(obs,
                     pred,
                     main = NULL,
+                 leg.txt = NULL,
                   legend = 'topright',
                    hover = FALSE) {
 
@@ -83,6 +85,7 @@ plot_pr <- function(obs,
     if (length(pred) == 1L) main <- 'Precision-Recall Curve'
     else main <- 'Precision-Recall Curves'
   }
+  if (is.null(leg.txt)) leg.txt <- 'Classifier'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -116,14 +119,14 @@ plot_pr <- function(obs,
       p <- p + geom_line(aes(text = Classifier,
                             group = Classifier,
                             color = Classifier)) +
-        scale_colour_manual(name = 'Classifier',
+        scale_colour_manual(name = leg.txt,
                           labels = map_chr(seq_along(pred), p_auc),
                           values = hue_pal()(length(pred)))
     )
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_line(aes(color = Classifier)) +
-      scale_colour_manual(name = 'Classifier',
+      scale_colour_manual(name = leg.txt,
                         labels = map_chr(seq_along(pred), p_auc),
                         values = 'black')
   }

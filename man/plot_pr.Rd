@@ -4,7 +4,8 @@
 \alias{plot_pr}
 \title{Precision-Recall Curve(s)}
 \usage{
-plot_pr(obs, pred, main = NULL, legend = "bottomright", hover = FALSE)
+plot_pr(obs, pred, main = NULL, leg.txt = NULL, legend = "topright",
+  hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -18,6 +19,8 @@ the probabilities output by a logistic model, or the expression levels of a
 particular biomarker.}
 
 \item{main}{Optional plot title.}
+
+\item{leg.txt}{Optional legend title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}
