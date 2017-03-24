@@ -1,11 +1,11 @@
 #' Mean-Difference Plot
 #'
-#' This function plots probewise means vs. log2 fold changes for a between-sample
-#' comparison or a test of differential expression.
+#' This function plots probewise means vs. log2 fold changes for a test of
+#' differential expression or between-sample comparison.
 #'
 #' @param dat Either a data frame representing the results of a test for differential
 #'   expression, or an omic data matrix with rows corresponding to probes and columns
-#'   to samples. The former will render a study-wide MD plot, the latter a
+#'   to samples. The former will render a study-wide MD plot, the latter a between
 #'   between-sample MD plot. See Details.
 #' @param fdr Threshold for declaring a probe differentially expressed. Only
 #'   relevant for study-wide MD plots.
@@ -24,29 +24,24 @@
 #'
 #' @details
 #' MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
-#' relationship between a probe's mean value and its log2 fold change versus
-#' some relevant reference group. These figures help to evaluate the symmetry,
-#' magnitude, and significance of differential effects across the full omic range.
+#' relationship between a probe's mean value and its log2 fold change versus some
+#' relevant reference group. These figures help to evaluate the symmetry, magnitude,
+#' and significance of differential effects across the full omic range.
 #'
-#' If \code{dat} is probe by sample matrix, then \code{sample} must \code{sampe = NULL}, then \code{dat} is
+#' If \code{dat} is a data frame summarizing the results of a test for differential
+#' expression, then each point's x-coordinate correponds to its average expression
+#' across all samples, while y-coordinates represent the log2 fold change for the
+#' given contrast. Points are colored to distinguish between those that do and do not
+#' meet a user-defined FDR threshold. \code{plot_md} accepts output from \code{limma::
+#' \link[limma]{topTable}}, \code{DESeq2::\link[DESeq2]{results}}, or \code{edgeR::
+#' \link[edgeR]{topTags}}. Alternatively, any object with columns for log fold changes,
+#' probewise means, and FDR is acceptable.
 #'
-#'
-#' its log2 fold change for a given
-#' test of differential expression. Points are colored to distinguish
-#' between those that do and do not meet a user-defined FDR threshold. These
-#' figures help to evaluate the symmetry, magnitude, and significance of effects
-#' for a given experiment.
-#'
-#' If passing a numeric matrix, then \code{sample} must be specified. An artificial
-#' sample will then be created by averaging probewise values for all other samples in
-#' the data.
-#'   \code{plot_md} will plot probewise sample means vs. log ratios of
-#'   \code{sample} must be specified
-#'
-#'   Output from \code{limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}},
-#'   or \code{DESeq2::\link[DESeq2]{results}} are all acceptable.
-#'   Alternatively, any object with columns for log fold changes, probewise means, and FDR.
-#'   If \code{hover = TRUE}, then probe names will be extracted from \code{dat}.
+#' If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
+#' must be specified. An artificial array will then be created by averaging probewise
+#' values for all other samples in the data. The figure will then represent the mean
+#' vs. the difference of expression values for the specified sample vs. the artificial
+#' array.
 #'
 #' @examples
 #' library(limma)
@@ -60,7 +55,7 @@
 #' plot_md(top)
 #'
 #' @seealso
-#' \code{\link[limma]{plotMD}} \code{\link[DESeq2]{plotMA}}
+#' \code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
 #' \code{\link[Glimma]{glMDPlot}}
 #'
 #' @export
@@ -86,16 +81,16 @@ plot_md <- function(dat,
     if ('baseMean' %in% colnames(dat)) {
       dat$baseMean <- log2(dat$baseMean)
     }
-    avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
+    avg <- c('AveExpr', 'baseMean', 'logCPM', 'AvgExpr', 'AvgMeth')
     if (sum(avg %in% colnames(dat)) == 1L) {
       colnames(dat)[colnames(dat) %in% avg] <- 'Mean'
     } else {
       stop('dat must include a column for average expression or methylation by ',
-           'probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth", ',
-           '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly ',
+           'probe. Recognized colnames for this vector include "AveExpr", "baseMean",
+           "logCPM", "AvgExpr", and "AvgMeth".Make sure that dat includes exactly ',
            'one such colname.')
     }
-    lfc <- c('log2FoldChange', 'logFC')
+    lfc <- c('logFC', 'log2FoldChange')
     if (sum(lfc %in% colnames(dat)) == 1L) {
       colnames(dat)[colnames(dat) %in% lfc] <- 'Diff'
     } else {
@@ -187,7 +182,7 @@ plot_md <- function(dat,
       theme(plot.title = element_text(hjust = 0.5))
   )
   if ('is.DE' %in% colnames(df)) {
-    if (sum(df$is.DE) == 0L) {  # Color pts by differential expression?
+    if (sum(df$is.DE) == 0L) {                   # Color pts by differential expression?
       warning('No probe meets your fdr threshold. To color data points by differential ',
               'expression/methylation, consider raising your fdr cutoff.')
       p <- p + geom_point(size = ptsize, alpha = 0.25)
@@ -204,7 +199,7 @@ plot_md <- function(dat,
       scale_color_manual(name = 'Control',
                        values = c('red', 'blue', 'black'))
   }
-  if (legend == 'bottomleft') {      # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

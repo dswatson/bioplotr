@@ -10,7 +10,7 @@ plot_md(dat, fdr = 0.05, sample = NULL, ctrls = NULL, ptsize = 0.25,
 \arguments{
 \item{dat}{Either a data frame representing the results of a test for differential
 expression, or an omic data matrix with rows corresponding to probes and columns
-to samples. The former will render a study-wide MD plot, the latter a
+to samples. The former will render a study-wide MD plot, the latter a between
 between-sample MD plot. See Details.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed. Only
@@ -35,34 +35,29 @@ display or appear in the RStudio viewer. Probe names are extracted from
 \code{dat}.}
 }
 \description{
-This function plots probewise means vs. log2 fold changes for a between-sample
-comparison or a test of differential expression.
+This function plots probewise means vs. log2 fold changes for a test of
+differential expression or between-sample comparison.
 }
 \details{
 MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
-relationship between a probe's mean value and its log2 fold change versus
-some relevant reference group. These figures help to evaluate the symmetry,
-magnitude, and significance of differential effects across the full omic range.
+relationship between a probe's mean value and its log2 fold change versus some
+relevant reference group. These figures help to evaluate the symmetry, magnitude,
+and significance of differential effects across the full omic range.
 
-If \code{dat} is probe by sample matrix, then \code{sample} must \code{sampe = NULL}, then \code{dat} is
+If \code{dat} is a data frame summarizing the results of a test for differential
+expression, then each point's x-coordinate correponds to its average expression
+across all samples, while y-coordinates represent the log2 fold change for the
+given contrast. Points are colored to distinguish between those that do and do not
+meet a user-defined FDR threshold. \code{plot_md} accepts output from \code{limma::
+\link[limma]{topTable}}, \code{DESeq2::\link[DESeq2]{results}}, or \code{edgeR::
+\link[edgeR]{topTags}}. Alternatively, any object with columns for log fold changes,
+probewise means, and FDR is acceptable.
 
-
-its log2 fold change for a given
-test of differential expression. Points are colored to distinguish
-between those that do and do not meet a user-defined FDR threshold. These
-figures help to evaluate the symmetry, magnitude, and significance of effects
-for a given experiment.
-
-If passing a numeric matrix, then \code{sample} must be specified. An artificial
-sample will then be created by averaging probewise values for all other samples in
-the data.
-  \code{plot_md} will plot probewise sample means vs. log ratios of
-  \code{sample} must be specified
-
-  Output from \code{limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}},
-  or \code{DESeq2::\link[DESeq2]{results}} are all acceptable.
-  Alternatively, any object with columns for log fold changes, probewise means, and FDR.
-  If \code{hover = TRUE}, then probe names will be extracted from \code{dat}.
+If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
+must be specified. An artificial array will then be created by averaging probewise
+values for all other samples in the data. The figure will then represent the mean
+vs. the difference of expression values for the specified sample vs. the artificial
+array.
 }
 \examples{
 library(limma)
@@ -77,6 +72,6 @@ plot_md(top)
 
 }
 \seealso{
-\code{\link[limma]{plotMD}} \code{\link[DESeq2]{plotMA}}
+\code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
 \code{\link[Glimma]{glMDPlot}}
 }
