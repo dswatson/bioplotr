@@ -92,7 +92,6 @@
 #' @export
 #' @importFrom limma getEAWP
 #' @importFrom DESeq2 counts
-#' @importFrom edgeR DGEList calcNormFactors cpm
 #' @importFrom matrixStats rowSds
 #' @import dplyr
 #' @importFrom purrr map_lgl
@@ -160,7 +159,7 @@ plot_mv <- function(dat,
     mu <- rowMeans(cnts)
     sigma <- rowSds(resids)
   }
-  if (trans == 'rank') {                    # Apply transformations
+  if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
     xlab <- expression('Rank'*(mu))
     ylab <- expression(sigma)
@@ -183,7 +182,7 @@ plot_mv <- function(dat,
                 Sigma_lo = lo[['y']])
   if ('s2.prior' %in% names(dat)) {
     df <- df %>% mutate(Prior = prior)
-    if (length(dat$s2.prior) > 1L) {          # Check for outliers
+    if (length(dat$s2.prior) > 1L) {             # Check for outliers
       s2 <- dat$sigma^2L / dat$s2.prior
       pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
       pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
@@ -210,7 +209,7 @@ plot_mv <- function(dat,
                           size = ptsize, alpha = 0.25)
     )
   }
-  if ('Prior' %in% colnames(df)) {          # Plot prior
+  if ('Prior' %in% colnames(df)) {               # Plot prior
     p <- p + geom_smooth(aes(Mu_lo, Sigma_lo, color = 'LOWESS fit'),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
@@ -228,7 +227,7 @@ plot_mv <- function(dat,
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
   }
-  if (legend == 'bottomleft') {             # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
