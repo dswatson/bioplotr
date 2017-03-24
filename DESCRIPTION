@@ -8,20 +8,23 @@ Description: This package provides functions to build many common (and some not
   so common) figures for omic data analysis. Most plots employ a "Grammar of 
   Graphics" framework, with optional plotly and shiny add-ons for interactive
   functionality and HTML output. 
-Depends: R (>= 3.3.2)
+Depends: 
+  R (>= 3.3.2)
+Suggests:
+  DESeq2,
+  edgeR
 Imports: 
   dplyr,
   ggplot2,
   tidyr,
   purrr,
   plotly,
-  NMF,
-  edgeR,
+  limma,
   matrixStats,
-  scales,
-  ModelMetrics,
   PRROC,
-  wordspace
+  NMF,
+  RColorBrewer,
+  scales,
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
