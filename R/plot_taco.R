@@ -43,7 +43,7 @@ plot_taco <- function(dat,
 
   # Preliminaries
   dat <- as.data.frame(dat) %>% na.omit()
-  lfc <- c('log2FoldChange', 'logFC')
+  lfc <- c('logFC', 'log2FoldChange')
   if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
   } else {
@@ -62,21 +62,21 @@ plot_taco <- function(dat,
   if ('baseMean' %in% colnames(dat)) {
     dat$baseMean <- log2(dat$baseMean)
   }
-  avg <- c('AvgMeth', 'AveExpr', 'logCPM', 'baseMean', 'AvgExpr')
+  avg <- c('AveExpr', 'baseMean', 'logCPM', 'AvgExpr', 'AvgMeth')
   if (sum(avg %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% avg] <- 'AvgExpr'
   } else {
     stop('dat must include a column for average expression or methylation by ',
-         'probe. Recognized colnames for this vector include "AvgExpr", "AvgMeth", ',
-         '"AveExpr", "logCPM", and "baseMean". Make sure that dat includes exactly ',
+         'probe. Recognized colnames for this vector include "AveExpr", "baseMean",
+         "logCPM", "AvgExpr", and "AvgMeth".Make sure that dat includes exactly ',
          'one such colname.')
   }
-  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
+  q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
+         'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
   if (is.null(main)) main <- 'Taco Plot'

@@ -61,20 +61,20 @@ plot_volcano <- function(dat,
          'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
          'exactly one such colname.')
   }
-  p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
+  p <- c('P.Value', 'pvalue', 'PValue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
     stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+         'include "P.Value", "pvalue", "PValue", and "p.value". Make sure that dat',
          'includes exactly one such colname.')
   }
-  q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
+  q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
+         'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
   if (is.null(main)) main <- 'Volcano Plot'
