@@ -32,16 +32,15 @@
 #' expression, then each point's x-coordinate correponds to its average expression
 #' across all samples, while y-coordinates represent the log2 fold change for the
 #' given contrast. Points are colored to distinguish between those that do and do not
-#' meet a user-defined FDR threshold. \code{plot_md} accepts output from \code{limma::
-#' \link[limma]{topTable}}, \code{DESeq2::\link[DESeq2]{results}}, or \code{edgeR::
-#' \link[edgeR]{topTags}}. Alternatively, any object with columns for log fold changes,
-#' probewise means, and FDR is acceptable.
+#' meet a user-defined FDR threshold. \code{plot_md} accepts output from \code{
+#' limma::\link[limma]{topTable}}, \code{DESeq2::\link[DESeq2]{results}}, or \code{
+#' edgeR::\link[edgeR]{topTags}}. Alternatively, any object with columns for log fold
+#' changes, probewise means, and FDR is acceptable.
 #'
 #' If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
-#' must be specified. An artificial array will then be created by averaging probewise
-#' values for all other samples in the data. The figure will then represent the mean
-#' vs. the difference of expression values for the specified sample vs. the artificial
-#' array.
+#' must be specified. An artificial array is created by averaging probewise values for
+#' all other samples in the data. The figure will then represent the mean vs. the
+#' difference of expression values for the specified sample vs. the artificial array.
 #'
 #' @examples
 #' library(limma)
@@ -174,7 +173,7 @@ plot_md <- function(dat,
   # Build plot
   suppressWarnings(
     p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
-      geom_hline(yintercept = 0L, size = 0.2) +
+      geom_hline(yintercept = 0L, size = 0.2, color = 'grey') +
       labs(title = main,
                x = expression(mu),
                y = expression('log'[2]*' Fold Change')) +
@@ -226,4 +225,7 @@ plot_md <- function(dat,
 
 }
 
+
+# Use gganimate, tweenr, and shiny to toggle between contrasts or samples
+# Set FDR and/or fold change cutoffs on the fly
 
