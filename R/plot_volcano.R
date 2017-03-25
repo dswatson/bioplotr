@@ -3,13 +3,12 @@
 #' This function plots the log2 fold changes against the -log10 \emph{p}-values
 #' for a given test of differential expression/methylation.
 #'
-#' @param dat Data frame or matrix representing the results of a test for
-#'   differential expression or methylation, such as the output of a call to
-#'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
-#'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for
-#'   \emph{p}-values, log fold changes, and FDR. \code{NA} values are silently
-#'   removed.
-#' @param fdr Threshold for declaring a probe differentially expressed/methylated.
+#' @param dat Data frame representing the results of a test for differential
+#'   expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
+#'   \code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
+#'   Alternatively, any object coercable to a data frame with columns for
+#'   \emph{p}-values, log fold changes, and FDR. Missing values are silently removed.
+#' @param fdr Threshold for declaring a probe differentially expressed.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
@@ -21,10 +20,10 @@
 #'
 #' @details
 #' Volcano plots visualize the relationship between each probe's log2 fold change and
-#' -log10 \emph{p}-value for a given test of differential expression/methylation.
-#' Points are colored to distinguish between those that do and do not meet a
-#' user-defined FDR threshold. These figures help to evaluate the symmetry,
-#' magnitude, and significance of effects for a given experiment.
+#' -log10 \emph{p}-value for a given test of differential expression. Points are
+#' colored to distinguish between those that do and do not meet a user-defined FDR
+#' threshold. These figures help to evaluate the symmetry, magnitude, and significance
+#' of effects for a given experiment.
 #'
 #' @examples
 #' library(limma)
@@ -52,7 +51,7 @@ plot_volcano <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
-  dat <- as.data.frame(dat) %>% na.omit()
+  dat <- as.data.frame(dat)
   lfc <- c('log2FoldChange', 'logFC')
   if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
@@ -69,6 +68,9 @@ plot_volcano <- function(dat,
          'include "P.Value", "pvalue", "PValue", and "p.value". Make sure that dat',
          'includes exactly one such colname.')
   }
+  if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
+    stop('P-values must be on [0, 1].')
+  }
   q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
@@ -77,10 +79,20 @@ plot_volcano <- function(dat,
          'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
+  if (min(dat$q.value < 0L) || max(dat$q.value > 1L)) {
+    stop('FDR values must be on [0, 1].')
+  }
   if (is.null(main)) main <- 'Volcano Plot'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
+  }
+  dat <- dat %>%
+    select(logFC, p.value, q.value) %>%
+    na.omit()
+  if (nrow(dat) == 0L) {
+    stop('dat must have at least one row with non-missing values for logFC, ',
+         'p.value, and FDR.')
   }
 
   # Tidy data
@@ -142,4 +154,4 @@ plot_volcano <- function(dat,
 
 }
 
-
+# Shiny: toggle between tests, impose fold change cutoffs, set FDR on the fly

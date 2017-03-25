@@ -8,14 +8,13 @@ plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{Data frame or matrix representing the results of a test for
-differential expression or methylation, such as the output of a call to
-\code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
-\code{\link[DESeq2]{results}}. Alternatively, any object with columns for
-\emph{p}-values, log fold changes, and FDR. \code{NA} values are silently
-removed.}
+\item{dat}{Data frame representing the results of a test for differential
+expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
+\code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
+Alternatively, any object coercable to a data frame with columns for
+\emph{p}-values, log fold changes, and FDR. Missing values are silently removed.}
 
-\item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
+\item{fdr}{Threshold for declaring a probe differentially expressed.}
 
 \item{ptsize}{Size of data points in the plot.}
 
@@ -35,10 +34,10 @@ for a given test of differential expression/methylation.
 }
 \details{
 Volcano plots visualize the relationship between each probe's log2 fold change and
--log10 \emph{p}-value for a given test of differential expression/methylation.
-Points are colored to distinguish between those that do and do not meet a
-user-defined FDR threshold. These figures help to evaluate the symmetry,
-magnitude, and significance of effects for a given experiment.
+-log10 \emph{p}-value for a given test of differential expression. Points are
+colored to distinguish between those that do and do not meet a user-defined FDR
+threshold. These figures help to evaluate the symmetry, magnitude, and significance
+of effects for a given experiment.
 }
 \examples{
 library(limma)
