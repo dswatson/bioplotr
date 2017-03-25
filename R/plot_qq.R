@@ -1,20 +1,18 @@
 #' Q-Q Plot
 #'
-#' This function plots expected vs. observed quantiles of a \emph{p}-value
-#' distribution following -log10 transform.
+#' This function plots expected vs. observed \emph{p}-values following -log10
+#' transform.
 #'
-#' @param dat Data frame or matrix representing the results of a test for
-#'   differential expression or methylation, such as the output of a call to
-#'   \code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-#'   Alternatively, any object with a column for \emph{p}-values.
+#' @param dat Either a vector of \emph{p}-values, optionally named, or any object
+#'   with a column for \emph{p}-values coercable to a data frame. Missing values are
+#'   silently removed.
+#' @param lambda Calculate genomic inflation factor? See Details.
 #' @param ptsize Size of data points in the plot.
 #' @param main Optional plot title.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
-#' @param probes String specifying the name of the column in which to find the probe
-#'   identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
-#'   \code{hover = TRUE}.
+#'   display or appear in the RStudio viewer. Probe names are extracted from
+#'   \code{dat}.
 #'
 #' @details
 #' Q-Q plots are a common way to visually assess the applicability of a statistical
@@ -22,9 +20,15 @@
 #' line, especially at low expected values of -log10(\emph{p}), then it suggests a
 #' violation of the assumptions upon which the test was based.
 #'
+#' In addition, \code{plot_qq} optionally calculates the genomic inflation factor
+#' \eqn{lambda}, defined as the ratio of the median of the observed distribution of
+#' the test statistic to the expected median. Inflated \eqn{lambda}-values (i.e.,
+#' \eqn{lambda > 1}) are indicative of a high false positive rate, possibly due to
+#' some systematic and unaccounted for bias in the data.
+#'
 #' @examples
 #' df <- data.frame(p.value = runif(10000))
-#' plot_qq(df)
+#' plot_qq(df, lambda = TRUE)
 #'
 #' library(limma)
 #' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
@@ -43,14 +47,14 @@
 #'
 
 plot_qq <- function(dat,
+                    lambda = FALSE,
                     ptsize = 0.25,
                       main = NULL,
-                    legend = 'outside',
-                     hover = FALSE,
-                    probes = NULL) {
+                     hover = FALSE) {
 
   # Preliminaries
-  dat <- as.data.frame(dat)
+  if (is.numeric(dat)) dat <- data.frame(p.value = dat)
+  else dat <- as.data.frame(dat)
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
@@ -59,41 +63,48 @@ plot_qq <- function(dat,
          'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
          'includes exactly one such colname.')
   }
+  dat <- na.omit(dat)
+  if (nrow(dat) == 0L) {
+    stop('No non-missing p-values.')
+  }
+  if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
+    stop('P-values must be on [0, 1].')
+  }
   if (is.null(main)) {
     main <- 'Q-Q Plot'
   }
-  if (is.null(probes)) {
-    if (identical(rownames(dat), as.character(seq_len(nrow(dat)))) ||
-        is.null(rownames(dat))) {
-      dat <- dat %>% mutate(Probe = row_number())
-    } else {
-      dat <- dat %>% mutate(Probe = rownames(dat))
-    }
-  } else {
-    if (!probes %in% colnames(dat)) {
-      stop(paste0('Column "', probes, '" not found.'))
-    } else {
-      colnames(dat)[colnames(dat) == probes] <- 'Probe'
-    }
-  }
 
   # Tidy
+  if (is.null(rownames(dat))) {
+    dat <- dat %>% mutate(Probe = seq_len(nrow(dat)))
+  } else {
+    dat <- dat %>% mutate(Probe = rownames(dat))
+  }
   df <- dat %>%
     mutate(Observed = -log10(sort(p.value)),
            Expected = -log10(ppoints(length(p.value)))) %>%
     select(Probe, Observed, Expected)
+  if (lambda) {
+    chisq <- qchisq(p = 1L - dat$p.value, df = 1L)
+    lambda_val <- median(chisq) / qchisq(p = 0.5, df = 1L)
+    lambda_lbl <- paste('lambda ==',  round(lambda_val, 2))
+  }
 
   # Build plot
   suppressWarnings(
     p <- ggplot(df, aes(Expected, Observed)) +
       geom_point(aes(text = Probe), size = ptsize) +
-      geom_abline(intercept = 0, slope = 1, color = 'red') +
+      geom_abline(intercept = 0L, slope = 1L, color = 'red') +
       labs(title = main,
                x = expression('Expected'~-log[10](italic(p))),
                y = expression('Observed'~-log[10](italic(p)))) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
+  if (lambda) {
+    p <- p + annotate('text', size = 5, x = max(df$Expected), y = 0L, hjust = 1,
+                      label = lambda_lbl, parse = TRUE)
+  }
 
   # Output
   if (!hover) {
@@ -105,7 +116,5 @@ plot_qq <- function(dat,
 
 }
 
-
-
-# Extend to other distributions?
+# Use gganimate, tweenr, and shiny to toggle between tests?
 

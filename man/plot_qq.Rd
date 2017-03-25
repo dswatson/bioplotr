@@ -4,14 +4,14 @@
 \alias{plot_qq}
 \title{Q-Q Plot}
 \usage{
-plot_qq(dat, ptsize = 0.25, main = NULL, legend = "outside",
-  hover = FALSE, probes = NULL)
+plot_qq(dat, lambda = FALSE, ptsize = 0.25, main = NULL, hover = FALSE)
 }
 \arguments{
-\item{dat}{Data frame or matrix representing the results of a test for
-differential expression or methylation, such as the output of a call to
-\code{limma::topTable, edgeR::topTags}, or \code{DESeq2::results}.
-Alternatively, any object with a column for \emph{p}-values.}
+\item{dat}{Either a vector of \emph{p}-values, optionally named, or any object
+with a column for \emph{p}-values coercable to a data frame. Missing values are
+silently removed.}
+
+\item{lambda}{Calculate genomic inflation factor? See Details.}
 
 \item{ptsize}{Size of data points in the plot.}
 
@@ -19,25 +19,28 @@ Alternatively, any object with a column for \emph{p}-values.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
-
-\item{probes}{String specifying the name of the column in which to find the probe
-identifiers, assuming they are not \code{rownames(dat)}. Only relevant if
-\code{hover = TRUE}.}
+display or appear in the RStudio viewer. Probe names are extracted from
+\code{dat}.}
 }
 \description{
-This function plots expected vs. observed quantiles of a \emph{p}-value
-distribution following -log10 transform.
+This function plots expected vs. observed \emph{p}-values following -log10
+transform.
 }
 \details{
 Q-Q plots are a common way to visually assess the applicability of a statistical
 test to a given data set. If the black points deviate too sharply from the red
 line, especially at low expected values of -log10(\emph{p}), then it suggests a
 violation of the assumptions upon which the test was based.
+
+In addition, \code{plot_qq} optionally calculates the genomic inflation factor
+\eqn{lambda}, defined as the ratio of the median of the observed distribution of
+the test statistic to the expected median. Inflated \eqn{lambda}-values (i.e.,
+\eqn{lambda > 1}) are indicative of a high false positive rate, possibly due to
+some systematic and unaccounted for bias in the data.
 }
 \examples{
 df <- data.frame(p.value = runif(10000))
-plot_qq(df)
+plot_qq(df, lambda = TRUE)
 
 library(limma)
 DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
