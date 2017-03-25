@@ -3,11 +3,12 @@
 #' This function plots log2 fold changes against -log10 \emph{p}-values against
 #' probewise means for a given test of differential expression/methylation.
 #'
-#' @param dat Data frame or matrix representing the results of a test for
-#'   differential expression or methylation, such as the output of a call to
-#'   \code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
-#'   \code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-#'   fold changes, probewise means, \emph{p}-values, and FDR.
+#' @param dat Data frame representing the results of a test for differential
+#'   expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
+#'   \code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
+#'   Alternatively, any object coercable to a data frame with columns for log fold
+#'   changes, probewise means, \emph{p}-values, and FDR. Missing values are silently
+#'   removed.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",

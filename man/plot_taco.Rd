@@ -7,11 +7,12 @@
 plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside")
 }
 \arguments{
-\item{dat}{Data frame or matrix representing the results of a test for
-differential expression or methylation, such as the output of a call to
-\code{\link[limma]{topTable}}, \code{\link[edgeR]{topTags}}, or
-\code{\link[DESeq2]{results}}. Alternatively, any object with columns for log
-fold changes, probewise means, \emph{p}-values, and FDR.}
+\item{dat}{Data frame representing the results of a test for differential
+expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
+\code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
+Alternatively, any object coercable to a data frame with columns for log fold
+changes, probewise means, \emph{p}-values, and FDR. Missing values are silently
+removed.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
 
