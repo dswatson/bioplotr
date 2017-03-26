@@ -99,7 +99,7 @@ plot_lorenz <- function(dat,
 
   # Build plot
   gini <- function(x) {                     # Calculate Gini coefficient
-    x <- sort(x[is.finite(x)])
+    x <- as.numeric(sort(x[is.finite(x)]))
     n <- length(x)
     g <- (2L * sum(x * seq_len(n)) / sum(x) - (n + 1L)) / n
     return(round(g, 2L))
@@ -156,4 +156,4 @@ plot_lorenz <- function(dat,
 
 }
 
-
+# Use gganimate, tweenr, and shiny to toggle between vectors
