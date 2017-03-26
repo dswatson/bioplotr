@@ -25,7 +25,7 @@
 #' especially deep read coverage. For \code{filter[2]}, the authors recommend using
 #' the number of replicates in the largest group, to guarantee that a gene is expresed
 #' in at least one sample for any groupwise comparison. These are broad guidelines,
-#' however, not strict rules.
+#' however, not strict rules. See Law, et al. (2016) for some worked through examples.
 #'
 #' \code{method = "TMM"} is the weighted trimmed mean of M-values (to the reference)
 #' proposed by Robinson & Oshlack (2010), where the weights are from the delta method
@@ -89,6 +89,7 @@
 #' @seealso
 #' \code{\link[limma]{voom}, \link[edgeR]{cpm}}
 #'
+#' @export
 #' @importFrom edgeR cpm DGEList calcNormFactors
 #'
 
