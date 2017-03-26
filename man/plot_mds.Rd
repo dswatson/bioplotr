@@ -40,21 +40,22 @@ display or appear in the RStudio viewer.}
 \item{D3}{Render plot in three dimensions?}
 }
 \description{
-This function plots the principal coordinates of an omic data matrix.
+This function plots a low-dimensional projection of an omic data matrix using
+multi-dimensional scaling.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or
 three-dimensional principal coordinate subspace. MDS is an easy and popular method
-for unsupervised cluster detection. It can also aid in spotting potential outliers
+for unsupervised cluster detection. It can also aid in spotting potential outliers,
 and generally helps to visualize the latent structure of a data set.
 
 The \code{top} argument filters probes using the leading fold change method of
-Smyth et al. (See \code{\link[limma]{plotMDS}}). Pairwise Euclidean distances are
-calculated using the most differentially expressed probes between the two samples.
-This method is appropriate when different molecular pathways are relevant for
-distinguishing different pairs of samples. To run MDS on the complete data, set
-\code{top = NULL}. This is functionally equivalent to running PCA on the full
-matrix. See \code{\link{plot_pca}}.
+Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
+distances are calculated using the most differentially expressed probes between the
+two samples. This method is appropriate when different molecular pathways are
+relevant for distinguishing different pairs of samples. To run MDS on the complete
+data, set \code{top = NULL}. This is functionally equivalent to running PCA on the
+full matrix. See \code{\link{plot_pca}}.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)

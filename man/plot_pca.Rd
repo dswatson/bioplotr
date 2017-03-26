@@ -40,13 +40,14 @@ display or appear in the RStudio viewer.}
 \item{D3}{Render plot in three dimensions?}
 }
 \description{
-This function plots the principal components of an omic data matrix.
+This function plots a low-dimensional projection of an omic data matrix using
+principal component analysis.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or
 three-dimensional principal component subspace. Axis labels include the percentage
 of variance explained by each component. PCA is an easy and popular method for
-unsupervised cluster detection. It can also aid in spotting potential outliers
+unsupervised cluster detection. It can also aid in spotting potential outliers,
 and generally helps to visualize the latent structure of a data set.
 
 By default, \code{plot_pca} performs singular value decomposition on the complete
