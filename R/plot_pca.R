@@ -1,6 +1,7 @@
 #' PCA Plot
 #'
-#' This function plots the principal components of an omic data matrix.
+#' This function plots a low-dimensional projection of an omic data matrix using
+#' principal component analysis.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples. It is strongly recommended that data be
@@ -29,7 +30,7 @@
 #' This function plots the samples of an omic data matrix in a two- or
 #' three-dimensional principal component subspace. Axis labels include the percentage
 #' of variance explained by each component. PCA is an easy and popular method for
-#' unsupervised cluster detection. It can also aid in spotting potential outliers
+#' unsupervised cluster detection. It can also aid in spotting potential outliers,
 #' and generally helps to visualize the latent structure of a data set.
 #'
 #' By default, \code{plot_pca} performs singular value decomposition on the complete
@@ -74,6 +75,9 @@ plot_pca <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   if (!is.null(covar)) {
     if (is.data.frame(covar)) covar <- as.list(covar)
     else if (!is.list(covar)) covar <- list(covar)
@@ -111,8 +115,9 @@ plot_pca <- function(dat,
   if (!is.null(top)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with infinite ',
-                'or missing values. Proceeding with the complete matrix.')
+        warning(paste('top exceeds nrow(dat), at least after removing probes with infinite',
+                      'or missing values. Proceeding with the complete', nrow(dat), 'x',
+                      ncol(dat), 'matrix.'))
       }
     } else top <- round(top * nrow(dat))
     vars <- rowVars(dat)
@@ -133,9 +138,6 @@ plot_pca <- function(dat,
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
   if (is.null(rownames(dat))) {
     rownames(dat) <- seq_len(nrow(dat))
   }
@@ -238,6 +240,11 @@ plot_pca <- function(dat,
         zaxis = list(title = pve[max(pcs)])))
     print(p)
   }
+
 }
 
 
+# Use gganimate, tweenr, and shiny to:
+# 1) filter probes
+# 2) filter samples
+# 3) change PCs
