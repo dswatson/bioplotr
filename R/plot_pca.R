@@ -37,6 +37,15 @@
 #' \code{dat} matrix. Limit the PCA to only the most variable probes by using the
 #' \code{top} argument.
 #'
+#' @references
+#' Hotelling, H. (1933). "Analysis of a complex of variables into principal components."
+#' \emph{Journal of Educational Psychology}, \emph{24}(6): 414:441.
+#' \url{http://psycnet.apa.org/journals/edu/24/6/417/}
+#'
+#' Pearson, K. (1901). "On lines and planes of closest fit to systems of points in
+#' space." \emph{Philosophical Magazine}, \emph{2}(11): 559–572.
+#' \url{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}
+#'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_pca(mat)
