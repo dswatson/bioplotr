@@ -1,6 +1,7 @@
 #' MDS Plot
 #'
-#' This function plots the principal coordinates of an omic data matrix.
+#' This function plots a low-dimensional projection of an omic data matrix using
+#' multi-dimensional scaling.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples. It is strongly recommended that data be
@@ -28,16 +29,16 @@
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or
 #' three-dimensional principal coordinate subspace. MDS is an easy and popular method
-#' for unsupervised cluster detection. It can also aid in spotting potential outliers
+#' for unsupervised cluster detection. It can also aid in spotting potential outliers,
 #' and generally helps to visualize the latent structure of a data set.
 #'
 #' The \code{top} argument filters probes using the leading fold change method of
-#' Smyth et al. (See \code{\link[limma]{plotMDS}}). Pairwise Euclidean distances are
-#' calculated using the most differentially expressed probes between the two samples.
-#' This method is appropriate when different molecular pathways are relevant for
-#' distinguishing different pairs of samples. To run MDS on the complete data, set
-#' \code{top = NULL}. This is functionally equivalent to running PCA on the full
-#' matrix. See \code{\link{plot_pca}}.
+#' Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
+#' distances are calculated using the most differentially expressed probes between the
+#' two samples. This method is appropriate when different molecular pathways are
+#' relevant for distinguishing different pairs of samples. To run MDS on the complete
+#' data, set \code{top = NULL}. This is functionally equivalent to running PCA on the
+#' full matrix. See \code{\link{plot_pca}}.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -57,6 +58,7 @@
 #' @import dplyr
 #' @importFrom purrr map
 #' @importFrom limma getEAWP
+#' @importFrom wordspace dist.matrix
 #' @import ggplot2
 #' @import plotly
 #' @importFrom scales hue_pal
@@ -76,6 +78,9 @@ plot_mds <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for MDS.'))
   }
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
   if (!is.null(covar)) {
     if (is.data.frame(covar)) covar <- as.list(covar)
     else if (!is.list(covar)) covar <- list(covar)
@@ -113,8 +118,9 @@ plot_mds <- function(dat,
   if (!is.null(top)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with infinite ',
-                'or missing values. Proceeding with the complete matrix.')
+        warning(paste('top exceeds nrow(dat), at least after removing probes with infinite',
+                      'or missing values. Proceeding with the complete', nrow(dat), 'x',
+                      ncol(dat), 'matrix.'))
       }
     } else top <- round(top * nrow(dat))
   }
@@ -133,21 +139,16 @@ plot_mds <- function(dat,
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
   if (is.null(rownames(dat))) {
     rownames(dat) <- seq_len(nrow(dat))
   }
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  if (is.null(top)) {                                            # Distance matrix
-    dm <- as.matrix(dist(t(dat), method = 'euclidean'))
-    dimnames(dm) <- list(colnames(dat), colnames(dat))
+  if (is.null(top)) {                                             # Distance matrix
+    dm <- dist.matrix(t(dat), method = 'euclidean')
   } else {
-    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat),
-                 dimnames = list(colnames(dat), colnames(dat)))
+    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
     top_idx <- nrow(dat) - top + 1L
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
@@ -256,6 +257,12 @@ plot_mds <- function(dat,
         zaxis = list(title = pve[max(pcs)])))
     print(p)
   }
+
 }
 
+
+# Use gganimate, tweenr, and shiny to:
+# 1) filter probes
+# 2) filter samples
+# 3) change PCs
 
