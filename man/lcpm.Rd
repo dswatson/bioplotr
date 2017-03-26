@@ -68,7 +68,6 @@ affect the estimated factors.
 mat <- matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5)
 
 # Plot raw counts
-library(bioplotr)
 plot_density(mat)
 
 # Plot transformed counts
@@ -77,14 +76,6 @@ plot_density(trans_mat)
 
 }
 \references{
-Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). "voom: precision weights unlock
-linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
-\strong{15}:R29.
-\url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
-
-Law, C.W., Alhamdoosh, M., Su, S., Smyth, G.K., & Ritchie, M.E. (2016). "RNA-seq
-analysis is easy as 1-2-3 with limma, Glimma and edgeR." \emph{}
-
 Anders, S. & Huber, W. (2010). "Differential expression analysis for sequence
 count data." \emph{Genome Biology}, 11:R106.
 \url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106}
@@ -93,6 +84,16 @@ Bullard, J.H., Purdom, E., Hansen, K.D. & Dudoit, S. (2010). "Evaluation of
 statistical methods for normalization and differential expression in mRNA-Seq
 experiments." \emph{BMC Bioinformatics}, 11:94.
 \url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-11-94}
+
+Law, C.W., Alhamdoosh, M., Su, S., Smyth, G.K., & Ritchie, M.E. (2016). "RNA-seq
+analysis is easy as 1-2-3 with limma, Glimma and edgeR." \emph{F1000 Research},
+\emph{5}(1408).
+\url{https://f1000research.com/articles/5-1408/v2}
+
+Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). "voom: precision weights unlock
+linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
+\strong{15}:R29.
+\url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
 
 Robinson, M.D. & Oshlack, A. (2010). "A scaling normalization method for
 differential expression analysis of RNA-seq data." \emph{Genome Biology}, 11:R25.
