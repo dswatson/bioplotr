@@ -170,7 +170,7 @@ plot_tsne <- function(dat,
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  if (is.null(top)) {                                            # Distance matrix
+  if (is.null(top)) {                                      # Distance matrix
     dm <- dist.matrix(t(dat), method = 'euclidean')
   } else {
     dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
@@ -184,8 +184,8 @@ plot_tsne <- function(dat,
   }
   tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims), theta = theta,
                 max_iter = max_iter, check_duplicates = FALSE, is_distance = TRUE)
-  tsne <- tsne$Y                                                  # t-SNE
-  df <- data_frame(Sample = colnames(dat))                        # Melt
+  tsne <- tsne$Y                                           # t-SNE
+  df <- data_frame(Sample = colnames(dat))                 # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = tsne[, min(dims)],
                         PC2 = tsne[, max(dims)])
@@ -246,7 +246,7 @@ plot_tsne <- function(dat,
                  shape = guide_legend(title = covars[2]))
       )
     }
-    if (legend == 'bottomleft') {                            # Locate legend
+    if (legend == 'bottomleft') {                          # Locate legend
       p <- p + theme(legend.justification = c(0.01, 0.01),
                      legend.position = c(0.01, 0.01))
     } else if (legend == 'bottomright') {
@@ -270,7 +270,7 @@ plot_tsne <- function(dat,
     }
   } else {
     ### REWRITE ###
-    # symbls <- c(16, 17, 15, 3, 7, 8)      # This would be right if plotly worked
+    # symbls <- c(16, 17, 15, 3, 7, 8)                     # This would be right if plotly worked
     symbls <- c(16, 18, 15, 3, 7, 8)
     p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
                  text = ~Sample, color = ~Group, symbol = ~Group,
@@ -292,4 +292,5 @@ plot_tsne <- function(dat,
 # 1) filter probes
 # 2) filter samples
 # 3) change PCs
+# 4) tweak perplexity, theta
 
