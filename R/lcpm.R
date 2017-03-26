@@ -21,8 +21,8 @@
 #' filter for a given data set. As a rule of thumb, the \code{limma} authors advise
 #' setting \code{filter[1]} to either 1, or 10 / (\emph{L} / 1,000,000), where
 #' \emph{L} = the minimum library size for a given count matrix. The former
-#' corresponds to a log2-CPM of 0, while the latter may be preferable in cases where
-#' read depth is especially shallow. For \code{filter[2]}, the authors recommend using
+#' corresponds to a log2-CPM of 0, while the latter may be preferable for studies with
+#' especially deep read coverage. For \code{filter[2]}, the authors recommend using
 #' the number of replicates in the largest group, to guarantee that a gene is expresed
 #' in at least one sample for any groupwise comparison. These are broad guidelines,
 #' however, not strict rules.
@@ -57,6 +57,9 @@
 #' linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
 #' \strong{15}:R29.
 #' \url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
+#'
+#' Law, C.W., Alhamdoosh, M., Su, S., Smyth, G.K., & Ritchie, M.E. (2016). "RNA-seq
+#' analysis is easy as 1-2-3 with limma, Glimma and edgeR." \emph{}
 #'
 #' Anders, S. & Huber, W. (2010). "Differential expression analysis for sequence
 #' count data." \emph{Genome Biology}, 11:R106.
