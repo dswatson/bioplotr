@@ -52,6 +52,7 @@
 #' @export
 #' @importFrom purrr map_lgl
 #' @importFrom limma getEAWP
+#' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
 #' @importFrom NMF aheatmap
 #' @import RColorBrewer
@@ -98,7 +99,7 @@ plot_similarity <- function(dat,
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   if (dist == 'euclidean') {
-    dm <- as.matrix(dist(t(dat), method = 'euclidean'))
+    dm <- dist.matrix(t(dat), method = 'euclidean')
   } else if (dist == 'pearson') {
     dm <- 1 - cor(mat)
   } else if (dist == 'MI') {
@@ -121,3 +122,4 @@ plot_similarity <- function(dat,
 }
 
 
+# Use shiny to toggle between distance measures and agglomeration methods
