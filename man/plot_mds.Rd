@@ -69,6 +69,17 @@ grp <- gl(n = 2, k = 5, labels = c("A", "B"))
 plot_mds(mat, covar = grp)
 
 }
+\references{
+Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling.} Second edition.
+Chapman and Hall.
+
+Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+(2015). "limma powers differential expression analyses for RNA-sequencing and
+microarray studies." \emph{Nucleic Acids Res.}, emph{43}(7): e47.
+\url{https://www.ncbi.nlm.nih.gov/pubmed/25605792}
+
+Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling.} New York: Wiley.
+}
 \seealso{
 \code{\link{plot_pca}}, \code{\link[limma]{plotMDS}}
 }
