@@ -1,0 +1,295 @@
+#' t-SNE Plot
+#'
+#' This function plots a low-dimensional projection of an omic data matrix using
+#' t-distributed stochastic neighbor embedding.
+#'
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples. It is strongly recommended that data be
+#'   normalized and filtered prior to running t-SNE. For count data, this means
+#'   undergoing some sort of variance stabilizing transformation, such as
+#'   \code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
+#'   \link[DESeq2]{rlog}}, etc.
+#' @param covar Optional vector of length equal to sample size, or up to two such
+#'   vectors organized into a list or data frame. If passing two covariates, only one
+#'   may be continuous. Supply legend title(s) by passing a named list or data frame.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
+#'   for t-SNE. See Details.
+#' @param dims Vector specifying which dimensions to plot. Must be of length
+#'   two unless \code{D3 = TRUE}.
+#' @param perplexity How many nearest neighbors should the algorithm consider when
+#'   building projections?
+#' @param theta Speed/accuracy tradeoff of the Barnes-Hut algorithm. See Details.
+#' @param max_iter Maximum number of iterations over which to minimize the loss
+#'   function. See Details.
+#' @param label Label data points by sample name? Defaults to \code{FALSE} unless
+#'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
+#' @param main Optional plot title.
+#' @param legend Legend position. Must be one of \code{"outside",
+#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
+#'   the plot is rendered in HTML and will either open in your browser's graphic
+#'   display or appear in the RStudio viewer.
+#' @param D3 Render plot in three dimensions?
+#'
+#' @details
+#' This function plots the samples of an omic data matrix in a two- or
+#' three-dimensional stochastic neighbor subspace. t-SNE is a popular machine learning
+#' method for unsupervised cluster detection. It can also aid in spotting potential
+#' outliers, and generally helps to visualize the latent structure of a data set.
+#'
+#' The \code{top} argument optionally filters probes using the leading fold change
+#' method of Smyth et al. See \code{\link{plot_mds}} for more details.
+#'
+#' \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm, which
+#' is a fast approximation of the original t-SNE projection method. An exact t-SNE
+#' plot may be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
+#' samplewise similarities based on distances in the original \emph{p}-dimensional
+#' space (where \emph{p} = the number of probes); generates a low-dimensional
+#' projection of the samples based on the user-defined \code{perplexity} parameter;
+#' and iteratively minimizes the Kullback-Leibler divergence between these two
+#' distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
+#' more details. A detailed introduction to and explication of the original t-SNE
+#' method and the Barnes-Hut algorithm may be found in the references below.
+#'
+#' @references
+#' van der Maaten, L.J.P. (2014). "Accelerating t-SNE using Tree-Based Algorithms."
+#' \emph{Journal of Machine Learning Research}, \emph{15}(3221-3245).
+#' \url{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}
+#'
+#' van der Maaten, L.J.P. & Hinton, G.E. (2008). "Visualizing High-Dimensional Data
+#' Using t-SNE." \emph{Journal of Machine Learning Research}, \emph{9}(2579-2605).
+#' \url{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}
+#'
+#' @examples
+#' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
+#' plot_tsne(mat)
+#'
+#' library(DESeq2)
+#' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
+#'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
+#' mat <- rlog(mat)
+#' grp <- gl(n = 2, k = 5, labels = c("A", "B"))
+#' plot_tsne(mat, covar = grp)
+#'
+#' @seealso
+#' \code{\link{plot_pca}}, \code{\link[limma]{plotMDS}}
+#'
+#' @export
+#' @import dplyr
+#' @importFrom purrr map
+#' @importFrom limma getEAWP
+#' @importFrom wordspace dist.matrix
+#' @importFrom Rtsne Rtsne
+#' @import ggplot2
+#' @import plotly
+#' @importFrom scales hue_pal
+#'
+
+plot_tsne <- function(dat,
+                      covar = NULL,
+                        top = NULL,
+                       dims = c(1, 2),
+                 perplexity = ncol(dat) / 4,
+                      theta = 0.1,
+                   max_iter = 1000,
+                      label = FALSE,
+                       main = NULL,
+                     legend = 'outside',
+                      hover = FALSE,
+                         D3 = FALSE) {
+
+  # Preliminaries
+  if (ncol(dat) < 3L) {
+    stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for t-SNE.'))
+  }
+  dat <- getEAWP(dat)$expr
+  keep <- rowSums(is.finite(dat)) == ncol(dat)
+  dat <- dat[keep, , drop = FALSE]
+  if (!is.null(covar)) {
+    if (is.data.frame(covar)) covar <- as.list(covar)
+    else if (!is.list(covar)) covar <- list(covar)
+    if (length(covar) > 2L) {
+      stop('covar cannot contain more than two covariates.')
+    }
+    for (i in seq_along(covar)) {
+      if (length(covar[[i]]) != ncol(dat)) {
+        stop('Covariate(s) must be of length equal to sample size.')
+      }
+      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0L) {
+        warning('Continuous feature is invariant.')
+      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1L) {
+        warning('Grouping factor is invariant.')
+      }
+    }
+    nums <- as.logical(map(covar, is.numeric))
+    if (sum(nums) == 2L) {
+      stop('Only one continuous covariate can be plotted at a time.')
+    }
+    if (any(nums)) {
+      cont_cov <- TRUE
+      if (which(nums) == 2L) covar <- covar[c(2, 1)]
+    } else cont_cov <- FALSE
+    if (!is.null(names(covar))) covars <- names(covar)
+    else {
+      if (cont_cov) covars <- c('Feature', 'Group')
+      else {
+        if (length(covar) == 1L) covars <- 'Group'
+        else covars <- c('Factor 1', 'Factor 2')
+      }
+    }
+    names(covar) <- paste0('Feature', seq_along(covar))
+  }
+  if (!is.null(top)) {
+    if (top > 1L) {
+      if (top > nrow(dat)) {
+        warning(paste('top exceeds nrow(dat), at least after removing probes with infinite',
+                      'or missing values. Proceeding with the complete', nrow(dat), 'x',
+                      ncol(dat), 'matrix.'))
+      }
+    } else top <- round(top * nrow(dat))
+  }
+  if (length(dims) > 2L && !D3) {
+    stop('dims must be of length 2 when D3 = FALSE.')
+  } else if (length(dims) > 3L) {
+    stop('dims must be a vector of length <= 3.')
+  }
+  if (label && !is.null(covar) && length(covar) == 2L) {
+    stop('If label is TRUE, then plot can render at most one covariate.')
+  }
+  if (is.null(main)) main <- 't-SNE'
+  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
+    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
+         '"topleft", or "topright"')
+  }
+
+  # Tidy data
+  set.seed(123)
+  if (is.null(rownames(dat))) {
+    rownames(dat) <- seq_len(nrow(dat))
+  }
+  if (is.null(colnames(dat))) {
+    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
+  }
+  if (is.null(top)) {                                            # Distance matrix
+    dm <- dist.matrix(t(dat), method = 'euclidean')
+  } else {
+    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+    top_idx <- nrow(dat) - top + 1L
+    for (i in 2L:ncol(dat)) {
+      for (j in 1L:(i - 1L)) {
+        dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
+                                      partial = top_idx)[top_idx:nrow(dat)]))
+      }
+    }
+  }
+  tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims), theta = theta,
+                max_iter = max_iter, check_duplicates = FALSE, is_distance = TRUE)
+  tsne <- tsne$Y                                                  # t-SNE
+  df <- data_frame(Sample = colnames(dat))                        # Melt
+  if (length(dims) == 2L) {
+    df <- df %>% mutate(PC1 = tsne[, min(dims)],
+                        PC2 = tsne[, max(dims)])
+  } else {
+    other <- setdiff(dims, c(min(dims), max(dims)))
+    df <- df %>% mutate(PC1 = tsne[, min(dims)],
+                        PC2 = tsne[, other],
+                        PC3 = tsne[, max(dims)])
+  }
+  if (!is.null(covar)) {
+    covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
+    df <- df %>% inner_join(covar, by = 'Sample')
+  }
+
+  # Build plot
+  if (!D3) {
+    p <- ggplot(df, aes(PC1, PC2)) +
+      geom_hline(yintercept = 0L, color = 'grey') +
+      geom_vline(xintercept = 0L, color = 'grey') +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+    if (is.null(top)) {
+      p <- p + labs(title = main,
+                    x = paste('Dim', min(dims)),
+                    y = paste('Dim', max(dims)))
+    } else {
+      p <- p + labs(title = main,
+                    x = paste('Leading logFC Dim', min(dims)),
+                    y = paste('Leading logFC Dim', max(dims)))
+    }
+    if (is.null(covar)) {
+      if (label) p <- p + geom_text(aes(label = Sample), alpha = 0.85)
+      else suppressWarnings(p <- p + geom_point(aes(text = Sample)))
+    } else if (ncol(covar) == 2L) {
+      if (label) {
+        p <- p + geom_text(aes(label = Sample, color = Feature1),
+                           alpha = 0.85)
+      } else {
+        if (cont_cov) {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1),
+                                alpha = 0.85)
+          )
+        } else {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
+                                alpha = 0.85)
+          )
+        }
+      }
+      p <- p + guides(color = guide_legend(title = covars[1]),
+                      shape = guide_legend(title = covars[1]))
+    } else {
+      suppressWarnings(
+        p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
+                            alpha = 0.85) +
+          guides(color = guide_legend(title = covars[1]),
+                 shape = guide_legend(title = covars[2]))
+      )
+    }
+    if (legend == 'bottomleft') {                            # Locate legend
+      p <- p + theme(legend.justification = c(0.01, 0.01),
+                     legend.position = c(0.01, 0.01))
+    } else if (legend == 'bottomright') {
+      p <- p + theme(legend.justification = c(0.99, 0.01),
+                     legend.position = c(0.99, 0.01))
+    } else if (legend == 'topleft') {
+      p <- p + theme(legend.justification = c(0.01, 0.99),
+                     legend.position = c(0.01, 0.99))
+    } else if (legend == 'topright') {
+      p <- p + theme(legend.justification = c(0.99, 0.99),
+                     legend.position = c(0.99, 0.99))
+    }
+    if (!hover) print(p)
+    else {
+      if (legend == 'outside') {
+        p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+      } else {
+        p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+      }
+      print(p)
+    }
+  } else {
+    ### REWRITE ###
+    # symbls <- c(16, 17, 15, 3, 7, 8)      # This would be right if plotly worked
+    symbls <- c(16, 18, 15, 3, 7, 8)
+    p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
+                 text = ~Sample, color = ~Group, symbol = ~Group,
+                 colors = hue_pal()(length(unique(df$Group))),
+                 symbols = symbls[1:length(unique(df$Group))],
+                 type = 'scatter3d', mode = 'markers',
+                 alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
+      layout(hovermode = 'closest', title = main, scene = list(
+        xaxis = list(title = pve[min(dims)]),
+        yaxis = list(title = pve[other]),
+        zaxis = list(title = pve[max(dims)])))
+    print(p)
+  }
+
+}
+
+
+# Use gganimate, tweenr, and shiny to:
+# 1) filter probes
+# 2) filter samples
+# 3) change PCs
+
