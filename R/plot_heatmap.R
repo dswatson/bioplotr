@@ -14,7 +14,7 @@
 #'
 #' @details
 #' Heatmaps are a common and intuitive way to display the values of an omic data
-#' matrix, especially after top probes have been selected through statistical testing.
+#' matrix, especially after top probes have been selected for closer investigation.
 #' Hierarchical clustering dendrograms cluster both the rows and the columns,
 #' revealing latent structure in the data. Annotation tracks atop the figure may be
 #' used to investigate associations with phenotypic features.
@@ -44,12 +44,17 @@ plot_heatmap <- function(dat,
   } else {
     stop('col must be one of "rb" or "gr".')
   }
-  if (is.data.frame(feat)) feat <- as.list(feat)
-  else if (!is.list(feat)) feat <- list('Variable' = feat)
-  else {
+  if (is.data.frame(feat)) {
+    feat <- as.list(feat)
+  } else if (!is.list(feat)) {
+    feat <- list('Variable' = feat)
+  } else {
     if (is.null(names(feat))) {
-      if (length(feat) == 1L) names(feat) <- 'Variable'
-      else names(feat) <- paste('Variable', seq_along(feat))
+      if (length(feat) == 1L) {
+        names(feat) <- 'Variable'
+      } else {
+        names(feat) <- paste('Variable', seq_along(feat))
+      }
     }
   }
   if (any(map_lgl(seq_along(feat), function(j) {
@@ -63,7 +68,9 @@ plot_heatmap <- function(dat,
   }))) {
     stop('feat is invariant.')
   }
-  if (is.null(main)) main <- 'Omic Heatmap'
+  if (is.null(main)) {
+    main <- 'Omic Heatmap'
+  }
 
   # Tidy data
   dat <- getEAWP(dat)$expr
