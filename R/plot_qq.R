@@ -53,8 +53,11 @@ plot_qq <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (is.numeric(dat)) dat <- data.frame(p.value = dat)
-  else dat <- as.data.frame(dat)
+  if (is.numeric(dat)) {
+    dat <- data.frame(p.value = dat)
+  } else {
+    dat <- as.data.frame(dat)
+  }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'

@@ -60,6 +60,7 @@
 #' @export
 #' @importFrom limma getEAWP
 #' @importFrom purrr map_lgl map_chr
+#' @importFrom ggsci pal_d3
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom plotly ggplotly
@@ -146,8 +147,11 @@ plot_md <- function(dat,
   }
 
   # Tidy data
-  if (!is.null(rownames(dat))) probes <- rownames(dat)
-  else probes <- seq_len(nrow(dat))
+  if (!is.null(rownames(dat))) {
+    probes <- rownames(dat)
+  } else {
+    probes <- seq_len(nrow(dat))
+  }
   if (!is.matrix(dat)) {
     test <- function(q) ifelse(q < fdr, TRUE, FALSE)
     df <- dat %>%
@@ -189,14 +193,14 @@ plot_md <- function(dat,
       p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
         scale_color_manual(name = expression(italic(q)*'-value'),
                          labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                         values = c('black', 'red')) +
+                         values = c('black', pal_d3()(4))) +
         guides(col = guide_legend(reverse = TRUE))
     }
   } else if ('Ctrl' %in% colnames(df)) {
     p <- p + geom_point(aes(color = Ctrl, size = Size), alpha = 0.25) +
       scale_size(range = c(ptsize, 5L * ptsize), guide = FALSE) +
       scale_color_manual(name = 'Control',
-                       values = c('red', 'blue', 'black'))
+                       values = c(pal_d3()(seq_len(2)), 'black'))
   }
   if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),

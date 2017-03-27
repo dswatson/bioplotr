@@ -65,12 +65,17 @@ plot_similarity <- function(dat,
                             main = NULL) {
 
   # Preliminaries
-  if (is.data.frame(feat)) feat <- as.list(feat)
-  else if (!is.list(feat)) feat <- list('Variable' = feat)
-  else {
+  if (is.data.frame(feat)) {
+    feat <- as.list(feat)
+  } else if (!is.list(feat)) {
+    feat <- list('Variable' = feat)
+  } else {
     if (is.null(names(feat))) {
-      if (length(feat) == 1L) names(feat) <- 'Variable'
-      else names(feat) <- paste('Variable', seq_along(feat))
+      if (length(feat) == 1L) {
+        names(feat) <- 'Variable'
+      } else {
+        names(feat) <- paste('Variable', seq_along(feat))
+      }
     }
   }
   if (any(map_lgl(seq_along(feat), function(j) {
@@ -92,7 +97,9 @@ plot_similarity <- function(dat,
     stop('hclustfun must be one of "ward.D", "ward.D2", "single", "complete", ',
          '"average", "mcquitty", "median", or "centroid". See ?hclust.')
   }
-  if (is.null(main)) main <- 'Sample Similarity Matrix'
+  if (is.null(main)) {
+    main <- 'Sample Similarity Matrix'
+  }
 
   # Tidy data
   dat <- getEAWP(dat)$expr

@@ -38,10 +38,10 @@
 #' plot_lorenz(X)
 #'
 #' @export
-#' @import dplyr
+#' @importFrom dplyr data_frame
 #' @importFrom purrr map map_chr
 #' @import ggplot2
-#' @importFrom scales hue_pal
+#' @importFrom ggsci pal_d3
 #' @importFrom plotly ggplotly
 #'
 
@@ -54,8 +54,11 @@ plot_lorenz <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
-  if (is.data.frame(dat)) dat <- as.list(dat)
-  else if (!is.list(dat)) dat <- list(dat)
+  if (is.data.frame(dat)) {
+    dat <- as.list(dat)
+  } else if (!is.list(dat)) {
+    dat <- list(dat)
+  }
   if (is.null(names(dat))) {
     names(dat) <- paste0('x', seq_along(dat))
   }
@@ -74,12 +77,21 @@ plot_lorenz <- function(dat,
     }
   }
   if (is.null(main)) {
-    if (length(dat) == 1L) main <- 'Lorenz Curve'
-    else main <- 'Lorenz Curves'
+    if (length(dat) == 1L) {
+      main <- 'Lorenz Curve'
+    } else {
+      main <- 'Lorenz Curves'
+    }
   }
-  if (is.null(xlab)) xlab <- 'Cumulative Proportion of Observations'
-  if (is.null(ylab)) ylab <- 'Cumulative Proportion of Values'
-  if (is.null(leg.txt)) leg.txt <- 'Data'
+  if (is.null(xlab)) {
+    xlab <- 'Cumulative Proportion of Observations'
+  }
+  if (is.null(ylab)) {
+    ylab <- 'Cumulative Proportion of Values'
+  }
+  if (is.null(leg.txt)) {
+    leg.txt <- 'Data'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -121,7 +133,7 @@ plot_lorenz <- function(dat,
     }
     p <- p + scale_colour_manual(name = leg.txt,
                                labels = map_chr(seq_along(dat), p_gin),
-                               values = hue_pal()(length(dat)))
+                               values = pal_d3()(length(dat)))
   } else {
     p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
       scale_colour_manual(name = leg.txt,

@@ -32,6 +32,7 @@
 #' @export
 #' @importFrom purrr map map_dbl map_df
 #' @importFrom dplyr data_frame
+#' @importFrom ggsci scale_color_d3
 #' @import ggplot2
 #' @importFrom plotly ggplotly
 #'
@@ -43,7 +44,9 @@ plot_calibration <- function(obs,
                             hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) obs <- as.factor(obs)
+  if (is.character(obs)) {
+    obs <- as.factor(obs)
+  }
   if (is.factor(obs)) {
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
@@ -54,15 +57,20 @@ plot_calibration <- function(obs,
       obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
     }
   }
-  if (is.logical(obs)) obs <- ifelse(obs, 1L, 0L)
+  if (is.logical(obs)) {
+    obs <- ifelse(obs, 1L, 0L)
+  }
   if (!all(obs %in% c(0L, 1L))) {
     stop('A numeric response can only take on values of 0 or 1.')
   }
   if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
-  if (is.data.frame(pred)) pred <- as.list(pred)
-  else if (!is.list(pred)) pred <- list(pred)
+  if (is.data.frame(pred)) {
+    pred <- as.list(pred)
+  } else if (!is.list(pred)) {
+    pred <- list(pred)
+  }
   pred <- map(pred, function(x) x <- x[is.finite(x)])
   if (is.null(names(pred))) {
     names(pred) <- paste0('M', seq_along(pred))
@@ -80,8 +88,11 @@ plot_calibration <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1L) main <- 'Calibration Curve'
-    else main <- 'Calibration Curves'
+    if (length(pred) == 1L) {
+      main <- 'Calibration Curve'
+    } else {
+      main <- 'Calibration Curves'
+    }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -116,7 +127,8 @@ plot_calibration <- function(obs,
   if (length(pred) > 1L) {       # Multiple curves?
     suppressWarnings(
       p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
-        geom_path(aes(color = Classifier, text = Classifier))
+        geom_path(aes(color = Classifier, text = Classifier)) +
+        scale_color_d3()
     )
   } else {
     p <- p + geom_point(aes(size = Freq)) +
@@ -150,4 +162,4 @@ plot_calibration <- function(obs,
 
 }
 
-
+# Use gganimate, tweenr, and shiny to toggle btw classifiers

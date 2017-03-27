@@ -32,8 +32,9 @@
 #' plot_taco(top)
 #'
 #' @export
-#' @importFrom purrr map_chr
 #' @import dplyr
+#' @importFrom ggsci pal_d3
+#' @importFrom purrr map_chr
 #' @importFrom plotly plot_ly
 #'
 
@@ -80,7 +81,9 @@ plot_taco <- function(dat,
          'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (is.null(main)) main <- 'Taco Plot'
+  if (is.null(main)) {
+    main <- 'Taco Plot'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -104,7 +107,7 @@ plot_taco <- function(dat,
 
   # Build Plot
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
-               text = ~Probe, color = ~is.DE, colors = c('red', 'black'),
+               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4), 'black'),
                type = 'scatter3d', mode = 'markers',
                alpha = 0.85, hoverinfo = 'text', marker = list(size = 1)) %>%
     layout(hovermode = 'closest', title = main, scene = list(

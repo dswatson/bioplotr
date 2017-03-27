@@ -137,8 +137,11 @@ plot_mv <- function(dat,
   }
 
   # Tidy data
-  if (is.null(rownames(dat))) probes <- seq_len(nrow(dat))
-  else probes <- rownames(dat)
+  if (is.null(rownames(dat))) {
+    probes <- seq_len(nrow(dat))
+  } else {
+    probes <- rownames(dat)
+  }
   if (!is(dat, 'MArrayLM') && !is(dat, 'DESeqDataSet')) {
     dat <- getEAWP(dat)$expr
     keep <- rowSums(is.finite(dat)) == ncol(dat)
@@ -165,12 +168,16 @@ plot_mv <- function(dat,
     ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if ('s2.prior' %in% names(dat)) prior <- log2(prior)
+    if ('s2.prior' %in% names(dat)) {
+      prior <- log2(prior)
+    }
     xlab <- expression(mu)
     ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if ('s2.prior' %in% names(dat)) prior <- sqrt(prior)
+    if ('s2.prior' %in% names(dat)) {
+      prior <- sqrt(prior)
+    }
     xlab <- expression(mu)
     ylab <- expression(sqrt(sigma))
   }

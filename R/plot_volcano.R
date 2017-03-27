@@ -37,8 +37,9 @@
 #' plot_volcano(top)
 #'
 #' @export
-#' @importFrom purrr map_lgl
 #' @import dplyr
+#' @importFrom purrr map_lgl
+#' @importFrom ggsci pal_d3
 #' @import ggplot2
 #' @importFrom plotly ggplotly
 #'
@@ -82,7 +83,9 @@ plot_volcano <- function(dat,
   if (min(dat$q.value < 0L) || max(dat$q.value > 1L)) {
     stop('FDR values must be on [0, 1].')
   }
-  if (is.null(main)) main <- 'Volcano Plot'
+  if (is.null(main)) {
+    main <- 'Volcano Plot'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -110,7 +113,7 @@ plot_volcano <- function(dat,
   suppressWarnings(
     p <- ggplot(df, aes(logFC, logP, text = Probe)) +
       labs(title = main,
-               x = expression(log[2]*' Fold Change'),
+               x = expression(log[2]~'Fold Change'),
                y = expression(~-log[10](italic(p)))) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
@@ -123,7 +126,7 @@ plot_volcano <- function(dat,
     p <- p + geom_point(aes(color = isDE), size = ptsize, alpha = 0.25) +
       scale_colour_manual(name = expression(italic(q)*'-value'),
                         labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                        values = c('black', 'red')) +
+                        values = c('black', pal_d3()(4))) +
       guides(color = guide_legend(reverse = TRUE))
   }
   if (legend == 'bottomleft') {  # Locate legend

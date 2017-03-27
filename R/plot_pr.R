@@ -38,7 +38,7 @@
 #' @importFrom purrr map map_df map_chr
 #' @import ggplot2
 #' @importFrom PRROC pr.curve
-#' @importFrom scales hue_pal
+#' @importFrom ggsci pal_d3
 #' @importFrom plotly ggplotly
 #'
 
@@ -50,7 +50,9 @@ plot_pr <- function(obs,
                    hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) obs <- as.factor(obs)
+  if (is.character(obs)) {
+    obs <- as.factor(obs)
+  }
   if (is.factor(obs)) {
     if (length(levels(obs)) != 2L) {
       stop('Response must be dichotomous.')
@@ -61,17 +63,24 @@ plot_pr <- function(obs,
       obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
     }
   }
-  if (is.logical(obs)) obs <- ifelse(obs, 1L, 0L)
+  if (is.logical(obs)) {
+    obs <- ifelse(obs, 1L, 0L)
+  }
   if (!all(obs %in% c(0L, 1L))) {
     stop('A numeric response can only take on values of 0 or 1.')
   }
   if (var(obs) == 0L) {
     stop('Response is invariant.')
   }
-  if (is.data.frame(pred)) pred <- as.list(pred)
-  else if (!is.list(pred)) pred <- list(pred)
+  if (is.data.frame(pred)) {
+    pred <- as.list(pred)
+  } else if (!is.list(pred)) {
+    pred <- list(pred)
+  }
   pred <- map(pred, function(x) x <- x[is.finite(x)])
-  if (is.null(names(pred))) names(pred) <- paste0('M', seq_along(pred))
+  if (is.null(names(pred))) {
+    names(pred) <- paste0('M', seq_along(pred))
+  }
   for (x in seq_along(pred)) {
     if (!is.numeric(pred[[x]])) {
       stop('pred must be a numeric vector, or several such vectors organized into ',
@@ -82,10 +91,15 @@ plot_pr <- function(obs,
     }
   }
   if (is.null(main)) {
-    if (length(pred) == 1L) main <- 'Precision-Recall Curve'
-    else main <- 'Precision-Recall Curves'
+    if (length(pred) == 1L) {
+      main <- 'Precision-Recall Curve'
+    } else {
+      main <- 'Precision-Recall Curves'
+    }
   }
-  if (is.null(leg.txt)) leg.txt <- 'Classifier'
+  if (is.null(leg.txt)) {
+    leg.txt <- 'Classifier'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -121,7 +135,7 @@ plot_pr <- function(obs,
                             color = Classifier)) +
         scale_colour_manual(name = leg.txt,
                           labels = map_chr(seq_along(pred), p_auc),
-                          values = hue_pal()(length(pred)))
+                          values = pal_d3()(length(pred)))
     )
   } else {
     p <- p + geom_point(size = 0.1) +
@@ -159,3 +173,5 @@ plot_pr <- function(obs,
 }
 
 
+# Use gganimate, tweenr, and shiny to toggle btw classifiers
+# Slash maybe do cumulative from left to right?

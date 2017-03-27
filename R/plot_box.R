@@ -1,7 +1,7 @@
 #' Box Plots by Sample
 #'
-#' This function displays each sample's omic data distribution as a box and
-#' whicker plot.
+#' This function displays each sample's omic data distribution as a box and whisker
+#' plot.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
@@ -35,7 +35,9 @@
 #' plot_box(mat, group = batch, ylab = "Normalized Counts")
 #'
 #' @export
+#' @importFrom limma getEAWP
 #' @importFrom tidyr gather
+#' @importFrom ggsci scale_fill_d3
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom plotly ggplotly
@@ -50,9 +52,12 @@ plot_box <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (is.null(group)) group <- list(rep(1L, times = ncol(dat)))
-  else {
-    if (!is.list(group)) group <- list(group)
+  if (is.null(group)) {
+    group <- list(rep(1L, times = ncol(dat)))
+  } else {
+    if (!is.list(group)) {
+      group <- list(group)
+    }
     if (!is.character(group[[1]]) & !is.factor(group[[1L]])) {
       stop('group must be a character or factor variable.')
     }
@@ -66,12 +71,18 @@ plot_box <- function(dat,
       warning('group is invariant.')
     }
   }
-  if (is.null(ylab)) ylab <- 'Value'
+  if (is.null(ylab)) {
+    ylab <- 'Value'
+  }
   if (is.null(main)) {
-    if (is.numeric(group[[1]])) main <- 'Expression By Sample'
-    else {
-      if (is.null(names(group))) main <- 'Expression By Group'
-      else main <- paste('Expression By', names(group))
+    if (is.numeric(group[[1]])) {
+      main <- 'Expression By Sample'
+    } else {
+      if (is.null(names(group))) {
+        main <- 'Expression By Group'
+      } else {
+        main <- paste('Expression By', names(group))
+      }
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -96,15 +107,16 @@ plot_box <- function(dat,
       theme(plot.title = element_text(hjust = 0.5),
             axis.text.x = element_text(angle = 45, hjust = 1))
   )
-  if (!is.numeric(group[[1]])) {  # Fill by group?
-    p <- p + geom_boxplot(aes(fill = Group))
+  if (!is.numeric(group[[1]])) {                 # Fill by group?
+    p <- p + geom_boxplot(aes(fill = Group)) +
+      scale_fill_d3()
   } else {
     p <- p + geom_boxplot()
   }
-  if (!is.null(names(group))) {   # Named list?
+  if (!is.null(names(group))) {                  # Named list?
     p <- p + guides(fill = guide_legend(title = names(group)))
   }
-  if (legend == 'bottomleft') {   # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
@@ -134,4 +146,6 @@ plot_box <- function(dat,
 
 # Fun fact: plotly won't display text for boxplots:
 # https://community.plot.ly/t/boxplot-hoverinfo-text-not-display/1959
+
+# Use gganimate, tweenr, and shiny to toggle btw matrices
 

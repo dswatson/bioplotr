@@ -36,7 +36,9 @@
 #' \code{\link[limma]{plotDensities}}
 #'
 #' @export
+#' @importFrom limma getEAWP
 #' @importFrom tidyr gather
+#' @importFrom ggsci scale_color_d3
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom plotly ggplotly
@@ -50,9 +52,12 @@ plot_density <- function(dat,
                          hover = FALSE) {
 
   # Preliminaries
-  if (is.null(group)) group <- list(rep(1L, times = ncol(dat)))
-  else {
-    if (!is.list(group)) group <- list(group)
+  if (is.null(group)) {
+    group <- list(rep(1L, times = ncol(dat)))
+  } else {
+    if (!is.list(group)) {
+      group <- list(group)
+    }
     if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
       stop('group must be a character or factor variable.')
     }
@@ -66,12 +71,18 @@ plot_density <- function(dat,
       warning('group is invariant.')
     }
   }
-  if (is.null(xlab)) xlab <- 'Value'
+  if (is.null(xlab)) {
+    xlab <- 'Value'
+  }
   if (is.null(main)) {
-    if (is.numeric(group[[1]])) main <- 'Density By Sample'
-    else {
-      if (is.null(names(group))) main <- 'Density By Group'
-      else main <- paste('Density By', names(group))
+    if (is.numeric(group[[1]])) {
+      main <- 'Density By Sample'
+    } else {
+      if (is.null(names(group))) {
+        main <- 'Density By Group'
+      } else {
+        main <- paste('Density By', names(group))
+      }
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -93,15 +104,16 @@ plot_density <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (!is.numeric(group[[1]])) {  # Color by group?
-    p <- p + geom_path(stat = 'density', aes(color = Group))
+  if (!is.numeric(group[[1]])) {                 # Color by group?
+    p <- p + geom_path(stat = 'density', aes(color = Group)) +
+      scale_color_d3()
   } else {
     p <- p + geom_path(stat = 'density')
   }
-  if (!is.null(names(group))) {   # Named list?
+  if (!is.null(names(group))) {                  # Named list?
     p <- p + guides(color = guide_legend(title = names(group)))
   }
-  if (legend == 'bottomleft') {   # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {
@@ -130,3 +142,4 @@ plot_density <- function(dat,
 }
 
 
+# Use gganimate, tweenr, and shiny to toggle btw matrices
