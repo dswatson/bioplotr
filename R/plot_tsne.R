@@ -7,11 +7,13 @@
 #'   probes and columns to samples. It is strongly recommended that data be
 #'   normalized and filtered prior to running t-SNE. For count data, this means
 #'   undergoing some sort of variance stabilizing transformation, such as
-#'   \code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
-#'   \link[DESeq2]{rlog}}, etc.
-#' @param covar Optional vector of length equal to sample size, or up to two such
-#'   vectors organized into a list or data frame. If passing two covariates, only one
-#'   may be continuous. Supply legend title(s) by passing a named list or data frame.
+#'   \code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+#' @param group Optional character or factor vector of length equal to sample size,
+#'   or up to two such vectors organized into a list or data frame. Supply legend
+#'   title(s) by passing a named list or data frame.
+#' @param covar Optional continuous covariate. If non-\code{NULL}, then function can
+#'   take at most one \code{group} variable. Supply legend title by passing a named
+#'   list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
 #'   for t-SNE. See Details.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
@@ -72,7 +74,7 @@
 #' plot_tsne(mat, covar = grp)
 #'
 #' @seealso
-#' \code{\link{plot_pca}}, \code{\link[limma]{plotMDS}}
+#' \code{\link[Rtsne]{Rtsne}, \link{plot_pca}, \link{plot_mds}}
 #'
 #' @export
 #' @import dplyr
@@ -80,12 +82,13 @@
 #' @importFrom limma getEAWP
 #' @importFrom wordspace dist.matrix
 #' @importFrom Rtsne Rtsne
+#' @importFrom ggsci scale_color_d3 pal_d3
 #' @import ggplot2
 #' @import plotly
-#' @importFrom scales hue_pal
 #'
 
 plot_tsne <- function(dat,
+                      group = NULL,
                       covar = NULL,
                         top = NULL,
                        dims = c(1, 2),
@@ -105,58 +108,93 @@ plot_tsne <- function(dat,
   dat <- getEAWP(dat)$expr
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
-  if (!is.null(covar)) {
-    if (is.data.frame(covar)) covar <- as.list(covar)
-    else if (!is.list(covar)) covar <- list(covar)
-    if (length(covar) > 2L) {
-      stop('covar cannot contain more than two covariates.')
+  if (!is.null(group)) {
+    if (is.data.frame(group)) {
+      group <- as.list(group)
+    } else if (!is.list(group)) {
+      group <- list(group)
     }
-    for (i in seq_along(covar)) {
-      if (length(covar[[i]]) != ncol(dat)) {
-        stop('Covariate(s) must be of length equal to sample size.')
+    if (length(group) > 2L) {
+      stop('Plot can render at most two categorical variables.')
+    }
+    if (length(group) == 2L) {
+      if (!is.null(covar)) {
+        stop('Plot can render at most one categorical variable when a continuous ',
+             'covariate is also supplied.')
       }
-      if (is.numeric(covar[[i]]) && var(covar[[i]]) == 0L) {
-        warning('Continuous feature is invariant.')
-      } else if (!is.numeric(covar[[i]]) && length(unique(covar[[i]])) == 1L) {
-        warning('Grouping factor is invariant.')
+      if (is.null(names(group))) {
+        names(group) <- paste('Factor', seq_len(2))
       }
-    }
-    nums <- as.logical(map(covar, is.numeric))
-    if (sum(nums) == 2L) {
-      stop('Only one continuous covariate can be plotted at a time.')
-    }
-    if (any(nums)) {
-      cont_cov <- TRUE
-      if (which(nums) == 2L) covar <- covar[c(2, 1)]
-    } else cont_cov <- FALSE
-    if (!is.null(names(covar))) covars <- names(covar)
-    else {
-      if (cont_cov) covars <- c('Feature', 'Group')
-      else {
-        if (length(covar) == 1L) covars <- 'Group'
-        else covars <- c('Factor 1', 'Factor 2')
+    } else {
+      if (is.null(names(group))) {
+        names(group) <- 'Group'
       }
     }
-    names(covar) <- paste0('Feature', seq_along(covar))
+    for (i in seq_along(group)) {
+      if (length(group[[i]]) != ncol(dat)) {
+        stop(paste(names(group)[i], 'not equal to sample size.'))
+      }
+      if (length(unique(group[[i]])) == 1L) {
+        warning(paste(names(group)[i], 'is invariant.'))
+      }
+      if (!(is.character(group[[i]]) || is.factor(group[[i]]))) {
+        warning(paste0(names(group)[i], ' is of class ', class(group[[i]]), '; ',
+                       'coercing to factor.'))
+        group[[i]] <- as.factor(group[[i]])
+      }
+    }
+  } else if (!is.null(covar)) {
+    if (is.data.frame(covar)) {
+      covar <- as.list(covar)
+    } else if (!is.list(covar)) {
+      covar <- list(covar)
+    }
+    if (length(covar) != 1L) {
+      stop('Plot can render at most one continuous covariate.')
+    }
+    if (length(covar[[1]] != ncol(dat))) {
+      stop('covar must be of length equal to sample size.')
+    }
+    if (!is.numeric(covar[[1]])) {
+      stop('covar must be of class numeric.')
+    }
+    if (var(covar[[1]]) == 0L) {
+      warning('covar is invariant.')
+    }
+    if (is.null(names(covar))) {
+      names(covar) <- 'Feature'
+    }
+  } else {
+    features <- NULL
+  }
+  if (!is.null(c(group, covar))) {
+    features <- c(group, covar)
+    feature_names <- names(features)
+    names(features) <- paste0('Feature', seq_along(features))
   }
   if (!is.null(top)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes with infinite',
-                      'or missing values. Proceeding with the complete', nrow(dat), 'x',
-                      ncol(dat), 'matrix.'))
+        warning(paste('top exceeds nrow(dat), at least after removing probes with
+                      infinite or missing values. Proceeding with the complete',
+                      nrow(dat), 'x', ncol(dat), 'matrix.'))
+        top <- NULL
       }
-    } else top <- round(top * nrow(dat))
+    } else {
+      top <- round(top * nrow(dat))
+    }
   }
   if (length(dims) > 2L && !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
     stop('dims must be a vector of length <= 3.')
   }
-  if (label && !is.null(covar) && length(covar) == 2L) {
-    stop('If label is TRUE, then plot can render at most one covariate.')
+  if (label && !is.null(features) && length(features) == 2L) {
+    stop('If label is TRUE, then plot can render at most one phenotypic feature.')
   }
-  if (is.null(main)) main <- 't-SNE'
+  if (is.null(main)) {
+    main <- 't-SNE'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright"')
@@ -195,12 +233,21 @@ plot_tsne <- function(dat,
                         PC2 = tsne[, other],
                         PC3 = tsne[, max(dims)])
   }
-  if (!is.null(covar)) {
-    covar <- tbl_df(covar) %>% mutate(Sample = colnames(dat))
-    df <- df %>% inner_join(covar, by = 'Sample')
+  if (!is.null(features)) {
+    df <- df %>% cbind(tbl_df(features))
   }
 
   # Build plot
+  if (nrow(df) <= 10L) {
+    size <- 3L
+    alpha <- 1L
+  } else if (nrow(df) <= 20L) {
+    size <- 2L
+    alpha <- 1L
+  } else {
+    size <- 1.5
+    alpha <- 0.85
+  }
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
@@ -216,36 +263,42 @@ plot_tsne <- function(dat,
                     x = paste('Leading logFC Dim', min(dims)),
                     y = paste('Leading logFC Dim', max(dims)))
     }
-    if (is.null(covar)) {
-      if (label) p <- p + geom_text(aes(label = Sample), alpha = 0.85)
-      else suppressWarnings(p <- p + geom_point(aes(text = Sample)))
-    } else if (ncol(covar) == 2L) {
+    if (is.null(features)) {
+      if (label) {
+        p <- p + geom_text(aes(label = Sample), alpha = alpha)
+      } else {
+        suppressWarnings(
+          p <- p + geom_point(aes(text = Sample), size = size, alpha = alpha)
+        )
+      }
+    } else if (length(features) == 1L) {
       if (label) {
         p <- p + geom_text(aes(label = Sample, color = Feature1),
-                           alpha = 0.85)
+                           alpha = alpha)
       } else {
-        if (cont_cov) {
+        if (!is.null(covar)) {
           suppressWarnings(
             p <- p + geom_point(aes(text = Sample, color = Feature1),
-                                alpha = 0.85)
+                                size = size, alpha = alpha)
           )
         } else {
           suppressWarnings(
             p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
-                                alpha = 0.85)
+                                size = size, alpha = alpha)
           )
         }
       }
-      p <- p + guides(color = guide_legend(title = covars[1]),
-                      shape = guide_legend(title = covars[1]))
+      p <- p + guides(color = guide_legend(title = feature_names[1]),
+                      shape = guide_legend(title = feature_names[1]))
     } else {
       suppressWarnings(
         p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
-                            alpha = 0.85) +
-          guides(color = guide_legend(title = covars[1]),
-                 shape = guide_legend(title = covars[2]))
+                            size = size, alpha = alpha) +
+          guides(color = guide_legend(title = feature_names[1]),
+                 shape = guide_legend(title = feature_names[2]))
       )
     }
+    p <- p + scale_color_d3()
     if (legend == 'bottomleft') {                          # Locate legend
       p <- p + theme(legend.justification = c(0.01, 0.01),
                      legend.position = c(0.01, 0.01))
@@ -259,8 +312,9 @@ plot_tsne <- function(dat,
       p <- p + theme(legend.justification = c(0.99, 0.99),
                      legend.position = c(0.99, 0.99))
     }
-    if (!hover) print(p)
-    else {
+    if (!hover) {
+      print(p)
+    } else {
       if (legend == 'outside') {
         p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
       } else {
