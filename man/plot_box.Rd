@@ -27,8 +27,8 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-This function displays each sample's omic data distribution as a box and
-whicker plot.
+This function displays each sample's omic data distribution as a box and whisker
+plot.
 }
 \details{
 Box plots are an intuitive way to visualize an omic data distribution. They are

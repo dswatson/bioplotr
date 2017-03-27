@@ -25,7 +25,7 @@ This function visualizes a probe by sample matrix as a heatmap.
 }
 \details{
 Heatmaps are a common and intuitive way to display the values of an omic data
-matrix, especially after top probes have been selected through statistical testing.
+matrix, especially after top probes have been selected for closer investigation.
 Hierarchical clustering dendrograms cluster both the rows and the columns,
 revealing latent structure in the data. Annotation tracks atop the figure may be
 used to investigate associations with phenotypic features.
