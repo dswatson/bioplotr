@@ -4,7 +4,7 @@
 \alias{plot_tsne}
 \title{t-SNE Plot}
 \usage{
-plot_tsne(dat, covar = NULL, top = NULL, dims = c(1, 2),
+plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
   main = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
 }
@@ -13,12 +13,15 @@ plot_tsne(dat, covar = NULL, top = NULL, dims = c(1, 2),
 probes and columns to samples. It is strongly recommended that data be
 normalized and filtered prior to running t-SNE. For count data, this means
 undergoing some sort of variance stabilizing transformation, such as
-\code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
-\link[DESeq2]{rlog}}, etc.}
+\code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.}
 
-\item{covar}{Optional vector of length equal to sample size, or up to two such
-vectors organized into a list or data frame. If passing two covariates, only one
-may be continuous. Supply legend title(s) by passing a named list or data frame.}
+\item{group}{Optional character or factor vector of length equal to sample size,
+or up to two such vectors organized into a list or data frame. Supply legend
+title(s) by passing a named list or data frame.}
+
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function can
+take at most one \code{group} variable. Supply legend title by passing a named
+list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
 for t-SNE. See Details.}
@@ -94,5 +97,5 @@ Using t-SNE." \emph{Journal of Machine Learning Research}, \emph{9}(2579-2605).
 \url{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}
 }
 \seealso{
-\code{\link{plot_pca}}, \code{\link[limma]{plotMDS}}
+\code{\link[Rtsne]{Rtsne}, \link{plot_pca}, \link{plot_mds}}
 }

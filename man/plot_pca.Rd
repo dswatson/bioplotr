@@ -4,20 +4,24 @@
 \alias{plot_pca}
 \title{PCA Plot}
 \usage{
-plot_pca(dat, covar = NULL, top = NULL, pcs = c(1, 2), label = FALSE,
-  main = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
+plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
+  label = FALSE, main = NULL, legend = "outside", hover = FALSE,
+  D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples. It is strongly recommended that data be
 normalized and filtered prior to running PCA. For count data, this means
 undergoing some sort of variance stabilizing transformation, such as
-\code{\link[edgeR]{cpm} (with \code{log = TRUE}), \link[DESeq2]{vst},
-\link[DESeq2]{rlog}}, etc.}
+\code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.}
 
-\item{covar}{Optional vector of length equal to sample size, or up to two such
-vectors organized into a list or data frame. If passing two covariates, only one
-may be continuous. Supply legend title(s) by passing a named list or data frame.}
+\item{group}{Optional character or factor vector of length equal to sample size,
+or up to two such vectors organized into a list or data frame. Supply legend
+title(s) by passing a named list or data frame.}
+
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function can
+take at most one \code{group} variable. Supply legend title by passing a named
+list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable probes
 to be used for PCA.}
@@ -76,5 +80,5 @@ space." \emph{Philosophical Magazine}, \emph{2}(11): 559–572.
 \url{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}
 }
 \seealso{
-\code{\link{plot_mds}}, \code{\link[DESeq2]{plotPCA}}
+\code{\link[DESeq2]{plotPCA}, \link{plot_mds}, \link{plot_tsne}}
 }
