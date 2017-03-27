@@ -106,8 +106,9 @@ lcpm <- function(mat,
   }
 
   # Filter
-  if (is.null(filter)) y <- DGEList(mat)
-  else {
+  if (is.null(filter)) {
+    y <- DGEList(mat)
+  } else {
     keep <- rowSums(cpm(mat) > filter[1]) >= filter[2]
     y <- DGEList(mat[keep, , drop = FALSE])
   }
