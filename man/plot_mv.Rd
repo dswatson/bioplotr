@@ -86,19 +86,19 @@ plot_mv(fit)
 }
 \references{
 Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
-"Variance Stabilization Applied to Microarray Data Calibration and to the
-Quantification of Differential Expression." \emph{Bioinformatics}, \emph{18}:1,
+Variance Stabilization Applied to Microarray Data Calibration and to the
+Quantification of Differential Expression. \emph{Bioinformatics}, \emph{18}:1,
 S96-2104.
 \url{https://www.ncbi.nlm.nih.gov/pubmed/12169536}
 
 Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
-& Medvedovic, M. (2006). "Intensity-based hierarchical Bayes method improves
-testing for differentially expressed genes in microarray experiments." \emph{BMC
+& Medvedovic, M. (2006). Intensity-based hierarchical Bayes method improves
+testing for differentially expressed genes in microarray experiments. \emph{BMC
 Bioinformatics}, \strong{7}:538.
 \url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}
 
-Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). "voom: precision weights unlock
-linear model analysis tools for RNA-seq read counts." \emph{Genome Biology},
+Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). voom: precision weights unlock
+linear model analysis tools for RNA-seq read counts. \emph{Genome Biology},
 \strong{15}:R29.
 \url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
 }
