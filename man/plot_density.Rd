@@ -12,8 +12,9 @@ plot_density(dat, group = NULL, xlab = NULL, main = NULL,
 probes and columns to samples.}
 
 \item{group}{Optional character or factor vector of length equal to sample size.
-Levels are used to color density curves. If supplied, legend title defaults to
-"Group". Override this feature by passing a named list instead.}
+Numeric or logical vectors will be silently coerced to factor. Levels are used
+to color density curves. If supplied, legend title defaults to "Group". Override
+this feature by passing a named list instead.}
 
 \item{xlab}{Optional label for x-axis.}
 

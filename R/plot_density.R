@@ -5,8 +5,9 @@
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
 #' @param group Optional character or factor vector of length equal to sample size.
-#'   Levels are used to color density curves. If supplied, legend title defaults to
-#'   "Group". Override this feature by passing a named list instead.
+#'   Numeric or logical vectors will be silently coerced to factor. Levels are used
+#'   to color density curves. If supplied, legend title defaults to "Group". Override
+#'   this feature by passing a named list instead.
 #' @param xlab Optional label for x-axis.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
@@ -52,14 +53,9 @@ plot_density <- function(dat,
                          hover = FALSE) {
 
   # Preliminaries
-  if (is.null(group)) {
-    group <- list(rep(1L, times = ncol(dat)))
-  } else {
+  if (!is.null(group)) {
     if (!is.list(group)) {
       group <- list(group)
-    }
-    if (!is.character(group[[1]]) & !is.factor(group[[1]])) {
-      stop('group must be a character or factor variable.')
     }
     if (length(group) > 1L) {
       stop('group cannot be a list of length > 1.')
@@ -70,19 +66,19 @@ plot_density <- function(dat,
     if (length(unique(group[[1]])) == 1L) {
       warning('group is invariant.')
     }
+    group[[1]] <- as.factor(group[[1]])
+    if (is.null(names(group))) {
+      names(group) <- 'Group'
+    }
   }
   if (is.null(xlab)) {
     xlab <- 'Value'
   }
   if (is.null(main)) {
-    if (is.numeric(group[[1]])) {
+    if (is.null(group)) {
       main <- 'Density By Sample'
     } else {
-      if (is.null(names(group))) {
-        main <- 'Density By Group'
-      } else {
-        main <- paste('Density By', names(group))
-      }
+      main <- paste('Density By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -94,8 +90,10 @@ plot_density <- function(dat,
   dat <- getEAWP(dat)$expr
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
-  df <- gather(tbl_df(dat), Sample, Value) %>%
-    mutate(Group = rep(group[[1]], each = nrow(dat)))
+  df <- gather(tbl_df(dat), Sample, Value)
+  if (!is.null(group)) {
+    df <- df %>% mutate(Group = rep(group[[1]], each = nrow(dat)))
+  }
 
   # Build plot
   suppressWarnings(
@@ -104,14 +102,12 @@ plot_density <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   )
-  if (!is.numeric(group[[1]])) {                 # Color by group?
+  if (!is.null(group)) {                         # Color by group?
     p <- p + geom_path(stat = 'density', aes(color = Group)) +
+      guides(color = guide_legend(title = names(group))) +
       scale_color_d3()
   } else {
     p <- p + geom_path(stat = 'density')
-  }
-  if (!is.null(names(group))) {                  # Named list?
-    p <- p + guides(color = guide_legend(title = names(group)))
   }
   if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),

@@ -6,8 +6,9 @@
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
 #' @param group Optional character or factor vector of length equal to sample size.
-#'   Levels are used to color box plots. If supplied, legend title defaults to
-#'   "Group". Override this feature by passing a named list instead.
+#'   Numeric or logical vectors will be silently coerced to factor. Levels are used
+#'   to color density curves. If supplied, legend title defaults to "Group". Override
+#'   this feature by passing a named list instead.
 #' @param ylab Optional label for y-axis.
 #' @param main Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
@@ -52,14 +53,9 @@ plot_box <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (is.null(group)) {
-    group <- list(rep(1L, times = ncol(dat)))
-  } else {
+  if (!is.null(group)) {
     if (!is.list(group)) {
       group <- list(group)
-    }
-    if (!is.character(group[[1]]) & !is.factor(group[[1L]])) {
-      stop('group must be a character or factor variable.')
     }
     if (length(group) > 1L) {
       stop('group cannot be a list of length > 1.')
@@ -70,19 +66,19 @@ plot_box <- function(dat,
     if (length(unique(group[[1]])) == 1L) {
       warning('group is invariant.')
     }
+    group[[1]] <- as.factor(group[[1]])
+    if (is.null(names(group))) {
+      names(group) <- 'Group'
+    }
   }
-  if (is.null(ylab)) {
-    ylab <- 'Value'
+  if (is.null(xlab)) {
+    xlab <- 'Value'
   }
   if (is.null(main)) {
-    if (is.numeric(group[[1]])) {
-      main <- 'Expression By Sample'
+    if (is.null(group)) {
+      main <- 'Density By Sample'
     } else {
-      if (is.null(names(group))) {
-        main <- 'Expression By Group'
-      } else {
-        main <- paste('Expression By', names(group))
-      }
+      main <- paste('Density By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -95,9 +91,12 @@ plot_box <- function(dat,
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   df <- gather(tbl_df(dat), Sample, Expression) %>%
-    mutate(Group = rep(group[[1L]], each = nrow(dat))) %>%
-    arrange(Group) %>%
     mutate(Sample = factor(Sample, levels = unique(Sample)))
+  if (!is.null(group)) {
+    df <- df %>%
+      mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
+      arrange(Group)
+  }
 
   # Build plot
   suppressWarnings(
@@ -107,14 +106,12 @@ plot_box <- function(dat,
       theme(plot.title = element_text(hjust = 0.5),
             axis.text.x = element_text(angle = 45, hjust = 1))
   )
-  if (!is.numeric(group[[1]])) {                 # Fill by group?
+  if (!is.null(group)) {                         # Fill by group?
     p <- p + geom_boxplot(aes(fill = Group)) +
+      guides(fill = guide_legend(title = names(group))) +
       scale_fill_d3()
   } else {
     p <- p + geom_boxplot()
-  }
-  if (!is.null(names(group))) {                  # Named list?
-    p <- p + guides(fill = guide_legend(title = names(group)))
   }
   if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
