@@ -5,24 +5,21 @@
 #' @param fit An object of class \code{\link{survival{survfit}}.
 #' @param fun An arbitrary function defining a transformation of the survival
 #'   curve(s). Common transformations can be specified with a character argument,
-#'   e.g. \code{"event"} for cumulative events (\eqn{f(y) = 1 - y}), \code{"cumhaz"}
-#'   for the cumulative hazard function (\eqn{f(y) = -}log(\eqn{y})), and \code{"pct"}
-#'   for survival probability in percentage.
+#'   e.g. \code{"event"} for cumulative events, \code{"cumhaz"} for the cumulative
+#'   hazard function, or \code{"pct"} for survival probability as a percentage.
 #' @param CI Plot confidence intervals?
-#' @param xlim Numeric vector of length two specifying x-axis limits.
-#' @param ylim Numeric vector of length two specifying y-axis limits.
-#' @param x.breaks Numeric value controlling x-axis breaks.
-#' @param y.breaks Numeric value controlling y-axis breaks.
+#' @param censor Include tick-marks to indicate censored subjects?
 #' @param title Optional plot title.
+#' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param ... Additional arguments to be passed to \code{\link[survminer]{ggsurvplot}}.
 #'
 #' @details
-#' Survival curves visualize the fit of a given time-to-event model, e.g. a
-#' Kaplan-Meier estimator or a Cox proportional hazards regression. They are an
-#' essential tool in survival analysis, providing a simple and intuitive visual
-#' summary of the relative risk associated with various conditions.
+#' Survival curves visualize the fit of a time-to-event model, e.g. a Kaplan-Meier
+#' estimator or a Cox proportional hazards regression. They are an essential tool in
+#' survival analysis, providing a simple and intuitive visual summary of the relative
+#' risk associated with different conditions.
 #'
 #' \code{plot_survival} is a stripped down wrapper for the \code{
 #' \link[survminer]{ggsurvplot}} function from the \code{survminer} package, which
@@ -42,7 +39,7 @@
 #' \url{https://www.jstor.org/stable/2985181?seq=1#page_scan_tab_contents}
 #'
 #' Kaplan, E.L. & Meier, P. (1958). Nonparametric estimation from incomplete
-#' observations. \emph{J. Amer. Stat. Assn}, \emph{53}(282): 457-481.
+#' observations. \emph{J. Amer. Stat. Assn.}, \emph{53}(282): 457-481.
 #' \url{https://www.jstor.org/stable/2281868?seq=1#page_scan_tab_contents}
 #'
 #' @examples
@@ -52,16 +49,15 @@
 #'
 #' @export
 #' @importFrom ggsci pal_d3
+#' @import ggplot2
 #' @import survminer
 
 plot_survival <- function(fit,
                           fun = NULL,
                            CI = FALSE,
-                         xlim = NULL,
-                         ylim = NULL,
-                     x.breaks = NULL,
-                     y.breaks = NULL,
+                       censor = TRUE,
                         title = NULL,
+                      leg.txt = NULL,
                        legend = 'outside',
                           ...) {
   # Preliminaries
@@ -69,24 +65,31 @@ plot_survival <- function(fit,
     stop('fit must be an object of class survfit. Load the survival package and see ',
          '?survfit for more details.')
   }
+  if (is.null(fun)) {
+    ylab <- 'Survival Probability'
+  } else if (fun == 'event') {
+    ylab <- 'Cumulative Event'
+  } else if (fun == 'cumhaz') {
+    ylab <- 'Cumulative Hazard'
+  } else if (fun == 'pct') {
+    ylab <- 'Survival Probability (%)'
+  }
+  if (is.null(title)) {
+    if (is.null(fit$strata)) {
+      title <- 'Survival Curve'
+    } else {
+      title <- 'Survival Curves'
+    }
+  }
+  if (is.null(leg.txt) && !is.null(fit$strata)) {
+    leg.txt <- gsub('=.*', '', names(fit$strata))[1]
+    leg.lbl <- gsub('.*=', '', names(fit$strata))
+  } else if (!is.null(leg.txt) && !is.null(fit$strata)) {
+    leg.lbl <- names(fit$strata)
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
-  }
-
-  # Tidy data
-  df <- suppressWarnings(surv_summary(fit))
-  if ('strata' %in% colnames(df)) {
-    strata <- length(unique(df$strata))
-  } else {
-    strata <- 1L
-  }
-  if (is.null(title)) {
-    if (strata > 1L) {
-      title <- 'Survival Curves'
-    } else {
-      title <- 'Survival Curve'
-    }
   }
   if (legend == 'outside') {
     legend <- 'right'
@@ -100,9 +103,21 @@ plot_survival <- function(fit,
     legend <- c(0.99, 0.99)
   }
 
+  # Tidy data
+  df <- suppressWarnings(surv_summary(fit))
+
   # Build plot
-  ggsurvplot(fit, data = df, fun = fun, conf.int = CI, palette = pal_d3(strata),
-             title = title, legend = legend, font.tickslab = 9,
-             break.x.by = x.breaks, break.y.by = y.breaks, ...)
+  p <- ggsurvplot(fit, data = df, fun = fun, size = 0.5, conf.int = CI,
+                  censor = censor, title = title, legend = legend,
+                  font.tickslab = 9, ggtheme = theme_bw(), ylab = ylab, ...)$plot
+  if (!is.null(fit$strata)) {
+    p <- p + scale_color_manual(name = leg.txt,
+                              labels = leg.lbl,
+                              values = pal_d3()(length(fit$strata)))
+  }
+  p <- p + theme(plot.title = element_text(hjust = 0.5))
+
+  # Export
+  print(p)
 
 }
