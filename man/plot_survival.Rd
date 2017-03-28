@@ -4,28 +4,22 @@
 \alias{plot_survival}
 \title{Survival Curve(s)}
 \usage{
-plot_survival(fit, fun = NULL, CI = FALSE, xlim = NULL, ylim = NULL,
-  x.breaks = NULL, y.breaks = NULL, title = NULL, legend = "outside",
-  ...)
+plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, title = NULL,
+  leg.txt = NULL, legend = "outside", ...)
 }
 \arguments{
 \item{fun}{An arbitrary function defining a transformation of the survival
 curve(s). Common transformations can be specified with a character argument,
-e.g. \code{"event"} for cumulative events (\eqn{f(y) = 1 - y}), \code{"cumhaz"}
-for the cumulative hazard function (\eqn{f(y) = -}log(\eqn{y})), and \code{"pct"}
-for survival probability in percentage.}
+e.g. \code{"event"} for cumulative events, \code{"cumhaz"} for the cumulative
+hazard function, or \code{"pct"} for survival probability as a percentage.}
 
 \item{CI}{Plot confidence intervals?}
 
-\item{xlim}{Numeric vector of length two specifying x-axis limits.}
-
-\item{ylim}{Numeric vector of length two specifying y-axis limits.}
-
-\item{x.breaks}{Numeric value controlling x-axis breaks.}
-
-\item{y.breaks}{Numeric value controlling y-axis breaks.}
+\item{censor}{Include tick-marks to indicate censored subjects?}
 
 \item{title}{Optional plot title.}
+
+\item{leg.txt}{Optional legend title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
@@ -36,10 +30,10 @@ for survival probability in percentage.}
 This function plots one or several survival curves for a given time-to-event model.
 }
 \details{
-Survival curves visualize the fit of a given time-to-event model, e.g. a
-Kaplan-Meier estimator or a Cox proportional hazards regression. They are an
-essential tool in survival analysis, providing a simple and intuitive visual
-summary of the relative risk associated with various conditions.
+Survival curves visualize the fit of a time-to-event model, e.g. a Kaplan-Meier
+estimator or a Cox proportional hazards regression. They are an essential tool in
+survival analysis, providing a simple and intuitive visual summary of the relative
+risk associated with different conditions.
 
 \code{plot_survival} is a stripped down wrapper for the \code{
 \link[survminer]{ggsurvplot}} function from the \code{survminer} package, which
@@ -65,6 +59,6 @@ Series B}, \emph{34}(2): 187-220.
 \url{https://www.jstor.org/stable/2985181?seq=1#page_scan_tab_contents}
 
 Kaplan, E.L. & Meier, P. (1958). Nonparametric estimation from incomplete
-observations. \emph{J. Amer. Stat. Assn}, \emph{53}(282): 457-481.
+observations. \emph{J. Amer. Stat. Assn.}, \emph{53}(282): 457-481.
 \url{https://www.jstor.org/stable/2281868?seq=1#page_scan_tab_contents}
 }
