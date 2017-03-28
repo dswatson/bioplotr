@@ -124,9 +124,9 @@ plot_volcano <- function(dat,
     p <- p + geom_point(size = ptsize, alpha = 0.25)
   } else {
     p <- p + geom_point(aes(color = isDE), size = ptsize, alpha = 0.25) +
-      scale_colour_manual(name = expression(italic(q)*'-value'),
-                        labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                        values = c('black', pal_d3()(4))) +
+      scale_color_manual(name = expression(italic(q)*'-value'),
+                       labels = c(paste('\u2265', fdr), paste('<', fdr)),
+                       values = c('black', pal_d3()(4))) +
       guides(color = guide_legend(reverse = TRUE))
   }
   if (legend == 'bottomleft') {  # Locate legend
