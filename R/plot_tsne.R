@@ -54,13 +54,15 @@
 #' method and the Barnes-Hut algorithm may be found in the references below.
 #'
 #' @references
-#' van der Maaten, L.J.P. (2014). Accelerating t-SNE using Tree-Based Algorithms.
-#' \emph{Journal of Machine Learning Research}, \emph{15}(3221-3245).
-#' \url{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}
+#' van der Maaten, L.J.P. (2014).
+#' \href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{Accelerating
+#' t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine Learning Research},
+#' \emph{15}(3221-3245).
 #'
-#' van der Maaten, L.J.P. & Hinton, G.E. (2008). Visualizing High-Dimensional Data
-#' Using t-SNE. \emph{Journal of Machine Learning Research}, \emph{9}(2579-2605).
-#' \url{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}
+#' van der Maaten, L.J.P. & Hinton, G.E. (2008).
+#' \href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{Visualizing
+#' High-Dimensional Data Using t-SNE}. \emph{Journal of Machine Learning Research},
+#' \emph{9}(2579-2605).
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
