@@ -31,16 +31,17 @@
 #'
 #' @references
 #' Andersen, P. & Gill, R. (1982).
-#' \href{https://www.jstor.org/stable/2240714?seq=1#page_scan_tab_contents}{Cox's regression model for counting processes, a large sample study}.
-#' \emph{Annals of Statistics}, \strong{10}, 1100-1120.
+#' \href{https://www.jstor.org/stable/2240714?seq=1#page_scan_tab_contents}{Cox's
+#' regression model for counting processes, a large sample study}. \emph{Annals of
+#' Statistics}, \strong{10}, 1100-1120.
 #'
 #' Cox, D.R. (1972).
-#' \href{https://www.jstor.org/stable/2985181?seq=1#page_scan_tab_contents}{Regression Models and Life-Tables}. \emph{J. R. Stat. Soc., Series B},
-#' \emph{34}(2): 187-220.
+#' \href{https://www.jstor.org/stable/2985181?seq=1#page_scan_tab_contents}{Regression
+#' Models and Life-Tables}. \emph{J. R. Stat. Soc., Series B, 34}(2): 187-220.
 #'
 #' Kaplan, E.L. & Meier, P. (1958).
-#' \href{https://www.jstor.org/stable/2281868?seq=1#page_scan_tab_contents}{Nonparametric estimation from incomplete observations}. \emph{J. Amer. Stat.
-#' Assn.}, \emph{53}(282): 457-481.
+#' \href{https://www.jstor.org/stable/2281868?seq=1#page_scan_tab_contents}{Nonparametric
+#' estimation from incomplete observations}. \emph{J. Amer. Stat. Assn., 53}(282): 457-481.
 #'
 #' @examples
 #' library(survival)

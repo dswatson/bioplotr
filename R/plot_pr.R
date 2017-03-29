@@ -26,10 +26,10 @@
 #' typical in omic contexts (Saito & Rehmsmeier, 2015).
 #'
 #' @references
-#' Saito, T. & Rehmsmeier, M. (2015). The Precision-Recall Plot Is More Informative
-#' than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets.
-#' \emph{PLoS ONE, 10}(3): e0118432.
-#' \url{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}
+#' Saito, T. & Rehmsmeier, M. (2015).
+#' \href{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}{The
+#' Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary
+#' Classifiers on Imbalanced Datasets}. \emph{PLoS ONE, 10}(3): e0118432.
 #'
 #' @examples
 #' y <- rbinom(1000, size = 1, prob = 0.1)
