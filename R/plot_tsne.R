@@ -98,7 +98,7 @@ plot_tsne <- function(dat,
                       theta = 0.1,
                    max_iter = 1000,
                       label = FALSE,
-                       title = NULL,
+                      title = NULL,
                      legend = 'outside',
                       hover = FALSE,
                          D3 = FALSE) {
