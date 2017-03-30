@@ -20,7 +20,7 @@
 #'   two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE} unless
 #'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
@@ -78,7 +78,7 @@ plot_pca <- function(dat,
                        top = NULL,
                        pcs = c(1, 2),
                      label = FALSE,
-                      main = NULL,
+                     title = NULL,
                     legend = 'outside',
                      hover = FALSE,
                         D3 = FALSE) {
@@ -176,8 +176,8 @@ plot_pca <- function(dat,
   if (label && !is.null(features) && length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic feature.')
   }
-  if (is.null(main)) {
-    main <- 'PCA'
+  if (is.null(title)) {
+    title <- 'PCA'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -191,7 +191,7 @@ plot_pca <- function(dat,
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  pca <- prcomp(t(dat))                          # PCA
+  pca <- prcomp(t(dat))                          # PCA, % variance explained
   pve <- map_chr(seq_len(max(pcs)), function(pc) {
     p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('PC', pc, ' (', p, '%)')
@@ -211,21 +211,13 @@ plot_pca <- function(dat,
   }
 
   # Build plot
-  if (nrow(df) <= 10L) {
-    size <- 3L
-    alpha <- 1L
-  } else if (nrow(df) <= 20L) {
-    size <- 2L
-    alpha <- 1L
-  } else {
-    size <- 1.5
-    alpha <- 0.85
-  }
+  size <- sample_ptsize(df)
+  alpha <- sample_alpha(df)
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
       geom_vline(xintercept = 0L, color = 'grey') +
-      labs(title = main, x = pve[min(pcs)], y = pve[max(pcs)]) +
+      labs(title = title, x = pve[min(pcs)], y = pve[max(pcs)]) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
     if (is.null(features)) {
@@ -297,7 +289,7 @@ plot_pca <- function(dat,
                  symbols = symbls[1:length(unique(df$Group))],
                  type = 'scatter3d', mode = 'markers',
                  alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
-      layout(hovermode = 'closest', title = main, scene = list(
+      layout(hovermode = 'closest', title = title, scene = list(
         xaxis = list(title = pve[min(pcs)]),
         yaxis = list(title = pve[other]),
         zaxis = list(title = pve[max(pcs)])))

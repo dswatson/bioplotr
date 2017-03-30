@@ -5,7 +5,7 @@
 \title{PCA Plot}
 \usage{
 plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
-  label = FALSE, main = NULL, legend = "outside", hover = FALSE,
+  label = FALSE, title = NULL, legend = "outside", hover = FALSE,
   D3 = FALSE)
 }
 \arguments{
@@ -32,7 +32,7 @@ two unless \code{D3 = TRUE}.}
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
