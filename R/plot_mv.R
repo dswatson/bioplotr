@@ -3,17 +3,15 @@
 #' This function visualizes the mean-variance relationship of omic data before
 #' or after modeling.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples. Data are presumed to be normalized prior to
-#'   visualization. Alternatively, a fitted model object of class
-#'   \code{\link[limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.
-#' @param trans Data transformation to be applied to probewise means
-#'   (if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
-#'   \code{"sqrt"}). Not all transformations are appropriate for all data types.
-#'   See Details.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
+#'   and columns to samples. Data are presumed to be normalized prior to visualization.
+#'   Alternatively, a fitted model object of class \code{\link[limma]{MArrayLM}} or
+#'   \code{\link[DESeq2]{DESeqDataSet}}. See Details.
+#' @param trans Data transformation to be applied to probewise means (if \code{trans =
+#'   "rank"}) or standard deviations (if \code{trans = "log"} or \code{"sqrt"}). Not all
+#'   transformations are appropriate for all data types. See Details.
 #' @param span Width of the LOWESS smoothing window as a proportion.
-#' @param ptsize Size of data points in the plot.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}. Only relevant if \code{dat}
 #'   is an \code{MArrayLM} object created by a call to \code{\link[limma]{eBayes}}
@@ -60,21 +58,20 @@
 #'
 #' @references
 #' Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
-#' Variance Stabilization Applied to Microarray Data Calibration and to the
-#' Quantification of Differential Expression. \emph{Bioinformatics}, \emph{18}:1,
-#' S96-2104.
-#' \url{https://www.ncbi.nlm.nih.gov/pubmed/12169536}
+#' \href{https://www.ncbi.nlm.nih.gov/pubmed/12169536}{Variance Stabilization Applied
+#' to Microarray Data Calibration and to the Quantification of Differential Expression}.
+#' \emph{Bioinformatics, 18}:1, S96-2104.
 #'
 #' Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
-#' & Medvedovic, M. (2006). Intensity-based hierarchical Bayes method improves
-#' testing for differentially expressed genes in microarray experiments. \emph{BMC
-#' Bioinformatics}, \strong{7}:538.
-#' \url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}
+#' & Medvedovic, M. (2006).
+#' \href{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}{Intensity-based
+#' hierarchical Bayes method improves testing for differentially expressed genes in
+#' microarray experiments}. \emph{BMC Bioinformatics}, \strong{7}:538.
 #'
-#' Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). voom: precision weights unlock
-#' linear model analysis tools for RNA-seq read counts. \emph{Genome Biology},
-#' \strong{15}:R29.
-#' \url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
+#' Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
+#' \href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{voom:
+#' precision weights unlock linear model analysis tools for RNA-seq read counts}.
+#' \emph{Genome Biology}, \strong{15}:R29.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
@@ -92,9 +89,11 @@
 #' @export
 #' @importFrom limma getEAWP
 #' @importFrom DESeq2 counts
+#' @importFrom SummarizedExperiment assay assays
 #' @importFrom matrixStats rowSds
-#' @import dplyr
 #' @importFrom purrr map_lgl
+#' @importFrom ggsci pal_d3
+#' @import dplyr
 #' @import ggplot2
 #' @importFrom plotly ggplotly
 #'
@@ -102,8 +101,7 @@
 plot_mv <- function(dat,
                   trans = 'rank',
                    span = 0.5,
-                 ptsize = 0.25,
-                   main = NULL,
+                  title = NULL,
                  legend = 'outside',
                   hover = FALSE) {
 
@@ -130,7 +128,7 @@ plot_mv <- function(dat,
             'Consider using trans = "rank" or "log" when passing an object of class ',
             'MArrayLM or DESeqDataSet.')
   }
-  if (is.null(main)) main <- 'Mean-Variance Plot'
+  if (is.null(title)) title <- 'Mean-Variance Plot'
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright".')
@@ -151,7 +149,9 @@ plot_mv <- function(dat,
   } else if (is(dat, 'MArrayLM')) {
     mu <- dat$Amean
     sigma <- dat$sigma
-    if ('s2.prior' %in% names(dat)) prior <- sqrt(dat$s2.prior)
+    if ('s2.prior' %in% names(dat)) {
+      prior <- sqrt(dat$s2.prior)
+    }
   } else if (is(dat, 'DESeqDataSet')) {
     fit <- assays(dat)[['mu']]
     keep <- rowSums(is.finite(fit)) == ncol(fit)
@@ -194,43 +194,40 @@ plot_mv <- function(dat,
       pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
       pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
       FDR <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
-      df <- df %>% mutate(Outlier = map_lgl(seq_len(nrow(dat)), function(i) {
-        ifelse(FDR[i] <= 0.05, TRUE, FALSE)
-      }))
+      df <- df %>% mutate(Outlier = map_lgl(FDR, function(q) q <= 0.05))
     }
   }
 
   # Build plot
+  size <- probe_ptsize(df)
+  alpha <- probe_alpha(df)
   p <- ggplot(df) +
-    labs(title = main, x = xlab, y = ylab) +
+    labs(title = title, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if ('Outlier' %in% colnames(df) && any(df$Outlier)) {
-    suppressWarnings(
-      p <- p + geom_point(aes(Mu, Sigma, text = Probe, color = Outlier),
-                          size = ptsize, alpha = 0.25)
-    )
+  if (any(df$Outlier)) {
+    p <- p + geom_point(aes(Mu, Sigma, text = Probe, color = Outlier),
+                        size = size, alpha = alpha) +
+      scale_color_manual(name = 'Outlier', value = pal_d3()(4)[4])
   } else {
-    suppressWarnings(
-      p <- p + geom_point(aes(Mu, Sigma, text = Probe),
-                          size = ptsize, alpha = 0.25)
-    )
+    p <- p + geom_point(aes(Mu, Sigma, text = Probe),
+                        size = size, alpha = alpha)
   }
-  if ('Prior' %in% colnames(df)) {               # Plot prior
+  if (!is.null(df$Prior)) {                      # Plot prior
     p <- p + geom_smooth(aes(Mu_lo, Sigma_lo, color = 'LOWESS fit'),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
     if (length(dat$s2.prior) == 1L) {
-      p <- p + geom_abline(aes(color = 'Prior'), slope = 0, intercept = prior)
+      p <- p + geom_hline(aes(color = 'Prior', yintercept = Prior))
     } else {
       p <- p + geom_smooth(aes(Mu, Prior, color = 'Prior'),
                            method = 'gam', formula = y ~ s(x, bs = 'cs'),
                            size = 0.5, se = FALSE)
     }
-    p <- p + scale_color_manual(name = 'Curves', values = c('red', 'blue')) +
+    p <- p + scale_color_manual(name = 'Curves', values = pal_d3()(2)) +
       guides(col = guide_legend(reverse = TRUE))
   } else {
-    p <- p + geom_smooth(aes(Mu_lo, Sigma_lo),
+    p <- p + geom_smooth(aes(Mu_lo, Sigma_lo), color = pal_d3()(1),
                          method = 'gam', formula = y ~ s(x, bs = 'cs'),
                          size = 0.5, se = FALSE)
   }
@@ -252,7 +249,7 @@ plot_mv <- function(dat,
   if (!hover) {
     print(p)
   } else {
-    if (legend == 'outside' && 'Prior' %in% colnames(df)) {
+    if (legend == 'outside' && !is.null(df$Prior)) {
       p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
     } else {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)

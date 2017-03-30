@@ -4,25 +4,22 @@
 \alias{plot_mv}
 \title{Mean-Variance Plot}
 \usage{
-plot_mv(dat, trans = "rank", span = 0.5, ptsize = 0.25, main = NULL,
+plot_mv(dat, trans = "rank", span = 0.5, title = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
-probes and columns to samples. Data are presumed to be normalized prior to
-visualization. Alternatively, a fitted model object of class
-\code{\link[limma]{MArrayLM}} or \code{\link[DESeq2]{DESeqDataSet}}. See Details.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to probes
+and columns to samples. Data are presumed to be normalized prior to visualization.
+Alternatively, a fitted model object of class \code{\link[limma]{MArrayLM}} or
+\code{\link[DESeq2]{DESeqDataSet}}. See Details.}
 
-\item{trans}{Data transformation to be applied to probewise means
-(if \code{trans = "rank"}) or standard deviations (if \code{trans = "log"} or
-\code{"sqrt"}). Not all transformations are appropriate for all data types.
-See Details.}
+\item{trans}{Data transformation to be applied to probewise means (if \code{trans =
+"rank"}) or standard deviations (if \code{trans = "log"} or \code{"sqrt"}). Not all
+transformations are appropriate for all data types. See Details.}
 
 \item{span}{Width of the LOWESS smoothing window as a proportion.}
 
-\item{ptsize}{Size of data points in the plot.}
-
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}. Only relevant if \code{dat}
@@ -86,21 +83,20 @@ plot_mv(fit)
 }
 \references{
 Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
-Variance Stabilization Applied to Microarray Data Calibration and to the
-Quantification of Differential Expression. \emph{Bioinformatics}, \emph{18}:1,
-S96-2104.
-\url{https://www.ncbi.nlm.nih.gov/pubmed/12169536}
+\href{https://www.ncbi.nlm.nih.gov/pubmed/12169536}{Variance Stabilization Applied
+to Microarray Data Calibration and to the Quantification of Differential Expression}.
+\emph{Bioinformatics, 18}:1, S96-2104.
 
 Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
-& Medvedovic, M. (2006). Intensity-based hierarchical Bayes method improves
-testing for differentially expressed genes in microarray experiments. \emph{BMC
-Bioinformatics}, \strong{7}:538.
-\url{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}
+& Medvedovic, M. (2006).
+\href{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}{Intensity-based
+hierarchical Bayes method improves testing for differentially expressed genes in
+microarray experiments}. \emph{BMC Bioinformatics}, \strong{7}:538.
 
-Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014). voom: precision weights unlock
-linear model analysis tools for RNA-seq read counts. \emph{Genome Biology},
-\strong{15}:R29.
-\url{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}
+Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
+\href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{voom:
+precision weights unlock linear model analysis tools for RNA-seq read counts}.
+\emph{Genome Biology}, \strong{15}:R29.
 }
 \seealso{
 \code{\link[vsn]{meanSdPlot}, \link[limma]{plotSA}, \link[limma]{voom}}
