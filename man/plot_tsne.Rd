@@ -6,7 +6,7 @@
 \usage{
 plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
-  main = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
+  title = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -40,7 +40,7 @@ function. See Details.}
 \item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
 \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
