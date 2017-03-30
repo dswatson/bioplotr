@@ -4,7 +4,7 @@
 \alias{plot_qq}
 \title{Q-Q Plot}
 \usage{
-plot_qq(dat, lambda = FALSE, ptsize = 0.25, main = NULL, hover = FALSE)
+plot_qq(dat, lambda = FALSE, title = NULL, hover = FALSE)
 }
 \arguments{
 \item{dat}{Either a vector of \emph{p}-values, optionally named, or any object
@@ -13,14 +13,14 @@ silently removed.}
 
 \item{lambda}{Calculate genomic inflation factor? See Details.}
 
-\item{ptsize}{Size of data points in the plot.}
-
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer. Probe names are extracted from
 \code{dat}.}
+
+\item{ptsize}{Size of data points in the plot.}
 }
 \description{
 This function plots expected vs. observed \emph{p}-values following -log10

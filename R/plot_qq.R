@@ -8,7 +8,7 @@
 #'   silently removed.
 #' @param lambda Calculate genomic inflation factor? See Details.
 #' @param ptsize Size of data points in the plot.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer. Probe names are extracted from
@@ -48,8 +48,7 @@
 
 plot_qq <- function(dat,
                     lambda = FALSE,
-                    ptsize = 0.25,
-                      main = NULL,
+                     title = NULL,
                      hover = FALSE) {
 
   # Preliminaries
@@ -73,8 +72,8 @@ plot_qq <- function(dat,
   if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
     stop('P-values must be on [0, 1].')
   }
-  if (is.null(main)) {
-    main <- 'Q-Q Plot'
+  if (is.null(title)) {
+    title <- 'Q-Q Plot'
   }
 
   # Tidy
@@ -94,18 +93,17 @@ plot_qq <- function(dat,
   }
 
   # Build plot
-  suppressWarnings(
-    p <- ggplot(df, aes(Expected, Observed)) +
-      geom_point(aes(text = Probe), size = ptsize) +
-      geom_abline(intercept = 0L, slope = 1L, color = 'red') +
-      labs(title = main,
-               x = expression('Expected'~-log[10](italic(p))),
-               y = expression('Observed'~-log[10](italic(p)))) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-  )
+  size <- probe_ptsize(df)
+  p <- ggplot(df, aes(Expected, Observed)) +
+    geom_point(aes(text = Probe), size = size) +
+    geom_abline(intercept = 0L, slope = 1L, color = 'red') +
+    labs(title = title,
+             x = expression('Expected'~-log[10](italic(p))),
+             y = expression('Observed'~-log[10](italic(p)))) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5))
   if (lambda) {
-    p <- p + annotate('text', size = 5, x = max(df$Expected), y = 0L, hjust = 1,
+    p <- p + annotate('text', x = max(df$Expected), y = 0L, size = 5L, hjust = 1L,
                       label = lambda_lbl, parse = TRUE)
   }
 
