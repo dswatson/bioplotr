@@ -8,7 +8,7 @@
 #'   the first level is assumed to be the reference.
 #' @param pred Vector of predicted probabilities, or several such vectors organized
 #'   into a data frame or list, optionally named. Must be numeric on \code{(0, 1)}.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
@@ -39,7 +39,7 @@
 
 plot_calibration <- function(obs,
                              pred,
-                             main = NULL,
+                            title = NULL,
                            legend = 'outside',
                             hover = FALSE) {
 
@@ -61,7 +61,7 @@ plot_calibration <- function(obs,
     obs <- ifelse(obs, 1L, 0L)
   }
   if (!all(obs %in% c(0L, 1L))) {
-    stop('A numeric response can only take on values of 0 or 1.')
+    stop('A numeric response can only take values of 1 or 0.')
   }
   if (var(obs) == 0L) {
     stop('Response is invariant.')
@@ -87,11 +87,11 @@ plot_calibration <- function(obs,
       stop('obs and pred vectors must be of equal length.')
     }
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (length(pred) == 1L) {
-      main <- 'Calibration Curve'
+      title <- 'Calibration Curve'
     } else {
-      main <- 'Calibration Curves'
+      title <- 'Calibration Curves'
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -119,22 +119,18 @@ plot_calibration <- function(obs,
   p <- ggplot(df, aes(X, Y)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
     scale_size(range = c(1L, 5L)) +
-    labs(title = main,
-         x = 'Expected Probability',
-         y = 'Observed Probability') +
+    labs(title = title, x = 'Expected Probability', y = 'Observed Probability') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1L) {       # Multiple curves?
-    suppressWarnings(
-      p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
-        geom_path(aes(color = Classifier, text = Classifier)) +
-        scale_color_d3()
-    )
+  if (length(pred) > 1L) {                       # Multiple curves?
+    p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
+      geom_path(aes(color = Classifier, text = Classifier)) +
+      scale_color_d3()
   } else {
     p <- p + geom_point(aes(size = Freq)) +
       geom_path()
   }
-  if (legend == 'bottomleft') {  # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

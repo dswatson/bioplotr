@@ -4,7 +4,7 @@
 \alias{plot_calibration}
 \title{Probability Calibration Curve(s)}
 \usage{
-plot_calibration(obs, pred, main = NULL, legend = "outside",
+plot_calibration(obs, pred, title = NULL, legend = "outside",
   hover = FALSE)
 }
 \arguments{
@@ -16,7 +16,7 @@ the first level is assumed to be the reference.}
 \item{pred}{Vector of predicted probabilities, or several such vectors organized
 into a data frame or list, optionally named. Must be numeric on \code{(0, 1)}.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}
