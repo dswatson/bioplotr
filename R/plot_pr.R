@@ -10,7 +10,7 @@
 #'   data frame or list, optionally named. Must be numeric. Common examples include
 #'   the probabilities output by a logistic model, or the expression levels of a
 #'   particular biomarker.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -50,10 +50,10 @@
 
 plot_pr <- function(obs,
                     pred,
-                    main = NULL,
-                 leg.txt = NULL,
-                  legend = 'topright',
-                   hover = FALSE) {
+                    title = NULL,
+                  leg.txt = NULL,
+                   legend = 'topright',
+                    hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -96,11 +96,11 @@ plot_pr <- function(obs,
       stop('obs and pred vectors must be of equal length.')
     }
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (length(pred) == 1L) {
-      main <- 'Precision-Recall Curve'
+      title <- 'Precision-Recall Curve'
     } else {
-      main <- 'Precision-Recall Curves'
+      title <- 'Precision-Recall Curves'
     }
   }
   if (is.null(leg.txt)) {
@@ -123,7 +123,7 @@ plot_pr <- function(obs,
   })
 
   # Build plot
-  p_auc <- function(x) {                    # Print AUC
+  p_auc <- function(x) {                         # Print AUC
     pos <- df %>% filter(Classifier == names(pred)[x], Y == 1L)
     neg <- df %>% filter(Classifier == names(pred)[x], Y == 0L)
     txt <- paste0(names(pred)[x], ', AUC = ',
@@ -131,26 +131,24 @@ plot_pr <- function(obs,
     return(txt)
   }
   p <- ggplot(df, aes(TPR, PPV)) +
-    labs(title = main, x = 'Recall', y = 'Precision') +
+    labs(title = title, x = 'Recall', y = 'Precision') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (length(pred) > 1L) {                  # Multiple curves?
-    suppressWarnings(
-      p <- p + geom_line(aes(text = Classifier,
-                            group = Classifier,
-                            color = Classifier)) +
-        scale_colour_manual(name = leg.txt,
-                          labels = map_chr(seq_along(pred), p_auc),
-                          values = pal_d3()(length(pred)))
-    )
+  if (length(pred) > 1L) {                       # Multiple curves?
+    p <- p + geom_line(aes(text = Classifier,
+                          group = Classifier,
+                          color = Classifier)) +
+      scale_color_manual(name = leg.txt,
+                       labels = map_chr(seq_along(pred), p_auc),
+                       values = pal_d3()(length(pred)))
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_line(aes(color = Classifier)) +
-      scale_colour_manual(name = leg.txt,
-                        labels = map_chr(seq_along(pred), p_auc),
-                        values = 'black')
+      scale_color_manual(name = leg.txt,
+                       labels = map_chr(seq_along(pred), p_auc),
+                       values = 'black')
   }
-  if (legend == 'bottomleft') {             # Locate legend
+  if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
                    legend.position = c(0.01, 0.01))
   } else if (legend == 'bottomright') {

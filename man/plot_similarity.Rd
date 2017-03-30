@@ -5,7 +5,7 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, feat = NULL, dist = "euclidean",
-  hclustfun = "average", main = NULL)
+  hclustfun = "average", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -26,7 +26,7 @@ atop the heatmap.}
 \item{hclustfun}{The agglomeration method to be used for hierarchical clustering.
 See \code{\link[stats]{hclust}} for available options.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 }
 \description{
 This function displays pairwise distances between samples as a heatmap.
@@ -53,13 +53,13 @@ for more info.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-plot_similarity(mat, main = "Nothin' Doin'")
+plot_similarity(mat, title = "Nothin' Doin'")
 
 library(DESeq2)
 mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
 grp <- rep(c("A", "B"), each = 5)
-plot_similarity(mat, feat = grp, main = "Somethin' Cookin'")
+plot_similarity(mat, feat = grp, title = "Somethin' Cookin'")
 
 }

@@ -16,7 +16,7 @@
 #'   "pearson", "MI",} or \code{"KLD"}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical clustering.
 #'   See \code{\link[stats]{hclust}} for available options.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #'
 #' @details
 #' Similarity matrices are a valuable tool for exploratory data analysis. A
@@ -40,14 +40,14 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_similarity(mat, main = "Nothin' Doin'")
+#' plot_similarity(mat, title = "Nothin' Doin'")
 #'
 #' library(DESeq2)
 #' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
 #' grp <- rep(c("A", "B"), each = 5)
-#' plot_similarity(mat, feat = grp, main = "Somethin' Cookin'")
+#' plot_similarity(mat, feat = grp, title = "Somethin' Cookin'")
 #'
 #' @export
 #' @importFrom purrr map_lgl
@@ -62,7 +62,7 @@ plot_similarity <- function(dat,
                             feat = NULL,
                             dist = 'euclidean',
                        hclustfun = 'average',
-                            main = NULL) {
+                           title = NULL) {
 
   # Preliminaries
   if (is.data.frame(feat)) {
@@ -97,8 +97,8 @@ plot_similarity <- function(dat,
     stop('hclustfun must be one of "ward.D", "ward.D2", "single", "complete", ',
          '"average", "mcquitty", "median", or "centroid". See ?hclust.')
   }
-  if (is.null(main)) {
-    main <- 'Sample Similarity Matrix'
+  if (is.null(title)) {
+    title <- 'Sample Similarity Matrix'
   }
 
   # Tidy data
@@ -118,10 +118,10 @@ plot_similarity <- function(dat,
   # Plot
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
   if (is.null(feat)) {
-    aheatmap(dm, col = rb, Rowv = FALSE, main = main,
+    aheatmap(dm, col = rb, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun)
   } else {
-    aheatmap(dm, col = rb, Rowv = FALSE, main = main,
+    aheatmap(dm, col = rb, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              annCol = feat)
   }

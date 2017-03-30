@@ -4,7 +4,7 @@
 \alias{plot_pr}
 \title{Precision-Recall Curve(s)}
 \usage{
-plot_pr(obs, pred, main = NULL, leg.txt = NULL, legend = "topright",
+plot_pr(obs, pred, title = NULL, leg.txt = NULL, legend = "topright",
   hover = FALSE)
 }
 \arguments{
@@ -18,7 +18,7 @@ data frame or list, optionally named. Must be numeric. Common examples include
 the probabilities output by a logistic model, or the expression levels of a
 particular biomarker.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 

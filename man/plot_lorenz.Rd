@@ -4,7 +4,7 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, main = NULL, xlab = NULL, ylab = NULL, leg.txt = NULL,
+plot_lorenz(dat, title = NULL, xlab = NULL, ylab = NULL, leg.txt = NULL,
   legend = "topleft", hover = FALSE)
 }
 \arguments{
@@ -13,7 +13,7 @@ optionally named. May also be a data frame of such vectors, however in that
 case each must be of equal length. Data may include negative values, but if so
 a warning will be issued to proceed with caution.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{xlab}{Optional label for x-axis.}
 

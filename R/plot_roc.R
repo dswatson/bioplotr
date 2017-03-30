@@ -10,7 +10,7 @@
 #'   data frame or list, optionally named. Must be numeric. Common examples include
 #'   the probabilities output by a logistic model, or the expression levels of a
 #'   particular biomarker.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param leg.txt Optional title for legend.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
@@ -43,10 +43,10 @@
 
 plot_roc <- function(obs,
                      pred,
-                     main = NULL,
-                  leg.txt = NULL,
-                   legend = 'bottomright',
-                    hover = FALSE) {
+                     title = NULL,
+                   leg.txt = NULL,
+                    legend = 'bottomright',
+                     hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -87,11 +87,11 @@ plot_roc <- function(obs,
       stop('obs and pred vectors must be of equal length.')
     }
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (length(pred) == 1L) {
-      main <- 'ROC Curve'
+      title <- 'ROC Curve'
     } else {
-      main <- 'ROC Curves'
+      title <- 'ROC Curves'
     }
   }
   if (is.null(leg.txt)) {
@@ -117,23 +117,21 @@ plot_roc <- function(obs,
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
-    labs(title = main, x = 'False Positive Rate', y = 'True Positive Rate') +
+    labs(title = title, x = 'False Positive Rate', y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {        # Multiple curves?
-    suppressWarnings(
-      p <- p + geom_step(aes(text = Classifier,
-                            group = Classifier,
-                            color = Classifier)) +
-        scale_colour_manual(name = leg.txt,
-                          labels = map_chr(seq_along(pred), p_auc),
-                          values = pal_d3()(length(pred)))
-    )
+    p <- p + geom_step(aes(text = Classifier,
+                          group = Classifier,
+                          color = Classifier)) +
+      scale_color_manual(name = leg.txt,
+                       labels = map_chr(seq_along(pred), p_auc),
+                       values = pal_d3()(length(pred)))
   } else {
     p <- p + geom_step(aes(color = Classifier)) +
-      scale_colour_manual(name = leg.txt,
-                        labels = map_chr(seq_along(pred), p_auc),
-                        values = 'black')
+      scale_color_manual(name = leg.txt,
+                       labels = map_chr(seq_along(pred), p_auc),
+                       values = 'black')
   }
   if (legend == 'bottomleft') {  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),

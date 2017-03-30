@@ -6,7 +6,7 @@
 #'   optionally named. May also be a data frame of such vectors, however in that
 #'   case each must be of equal length. Data may include negative values, but if so
 #'   a warning will be issued to proceed with caution.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
 #' @param leg.txt Optional title for legend.
@@ -46,7 +46,7 @@
 #'
 
 plot_lorenz <- function(dat,
-                        main = NULL,
+                       title = NULL,
                         xlab = NULL,
                         ylab = NULL,
                      leg.txt = NULL,
@@ -76,11 +76,11 @@ plot_lorenz <- function(dat,
               'should be interpreted with caution.')
     }
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (length(dat) == 1L) {
-      main <- 'Lorenz Curve'
+      title <- 'Lorenz Curve'
     } else {
-      main <- 'Lorenz Curves'
+      title <- 'Lorenz Curves'
     }
   }
   if (is.null(xlab)) {
@@ -121,24 +121,22 @@ plot_lorenz <- function(dat,
   }
   p <- ggplot() +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
-    labs(title = main, x = xlab, y = ylab) +
+    labs(title = title, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(dat) > 1L) {                   # Multiple curves?
     for (i in seq_along(dat)) {
-      suppressWarnings(
-        p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
-                                                text = Title, color = Title))
-      )
+      p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
+                                              text = Title, color = Title))
     }
-    p <- p + scale_colour_manual(name = leg.txt,
-                               labels = map_chr(seq_along(dat), p_gin),
-                               values = pal_d3()(length(dat)))
+    p <- p + scale_color_manual(name = leg.txt,
+                              labels = map_chr(seq_along(dat), p_gin),
+                              values = pal_d3()(length(dat)))
   } else {
     p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
-      scale_colour_manual(name = leg.txt,
-                        labels = map_chr(seq_along(dat), p_gin),
-                        values = 'black')
+      scale_color_manual(name = leg.txt,
+                       labels = map_chr(seq_along(dat), p_gin),
+                       values = 'black')
   }
   if (legend == 'bottomleft') {             # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),
