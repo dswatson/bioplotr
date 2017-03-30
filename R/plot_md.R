@@ -7,14 +7,15 @@
 #'   expression, or an omic data matrix with rows corresponding to probes and columns
 #'   to samples. The former will render a study-wide MD plot, the latter a between
 #'   between-sample MD plot. See Details.
-#' @param fdr Threshold for declaring a probe differentially expressed. Only
+#' @param fdr Significance threshold for declaring a probe differentially expressed. Only
 #'   relevant for study-wide MD plots.
+#' @param lfc Optional effect size threshold for declaring a probe differentially
+#'   expressed. Only relevant for study-wide MD plots.
 #' @param sample Column number or name specifying which sample in \code{dat} to
 #'   compare with the others. Only relevant for between-sample MD plots.
 #' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating the
 #'   control status of each probe. Only relevant for between-sample MD plots.
-#' @param ptsize Size of data points in the plot.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
@@ -59,7 +60,7 @@
 #'
 #' @export
 #' @importFrom limma getEAWP
-#' @importFrom purrr map_lgl map_chr
+#' @importFrom purrr map_chr
 #' @importFrom ggsci pal_d3
 #' @import dplyr
 #' @import ggplot2
@@ -68,10 +69,10 @@
 
 plot_md <- function(dat,
                     fdr = 0.05,
+                    lfc = NULL,
                  sample = NULL,
                   ctrls = NULL,
-                 ptsize = 0.25,
-                   main = NULL,
+                  title = NULL,
                  legend = 'outside',
                   hover = FALSE) {
 
@@ -90,9 +91,9 @@ plot_md <- function(dat,
            "logCPM", "AvgExpr", and "AvgMeth".Make sure that dat includes exactly ',
            'one such colname.')
     }
-    lfc <- c('logFC', 'log2FoldChange')
-    if (sum(lfc %in% colnames(dat)) == 1L) {
-      colnames(dat)[colnames(dat) %in% lfc] <- 'Diff'
+    fc <- c('logFC', 'log2FoldChange')
+    if (sum(fc %in% colnames(dat)) == 1L) {
+      colnames(dat)[colnames(dat) %in% fc] <- 'Diff'
     } else {
       stop('dat must include a log fold change column. Recognized colnames for this ',
            'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
@@ -115,9 +116,9 @@ plot_md <- function(dat,
               'inheriting from data.frame.')
     }
   } else {
-    if (!is.null(control)) {
-      if (length(control) != nrow(dat)) {
-        stop('control must be NULL or of length equal to nrow(dat).')
+    if (!is.null(ctrls)) {
+      if (length(ctrls) != nrow(dat)) {
+        stop('ctrls must be NULL or of length equal to nrow(dat).')
       }
     }
     if (is.null(sample)) {
@@ -140,7 +141,9 @@ plot_md <- function(dat,
     keep <- rowSums(is.finite(dat)) == ncol(dat)
     dat <- dat[keep, , drop = FALSE]
   }
-  if (is.null(main)) main <- 'Mean-Difference Plot'
+  if (is.null(title)) {
+    title <- 'Mean-Difference Plot'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
@@ -153,18 +156,16 @@ plot_md <- function(dat,
     probes <- seq_len(nrow(dat))
   }
   if (!is.matrix(dat)) {
-    test <- function(q) ifelse(q < fdr, TRUE, FALSE)
     df <- dat %>%
-      mutate(Probe = probes,
-             is.DE = map_lgl(q.value, test)) %>%
-      select(Probe, Mean, Diff, is.DE)
+      mutate(Probe = probes) %>%
+      select(Probe, Mean, Diff, q.value)
   } else {
     other <- rowMeans(dat[, -sample])
     df <- data_frame(Probe = probes,
                       Mean = (other + dat[, sample]) / 2L,
                       Diff = dat[, sample] - other)
     if (!is.null(ctrls)) {
-      type <- function(p) {   ### THIS IS GONNA NEED WORK ###
+      type <- function(probe) {   ### THIS IS GONNA NEED WORK ###
         if (probe > 0L) 'Positive'
         else if (probe < 0L) 'Negative'
         else 'Zero'
@@ -175,32 +176,38 @@ plot_md <- function(dat,
   }
 
   # Build plot
-  suppressWarnings(
-    p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
-      geom_hline(yintercept = 0L, size = 0.2, color = 'grey') +
-      labs(title = main,
-               x = expression(mu),
-               y = expression('log'[2]*' Fold Change')) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-  )
-  if ('is.DE' %in% colnames(df)) {
-    if (sum(df$is.DE) == 0L) {                   # Color pts by differential expression?
+  size <- probe_ptsize(df)
+  alpha <- probe_alpha(df)
+  p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
+    geom_hline(yintercept = 0L, size = 0.2, color = 'grey') +
+    labs(title = title,
+             x = expression(mu),
+             y = expression('log'[2]*' Fold Change')) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5))
+  if (!is.null(df$q.value)) {
+    if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
       warning('No probe meets your fdr threshold. To color data points by differential ',
-              'expression/methylation, consider raising your fdr cutoff.')
-      p <- p + geom_point(size = ptsize, alpha = 0.25)
+              'expression, consider raising your fdr cutoff.')
+      p <- p + geom_point(size = size, alpha = alpha, color = '#444444')
     } else {
-      p <- p + geom_point(aes(color = is.DE), size = ptsize, alpha = 0.25) +
-        scale_color_manual(name = expression(italic(q)*'-value'),
-                         labels = c(paste('\u2265', fdr), paste('<', fdr)),
-                         values = c('black', pal_d3()(4))) +
-        guides(col = guide_legend(reverse = TRUE))
+      if (is.null(lfc)) {
+        p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
+          scale_color_manual(name = 'FDR',
+                           labels = c(paste('>', fdr), paste('\u2264', fdr)),
+                           values = c('#444444', pal_d3()(4)[4])) +
+          guides(col = guide_legend(reverse = TRUE))
+      }
     }
-  } else if ('Ctrl' %in% colnames(df)) {
-    p <- p + geom_point(aes(color = Ctrl, size = Size), alpha = 0.25) +
-      scale_size(range = c(ptsize, 5L * ptsize), guide = FALSE) +
+  } else if (!is.null(df$Ctrl)) {
+    p <- p + geom_point(aes(color = Ctrl, size = Size), alpha = alpha) +
+      scale_size(range = c(size, 5L * size), guide = FALSE) +
       scale_color_manual(name = 'Control',
-                       values = c(pal_d3()(seq_len(2)), 'black'))
+                       values = c(pal_d3()(2), '#444444'))
+  }
+  if (!is.null(lfc)) {
+    p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
+      geom_hline(yintercept = -lfc, linetype = 2L)
   }
   if (legend == 'bottomleft') {                  # Locate legend
     p <- p + theme(legend.justification = c(0.01, 0.01),

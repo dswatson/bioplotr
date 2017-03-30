@@ -4,8 +4,8 @@
 \alias{plot_md}
 \title{Mean-Difference Plot}
 \usage{
-plot_md(dat, fdr = 0.05, sample = NULL, ctrls = NULL, ptsize = 0.25,
-  main = NULL, legend = "outside", hover = FALSE)
+plot_md(dat, fdr = 0.05, lfc = NULL, sample = NULL, ctrls = NULL,
+  title = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{dat}{Either a data frame representing the results of a test for differential
@@ -13,8 +13,11 @@ expression, or an omic data matrix with rows corresponding to probes and columns
 to samples. The former will render a study-wide MD plot, the latter a between
 between-sample MD plot. See Details.}
 
-\item{fdr}{Threshold for declaring a probe differentially expressed. Only
+\item{fdr}{Significance threshold for declaring a probe differentially expressed. Only
 relevant for study-wide MD plots.}
+
+\item{lfc}{Optional effect size threshold for declaring a probe differentially
+expressed. Only relevant for study-wide MD plots.}
 
 \item{sample}{Column number or name specifying which sample in \code{dat} to
 compare with the others. Only relevant for between-sample MD plots.}
@@ -22,9 +25,7 @@ compare with the others. Only relevant for between-sample MD plots.}
 \item{ctrls}{Optional vector of length equal to \code{nrow(dat)} indicating the
 control status of each probe. Only relevant for between-sample MD plots.}
 
-\item{ptsize}{Size of data points in the plot.}
-
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
