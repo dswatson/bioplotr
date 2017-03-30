@@ -4,7 +4,7 @@
 \alias{plot_volcano}
 \title{Volcano Plot}
 \usage{
-plot_volcano(dat, fdr = 0.05, ptsize = 0.25, main = NULL,
+plot_volcano(dat, fdr = 0.05, lfc = NULL, title = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
@@ -14,11 +14,12 @@ expression, such as the output of a call to \code{limma::\link[limma]{topTable}}
 Alternatively, any object coercable to a data frame with columns for
 \emph{p}-values, log fold changes, and FDR. Missing values are silently removed.}
 
-\item{fdr}{Threshold for declaring a probe differentially expressed.}
+\item{fdr}{Significance threshold for declaring a probe differentially expressed.}
 
-\item{ptsize}{Size of data points in the plot.}
+\item{lfc}{Optional effect size threshold for declaring a probe differentially
+expressed.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
@@ -29,15 +30,16 @@ display or appear in the RStudio viewer. Probe names are extracted from
 \code{dat}.}
 }
 \description{
-This function plots the log2 fold changes against the -log10 \emph{p}-values
-for a given test of differential expression/methylation.
+This function plots log2 fold changes against -log10 \emph{p}-values for a given
+test of differential expression.
 }
 \details{
 Volcano plots visualize the relationship between each probe's log2 fold change and
 -log10 \emph{p}-value for a given test of differential expression. Points are
 colored to distinguish between those that do and do not meet a user-defined FDR
-threshold. These figures help to evaluate the symmetry, magnitude, and significance
-of effects for a given experiment.
+threshold. An additional chromatic distinction is made between up- and down-regulated
+genes, if a minimum absolute fold change is supplied. These figures help to evaluate
+the symmetry, magnitude, and significance of effects in an omic experiment.
 }
 \examples{
 library(limma)
