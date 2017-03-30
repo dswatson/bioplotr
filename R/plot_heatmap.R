@@ -8,9 +8,9 @@
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
 #'   atop the heatmap.
-#' @param col Color scheme to use for heatmap tiles. Options are \code{"rb"} (for
-#'   red to blue gradient) or \code{"gr"} (for green to red gradient).
-#' @param main Optional plot title.
+#' @param col Color palette to use for heatmap tiles. Options are \code{"RdBu"} (for
+#'   red to blue gradient) or \code{"GrRd"} (for green to red gradient).
+#' @param title Optional plot title.
 #'
 #' @details
 #' Heatmaps are a common and intuitive way to display the values of an omic data
@@ -33,13 +33,13 @@
 
 plot_heatmap <- function(dat,
                          feat = NULL,
-                         col = 'rb',
-                         main = NULL) {
+                          col = 'RdBu',
+                        title = NULL) {
 
   # Preliminaries
-  if (col == 'rb') {
+  if (col == 'RdBu') {
     cols <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
-  } else if (col == 'gr') {
+  } else if (col == 'GrRd') {
     cols <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
   } else {
     stop('col must be one of "rb" or "gr".')
@@ -68,8 +68,8 @@ plot_heatmap <- function(dat,
   }))) {
     stop('feat is invariant.')
   }
-  if (is.null(main)) {
-    main <- 'Omic Heatmap'
+  if (is.null(title)) {
+    title <- 'Omic Heatmap'
   }
 
   # Tidy data
@@ -80,10 +80,10 @@ plot_heatmap <- function(dat,
   # Plot
   if (is.null(feat)) {
     aheatmap(dat, distfun = 'pearson', scale = 'row', col = cols,
-             hclustfun = 'average', main = main)
+             hclustfun = 'average', main = title)
   } else {
     aheatmap(dat, distfun = 'pearson', scale = 'row', col = cols,
-             hclustfun = 'average', main = main, annCol = feat)
+             hclustfun = 'average', main = title, annCol = feat)
   }
 
 }

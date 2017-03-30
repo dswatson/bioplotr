@@ -4,7 +4,7 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, feat = NULL, col = "rb", main = NULL)
+plot_heatmap(dat, feat = NULL, col = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -15,10 +15,10 @@ equal to sample size. Alternatively, a data frame or list of such vectors,
 optionally named. Values are used to color one or several annotation tracks
 atop the heatmap.}
 
-\item{col}{Color scheme to use for heatmap tiles. Options are \code{"rb"} (for
-red to blue gradient) or \code{"gr"} (for green to red gradient).}
+\item{col}{Color palette to use for heatmap tiles. Options are \code{"RdBu"} (for
+red to blue gradient) or \code{"GrRd"} (for green to red gradient).}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 }
 \description{
 This function visualizes a probe by sample matrix as a heatmap.
