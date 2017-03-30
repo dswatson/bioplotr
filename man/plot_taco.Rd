@@ -4,7 +4,7 @@
 \alias{plot_taco}
 \title{Taco Plot}
 \usage{
-plot_taco(dat, fdr = 0.05, main = NULL, legend = "outside")
+plot_taco(dat, fdr = 0.05, title = NULL, legend = "outside")
 }
 \arguments{
 \item{dat}{Data frame representing the results of a test for differential
@@ -16,7 +16,7 @@ removed.}
 
 \item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}

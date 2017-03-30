@@ -10,7 +10,7 @@
 #'   changes, probewise means, \emph{p}-values, and FDR. Missing values are silently
 #'   removed.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #'
@@ -40,7 +40,7 @@
 
 plot_taco <- function(dat,
                       fdr = 0.05,
-                     main = NULL,
+                     title = NULL,
                    legend = 'outside') {
 
   # Preliminaries
@@ -81,8 +81,8 @@ plot_taco <- function(dat,
          'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (is.null(main)) {
-    main <- 'Taco Plot'
+  if (is.null(title)) {
+    title <- 'Taco Plot'
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
@@ -107,10 +107,10 @@ plot_taco <- function(dat,
 
   # Build Plot
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
-               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4), 'black'),
+               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4)[4], 'black'),
                type = 'scatter3d', mode = 'markers',
                alpha = 0.85, hoverinfo = 'text', marker = list(size = 1)) %>%
-    layout(hovermode = 'closest', title = main, scene = list(
+    layout(hovermode = 'closest', title = title, scene = list(
       xaxis = list(title = 'Mean Expression'),
       yaxis = list(title = 'log2 Fold Change'),
       zaxis = list(title = '-log10 p-value')))
@@ -121,6 +121,6 @@ plot_taco <- function(dat,
 
 
 # Plotly doesn't play well with expression() text
-# According to their documentation, LaTeX formating should work, e.g.
-# xaxis = list(title = '$\\mu\\$')
-# Except it doesn't cuz plotly sucks
+# Can't handle plotmath, LaTeX typesetting, etc. in R:
+# https://github.com/ropensci/plotly/issues/375
+# Altho it used to? https://plot.ly/r/LaTeX/
