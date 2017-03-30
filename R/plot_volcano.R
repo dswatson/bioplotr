@@ -40,7 +40,6 @@
 #'
 #' @export
 #' @import dplyr
-#' @importFrom purrr map_lgl
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
 #' @importFrom plotly ggplotly
@@ -122,41 +121,35 @@ plot_volcano <- function(dat,
              y = expression(~-log[10](italic(p)))) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (all(!df$q.value <= fdr)) {                 # Color pts by differential expression?
+  if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression, consider raising your fdr cutoff.')
-    p <- p + geom_point(size = size, alpha = alpha)
-  } else {
-    if (is.null(lfc)) {
+    p <- p + geom_point(size = size, alpha = alpha, color = '#444444')
+  } else {                                       # Separate up- and downregulated probes?
+    if (!is.null(lfc) & any(df$Direction != 'NA')) {
+      y <- df %>%
+        filter(q.value <= fdr) %>%
+        filter(logP == min(logP)) %>%
+        select(logP) %>%
+        as.numeric()
+      p <- p + geom_point(aes(color = Direction), size = size, alpha = alpha) +
+        geom_hline(yintercept = y, linetype = 2L) +
+        geom_vline(xintercept = lfc, linetype = 2L) +
+        geom_vline(xintercept = -lfc, linetype = 2L) +
+        annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
+                 hjust = 0L, vjust = -1L) +
+        scale_color_manual(guide = FALSE,
+                          values = c(pal_d3()(3)[3], '#444444', pal_d3()(4)[4]))
+    } else {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = 'FDR',
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
                          values = c('#444444', pal_d3()(4)[4])) +
         guides(color = guide_legend(reverse = TRUE))
-    } else {
-      if (all(is.na(df$Direction))) {
+      if (!is.null(lfc) & all(df$Direction == 'NA')) {
         warning('No probe meets both your fdr and lfc criteria. To color probes by ',
                 'the direction of their differential expression, consider lowering ',
                 'your lfc threshold.')
-        p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
-          scale_color_manual(name = 'FDR',
-                           labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                           values = c('#444444', pal_d3()(4)[4])) +
-          guides(color = guide_legend(reverse = TRUE))
-      } else {                                   # Separate up- and downregulated probes?
-        y <- df %>%
-          filter(q.value <= fdr) %>%
-          filter(logP == min(logP)) %>%
-          select(logP) %>%
-          as.numeric()
-        p <- p + geom_point(aes(color = Direction), size = size, alpha = alpha) +
-          geom_hline(yintercept = y, linetype = 2L) +
-          geom_vline(xintercept = lfc, linetype = 2L) +
-          geom_vline(xintercept = -lfc, linetype = 2L) +
-          annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
-                   hjust = 0L, vjust = -1L) +
-          scale_color_manual(guide = FALSE,
-                            values = c(pal_d3()(3)[3], '#444444', pal_d3()(4)[4]))
       }
     }
   }
