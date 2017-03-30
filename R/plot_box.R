@@ -10,7 +10,7 @@
 #'   to color density curves. If supplied, legend title defaults to "Group". Override
 #'   this feature by passing a named list instead.
 #' @param ylab Optional label for y-axis.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
@@ -25,13 +25,11 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
-#' plot_box(mat, ylab = "Normalized Expression")
+#' plot_box(mat)
 #'
-#' library(edgeR)
-#' mat <- cbind(matrix(rnbinom(1000 * 5, mu = 4, size = 1), nrow = 1000, ncol = 5),
-#'              matrix(rnbinom(1000 * 5, mu = 4, size = 5), nrow = 1000, ncol = 5))
-#' mat <- calcNormFactors(DGEList(mat))
-#' mat <- cpm(mat, log = TRUE)
+#' mat <- cbind(matrix(rnbinom(1000 * 5, size = 1, mu = 4), nrow = 1000, ncol = 5),
+#'              matrix(rnbinom(1000 * 5, size = 3, mu = 4), nrow = 1000, ncol = 5))
+#' mat <- lcpm(mat)
 #' batch <- rep(c("A", "B"), each = 5)
 #' plot_box(mat, group = batch, ylab = "Normalized Counts")
 #'
@@ -48,7 +46,7 @@ plot_box <- function(dat,
                      group = NULL,
                       type = NULL,
                       ylab = NULL,
-                      main = NULL,
+                     title = NULL,
                     legend = 'outside',
                      hover = FALSE) {
 
@@ -99,13 +97,11 @@ plot_box <- function(dat,
   }
 
   # Build plot
-  suppressWarnings(
-    p <- ggplot(df, aes(Sample, Expression, text = Sample)) +
-      labs(title = main, x = 'Sample', y = ylab) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5),
-            axis.text.x = element_text(angle = 45, hjust = 1))
-  )
+  p <- ggplot(df, aes(Sample, Expression, text = Sample)) +
+    labs(title = title, x = 'Sample', y = ylab) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(angle = 45L, hjust = 1L))
   if (!is.null(group)) {                         # Fill by group?
     p <- p + geom_boxplot(aes(fill = Group)) +
       guides(fill = guide_legend(title = names(group))) +

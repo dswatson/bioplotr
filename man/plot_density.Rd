@@ -4,7 +4,7 @@
 \alias{plot_density}
 \title{Density Plots by Sample}
 \usage{
-plot_density(dat, group = NULL, xlab = NULL, main = NULL,
+plot_density(dat, group = NULL, xlab = NULL, title = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
@@ -18,7 +18,7 @@ this feature by passing a named list instead.}
 
 \item{xlab}{Optional label for x-axis.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
@@ -38,13 +38,12 @@ or associations with phenotypic factors by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-plot_density(mat, xlab = "Normalized Expression")
+plot_density(mat)
 
 library(DESeq2)
-mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-             matrix(rnbinom(5000, mu = 4, size = 5), nrow = 1000, ncol = 5))
-mat <- rlog(mat)
-batch <- rep(c("A", "B"), each = 5)
+dds <- makeExampleDESeqDataSet
+mat <- rlog(dds)
+batch <- rep(c("A", "B"), each = 6)
 plot_density(mat, group = batch, xlab = "Normalized Counts")
 
 }

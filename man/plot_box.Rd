@@ -4,7 +4,7 @@
 \alias{plot_box}
 \title{Box Plots by Sample}
 \usage{
-plot_box(dat, group = NULL, type = NULL, ylab = NULL, main = NULL,
+plot_box(dat, group = NULL, type = NULL, ylab = NULL, title = NULL,
   legend = "outside", hover = FALSE)
 }
 \arguments{
@@ -18,7 +18,7 @@ this feature by passing a named list instead.}
 
 \item{ylab}{Optional label for y-axis.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside",
 "bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
@@ -39,13 +39,11 @@ or associations with phenotypic factors by using the \code{group} argument.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
-plot_box(mat, ylab = "Normalized Expression")
+plot_box(mat)
 
-library(edgeR)
-mat <- cbind(matrix(rnbinom(1000 * 5, mu = 4, size = 1), nrow = 1000, ncol = 5),
-             matrix(rnbinom(1000 * 5, mu = 4, size = 5), nrow = 1000, ncol = 5))
-mat <- calcNormFactors(DGEList(mat))
-mat <- cpm(mat, log = TRUE)
+mat <- cbind(matrix(rnbinom(1000 * 5, size = 1, mu = 4), nrow = 1000, ncol = 5),
+             matrix(rnbinom(1000 * 5, size = 3, mu = 4), nrow = 1000, ncol = 5))
+mat <- lcpm(mat)
 batch <- rep(c("A", "B"), each = 5)
 plot_box(mat, group = batch, ylab = "Normalized Counts")
 

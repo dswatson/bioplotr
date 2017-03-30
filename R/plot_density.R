@@ -9,7 +9,7 @@
 #'   to color density curves. If supplied, legend title defaults to "Group". Override
 #'   this feature by passing a named list instead.
 #' @param xlab Optional label for x-axis.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside",
 #'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
@@ -24,13 +24,12 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_density(mat, xlab = "Normalized Expression")
+#' plot_density(mat)
 #'
 #' library(DESeq2)
-#' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-#'              matrix(rnbinom(5000, mu = 4, size = 5), nrow = 1000, ncol = 5))
-#' mat <- rlog(mat)
-#' batch <- rep(c("A", "B"), each = 5)
+#' dds <- makeExampleDESeqDataSet
+#' mat <- rlog(dds)
+#' batch <- rep(c("A", "B"), each = 6)
 #' plot_density(mat, group = batch, xlab = "Normalized Counts")
 #'
 #' @seealso
@@ -48,7 +47,7 @@
 plot_density <- function(dat,
                          group = NULL,
                           xlab = NULL,
-                          main = NULL,
+                         title = NULL,
                         legend = 'outside',
                          hover = FALSE) {
 
@@ -74,11 +73,11 @@ plot_density <- function(dat,
   if (is.null(xlab)) {
     xlab <- 'Value'
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (is.null(group)) {
-      main <- 'Density By Sample'
+      title <- 'Density By Sample'
     } else {
-      main <- paste('Density By', names(group))
+      title <- paste('Density By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -96,12 +95,10 @@ plot_density <- function(dat,
   }
 
   # Build plot
-  suppressWarnings(
-    p <- ggplot(df, aes(Value, group = Sample, text = Sample)) +
-      labs(title = main, x = xlab, y = 'Density') +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-  )
+  p <- ggplot(df, aes(Value, group = Sample, text = Sample)) +
+    labs(title = title, x = xlab, y = 'Density') +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5))
   if (!is.null(group)) {                         # Color by group?
     p <- p + geom_path(stat = 'density', aes(color = Group)) +
       guides(color = guide_legend(title = names(group))) +
