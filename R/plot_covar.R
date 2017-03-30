@@ -1,8 +1,8 @@
-#' Plot associations between omic and clinical data
+#' Plot Covariance Between Omic and Clinical Data
 #'
-#' This function creates a heatmap visualizing the strength of associations
-#' between the principal components of an omic data matrix and a set of
-#' technical and/or biological covariates.
+#' This function creates a heatmap visualizing the strength of associations between
+#' the principal components of an omic data matrix and a set of technical and/or
+#' biological covariates.
 #'
 #' @param dat Omic data matrix with rows corresponding to probes and columns
 #'   to samples. For best results, data should be normalized and filtered in
@@ -15,7 +15,7 @@
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
 #' @param n.pc Number of principal components to include in the figure.
-#' @param main Optional plot title.
+#' @param title Optional plot title.
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
@@ -56,7 +56,7 @@ plot_covar <- function(dat,
                        index = 'Sample',
                        block = NULL,
                         n.pc = 10,
-                        main = NULL,
+                       title = NULL,
                        hover = FALSE) {
 
   # Preliminaries
@@ -107,18 +107,20 @@ plot_covar <- function(dat,
                  ifelse(is.numeric(clin[[j]]), 'numeric', 'factor')
              })) %>%
     print()
-  if (is.null(main)) main <- 'Variation By Feature'
+  if (is.null(title)) {
+    title <- 'Variation By Feature'
+  }
 
   # Tidy data
   dat <- getEAWP(dat)$expr
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
-  pca <- prcomp(t(dat))                        # PCA
+  pca <- prcomp(t(dat))                          # PCA, % variance explained
   pve <- map_chr(seq_len(n.pc), function(pc) {
     p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('\n(', p, '%)')
   })
-  sig <- function(var, pc) {                   # p-val fn
+  sig <- function(var, pc) {                     # p-val fn
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
       ifelse(is.numeric(clin[[var]]),
@@ -133,23 +135,21 @@ plot_covar <- function(dat,
       }
     }
   }
-  df <- expand.grid(Feature = colnames(clin),  # Melt
+  df <- expand.grid(Feature = colnames(clin),    # Melt
                     PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise() %>%
-    mutate(Association = sig(Feature, PC))     # Populate
+    mutate(Association = sig(Feature, PC))       # Populate
 
   # Build plot
-  suppressWarnings(
-    p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association)) +
-      geom_tile() +
-      coord_equal() +
-      scale_fill_gradientn(colors = c('white', 'pink', 'orange', 'red', 'darkred'),
+  p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association)) +
+    geom_tile() +
+    coord_equal() +
+    scale_fill_gradientn(colors = c('white', 'pink', 'orange', 'red', 'darkred'),
                            name = expression(~-log[10](italic(p)))) +
-      scale_x_discrete(labels = paste0(unique(df$PC), pve)) +
-      labs(title = main, x = 'Principal Component') +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-  )
+    scale_x_discrete(labels = paste0(unique(df$PC), pve)) +
+    labs(title = title, x = 'Principal Component') +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5))
 
   # Output
   if (!hover) {
@@ -165,6 +165,8 @@ plot_covar <- function(dat,
   # no \n for PCs
   # no -log10(p) for legend
   # automate height/width?
+
+# Maybe change -log10(p) to straightup p?
 
 # When shiny-ifying: change n.pc?
 

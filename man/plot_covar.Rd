@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot_covar.R
 \name{plot_covar}
 \alias{plot_covar}
-\title{Plot associations between omic and clinical data}
+\title{Plot Covariance Between Omic and Clinical Data}
 \usage{
 plot_covar(dat, clin, index = "Sample", block = NULL, n.pc = 10,
-  main = NULL, hover = FALSE)
+  title = NULL, hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix with rows corresponding to probes and columns
@@ -24,16 +24,16 @@ blocking variable, should one be accounted for. See Details.}
 
 \item{n.pc}{Number of principal components to include in the figure.}
 
-\item{main}{Optional plot title.}
+\item{title}{Optional plot title.}
 
 \item{hover}{Show \emph{p}-values by hovering mouse over tiles? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 }
 \description{
-This function creates a heatmap visualizing the strength of associations
-between the principal components of an omic data matrix and a set of
-technical and/or biological covariates.
+This function creates a heatmap visualizing the strength of associations between
+the principal components of an omic data matrix and a set of technical and/or
+biological covariates.
 }
 \details{
 Strength of association is measured using -log10 \emph{p}-values. When
