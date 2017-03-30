@@ -1,7 +1,7 @@
-#' Utilities
+#' Size Probewise Data Points
 #'
-#' These utility functions assign reasonable size and alpha parameters based on
-#' data dimensionality.
+#' This utility function assigns a reasonable point size parameter based on data
+#' dimensionality.
 #'
 #' @param df Data frame to be passed to \code{ggplot}.
 #'
@@ -17,6 +17,14 @@ probe_ptsize <- function(df) {
   return(out)
 }
 
+#' Set Transparency for Probewise Data Points
+#'
+#' This utility function assigns a reasonable alpha parameter based on data
+#' dimensionality.
+#'
+#' @param df Data frame to be passed to \code{ggplot}.
+#'
+
 probe_alpha <- function(df) {
   if (nrow(df) <= 1e5L) {
     out <- 0.5
@@ -25,6 +33,14 @@ probe_alpha <- function(df) {
   }
   return(out)
 }
+
+#' Size Samplewise Data Points
+#'
+#' This utility function assigns a reasonable point size parameter based on data
+#' dimensionality.
+#'
+#' @param df Data frame to be passed to \code{ggplot}.
+#'
 
 sample_ptsize <- function(df) {
   if (nrow(df) <= 10L) {
@@ -36,6 +52,14 @@ sample_ptsize <- function(df) {
   }
   return(out)
 }
+
+#' Set Transparency for Samplewise Data Points
+#'
+#' This utility function assigns a reasonable alpha parameter based on data
+#' dimensionality.
+#'
+#' @param df Data frame to be passed to \code{ggplot}.
+#'
 
 sample_alpha <- function(df) {
   if (nrow(df) <= 20L) {
