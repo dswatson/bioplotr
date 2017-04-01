@@ -16,8 +16,8 @@
 #' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating the
 #'   control status of each probe. Only relevant for between-sample MD plots.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
+#'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer. Probe names are extracted from

@@ -18,8 +18,8 @@ removed.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside",
-"bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
+"bottomright", "topleft",} or \code{"topright"}.}
 }
 \description{
 This function plots log2 fold changes against -log10 \emph{p}-values against

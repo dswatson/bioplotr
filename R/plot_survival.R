@@ -11,8 +11,8 @@
 #' @param censor Include tick-marks to indicate censored subjects?
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
+#'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param ... Additional arguments to be passed to \code{\link[survminer]{ggsurvplot}}.
 #'
 #' @details

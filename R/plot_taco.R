@@ -11,8 +11,8 @@
 #'   removed.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
+#'   "bottomright", "topleft",} or \code{"topright"}.
 #'
 #' @details
 #' A taco plot combines the elements of a volcano plot and an MD plot into a single

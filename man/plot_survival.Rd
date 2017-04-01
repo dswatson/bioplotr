@@ -21,8 +21,8 @@ hazard function, or \code{"pct"} for survival probability as a percentage.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside",
-"bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
+"bottomright", "topleft",} or \code{"topright"}.}
 
 \item{...}{Additional arguments to be passed to \code{\link[survminer]{ggsurvplot}}.}
 }

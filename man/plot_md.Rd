@@ -27,8 +27,8 @@ control status of each probe. Only relevant for between-sample MD plots.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside",
-"bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
+"bottomright", "topleft",} or \code{"topright"}.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic

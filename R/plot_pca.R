@@ -21,8 +21,8 @@
 #' @param label Label data points by sample name? Defaults to \code{FALSE} unless
 #'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
+#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
+#'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
