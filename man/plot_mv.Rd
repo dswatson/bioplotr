@@ -99,5 +99,6 @@ precision weights unlock linear model analysis tools for RNA-seq read counts}.
 \emph{Genome Biology}, \strong{15}:R29.
 }
 \seealso{
-\code{\link[vsn]{meanSdPlot}, \link[limma]{plotSA}, \link[limma]{voom}}
+\code{\link[edgeR]{plotMeanVar, dglmStdResid}, \link[vsn]{meanSdPlot},
+\link[limma]{plotSA}, \link[limma]{voom}}
 }

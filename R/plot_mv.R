@@ -84,7 +84,8 @@
 #' plot_mv(fit)
 #'
 #' @seealso
-#' \code{\link[vsn]{meanSdPlot}, \link[limma]{plotSA}, \link[limma]{voom}}
+#' \code{\link[edgeR]{plotMeanVar, dglmStdResid}, \link[vsn]{meanSdPlot},
+#' \link[limma]{plotSA}, \link[limma]{voom}}
 #'
 #' @export
 #' @importFrom limma getEAWP
@@ -128,7 +129,9 @@ plot_mv <- function(dat,
             'Consider using trans = "rank" or "log" when passing an object of class ',
             'MArrayLM or DESeqDataSet.')
   }
-  if (is.null(title)) title <- 'Mean-Variance Plot'
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
+  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright".')
