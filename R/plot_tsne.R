@@ -32,6 +32,7 @@
 #'   the plot is rendered in HTML and will either open in your browser's graphic
 #'   display or appear in the RStudio viewer.
 #' @param D3 Render plot in three dimensions?
+#' @param ... Additional arguments to be passed to \code{\link[Rtsne]{Rtsne}}.
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or
@@ -51,7 +52,7 @@
 #' and iteratively minimizes the Kullback-Leibler divergence between these two
 #' distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
 #' more details. A detailed introduction to and explication of the original t-SNE
-#' method and the Barnes-Hut algorithm may be found in the references below.
+#' method and the Barnes-Hut approximation may be found in the references below.
 #'
 #' @references
 #' van der Maaten, L.J.P. (2014).
@@ -101,7 +102,8 @@ plot_tsne <- function(dat,
                       title = NULL,
                      legend = 'outside',
                       hover = FALSE,
-                         D3 = FALSE) {
+                         D3 = FALSE,
+                        ...) {
 
   # Preliminaries
   if (ncol(dat) < 3L) {
@@ -223,7 +225,7 @@ plot_tsne <- function(dat,
     }
   }
   tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims), theta = theta,
-                max_iter = max_iter, check_duplicates = FALSE, is_distance = TRUE)
+                max_iter = max_iter, check_duplicates = FALSE, is_distance = TRUE, ...)
   tsne <- tsne$Y                                           # t-SNE
   df <- data_frame(Sample = colnames(dat))                 # Melt
   if (length(dims) == 2L) {

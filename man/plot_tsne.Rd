@@ -6,7 +6,7 @@
 \usage{
 plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
-  title = NULL, legend = "outside", hover = FALSE, D3 = FALSE)
+  title = NULL, legend = "outside", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -50,6 +50,8 @@ the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer.}
 
 \item{D3}{Render plot in three dimensions?}
+
+\item{...}{Additional arguments to be passed to \code{\link[Rtsne]{Rtsne}}.}
 }
 \description{
 This function plots a low-dimensional projection of an omic data matrix using
@@ -73,7 +75,7 @@ projection of the samples based on the user-defined \code{perplexity} parameter;
 and iteratively minimizes the Kullback-Leibler divergence between these two
 distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
 more details. A detailed introduction to and explication of the original t-SNE
-method and the Barnes-Hut algorithm may be found in the references below.
+method and the Barnes-Hut approximation may be found in the references below.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
