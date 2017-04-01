@@ -19,8 +19,6 @@ silently removed.}
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer. Probe names are extracted from
 \code{dat}.}
-
-\item{ptsize}{Size of data points in the plot.}
 }
 \description{
 This function plots expected vs. observed \emph{p}-values following -log10

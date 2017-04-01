@@ -7,7 +7,6 @@
 #'   with a column for \emph{p}-values coercable to a data frame. Missing values are
 #'   silently removed.
 #' @param lambda Calculate genomic inflation factor? See Details.
-#' @param ptsize Size of data points in the plot.
 #' @param title Optional plot title.
 #' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
 #'   the plot is rendered in HTML and will either open in your browser's graphic
