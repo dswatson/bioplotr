@@ -29,15 +29,11 @@
 #' df <- data.frame(p.value = runif(10000))
 #' plot_qq(df, lambda = TRUE)
 #'
-#' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-#' eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-#' treat <- rep(c("A", "B"), each = 5)
-#' des <- model.matrix(~ treat)
-#' fit <- eBayes(lmFit(eset, des))
-#' top <- topTable(fit, number = Inf)
-#' plot_qq(top)
+#' library(DESeq2)
+#' dds <- makeExampleDESeqDataSet()
+#' dds <- DESeq(dds)
+#' res <- results(dds)
+#' plot_qq(res)
 #'
 #' @export
 #' @import dplyr
@@ -93,8 +89,8 @@ plot_qq <- function(dat,
 
   # Build plot
   size <- probe_ptsize(df)
-  p <- ggplot(df, aes(Expected, Observed)) +
-    geom_point(aes(text = Probe), size = size) +
+  p <- ggplot(df, aes(Expected, Observed, text = Probe)) +
+    geom_point(size = size) +
     geom_abline(intercept = 0L, slope = 1L, color = 'red') +
     labs(title = title,
              x = expression('Expected'~-log[10](italic(p))),

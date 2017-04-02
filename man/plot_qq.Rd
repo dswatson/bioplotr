@@ -40,14 +40,10 @@ some systematic and unaccounted for bias in the data.
 df <- data.frame(p.value = runif(10000))
 plot_qq(df, lambda = TRUE)
 
-library(limma)
-DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-                  matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-treat <- rep(c("A", "B"), each = 5)
-des <- model.matrix(~ treat)
-fit <- eBayes(lmFit(eset, des))
-top <- topTable(fit, number = Inf)
-plot_qq(top)
+library(DESeq2)
+dds <- makeExampleDESeqDataSet()
+dds <- DESeq(dds)
+res <- results(dds)
+plot_qq(res)
 
 }
