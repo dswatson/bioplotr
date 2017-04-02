@@ -135,12 +135,14 @@ plot_pr <- function(obs,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {                       # Multiple curves?
-    p <- p + geom_line(aes(text = Classifier,
-                          group = Classifier,
-                          color = Classifier)) +
-      scale_color_manual(name = leg.txt,
-                       labels = map_chr(seq_along(pred), p_auc),
-                       values = pal_d3()(length(pred)))
+    suppressWarnings(
+      p <- p + geom_line(aes(text = Classifier,
+                            group = Classifier,
+                            color = Classifier)) +
+        scale_color_manual(name = leg.txt,
+                         labels = map_chr(seq_along(pred), p_auc),
+                         values = pal_d3()(length(pred)))
+    )
   } else {
     p <- p + geom_point(size = 0.1) +
       geom_line(aes(color = Classifier)) +
