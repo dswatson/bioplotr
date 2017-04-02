@@ -44,37 +44,35 @@
 #' method of Smyth et al. See \code{\link{plot_mds}} for more details.
 #'
 #' \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm, which
-#' is a fast approximation of the original t-SNE projection method. An exact t-SNE
-#' plot may be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
+#' vastly accelerates the original t-SNE projection method. An exact t-SNE plot may
+#' be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
 #' samplewise similarities based on distances in the original \emph{p}-dimensional
 #' space (where \emph{p} = the number of probes); generates a low-dimensional
-#' projection of the samples based on the user-defined \code{perplexity} parameter;
+#' embedding of the samples based on the user-defined \code{perplexity} parameter;
 #' and iteratively minimizes the Kullback-Leibler divergence between these two
 #' distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
-#' more details. A detailed introduction to and explication of the original t-SNE
+#' more details. A thorough introduction to and explication of the original t-SNE
 #' method and the Barnes-Hut approximation may be found in the references below.
 #'
 #' @references
 #' van der Maaten, L.J.P. (2014).
 #' \href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{Accelerating
 #' t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine Learning Research},
-#' \emph{15}(3221-3245).
+#' \emph{15}: 3221-3245.
 #'
 #' van der Maaten, L.J.P. & Hinton, G.E. (2008).
 #' \href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{Visualizing
 #' High-Dimensional Data Using t-SNE}. \emph{Journal of Machine Learning Research},
-#' \emph{9}(2579-2605).
+#' \emph{9}: 2579-2605.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_tsne(mat)
 #'
 #' library(DESeq2)
-#' mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-#'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
-#' mat <- rlog(mat)
-#' grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-#' plot_tsne(mat, covar = grp)
+#' dds <- makeExampleDESeqDataSet()
+#' dds <- rlog(dds)
+#' plot_tsne(dds, group = colData(dds)$condition)
 #'
 #' @seealso
 #' \code{\link[Rtsne]{Rtsne}, \link{plot_pca}, \link{plot_mds}}
