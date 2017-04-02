@@ -66,11 +66,9 @@ mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 plot_mds(mat)
 
 library(DESeq2)
-mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-             matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
-mat <- rlog(mat)
-grp <- gl(n = 2, k = 5, labels = c("A", "B"))
-plot_mds(mat, covar = grp)
+dds <- makeExampleDESeqDataSet()
+dds <- rlog(dds)
+plot_mds(mat, group = colData(dds)$condition)
 
 }
 \references{
