@@ -40,7 +40,7 @@
 
 plot_taco <- function(dat,
                       fdr = 0.05,
-                     title = NULL,
+                    title = NULL,
                    legend = 'outside') {
 
   # Preliminaries
@@ -124,3 +124,5 @@ plot_taco <- function(dat,
 # Can't handle plotmath, LaTeX typesetting, etc. in R:
 # https://github.com/ropensci/plotly/issues/375
 # Altho it used to? https://plot.ly/r/LaTeX/
+
+# Add lfc threshold?
