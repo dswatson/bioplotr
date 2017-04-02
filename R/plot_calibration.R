@@ -111,7 +111,7 @@ plot_calibration <- function(obs,
   df <- map_df(seq_along(pred), function(x) {
     data_frame(Y = map_dbl(obs_grps[[x]], mean),
                X = map_dbl(exp_grps[[x]], mean),
-            Freq = map_dbl(exp_grps[[x]], length),
+       Frequency = map_dbl(exp_grps[[x]], length),
       Classifier = names(pred)[x])
   })
 
@@ -123,11 +123,14 @@ plot_calibration <- function(obs,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {                       # Multiple curves?
-    p <- p + geom_point(aes(size = Freq, color = Classifier, text = Classifier)) +
-      geom_path(aes(color = Classifier, text = Classifier)) +
-      scale_color_d3()
+    suppressWarnings(
+      p <- p + geom_point(aes(size = Frequency, color = Classifier,
+                              text = Classifier)) +
+        geom_path(aes(color = Classifier, text = Classifier)) +
+        scale_color_d3()
+    )
   } else {
-    p <- p + geom_point(aes(size = Freq)) +
+    p <- p + geom_point(aes(size = Frequency)) +
       geom_path()
   }
   if (legend == 'bottomleft') {                  # Locate legend
