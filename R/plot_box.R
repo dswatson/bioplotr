@@ -72,11 +72,11 @@ plot_box <- function(dat,
   if (is.null(xlab)) {
     xlab <- 'Value'
   }
-  if (is.null(main)) {
+  if (is.null(title)) {
     if (is.null(group)) {
-      main <- 'Density By Sample'
+      title <- 'Density By Sample'
     } else {
-      main <- paste('Density By', names(group))
+      title <- paste('Density By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
