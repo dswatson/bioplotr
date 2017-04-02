@@ -44,19 +44,20 @@
 #' difference of expression values for the specified sample vs. the artificial array.
 #'
 #' @examples
-#' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-#' mat <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-#' treat <- rep(c("A", "B"), each = 5)
-#' des <- model.matrix(~ treat)
-#' fit <- eBayes(lmFit(mat, des))
-#' top <- topTable(fit, number = Inf)
-#' plot_md(top)
+#' library(DESeq2)
+#' dds <- makeExampleDESeqDataSet()
+#'
+#' # Between-sample MD plot
+#' mat <- lcpm(counts(dds), filter = c(1, 6))
+#' plot_md(mat, sample = 1)
+#'
+#' # Study-wide MD plot
+#' dds <- DESeq(dds)
+#' res <- results(dds)
+#' plot_md(res)
 #'
 #' @seealso
-#' \code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
-#' \code{\link[Glimma]{glMDPlot}}
+#' \code{\link[limma]{plotMD}, \link[DESeq2]{plotMA}, \link[Glimma]{glMDPlot}}
 #'
 #' @export
 #' @importFrom limma getEAWP
@@ -189,21 +190,26 @@ plot_md <- function(dat,
     if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
       warning('No probe meets your fdr threshold. To color data points by differential ',
               'expression, consider raising your fdr cutoff.')
-      p <- p + geom_point(size = size, alpha = alpha, color = '#444444')
+      p <- p + geom_point(size = size, alpha = alpha, color = 'black')
     } else {
       if (is.null(lfc)) {
         p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
           scale_color_manual(name = 'FDR',
                            labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                           values = c('#444444', pal_d3()(4)[4])) +
-          guides(col = guide_legend(reverse = TRUE))
+                           values = c('black', pal_d3()(4)[4]),
+                            guide = guide_legend(reverse = TRUE, override.aes = list(
+                              size = rep(1L, 2L), alpha = rep(1L, 2L)
+                            )))
       }
     }
   } else if (!is.null(df$Ctrl)) {
     p <- p + geom_point(aes(color = Ctrl, size = Size), alpha = alpha) +
       scale_size(range = c(size, 5L * size), guide = FALSE) +
       scale_color_manual(name = 'Control',
-                       values = c(pal_d3()(2), '#444444'))
+                       values = c(pal_d3()(2), 'black'),
+                        guide = guide_legend(override.aes = list(
+                          size = rep(1L, 2L), alpha = rep(1L, 2L)
+                        )))
   }
   if (!is.null(lfc)) {
     p <- p + geom_hline(yintercept = lfc, linetype = 2L) +

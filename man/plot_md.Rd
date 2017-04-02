@@ -60,18 +60,19 @@ all other samples in the data. The figure will then represent the mean vs. the
 difference of expression values for the specified sample vs. the artificial array.
 }
 \examples{
-library(limma)
-DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-                  matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-mat <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-treat <- rep(c("A", "B"), each = 5)
-des <- model.matrix(~ treat)
-fit <- eBayes(lmFit(mat, des))
-top <- topTable(fit, number = Inf)
-plot_md(top)
+library(DESeq2)
+dds <- makeExampleDESeqDataSet()
+
+# Between-sample MD plot
+mat <- lcpm(counts(dds), filter = c(1, 6))
+plot_md(mat, sample = 1)
+
+# Study-wide MD plot
+dds <- DESeq(dds)
+res <- results(dds)
+plot_md(res)
 
 }
 \seealso{
-\code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
-\code{\link[Glimma]{glMDPlot}}
+\code{\link[limma]{plotMD}, \link[DESeq2]{plotMA}, \link[Glimma]{glMDPlot}}
 }
