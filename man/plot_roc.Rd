@@ -20,7 +20,7 @@ particular biomarker.}
 
 \item{title}{Optional plot title.}
 
-\item{leg.txt}{Optional title for legend.}
+\item{leg.txt}{Optional legend title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}

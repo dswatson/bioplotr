@@ -11,7 +11,7 @@
 #'   the probabilities output by a logistic model, or the expression levels of a
 #'   particular biomarker.
 #' @param title Optional plot title.
-#' @param leg.txt Optional title for legend.
+#' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
@@ -121,12 +121,14 @@ plot_roc <- function(obs,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {        # Multiple curves?
-    p <- p + geom_step(aes(text = Classifier,
-                          group = Classifier,
-                          color = Classifier)) +
-      scale_color_manual(name = leg.txt,
-                       labels = map_chr(seq_along(pred), p_auc),
-                       values = pal_d3()(length(pred)))
+    suppressWarnings(
+      p <- p + geom_step(aes(text = Classifier,
+                            group = Classifier,
+                            color = Classifier)) +
+        scale_color_manual(name = leg.txt,
+                         labels = map_chr(seq_along(pred), p_auc),
+                         values = pal_d3()(length(pred)))
+    )
   } else {
     p <- p + geom_step(aes(color = Classifier)) +
       scale_color_manual(name = leg.txt,
