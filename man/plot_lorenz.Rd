@@ -4,8 +4,8 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, title = NULL, xlab = NULL, ylab = NULL, leg.txt = NULL,
-  legend = "topleft", hover = FALSE)
+plot_lorenz(dat, title = NULL, leg.txt = NULL, legend = "topleft",
+  hover = FALSE)
 }
 \arguments{
 \item{dat}{Numeric vector, or several such vectors organized into a list,
@@ -15,11 +15,7 @@ a warning will be issued to proceed with caution.}
 
 \item{title}{Optional plot title.}
 
-\item{xlab}{Optional label for x-axis.}
-
-\item{ylab}{Optional label for y-axis.}
-
-\item{leg.txt}{Optional title for legend.}
+\item{leg.txt}{Optional legend title.}
 
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}
@@ -49,7 +45,8 @@ spread of RNA-sequencing counts across libraries.
 x <- runif(100)
 plot_lorenz(x)
 
-X <- list("x1" = runif(100), "x2" = rpois(200, lambda = 5))
+X <- list("Uniform" = runif(100),
+          "Poisson" = rpois(200, lambda = 5))
 plot_lorenz(X)
 
 }

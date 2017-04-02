@@ -7,9 +7,7 @@
 #'   case each must be of equal length. Data may include negative values, but if so
 #'   a warning will be issued to proceed with caution.
 #' @param title Optional plot title.
-#' @param xlab Optional label for x-axis.
-#' @param ylab Optional label for y-axis.
-#' @param leg.txt Optional title for legend.
+#' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
 #'   "bottomright", "topleft",} or \code{"topright"}.
 #' @param hover Show vector name by hovering mouse over Lorenz curve? If \code{TRUE},
@@ -34,7 +32,8 @@
 #' x <- runif(100)
 #' plot_lorenz(x)
 #'
-#' X <- list("x1" = runif(100), "x2" = rpois(200, lambda = 5))
+#' X <- list("Uniform" = runif(100),
+#'           "Poisson" = rpois(200, lambda = 5))
 #' plot_lorenz(X)
 #'
 #' @export
@@ -47,8 +46,6 @@
 
 plot_lorenz <- function(dat,
                        title = NULL,
-                        xlab = NULL,
-                        ylab = NULL,
                      leg.txt = NULL,
                       legend = 'topleft',
                        hover = FALSE) {
@@ -83,12 +80,6 @@ plot_lorenz <- function(dat,
       title <- 'Lorenz Curves'
     }
   }
-  if (is.null(xlab)) {
-    xlab <- 'Cumulative Proportion of Observations'
-  }
-  if (is.null(ylab)) {
-    ylab <- 'Cumulative Proportion of Values'
-  }
   if (is.null(leg.txt)) {
     leg.txt <- 'Data'
   }
@@ -121,13 +112,17 @@ plot_lorenz <- function(dat,
   }
   p <- ggplot() +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
-    labs(title = title, x = xlab, y = ylab) +
+    labs(title = title,
+             x = 'Cumulative Proportion of Observations',
+             y = 'Cumulative Proportion of Values') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(dat) > 1L) {                   # Multiple curves?
     for (i in seq_along(dat)) {
-      p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
-                                              text = Title, color = Title))
+      suppressWarnings(
+        p <- p + geom_path(data = dfs[[i]], aes(Proportion, Lorenz,
+                                                text = Title, color = Title))
+      )
     }
     p <- p + scale_color_manual(name = leg.txt,
                               labels = map_chr(seq_along(dat), p_gin),
