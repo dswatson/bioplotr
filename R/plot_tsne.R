@@ -7,7 +7,8 @@
 #'   probes and columns to samples. It is strongly recommended that data be
 #'   normalized and filtered prior to running t-SNE. For count data, this means
 #'   undergoing some sort of variance stabilizing transformation, such as
-#'   \code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+#'   \code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
+#'   \link[DESeq2]{rlog}}, etc.
 #' @param group Optional character or factor vector of length equal to sample size,
 #'   or up to two such vectors organized into a list or data frame. Supply legend
 #'   title(s) by passing a named list or data frame.
@@ -107,7 +108,15 @@ plot_tsne <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for t-SNE.'))
   }
-  dat <- getEAWP(dat)$expr
+  if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+    stop('dat must undergo a variance stabilizing transformation before reducing ',
+         'dimensionality with t-SNE.')
+  }
+  if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+  } else {
+    dat <- getEAWP(dat)$expr
+  }
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   if (!is.null(group)) {
@@ -250,12 +259,12 @@ plot_tsne <- function(dat,
       theme(plot.title = element_text(hjust = 0.5))
     if (is.null(top)) {
       p <- p + labs(title = title,
-                        x = paste('Dim', min(dims)),
-                        y = paste('Dim', max(dims)))
+                        x = paste('t-SNE Dim', min(dims)),
+                        y = paste('t-SNE Dim', max(dims)))
     } else {
       p <- p + labs(title = title,
-                        x = paste('Leading logFC Dim', min(dims)),
-                        y = paste('Leading logFC Dim', max(dims)))
+                        x = paste('Leading logFC, t-SNE Dim', min(dims)),
+                        y = paste('Leading logFC, t-SNE Dim', max(dims)))
     }
     if (is.null(features)) {
       if (label) {

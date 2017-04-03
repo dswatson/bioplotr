@@ -13,7 +13,8 @@ plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
 probes and columns to samples. It is strongly recommended that data be
 normalized and filtered prior to running t-SNE. For count data, this means
 undergoing some sort of variance stabilizing transformation, such as
-\code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.}
+\code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
+\link[DESeq2]{rlog}}, etc.}
 
 \item{group}{Optional character or factor vector of length equal to sample size,
 or up to two such vectors organized into a list or data frame. Supply legend

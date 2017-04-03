@@ -7,7 +7,8 @@
 #'   probes and columns to samples. It is strongly recommended that data be
 #'   normalized and filtered prior to running MDS. For count data, this means
 #'   undergoing some sort of variance stabilizing transformation, such as
-#'   \code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+#'   \code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
+#'   \link[DESeq2]{rlog}}, etc.
 #' @param group Optional character or factor vector of length equal to sample size,
 #'   or up to two such vectors organized into a list or data frame. Supply legend
 #'   title(s) by passing a named list or data frame.
@@ -60,7 +61,7 @@
 #' library(DESeq2)
 #' dds <- makeExampleDESeqDataSet()
 #' dds <- rlog(dds)
-#' plot_mds(mat, group = colData(dds)$condition)
+#' plot_mds(dds, group = colData(dds)$condition)
 #'
 #' @seealso
 #' \code{\link[limma]{plotMDS}, \link{plot_pca}, \link{plot_tsne}}
@@ -90,7 +91,15 @@ plot_mds <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for MDS.'))
   }
-  dat <- getEAWP(dat)$expr
+  if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+    stop('dat must undergo a variance stabilizing transformation before reducing ',
+         'dimensionality with MDS.')
+  }
+  if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+  } else {
+    dat <- getEAWP(dat)$expr
+  }
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   if (!is.null(group)) {
@@ -234,8 +243,8 @@ plot_mds <- function(dat,
                         y = paste0('PC', max(pcs)))
     } else {
       p <- p + labs(title = title,
-                        x = paste('Leading logFC Dim', min(pcs)),
-                        y = paste('Leading logFC Dim', max(pcs)))
+                        x = paste('Leading logFC, MDS Dim', min(pcs)),
+                        y = paste('Leading logFC, MDS Dim', max(pcs)))
     }
     if (is.null(features)) {
       if (label) {

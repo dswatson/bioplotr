@@ -7,7 +7,8 @@
 #'   probes and columns to samples. It is strongly recommended that data be
 #'   normalized and filtered prior to running PCA. For count data, this means
 #'   undergoing some sort of variance stabilizing transformation, such as
-#'   \code{\link{lcpm}, \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+#'   \code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
+#'   \link[DESeq2]{rlog}}, etc.
 #' @param group Optional character or factor vector of length equal to sample size,
 #'   or up to two such vectors organized into a list or data frame. Supply legend
 #'   title(s) by passing a named list or data frame.
@@ -55,7 +56,7 @@
 #' library(DESeq2)
 #' dds <- makeExampleDESeqDataSet()
 #' dds <- rlog(dds)
-#' plot_pca(mat, group = colData(dds)$condition)
+#' plot_pca(dds, group = colData(dds)$condition)
 #'
 #' @seealso
 #' \code{\link[DESeq2]{plotPCA}, \link{plot_mds}, \link{plot_tsne}}
@@ -85,7 +86,15 @@ plot_pca <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
-  dat <- getEAWP(dat)$expr
+  if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+    stop('dat must undergo a variance stabilizing transformation before reducing ',
+         'dimensionality with PCA.')
+  }
+  if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+  } else {
+    dat <- getEAWP(dat)$expr
+  }
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   if (!is.null(group)) {
