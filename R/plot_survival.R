@@ -110,7 +110,7 @@ plot_survival <- function(fit,
   # Build plot
   p <- ggsurvplot(fit, data = df, fun = fun, size = 0.5, conf.int = CI,
                   censor = censor, title = title, legend = legend,
-                  font.tickslab = 9, ggtheme = theme_bw(), ylab = ylab, ...)$plot
+                  font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab, ...)$plot
   if (!is.null(fit$strata)) {
     p <- p + scale_color_manual(name = leg.txt,
                               labels = leg.lbl,
@@ -122,3 +122,6 @@ plot_survival <- function(fit,
   print(p)
 
 }
+
+
+# ggplotly? Would need to go over curves with a text = Curve aesthetic...
