@@ -41,20 +41,20 @@
 #' objects vary depending on whether or not a model matrix is supplied. See
 #' \code{\link[edgeR]{estimateDisp}} for more details. A thorough explication of the
 #' statistical theory behind this pipeline can be found in the original papers by
-#' the packages authors: Robinson & Smyth (2007); Robinson & Smyth (2008); and
+#' the packages authors: Robinson & Smyth (2007), Robinson & Smyth (2008), and
 #' McCarthy et al. (2012).
 #'
 #' \code{DESeq2} also fits a trend line through likelihood estimates of genewise
-#' dispersions, depicted by orange points in this function's output. Posterior values
-#' are calculated following regression toward a normal prior with mean equal to the
-#' predicted value from the trended fit and variance equal to the difference between
-#' the observed variance of the log dispersion estimates and the expected sampling
-#' variance. These maximum a posteriori values are colored blue, while outliers,
-#' defined as genes with log dispersion values more than two standard deviations
-#' away from the trend line, are colored red. See \code{\link[DESeq2]{
-#' estimateDispersions}} for more details. For more thorough statistical background,
-#' see the original DESeq paper (Anders & Huber, 2010), as well as the DESeq2
-#' paper (Love et al., 2014).
+#' dispersions, depicted by orange points in the \code{plot_dispersion} output.
+#' Posterior values are calculated following regression toward a log-normal prior with
+#' mean equal to the predicted value from the trended fit and variance equal to the
+#' difference between the observed variance of the log dispersion estimates and the
+#' expected sampling variance. These maximum a posteriori values are colored blue,
+#' while outliers, defined as genes with log dispersion values more than two median
+#' absolute deviations away from the trend line, are colored red. See \code{
+#' \link[DESeq2]{estimateDispersions}} for more details. For more comprehensive
+#' statistical background, see the original DESeq paper (Anders & Huber, 2010), as
+#' well as the DESeq2 paper (Love et al., 2014).
 #'
 #' \code{plot_dispersion} effectively combines \code{edgeR::\link[edgeR]{plotBCV}}
 #' and \code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single function that can
@@ -188,9 +188,7 @@ plot_dispersion <- function(dat,
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   p <- ggplot(df) +
-    labs(title = title,
-             x = expression('Mean'~log[2]*'-CPM'),
-             y = ylab) +
+    labs(title = title, x = expression('Mean'~log[2]*'-CPM'), y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (is(dat, 'DESeqDataSet')) {
