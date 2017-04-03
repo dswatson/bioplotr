@@ -140,7 +140,7 @@ plot_pr <- function(obs,
   }
   p <- ggplot(df, aes(Recall, Precision)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
-    geom_hline(yintercept = sum(obs) / length(obs), color = 'grey') +
+    geom_hline(yintercept = sum(obs) / length(obs), linetype = 2L, color = 'grey') +
     labs(title = title) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))

@@ -126,7 +126,7 @@ plot_roc <- function(obs,
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
-    geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
+    geom_abline(intercept = 0L, slope = 1L, linetype = 2L, color = 'grey') +
     labs(title = title, x = 'False Positive Rate', y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
