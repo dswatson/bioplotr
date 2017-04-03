@@ -8,8 +8,8 @@ plot_roc(obs, pred, title = NULL, leg.txt = NULL, legend = "bottomright",
   hover = FALSE)
 }
 \arguments{
-\item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
-logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
+\item{obs}{Vector of observed outcomes. Must be dichotomous. Can be logical,
+numeric, character, or factor. If numeric, \code{obs} must be coded \code{1}
 or \code{0}. If character or factor, a warning will be issued clarifying that
 the first level is assumed to be the reference.}
 
@@ -36,14 +36,15 @@ This functions plots ROC curves for one or several classifiers.
 ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
 positive rate (i.e., sensitivity) for a given classifier and vector of observations.
 The area under the ROC curve (AUC) is a common performance metric for binary
-classifiers.
+classifiers. The grey diagonal line across the plot represents the performance of
+a theoretical random classifier.
 }
 \examples{
 y <- rbinom(100, size = 1, prob = 0.5)
-x <- rnorm(100, mean = y, sd = 0.5)
-plot_roc(obs = y, pred = x)
+x1 <- rnorm(100, mean = y)
+plot_roc(obs = y, pred = x1)
 
 x2 <- rnorm(100, mean = y, sd = 2)
-plot_roc(obs = y, pred = list("x1" = x, "x2" = x2))
+plot_roc(obs = y, pred = list("x1" = x1, "x2" = x2))
 
 }

@@ -23,9 +23,17 @@
 #' (i.e., true positive rate/sensitivity) for a given classifier and vector of
 #' observations. The area under the PR curve (AUC) is a useful performance metric for
 #' binary classifiers, especially in cases of extreme class imbalance, which is
-#' typical in omic contexts (Saito & Rehmsmeier, 2015).
+#' typical in omic contexts (Saito & Rehmsmeier, 2015). The grey horizontal line
+#' represents the performance of a theoretical random classifier. Interpolations
+#' for tied \code{pred} values are computed using the nonlinear method of Davis &
+#' Goadrich (2006).
 #'
 #' @references
+#' Davis, J. & Goadrich, M. (2006).
+#' \href{http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf}{The Relationship
+#' Between Precision-Recall and ROC Curves}. In \emph{Proceedings of the 23rd
+#' International Conference on Machine Learning}, pp. 223-240. New York: ACM.
+#'
 #' Saito, T. & Rehmsmeier, M. (2015).
 #' \href{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}{The
 #' Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary
@@ -33,17 +41,17 @@
 #'
 #' @examples
 #' y <- rbinom(1000, size = 1, prob = 0.1)
-#' x <- rnorm(1000, mean = y, sd = 0.5)
-#' plot_pr(obs = y, pred = x)
+#' x1 <- rnorm(1000, mean = y)
+#' plot_pr(obs = y, pred = x1)
 #'
 #' x2 <- rnorm(1000, mean = y, sd = 2)
-#' plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
+#' plot_pr(obs = y, pred = list("x1" = x1, "x2" = x2))
 #'
 #' @export
 #' @import dplyr
-#' @importFrom purrr map map_df map_chr
+#' @importFrom precrec evalmod
+#' @importFrom purrr map_df map_chr
 #' @import ggplot2
-#' @importFrom PRROC pr.curve
 #' @importFrom ggsci pal_d3
 #' @importFrom plotly ggplotly
 #'
@@ -65,27 +73,27 @@ plot_pr <- function(obs,
     } else {
       warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
               'To change this to obs == "', levels(obs)[2], '", either relevel the ',
-              'factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
+              'factor or recode response as logical or numeric (1/0).')
+      obs <- ifelse(obs == levels(obs)[1], TRUE, FALSE)
     }
   }
-  if (is.logical(obs)) {
-    obs <- ifelse(obs, 1L, 0L)
+  if (is.numeric(obs)) {
+    if (!all(obs %in% c(0L, 1L))) {
+      stop('A numeric response can only take on values of 0 or 1.')
+    } else {
+      obs <- ifelse(obs == 1L, TRUE, FALSE)
+    }
   }
-  if (!all(obs %in% c(0L, 1L))) {
-    stop('A numeric response can only take on values of 0 or 1.')
+  if (any(is.na(obs))) {
+    stop('obs cannot contain missing values.')
   }
-  if (var(obs) == 0L) {
-    stop('Response is invariant.')
+  if (all(obs) | all(!obs)) {
+    stop('obs is invariant.')
   }
   if (is.data.frame(pred)) {
     pred <- as.list(pred)
   } else if (!is.list(pred)) {
     pred <- list(pred)
-  }
-  pred <- map(pred, function(x) x <- x[is.finite(x)])
-  if (is.null(names(pred))) {
-    names(pred) <- paste0('M', seq_along(pred))
   }
   for (x in seq_along(pred)) {
     if (!is.numeric(pred[[x]])) {
@@ -95,6 +103,12 @@ plot_pr <- function(obs,
     if (length(obs) != length(pred[[x]])) {
       stop('obs and pred vectors must be of equal length.')
     }
+    if (any(!is.finite(pred[[x]]))) {
+      stop('pred cannot contain missing or infinite values.')
+    }
+  }
+  if (is.null(names(pred))) {
+    names(pred) <- paste0('M', seq_along(pred))
   }
   if (is.null(title)) {
     if (length(pred) == 1L) {
@@ -112,26 +126,22 @@ plot_pr <- function(obs,
   }
 
   # Tidy data
-  df <- map_df(seq_along(pred), function(x) {
-    data_frame(Y = obs,
-               X = pred[[x]],
-      Classifier = names(pred)[x]) %>%
-      arrange(desc(X)) %>%
-      mutate(TPR = cumsum(Y == 1L) / sum(Y == 1L),
-             PPV = cumsum(Y == 1L) / (cumsum(Y == 1L) + cumsum(Y == 0L))) %>%
+  prcs <- evalmod(scores = pred, labels = obs)$prcs
+  df <- map_df(seq_along(pred), function(m) {
+    data_frame(Recall = prcs[[m]]$x,
+            Precision = prcs[[m]]$y,
+           Classifier = names(pred)[m]) %>%
       return()
   })
 
   # Build plot
-  p_auc <- function(x) {                         # Print AUC
-    pos <- df %>% filter(Classifier == names(pred)[x], Y == 1L)
-    neg <- df %>% filter(Classifier == names(pred)[x], Y == 0L)
-    txt <- paste0(names(pred)[x], ', AUC = ',
-                  round(pr.curve(pos$X, neg$X)$auc.integral, 2L))
-    return(txt)
+  p_auc <- function(m) {                         # Print AUC
+    paste0(names(pred)[m], ', AUC = ', round(attr(prcs[[m]], 'auc'), 2L))
   }
-  p <- ggplot(df, aes(TPR, PPV)) +
-    labs(title = title, x = 'Recall', y = 'Precision') +
+  p <- ggplot(df, aes(Recall, Precision)) +
+    lims(x = c(0L, 1L), y = c(0L, 1L)) +
+    geom_hline(yintercept = sum(obs) / length(obs), color = 'grey') +
+    labs(title = title) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (length(pred) > 1L) {                       # Multiple curves?
@@ -144,8 +154,7 @@ plot_pr <- function(obs,
                          values = pal_d3()(length(pred)))
     )
   } else {
-    p <- p + geom_point(size = 0.1) +
-      geom_line(aes(color = Classifier)) +
+    p <- p + geom_line(aes(color = Classifier)) +
       scale_color_manual(name = leg.txt,
                        labels = map_chr(seq_along(pred), p_auc),
                        values = 'black')
@@ -179,5 +188,3 @@ plot_pr <- function(obs,
 }
 
 
-# Use gganimate, tweenr, and shiny to toggle btw classifiers
-# Slash maybe do cumulative from left to right?

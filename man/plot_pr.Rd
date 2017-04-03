@@ -37,18 +37,26 @@ PR curves plot the precision (i.e., positive predictive value) against the recal
 (i.e., true positive rate/sensitivity) for a given classifier and vector of
 observations. The area under the PR curve (AUC) is a useful performance metric for
 binary classifiers, especially in cases of extreme class imbalance, which is
-typical in omic contexts (Saito & Rehmsmeier, 2015).
+typical in omic contexts (Saito & Rehmsmeier, 2015). The grey horizontal line
+represents the performance of a theoretical random classifier. Interpolations
+for tied \code{pred} values are computed using the nonlinear method of Davis &
+Goadrich (2006).
 }
 \examples{
 y <- rbinom(1000, size = 1, prob = 0.1)
-x <- rnorm(1000, mean = y, sd = 0.5)
-plot_pr(obs = y, pred = x)
+x1 <- rnorm(1000, mean = y)
+plot_pr(obs = y, pred = x1)
 
 x2 <- rnorm(1000, mean = y, sd = 2)
-plot_pr(obs = y, pred = list("x1" = x, "x2" = x2))
+plot_pr(obs = y, pred = list("x1" = x1, "x2" = x2))
 
 }
 \references{
+Davis, J. & Goadrich, M. (2006).
+\href{http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf}{The Relationship
+Between Precision-Recall and ROC Curves}. In \emph{Proceedings of the 23rd
+International Conference on Machine Learning}, pp. 223-240. New York: ACM.
+
 Saito, T. & Rehmsmeier, M. (2015).
 \href{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}{The
 Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary
