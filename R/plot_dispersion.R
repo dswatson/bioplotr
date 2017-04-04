@@ -122,9 +122,9 @@ plot_dispersion <- function(dat,
       dat <- estimateSizeFactors(dat)
     }
     if (!is.null(design)) {
-      dat <- estimateDispersions(dat, modelMatrix = design)
+      dat <- estimateDispersions(dat, modelMatrix = design, quiet = TRUE)
     } else if (is.null(dispersions(dat))) {
-      dat <- estimateDispersions(dat)
+      dat <- estimateDispersions(dat, quiet = TRUE)
     }
   } else if (is(dat, 'DGEList')) {
     if (all(dat$samples$norm.factors == 1L)) {
@@ -207,8 +207,8 @@ plot_dispersion <- function(dat,
     p <- p + suppressWarnings(
         geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
                    size = size, alpha = alpha)
-      ) + geom_hline(aes(color = 'Common', yintercept = cmn), size = 1L) +
-      geom_path(aes(Mean, Fit, color = 'Trend'), size = 1L) +
+      ) + geom_hline(aes(color = 'Common', yintercept = cmn), size = 0.5) +
+      geom_path(aes(Mean, Fit, color = 'Trend'), size = 0.5) +
       scale_color_manual(name = 'Dispersion\n Estimate',
                        breaks = c(TRUE, 'Common', 'Trend'),
                        labels = c('Genewise', 'Common', 'Trend'),
