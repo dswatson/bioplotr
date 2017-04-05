@@ -9,12 +9,14 @@ plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   title = NULL, legend = "outside", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
-probes and columns to samples. It is strongly recommended that data be
-normalized and filtered prior to running t-SNE. For count data, this means
-undergoing some sort of variance stabilizing transformation, such as
-\code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
-\link[DESeq2]{rlog}}, etc.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to probes
+and columns to samples. It is strongly recommended that data be filtered and
+normalized prior to running t-SNE. For count data, this means undergoing some sort
+of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
+\code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
+matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
+DESeqDataSet}} objects will be automatically extracted and transformed to the
+log2-CPM scale, with a warning.}
 
 \item{group}{Optional character or factor vector of length equal to sample size,
 or up to two such vectors organized into a list or data frame. Supply legend

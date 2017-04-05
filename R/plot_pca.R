@@ -3,12 +3,14 @@
 #' This function plots a low-dimensional projection of an omic data matrix using
 #' principal component analysis.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples. It is strongly recommended that data be
-#'   normalized and filtered prior to running PCA. For count data, this means
-#'   undergoing some sort of variance stabilizing transformation, such as
-#'   \code{\link[edgeR]{cpm}} (with \code{log = TRUE}), \code{\link[DESeq2]{vst},
-#'   \link[DESeq2]{rlog}}, etc.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
+#'   and columns to samples. It is strongly recommended that data be filtered and
+#'   normalized prior to running PCA. For count data, this means undergoing some sort
+#'   of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
+#'   \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
+#'   matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
+#'   DESeqDataSet}} objects will be automatically extracted and transformed to the
+#'   log2-CPM scale, with a warning.
 #' @param group Optional character or factor vector of length equal to sample size,
 #'   or up to two such vectors organized into a list or data frame. Supply legend
 #'   title(s) by passing a named list or data frame.
@@ -86,11 +88,25 @@ plot_pca <- function(dat,
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
-  if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
-    stop('dat must undergo a variance stabilizing transformation before reducing ',
-         'dimensionality with PCA.')
-  }
-  if (is(dat, 'DESeqTransform')) {
+  if (is(dat, 'DGEList')) {
+    if (is.null(dat$samples$lib.size)) {
+      dat$samples$lib.size <- colSums(dat$counts)
+    }
+    if (is.null(dat$samples$norm.factors) | all(dat$samples$norm.factors == 1L)) {
+      dat <- calcNormFactors(dat)
+    }
+    dat <- cpm(dat, log = TRUE, prior.count = 0.5)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqDataSet')) {
+    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+      dat <- estimateSizeFactors(dat)
+    }
+    dat <- counts(dat, normalized = TRUE)
+    keep <- rowMeans(dat) > 0L
+    dat <- dat[keep, , drop = FALSE]
+    dat <- cpm(dat, log = TRUE, prior.count = 0.5)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqTransform')) {
     dat <- assay(dat)
   } else {
     dat <- getEAWP(dat)$expr
@@ -229,7 +245,9 @@ plot_pca <- function(dat,
       theme(plot.title = element_text(hjust = 0.5))
     if (is.null(features)) {
       if (label) {
-        p <- p + geom_text(aes(label = Sample), alpha = alpha)
+        suppressWarnings(
+          p <- p + geom_text(aes(label = Sample), alpha = alpha)
+        )
       } else {
         suppressWarnings(
           p <- p + geom_point(aes(text = Sample), size = size, alpha = alpha)
