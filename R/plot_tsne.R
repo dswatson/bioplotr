@@ -320,29 +320,8 @@ plot_tsne <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    if (legend == 'bottomleft') {                          # Locate legend
-      p <- p + theme(legend.justification = c(0.01, 0.01),
-                     legend.position = c(0.01, 0.01))
-    } else if (legend == 'bottomright') {
-      p <- p + theme(legend.justification = c(0.99, 0.01),
-                     legend.position = c(0.99, 0.01))
-    } else if (legend == 'topleft') {
-      p <- p + theme(legend.justification = c(0.01, 0.99),
-                     legend.position = c(0.01, 0.99))
-    } else if (legend == 'topright') {
-      p <- p + theme(legend.justification = c(0.99, 0.99),
-                     legend.position = c(0.99, 0.99))
-    }
-    if (!hover) {
-      print(p)
-    } else {
-      if (legend == 'outside') {
-        p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
-      } else {
-        p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
-      }
-      print(p)
-    }
+    p <- locate_legend(p)
+    gg_out(p)
   } else {
     # ???
   }

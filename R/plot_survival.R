@@ -118,7 +118,7 @@ plot_survival <- function(fit,
   }
   p <- p + theme(plot.title = element_text(hjust = 0.5))
 
-  # Export
+  # Output
   print(p)
 
 }
