@@ -70,4 +70,31 @@ sample_alpha <- function(df) {
   return(out)
 }
 
+#' Locate Legend
+#'
+#' This utility function translates a user-supplied string into coordinates for
+#' legend location.
+#'
+#' @param p A \code{ggplot2} object.
+#' @param loc String specifying legend location.
+#'
+#' @importFrom ggplot2 theme
+#'
+
+locate_legend <- function(p, loc) {
+  if (loc == 'bottomleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.01),
+                        legend.position = c(0.01, 0.01))
+  } else if (loc == 'bottomright') {
+    p <- p + theme(legend.justification = c(0.99, 0.01),
+                        legend.position = c(0.99, 0.01))
+  } else if (loc == 'topleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.99),
+                        legend.position = c(0.01, 0.99))
+  } else if (loc == 'topright') {
+    p <- p + theme(legend.justification = c(0.99, 0.99),
+                        legend.position = c(0.99, 0.99))
+  }
+  return(p)
+}
 
