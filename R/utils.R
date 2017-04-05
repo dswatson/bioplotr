@@ -76,25 +76,47 @@ sample_alpha <- function(df) {
 #' legend location.
 #'
 #' @param p A \code{ggplot2} object.
-#' @param loc String specifying legend location.
 #'
 #' @importFrom ggplot2 theme
 #'
 
-locate_legend <- function(p, loc) {
-  if (loc == 'bottomleft') {
+locate_legend <- function(p) {
+  if (legend == 'bottomleft') {
     p <- p + theme(legend.justification = c(0.01, 0.01),
                         legend.position = c(0.01, 0.01))
-  } else if (loc == 'bottomright') {
+  } else if (legend == 'bottomright') {
     p <- p + theme(legend.justification = c(0.99, 0.01),
                         legend.position = c(0.99, 0.01))
-  } else if (loc == 'topleft') {
+  } else if (legend == 'topleft') {
     p <- p + theme(legend.justification = c(0.01, 0.99),
                         legend.position = c(0.01, 0.99))
-  } else if (loc == 'topright') {
+  } else if (legend == 'topright') {
     p <- p + theme(legend.justification = c(0.99, 0.99),
                         legend.position = c(0.99, 0.99))
   }
   return(p)
 }
+
+#' Output Image
+#'
+#' This utility function prints a ggplot or ggplotly figure.
+#'
+#' @param p A \code{ggplot2} object.
+#'
+#' @importFrom plotly ggplotly
+#'
+
+gg_out <- function(p) {
+  if (!hover) {
+    print(p)
+  } else {
+    if (legend == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
+    print(p)
+  }
+}
+
 
