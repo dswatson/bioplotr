@@ -108,12 +108,12 @@ locate_legend <- function(p, loc) {
 #' @importFrom plotly ggplotly
 #'
 
-gg_out <- function(p, hover) {
+gg_out <- function(p, hover,legend) {
   if (!hover) {
     print(p)
   } else {
     if (legend == 'outside') {
-      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
     } else {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
     }

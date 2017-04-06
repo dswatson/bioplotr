@@ -112,7 +112,7 @@ plot_box <- function(dat,
   p <- locate_legend(p, legend)
 
   # Output
-  gg_out(p, hover)
+  gg_out(p, hover, legend)
 
 }
 
