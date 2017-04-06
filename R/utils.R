@@ -104,15 +104,16 @@ locate_legend <- function(p, loc) {
 #'
 #' @param p A \code{ggplot2} object.
 #' @param hover Add text tooltip using plotly?
+#' @param loc String specifying legend location.
 #'
 #' @importFrom plotly ggplotly
 #'
 
-gg_out <- function(p, hover,legend) {
+gg_out <- function(p, hover, loc) {
   if (!hover) {
     print(p)
   } else {
-    if (legend == 'outside') {
+    if (loc == 'outside') {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
     } else {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
