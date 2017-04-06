@@ -340,10 +340,10 @@ plot_mv.DGELM <- function(dat,
   }
   lo <- lowess(mu, sigma, f = span)                   # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
-                   Mu = mu,
+                      Mu = mu,
                    Sigma = sigma,
                    Mu_lo = lo[['x']],
-                   Sigma_lo = lo[['y']])
+                Sigma_lo = lo[['y']])
 
   # Built plot
   size <- probe_ptsize(df)
@@ -489,10 +489,10 @@ plot_mv.default <- function(dat,
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
-                   Mu = mu,
+                      Mu = mu,
                    Sigma = sigma,
                    Mu_lo = lo[['x']],
-                   Sigma_lo = lo[['y']])
+                Sigma_lo = lo[['y']])
 
   # Build plot
   size <- probe_ptsize(df)
