@@ -4,10 +4,12 @@
 \alias{locate_legend}
 \title{Locate Legend}
 \usage{
-locate_legend(p)
+locate_legend(p, loc)
 }
 \arguments{
 \item{p}{A \code{ggplot2} object.}
+
+\item{loc}{String specifying legend location.}
 }
 \description{
 This utility function translates a user-supplied string into coordinates for
