@@ -320,8 +320,8 @@ plot_tsne <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    p <- locate_legend(p)
-    gg_out(p)
+    p <- locate_legend(p, legend)
+    gg_out(p, hover)
   } else {
     # ???
   }

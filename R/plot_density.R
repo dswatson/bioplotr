@@ -106,12 +106,11 @@ plot_density <- function(dat,
   } else {
     p <- p + geom_path(stat = 'density')
   }
-  p <- locate_legend(p)
+  p <- locate_legend(p, legend)
 
   # Output
-  gg_out(p)
+  gg_out(p, hover)
 
 }
 
 
-# Use gganimate, tweenr, and shiny to toggle btw matrices

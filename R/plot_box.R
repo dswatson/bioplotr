@@ -109,15 +109,14 @@ plot_box <- function(dat,
   } else {
     p <- p + geom_boxplot()
   }
-  p <- locate_legend(p)
+  p <- locate_legend(p, legend)
 
   # Output
-  gg_out(p)
+  gg_out(p, hover)
 
 }
 
 # Fun fact: plotly won't display text for boxplots:
 # https://community.plot.ly/t/boxplot-hoverinfo-text-not-display/1959
 
-# Use gganimate, tweenr, and shiny to toggle btw matrices
 

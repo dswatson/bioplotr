@@ -281,8 +281,8 @@ plot_pca <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    p <- locate_legend(p)
-    gg_out(p)
+    p <- locate_legend(p, legend)
+    gg_out(p, hover)
   } else {
     ### REWRITE ###
     # symbls <- c(16, 17, 15, 3, 7, 8)           # This would be right if plotly worked

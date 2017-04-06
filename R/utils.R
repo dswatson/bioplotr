@@ -76,21 +76,22 @@ sample_alpha <- function(df) {
 #' legend location.
 #'
 #' @param p A \code{ggplot2} object.
+#' @param loc String specifying legend location.
 #'
 #' @importFrom ggplot2 theme
 #'
 
-locate_legend <- function(p) {
-  if (legend == 'bottomleft') {
+locate_legend <- function(p, loc) {
+  if (loc == 'bottomleft') {
     p <- p + theme(legend.justification = c(0.01, 0.01),
                         legend.position = c(0.01, 0.01))
-  } else if (legend == 'bottomright') {
+  } else if (loc == 'bottomright') {
     p <- p + theme(legend.justification = c(0.99, 0.01),
                         legend.position = c(0.99, 0.01))
-  } else if (legend == 'topleft') {
+  } else if (loc == 'topleft') {
     p <- p + theme(legend.justification = c(0.01, 0.99),
                         legend.position = c(0.01, 0.99))
-  } else if (legend == 'topright') {
+  } else if (loc == 'topright') {
     p <- p + theme(legend.justification = c(0.99, 0.99),
                         legend.position = c(0.99, 0.99))
   }
@@ -102,11 +103,12 @@ locate_legend <- function(p) {
 #' This utility function prints a ggplot or ggplotly figure.
 #'
 #' @param p A \code{ggplot2} object.
+#' @param hover Add text tooltip using plotly?
 #'
 #' @importFrom plotly ggplotly
 #'
 
-gg_out <- function(p) {
+gg_out <- function(p, hover) {
   if (!hover) {
     print(p)
   } else {

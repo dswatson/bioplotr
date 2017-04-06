@@ -218,10 +218,10 @@ plot_dispersion <- function(dat,
                              shape = c(16L, NA, NA), size = rep(1L, 3L)
                         )))
   }
-  p <- locate_legend(p)
+  p <- locate_legend(p, legend)
 
   # Output
-  gg_out(p)
+  gg_out(p, hover)
 
 }
 

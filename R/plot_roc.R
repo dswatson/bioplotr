@@ -145,10 +145,10 @@ plot_roc <- function(obs,
                        labels = map_chr(seq_along(pred), p_auc),
                        values = 'black')
   }
-  p <- locate_legend(p)
+  p <- locate_legend(p, legend)
 
   # Output
-  gg_out(p)
+  gg_out(p, hover)
 
 }
 
