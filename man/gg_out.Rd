@@ -4,10 +4,14 @@
 \alias{gg_out}
 \title{Output Image}
 \usage{
-gg_out(p)
+gg_out(p, hover, loc)
 }
 \arguments{
 \item{p}{A \code{ggplot2} object.}
+
+\item{hover}{Add text tooltip using plotly?}
+
+\item{loc}{String specifying legend location.}
 }
 \description{
 This utility function prints a ggplot or ggplotly figure.
