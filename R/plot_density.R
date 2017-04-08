@@ -23,19 +23,22 @@
 #' or associations with phenotypic factors by using the \code{group} argument.
 #'
 #' @examples
-#' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+#' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_density(mat)
 #'
 #' library(DESeq2)
-#' dds <- makeExampleDESeqDataSet
-#' mat <- rlog(dds)
-#' batch <- rep(c("A", "B"), each = 6)
-#' plot_density(mat, group = batch, xlab = "Normalized Counts")
+#' dds <- makeExampleDESeqDataSet()
+#' plot_density(dds, group = colData(dds)$condition)
+#'
+#' rld <- rlog(dds)
+#' plot_density(rld, group = colData(rld)$condition)
 #'
 #' @seealso
 #' \code{\link[limma]{plotDensities}}
 #'
 #' @export
+#' @importFrom DESeq2 counts
+#' @importFrom SummarizedExperiment assay
 #' @importFrom limma getEAWP
 #' @importFrom tidyr gather
 #' @importFrom ggsci scale_color_d3
@@ -70,9 +73,6 @@ plot_density <- function(dat,
       names(group) <- 'Group'
     }
   }
-  if (is.null(xlab)) {
-    xlab <- 'Value'
-  }
   if (is.null(title)) {
     if (is.null(group)) {
       title <- 'Density By Sample'
@@ -86,9 +86,29 @@ plot_density <- function(dat,
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
+  if (is(dat, 'DGEList')) {
+    dat <- dat$counts
+    if (is.null(ylab)) {
+      xlab <- 'Raw Counts'
+    }
+  } else if (is(dat, 'DESeqDataSet')) {
+    dat <- counts(dat)
+    if (is.null(ylab)) {
+      xlab <- 'Raw Counts'
+    }
+  } else if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+    if (is.null(ylab)) {
+      xlab <- 'Transformed Counts'
+    }
+  } else {
+    dat <- getEAWP(dat)$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
+    if (is.null(ylab)) {
+      xlab <- 'Value'
+    }
+  }
   df <- gather(tbl_df(dat), Sample, Value)
   if (!is.null(group)) {
     df <- df %>% mutate(Group = rep(group[[1]], each = nrow(dat)))

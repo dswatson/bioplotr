@@ -37,14 +37,15 @@ are especially helpful when contrasting pre- and post-normalization matrices.
 or associations with phenotypic factors by using the \code{group} argument.
 }
 \examples{
-mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
+mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 plot_density(mat)
 
 library(DESeq2)
-dds <- makeExampleDESeqDataSet
-mat <- rlog(dds)
-batch <- rep(c("A", "B"), each = 6)
-plot_density(mat, group = batch, xlab = "Normalized Counts")
+dds <- makeExampleDESeqDataSet()
+plot_density(dds, group = colData(dds)$condition)
+
+rld <- rlog(dds)
+plot_density(rld, group = colData(rld)$condition)
 
 }
 \seealso{
