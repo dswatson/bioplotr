@@ -5,11 +5,11 @@
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
 #'   and columns to samples. It is strongly recommended that data be filtered and
-#'   normalized prior to running MDS For count data, this means undergoing some sort
+#'   normalized prior to running MDS. For count data, this means undergoing some sort
 #'   of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
 #'   \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
 #'   matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-#'   DESeqDataSet}} objects will be automatically extracted and transformed to the
+#'   DESeqDataSet}} objects are automatically extracted and transformed to the
 #'   log2-CPM scale, with a warning.
 #' @param group Optional character or factor vector of length equal to sample size,
 #'   or up to two such vectors organized into a list or data frame. Supply legend
@@ -69,11 +69,13 @@
 #' \code{\link[limma]{plotMDS}, \link{plot_pca}, \link{plot_tsne}}
 #'
 #' @export
-#' @import dplyr
-#' @importFrom purrr map
+#' @importFrom edgeR calcNormFactors cpm
+#' @importFrom DESeq2 estimateSizeFactors counts
+#' @importFrom SummarizedExperiment assay
 #' @importFrom limma getEAWP
 #' @importFrom wordspace dist.matrix
 #' @importFrom ggsci scale_color_d3 pal_d3
+#' @import dplyr
 #' @import ggplot2
 #' @import plotly
 #'
@@ -94,30 +96,30 @@ plot_mds <- function(dat,
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for MDS.'))
   }
   if (is(dat, 'DGEList')) {
-    if (is.null(dat$samples$lib.size)) {
-      dat$samples$lib.size <- colSums(dat$counts)
-    }
-    if (is.null(dat$samples$norm.factors) | all(dat$samples$norm.factors == 1L)) {
+    keep <- rowSums(dat$counts) > 0L             # Minimal count filter
+    dat <- dat[keep, , drop = FALSE]
+    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
+        all(dat$samples$norm.factors == 1L)) {
       dat <- calcNormFactors(dat)
     }
-    dat <- cpm(dat, log = TRUE, prior.count = 0.5)
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (is(dat, 'DESeqDataSet')) {
     if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
-      dat <- estimateSizeFactors(dat)
+      dat <- estimateSizeFactors(dat)            # Normalize counts
     }
     dat <- counts(dat, normalized = TRUE)
-    keep <- rowMeans(dat) > 0L
+    keep <- rowMeans(dat) > 0L                   # Minimal count filter
     dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 0.5)
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (is(dat, 'DESeqTransform')) {
     dat <- assay(dat)
   } else {
     dat <- getEAWP(dat)$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
   }
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
   if (!is.null(group)) {
     if (is.data.frame(group)) {
       group <- as.list(group)
@@ -186,20 +188,20 @@ plot_mds <- function(dat,
     if (top > 1L) {
       if (top > nrow(dat)) {
         warning(paste('top exceeds nrow(dat), at least after removing probes with
-                      infinite or missing values. Proceeding with the complete',
-                      nrow(dat), 'x', ncol(dat), 'matrix.'))
+                      missing values and/or applying a minimal expression filter.
+                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
         top <- NULL
       }
     } else {
       top <- round(top * nrow(dat))
     }
   }
-  if (length(pcs) > 2L && !D3) {
+  if (length(pcs) > 2L & !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
   } else if (length(pcs) > 3L) {
     stop('pcs must be a vector of length <= 3.')
   }
-  if (label && !is.null(features) && length(features) == 2L) {
+  if (label & !is.null(features) & length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic feature.')
   }
   if (is.null(title)) {

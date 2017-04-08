@@ -15,7 +15,7 @@ normalized prior to running t-SNE. For count data, this means undergoing some so
 of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
 \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
 matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-DESeqDataSet}} objects will be automatically extracted and transformed to the
+DESeqDataSet}} objects are automatically extracted and transformed to the
 log2-CPM scale, with a warning.}
 
 \item{group}{Optional character or factor vector of length equal to sample size,
