@@ -4,10 +4,10 @@
 #' test of differential expression.
 #'
 #' @param dat Data frame representing the results of a test for differential
-#'   expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
-#'   \code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
-#'   Alternatively, any object coercable to a data frame with columns for
-#'   \emph{p}-values, log fold changes, and FDR. Missing values are silently removed.
+#'   expression, such as the output of a call to \code{\link[limma]{topTable}},
+#'   \code{\link[edgeR]{topTags}}, or \code{\link[DESeq2]{results}}. Alternatively,
+#'   any object coercable to a data frame with columns for \emph{p}-values, log fold
+#'   changes, and FDR. Missing values are silently removed.
 #' @param fdr Significance threshold for declaring a probe differentially expressed.
 #' @param lfc Optional effect size threshold for declaring a probe differentially
 #'   expressed.
@@ -23,20 +23,16 @@
 #' Volcano plots visualize the relationship between each probe's log2 fold change and
 #' -log10 \emph{p}-value for a given test of differential expression. Points are
 #' colored to distinguish between those that do and do not meet a user-defined FDR
-#' threshold. An additional chromatic distinction is made between up- and down-regulated
-#' genes, if a minimum absolute fold change is supplied. These figures help to evaluate
-#' the symmetry, magnitude, and significance of effects in an omic experiment.
+#' threshold. Up- and down-regulated genes may also be differentially colored if a
+#' minimum absolute fold change is supplied. These figures help to evaluate the
+#' symmetry, magnitude, and significance of effects in an omic experiment.
 #'
 #' @examples
-#' library(limma)
-#' DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-#'                   matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-#' eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-#' treat <- rep(c("A", "B"), each = 5)
-#' des <- model.matrix(~ treat)
-#' fit <- eBayes(lmFit(eset, des))
-#' top <- topTable(fit, number = Inf)
-#' plot_volcano(top)
+#' library(DESeq2)
+#' dds <- makeExampleDESeqDataSet()
+#' dds <- DESeq(dds)
+#' res <- results(dds)
+#' plot_volcano(res)
 #'
 #' @export
 #' @import dplyr
@@ -55,7 +51,7 @@ plot_volcano <- function(dat,
   # Preliminaries
   dat <- as.data.frame(dat)
   fc <- c('log2FoldChange', 'logFC')
-  if (sum(fc %in% colnames(dat)) == 1L) {
+  if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'logFC'
   } else {
     stop('dat must include a log fold change column. Recognized colnames for this ',
@@ -63,25 +59,32 @@ plot_volcano <- function(dat,
          'exactly one such colname.')
   }
   p <- c('P.Value', 'pvalue', 'PValue', 'p.value')
-  if (sum(p %in% colnames(dat)) == 1L) {
+  if (sum(p %in% colnames(dat)) == 1L) {         # Rename p.value
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
     stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "P.Value", "pvalue", "PValue", and "p.value". Make sure that dat',
+         'include "P.Value", "pvalue", "PValue", and "p.value". Make sure that dat ',
          'includes exactly one such colname.')
   }
-  if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
-    stop('P-values must be on [0, 1].')
-  }
   q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
-  if (sum(q %in% colnames(dat)) == 1L) {
+  if (sum(q %in% colnames(dat)) == 1L) {         # Rename q.value
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
     stop('dat must include a column for adjusted p-values. Recognized colnames ',
          'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (min(dat$q.value < 0L) || max(dat$q.value > 1L)) {
+  dat <- dat %>%
+    select(logFC, p.value, q.value) %>%
+    na.omit()
+  if (nrow(dat) == 0L) {
+    stop('dat must have at least one row with non-missing values for logFC, ',
+         'p.value, and FDR.')
+  }
+  if (min(dat$p.value) < 0L | max(dat$p.value) > 1L) {
+    stop('P-values must be on [0, 1].')
+  }
+  if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
     stop('FDR values must be on [0, 1].')
   }
   if (is.null(title)) {
@@ -91,21 +94,11 @@ plot_volcano <- function(dat,
     stop('legend must be one of "outside", "bottomleft", "bottomright", ',
          '"topleft", or "topright".')
   }
-  dat <- dat %>%
-    select(logFC, p.value, q.value) %>%
-    na.omit()
-  if (nrow(dat) == 0L) {
-    stop('dat must have at least one row with non-missing values for logFC, ',
-         'p.value, and FDR.')
-  }
 
   # Tidy data
-  if (is.null(rownames(dat))) {
-    dat <- dat %>% mutate(Probe = row_number())
-  } else {
-    dat <- dat %>% mutate(Probe = rownames(dat))
-  }
-  df <- dat %>% mutate(logP = -log10(p.value))
+  df <- dat %>%
+    mutate(Probe = ifelse(is.null(rownames(dat)), row_number(), rownames(dat)),
+            logP = -log10(p.value))
   if (!is.null(lfc)) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
@@ -124,27 +117,34 @@ plot_volcano <- function(dat,
   if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by differential ',
             'expression, consider raising your fdr cutoff.')
-    p <- p + geom_point(size = size, alpha = alpha, color = '#444444')
-  } else {                                       # Separate up- and downregulated probes?
+    p <- p + geom_point(size = size, alpha = alpha, color = 'black')
+  } else {                                       # Separate up- and down-regulated probes?
     if (!is.null(lfc) & any(df$Direction != 'NA')) {
       y <- df %>%
         filter(q.value <= fdr) %>%
         filter(logP == min(logP)) %>%
         select(logP) %>%
         as.numeric()
-      p <- p + geom_point(aes(color = Direction), size = size, alpha = alpha) +
-        geom_hline(yintercept = y, linetype = 2L) +
-        geom_vline(xintercept = lfc, linetype = 2L) +
-        geom_vline(xintercept = -lfc, linetype = 2L) +
-        annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
-                 hjust = 0L, vjust = -1L) +
-        scale_color_manual(guide = FALSE,
-                          values = c(pal_d3()(3)[3], '#444444', pal_d3()(4)[4]))
+      suppressWarnings(
+        p <- p + geom_point(data = df %>% filter(Direction != 'NA'),
+                            aes(logFC, logP, color = Direction, text = Probe),
+                            size = size, alpha = alpha) +
+          geom_point(data = df %>% filter(Direction == 'NA'),
+                     aes(logFC, logP, text = Probe),
+                     color = '#444444', size = size, alpha = alpha) +
+          geom_segment(x = -Inf, xend = -lfc, y = y, yend = y, linetype = 2L) +
+          geom_segment(x = lfc, xend = Inf, y = y, yend = y, linetype = 2L) +
+          geom_segment(x = -lfc, xend = -lfc, y = y, yend = Inf, linetype = 2L) +
+          geom_segment(x = lfc, xend = lfc, y = y, yend = Inf, linetype = 2L) +
+          annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
+                   hjust = 0L, vjust = -1L) +
+          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
+      )
     } else {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = 'FDR',
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                         values = c('#444444', pal_d3()(4)[4])) +
+                         values = c('black', pal_d3()(4)[4])) +
         guides(color = guide_legend(reverse = TRUE))
       if (!is.null(lfc) & all(df$Direction == 'NA')) {
         warning('No probe meets both your fdr and lfc criteria. To color probes by ',
@@ -153,32 +153,11 @@ plot_volcano <- function(dat,
       }
     }
   }
-  if (legend == 'bottomleft') {                  # Locate legend
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                   legend.position = c(0.01, 0.01))
-  } else if (legend == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                   legend.position = c(0.99, 0.01))
-  } else if (legend == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                   legend.position = c(0.01, 0.99))
-  } else if (legend == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                   legend.position = c(0.99, 0.99))
-  }
+  p <- locate_legend(p, legend)
 
   # Output
-  if (!hover) {
-    print(p)
-  } else {
-    if (legend == 'outside') {
-      p <- ggplotly(p, tooltip = 'text', height = 525, width = 600)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
-    }
-    print(p)
-  }
+  gg_out(p, hover, legend)
 
 }
 
-# Shiny: toggle between tests, impose fold change cutoffs, set FDR on the fly
+

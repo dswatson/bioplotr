@@ -9,10 +9,10 @@ plot_volcano(dat, fdr = 0.05, lfc = NULL, title = NULL,
 }
 \arguments{
 \item{dat}{Data frame representing the results of a test for differential
-expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
-\code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
-Alternatively, any object coercable to a data frame with columns for
-\emph{p}-values, log fold changes, and FDR. Missing values are silently removed.}
+expression, such as the output of a call to \code{\link[limma]{topTable}},
+\code{\link[edgeR]{topTags}}, or \code{\link[DESeq2]{results}}. Alternatively,
+any object coercable to a data frame with columns for \emph{p}-values, log fold
+changes, and FDR. Missing values are silently removed.}
 
 \item{fdr}{Significance threshold for declaring a probe differentially expressed.}
 
@@ -37,19 +37,15 @@ test of differential expression.
 Volcano plots visualize the relationship between each probe's log2 fold change and
 -log10 \emph{p}-value for a given test of differential expression. Points are
 colored to distinguish between those that do and do not meet a user-defined FDR
-threshold. An additional chromatic distinction is made between up- and down-regulated
-genes, if a minimum absolute fold change is supplied. These figures help to evaluate
-the symmetry, magnitude, and significance of effects in an omic experiment.
+threshold. Up- and down-regulated genes may also be differentially colored if a
+minimum absolute fold change is supplied. These figures help to evaluate the
+symmetry, magnitude, and significance of effects in an omic experiment.
 }
 \examples{
-library(limma)
-DE_genes <- cbind(matrix(rnorm(50 * 5, mean = 5), nrow = 50, ncol = 5),
-                  matrix(rnorm(50 * 5), nrow = 50, ncol = 5))
-eset <- rbind(DE_genes, matrix(rnorm(4950 * 10), nrow = 4950, ncol = 10))
-treat <- rep(c("A", "B"), each = 5)
-des <- model.matrix(~ treat)
-fit <- eBayes(lmFit(eset, des))
-top <- topTable(fit, number = Inf)
-plot_volcano(top)
+library(DESeq2)
+dds <- makeExampleDESeqDataSet()
+dds <- DESeq(dds)
+res <- results(dds)
+plot_volcano(res)
 
 }
