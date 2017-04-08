@@ -2,22 +2,31 @@
 % Please edit documentation in R/plot_dispersion.R
 \name{plot_dispersion}
 \alias{plot_dispersion}
+\alias{plot_dispersion.DGEList}
+\alias{plot_dispersion.DESeqDataSet}
+\alias{plot_dispersion.default}
 \title{Plot Dispersion Estimates}
 \usage{
-plot_dispersion(dat, design = NULL, trans = "log", title = NULL,
+plot_dispersion(dat, trans = "log", title = NULL, legend = "outside", ...)
+
+\method{plot_dispersion}{DGEList}(dat, design = NULL, trans = "log",
+  title = NULL, legend = "outside", hover = FALSE)
+
+\method{plot_dispersion}{DESeqDataSet}(dat, trans = "log", title = NULL,
   legend = "outside", hover = FALSE)
+
+\method{plot_dispersion}{DESeqDataSet}(dat, design = NULL, trans = "log",
+  pipeline = NULL, title = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{dat}{A \code{\link[edgeR]{DGEList}} object or \code{\link[DESeq2]{
 DESeqDataSet}}. If normalization factors or dispersions have not already been
 estimated for \code{dat}, they will be internally computed using the appropriate
-\code{edgeR} or \code{DESeq2} functions. For the former, a design matrix may be
-required to calculate the genewise adjusted profile log-likelihoods. See
-Details.}
-
-\item{design}{Optional study design matrix. This will be extracted from \code{dat}
-if available and need not be set explicitly in the call. If provided, however,
-\code{design} will override the relevant slots or components of \code{dat}.}
+\code{edgeR} or \code{DESeq2} functions. Alternatively, \code{dat} may be a raw
+count matrix, in which case the \code{pipeline} argument must specify which
+software to use for estimating normalization factors and genewise dispersions.
+A design matrix may be required to calculate adjusted profile log-likelihoods.
+See Details.}
 
 \item{trans}{Data transformation to be applied to genewise dispersion estimates.
 Must be one of \code{"log"} or \code{"sqrt"}.}
@@ -27,10 +36,21 @@ Must be one of \code{"log"} or \code{"sqrt"}.}
 \item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
 "bottomright", "topleft",} or \code{"topright"}.}
 
+\item{design}{Optional design matrix with rows corresponding to samples and columns
+to coefficients to be estimated. This will be extracted from \code{dat}
+if available and need not be set explicitly in the call. If provided, however,
+\code{design} will override the relevant slot of \code{dat}.}
+
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. Gene names are extracted from
-\code{dat}.}
+display or appear in the RStudio viewer. Gene names are extracted from \code{dat}.}
+
+\item{pipeline}{Which package should be used to estimate normalization factors
+and genewise dispersions? Only relevant if \code{dat} is a raw count matrix.
+Must be one of \code{"edgeR"} or \code{"DESeq2"}. Default settings are applied
+at all steps. For greater control of internal parameters, create the appropriate
+\code{DGEList} or \code{DESeqDataSet} object with your preferred settings and
+pass it directly as \code{dat}.}
 }
 \description{
 This function plots the mean-dispersion relationship for a given count matrix.
@@ -40,12 +60,12 @@ Count data in omic studies are often presumed to follow a negative binomial
 distribution, which may be uniquely identified by its mean and dispersion
 parameters. For RNA-seq pipelines that rely on negative binomial generalized linear
 models (GLMs), such as \code{edgeR} and \code{DESeq2}, estimating genewise
-dispersions is an essential step in the model fitting process. There are rarely
-sufficient replicates to reliably infer these values independently for each gene,
-however, which is why both packages use empirical Bayes methods to pool information
-across genes.
+dispersions is therefore an essential step in the model fitting process. Becaeuse
+there are rarely sufficient replicates to reliably infer these values independently
+for each gene, both packages use empirical Bayes methods to pool information across
+genes.
 
-Details vary across the two pipelines, which is why output will differ for \code{
+Details vary between the two pipelines, which is why output will differ for \code{
 DGEList} objects and \code{DESeqDataSet}s. \code{edgeR} begins by computing a common
 dispersion parameter for the entire dataset, rendered by \code{plot_dispersion} as
 a blue horizontal line; then fits a trend line to the maximized negative binomial
@@ -67,8 +87,8 @@ expected sampling variance. These maximum a posteriori values are colored blue,
 while outliers, defined as genes with log dispersion values more than two median
 absolute deviations away from the trend line, are colored red. See \code{
 \link[DESeq2]{estimateDispersions}} for more details. For more comprehensive
-statistical background, see the original DESeq paper (Anders & Huber, 2010), as
-well as the DESeq2 paper (Love et al., 2014).
+statistical background, see the original DESeq paper (Anders & Huber, 2010) and
+the DESeq2 paper (Love et al., 2014).
 
 \code{plot_dispersion} effectively combines \code{edgeR::\link[edgeR]{plotBCV}}
 and \code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single function that can
@@ -82,6 +102,10 @@ may be interpreted as the biological coefficient of variation (McCarthy et al.,
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 plot_dispersion(dds)
+
+# Plot the same data using the edgeR pipeline and sqrt transform
+plot_dispersion(counts(dds), design = model.matrix(~ condition, colData(dds)),
+                pipeline = "edgeR", trans = "sqrt")
 
 }
 \references{
