@@ -7,7 +7,7 @@ Authors@R: person("David", "Watson", email = "d.watson@qmul.ac.uk",
 Description: This package provides functions to build many common (and some not 
   so common) figures for omic data analysis. Almost all plots employ a "Grammar of 
   Graphics" framework, with optional plotly output for interactive functionality.
-  Most functions have methods for objects from limma, edgeR, and DESeq2 pipelines 
+  Methods are available for objects from limma, edgeR, and DESeq2 pipelines 
   for easy integration with Bioconductor software.
 Depends: 
   R (>= 3.3.3)
