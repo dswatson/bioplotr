@@ -27,13 +27,17 @@
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_box(mat)
 #'
-#' mat <- cbind(matrix(rnbinom(1000 * 5, size = 1, mu = 4), nrow = 1000, ncol = 5),
-#'              matrix(rnbinom(1000 * 5, size = 3, mu = 4), nrow = 1000, ncol = 5))
-#' mat <- lcpm(mat)
-#' batch <- rep(c("A", "B"), each = 5)
-#' plot_box(mat, group = batch, ylab = "Normalized Counts")
+#' library(DESeq2)
+#' dds <- makeExampleDESeqDataSet()
+#' plot_box(dds, group = colData(dds)$condition)
+#'
+#' rld <- rlog(dds)
+#' plot_box(rld, group = colData(rld)$condition)
+#'
 #'
 #' @export
+#' @importFrom DESeq2 counts
+#' @importFrom SummarizedExperiment assay
 #' @importFrom limma getEAWP
 #' @importFrom tidyr gather
 #' @importFrom ggsci scale_fill_d3
@@ -69,14 +73,11 @@ plot_box <- function(dat,
       names(group) <- 'Group'
     }
   }
-  if (is.null(xlab)) {
-    xlab <- 'Value'
-  }
   if (is.null(title)) {
     if (is.null(group)) {
-      title <- 'Density By Sample'
+      title <- 'Box Plots By Sample'
     } else {
-      title <- paste('Density By', names(group))
+      title <- paste('Box Plots By', names(group))
     }
   }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
@@ -85,19 +86,39 @@ plot_box <- function(dat,
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
-  df <- gather(tbl_df(dat), Sample, Expression) %>%
-    mutate(Sample = factor(Sample, levels = unique(Sample)))
+  if (is(dat, 'DGEList')) {
+    dat <- dat$counts
+    if (is.null(ylab)) {
+      ylab <- 'Raw Counts'
+    }
+  } else if (is(dat, 'DESeqDataSet')) {
+    dat <- counts(dat)
+    if (is.null(ylab)) {
+      ylab <- 'Raw Counts'
+    }
+  } else if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+    if (is.null(ylab)) {
+      ylab <- 'Transformed Counts'
+    }
+  } else {
+    dat <- getEAWP(dat)$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
+    if (is.null(ylab)) {
+      ylab <- 'Value'
+    }
+  }
+  df <- gather(tbl_df(dat), Sample, Value)
   if (!is.null(group)) {
     df <- df %>%
       mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
-      arrange(Group)
+      arrange(Group) %>%
+      mutate(Sample = factor(Sample, levels = unique(Sample)))
   }
 
   # Build plot
-  p <- ggplot(df, aes(Sample, Expression, text = Sample)) +
+  p <- ggplot(df, aes(Sample, Value, text = Sample)) +
     labs(title = title, x = 'Sample', y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),

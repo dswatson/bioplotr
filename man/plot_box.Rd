@@ -41,10 +41,12 @@ or associations with phenotypic factors by using the \code{group} argument.
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 plot_box(mat)
 
-mat <- cbind(matrix(rnbinom(1000 * 5, size = 1, mu = 4), nrow = 1000, ncol = 5),
-             matrix(rnbinom(1000 * 5, size = 3, mu = 4), nrow = 1000, ncol = 5))
-mat <- lcpm(mat)
-batch <- rep(c("A", "B"), each = 5)
-plot_box(mat, group = batch, ylab = "Normalized Counts")
+library(DESeq2)
+dds <- makeExampleDESeqDataSet()
+plot_box(dds, group = colData(dds)$condition)
+
+rld <- rlog(dds)
+plot_box(rld, group = colData(rld)$condition)
+
 
 }
