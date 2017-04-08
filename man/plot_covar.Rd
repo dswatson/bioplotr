@@ -4,13 +4,18 @@
 \alias{plot_covar}
 \title{Plot Covariance Between Omic and Clinical Data}
 \usage{
-plot_covar(dat, clin, index = "Sample", block = NULL, n.pc = 10,
-  title = NULL, hover = FALSE)
+plot_covar(dat, clin, index = "Sample", block = NULL, top = NULL,
+  n.pc = 10, title = NULL, hover = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix with rows corresponding to probes and columns
-to samples. For best results, data should be normalized and filtered in
-preparation for PCA.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. For best results, data should be filtered and
+normalized in preparation for PCA. For count data, this means undergoing some
+sort of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}}
+(with \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+Count matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
+DESeqDataSet}} objects are automatically extracted and transformed to the
+log2-CPM scale, with a warning.}
 
 \item{clin}{Data frame with rows correponding to samples and columns to
 technical and/or biological covariates to test for associations with omic data.}
@@ -21,6 +26,9 @@ sample names. Only samples in \code{index} with matching column names in
 
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
+
+\item{top}{Optional number (if > 1) or proportion (if < 1) of most variable probes
+to be used for PCA.}
 
 \item{n.pc}{Number of principal components to include in the figure.}
 
@@ -52,10 +60,12 @@ biological covariates like sex and age are usually nested within subject, while
 subject may be nested within other features like batch or treatment group.
 }
 \examples{
-data(Nevins)
-mat <- exprs(Nevins)
-clin <- pData(Nevins)
-clin$Sample <- rownames(clin)
+library(edgeR)
+data(airway)
+cnts <- assay(airway)
+keep <- rowSums(cpm(cnts) > 1) >= 4
+mat <- cpm(cnts[keep, ], log = TRUE)
+clin <- colData(airway)[, 1:3]        # Only need the first three cols
 plot_covar(mat, clin)
 
 }
