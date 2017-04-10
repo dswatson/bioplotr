@@ -97,7 +97,7 @@ plot_mds <- function(dat,
   }
   if (is(dat, 'DGEList')) {
     keep <- rowSums(dat$counts) > 0L             # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
+    dat <- dat[keep, ]
     if (is.null(dat$samples$norm.factors) |      # Calculate size factors
         all(dat$samples$norm.factors == 1L)) {
       dat <- calcNormFactors(dat)
