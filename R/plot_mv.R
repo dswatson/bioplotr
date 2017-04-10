@@ -76,18 +76,18 @@
 #' Huber, W., Hedebreck, A., Sültmann, H., Poustka, A. & Vingron, M. (2002).
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/12169536}{Variance Stabilization Applied
 #' to Microarray Data Calibration and to the Quantification of Differential Expression}.
-#' \emph{Bioinformatics, 18}:1, S96-2104.
+#' \emph{Bioinformatics}, \emph{18}(1), S96-2104.
 #'
 #' Sartor, M.A., Tomlinson, C.R., Wesselkamper, S.C., Sivaganesan, S., Leikauf, G.D.
 #' & Medvedovic, M. (2006).
 #' \href{http://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-538}{Intensity-based
 #' hierarchical Bayes method improves testing for differentially expressed genes in
-#' microarray experiments}. \emph{BMC Bioinformatics}, \strong{7}:538.
+#' microarray experiments}. \emph{BMC Bioinformatics}, \strong{7}: 538.
 #'
 #' Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
 #' \href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{voom:
 #' precision weights unlock linear model analysis tools for RNA-seq read counts}.
-#' \emph{Genome Biology}, \strong{15}:R29.
+#' \emph{Genome Biology}, \strong{15}: R29.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
@@ -244,7 +244,7 @@ plot_mv.DGEList <- function(dat,
 
   # Tidy data
   keep <- rowSums(dat$counts) > 0L               # Minimal count filter
-  dat <- dat[keep, , drop = FALSE]
+  dat <- dat[keep, ]
   if (is.null(dat$samples$norm.factors) |        # Calculate size factors
       all(dat$samples$norm.factors == 1L)) {
     dat <- calcNormFactors(dat)
@@ -410,7 +410,7 @@ plot_mv.DESeqDataSet <- function(dat,
       dat <- estimateDispersions(dat, quiet = TRUE)
     }
     keep <- mcols(dat)$baseMean > 0L             # Minimal count filter
-    dat <- dat[keep, , drope = FALSE]
+    dat <- dat[keep, , drop = FALSE]
     cnts <- counts(dat, normalized = TRUE)
     cnts_lcpm <- cpm(cnts, log = TRUE, prior.count = 1L)
     mu <- aveLogCPM(cnts, prior.count = 1L, dispersion = dispersions(dat))
