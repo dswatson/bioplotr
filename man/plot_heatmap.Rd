@@ -4,19 +4,28 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, feat = NULL, col = "RdBu", title = NULL)
+plot_heatmap(dat, anno = NULL, dist = "pearson", hclustfun = "average",
+  col = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples.}
 
-\item{feat}{Optional character, factor, numeric, or logical vector of length
+\item{anno}{Optional character, factor, numeric, or logical vector of length
 equal to sample size. Alternatively, a data frame or list of such vectors,
 optionally named. Values are used to color one or several annotation tracks
 atop the heatmap.}
 
-\item{col}{Color palette to use for heatmap tiles. Options are \code{"RdBu"} (for
-red to blue gradient) or \code{"GrRd"} (for green to red gradient).}
+\item{dist}{Distance measure to be used. Currently supports any method available
+in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
+
+\item{hclustfun}{The agglomeration method to be used for hierarchical clustering.
+See \code{\link[stats]{hclust}} for available options.}
+
+\item{col}{Color palette to use for heatmap tiles. Preset options include \code{
+"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
+\code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
+color palette is acceptable.}
 
 \item{title}{Optional plot title.}
 }
@@ -31,8 +40,8 @@ revealing latent structure in the data. Annotation tracks atop the figure may be
 used to investigate associations with phenotypic features.
 }
 \examples{
-mat <- matrix(rnorm(1000 * 10), nrow = 1000, ncol = 10)
+mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
 grp <- rep(c("A", "B"), each = 5)
-plot_heatmap(mat, feat = grp)
+plot_heatmap(mat, anno = grp)
 
 }
