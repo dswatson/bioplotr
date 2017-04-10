@@ -160,7 +160,7 @@ plot_dispersion.DGEList <- function(dat,
                                      hover = FALSE) {
 
   # Preliminaries
-  keep <- rowSums(dat$counts) > 0L               # Minimal count filter
+  keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
   if (is.null(dat$samples$norm.factors) |
       all(dat$samples$norm.factors == 1L)) {
@@ -294,7 +294,7 @@ plot_dispersion.default <- function(dat,
                     legend = legend, hover = hover)
   } else if (pipeline == 'DESeq2') {
     if (is.null(design)) {
-      cd <- data.frame(A = rep(0L, ncol(dat)))
+      cd <- data.frame(A = rep(0L, times = ncol(dat)))
       dat <- DESeqDataSetFromMatrix(dat, colData = cd, design = ~ 1L)
       dat <- estimateSizeFactors(dat)
       dat <- estimateDispersions(dat, quiet = TRUE)

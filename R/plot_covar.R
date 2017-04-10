@@ -77,8 +77,8 @@ plot_covar <- function(dat,
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
   }
   if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 0L             # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
+    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
+    dat <- dat[keep, ]
     if (is.null(dat$samples$norm.factors) |      # Calculate size factors
         all(dat$samples$norm.factors == 1L)) {
       dat <- calcNormFactors(dat)

@@ -1,10 +1,15 @@
 #' Plot Quantiles
 #'
-#' This function plots the quantiles for two vectors against each other as either a
-#' QQ or an MD plot.
+#' This function plots the quantiles for either two observed vectors or one vector
+#' and a theoretical distribution against each other as a QQ or an MD plot.
 #'
 #' @param x Vector of numeric values.
-#' @param y Second vector of numeric values.
+#' @param y Optional second vector of numeric values.
+#'
+#'Alternative options include \code{"beta",
+#'   "binom", "cauchy", "chisq", "exp",  "f", "gamma", "geom", "hyper", "lnorm",
+#'   "logis", "nbinom", "norm", "pois", "t", "unif",} and \code{"weibull"}.
+#'
 #' @param method Plot quantiles against quantiles (\code{method = "QQ"}) or mean
 #'   quantiles against difference in quantiles (\code{method = "MD"})?
 #' @param pts Number of points to plot.

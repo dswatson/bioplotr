@@ -151,7 +151,7 @@ plot_md.DGEList <- function(dat,
   }
 
   # Tidy data
-  keep <- rowSums(dat$counts) > 0L               # Minimal count filter
+  keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
   other <- dat[, -sample]
   other <- calcNormFactors(other)

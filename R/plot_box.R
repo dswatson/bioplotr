@@ -93,13 +93,13 @@ plot_box <- function(dat,
 
   # Tidy data
   if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 0L             # Minimal count filter
+    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
     dat <- dat$counts[keep, , drop = FALSE]
     if (is.null(ylab)) {
       ylab <- 'Raw Counts'
     }
   } else if (is(dat, 'DESeqDataSet')) {
-    keep <- rowSums(counts(dat) > 0L)            # Minimal count filter
+    keep <- rowSums(counts(dat) > 1L)            # Minimal count filter
     dat <- counts(dat)[keep, , drop = FALSE]
     if (is.null(ylab)) {
       ylab <- 'Raw Counts'
