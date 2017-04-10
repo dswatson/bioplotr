@@ -249,20 +249,20 @@ plot_mv.DGEList <- function(dat,
       all(dat$samples$norm.factors == 1L)) {
     dat <- calcNormFactors(dat)
   }
-  if (is.null(dat$tagwise.dispersion)) {         # Calculate aveLogCPM, with or without
-    if (is.null(dat$design) & is.null(design)) { # tagwise dispersion estimates
-      mu <- aveLogCPM(dat, prior.count = 1L)
-      warning('No design matrix detected or supplied. To incorporate genewise dispersion ',
-              'estimates, rerun with a design matrix. (Differences should be fairly ',
-              'minimal.)')
+  if (is.null(dat$tagwise.dispersion)) {
+    if (is.null(dat$design) & !is.null(dat$group)) {
+      dat$design <- model.matrix(~ dat$group)
+    }
+    if (!is.null(design)) {
+      dat$design <- design
+    }
+    if (is.null(dat$design)) {
+      dat <- estimateTagwiseDisp(dat, dispersion = estimateCommonDisp(dat))
     } else {
-      if (!is.null(design)) {
-        dat$design <- design
-      }
       dat <- estimateDisp(dat)
-      mu <- aveLogCPM(dat, prior.count = 1L, dispersion = dat$tagwise.dispersion)
     }
   }
+  mu <- aveLogCPM(dat, prior.count = 1L, dispersion = dat$tagwise.dispersion)
   lcpm <- cpm(dat, log = TRUE, prior.count = 1L)
   sigma <- rowSds(lcpm)
   if (trans == 'rank') {                         # Apply transformations
@@ -367,7 +367,7 @@ plot_mv.DGELM <- function(dat,
 #' @method plot_mv DESeqDataSet
 #' @S3method plot_mv DESeqDataSet
 #' @importFrom DESeq2 counts sizeFactors normalizationFactors estimateSizeFactors
-#'   estimateDispersions
+#'   estimateDispersions dispersions
 #' @importFrom edgeR cpm aveLogCPM
 #' @importFrom SummarizedExperiment assays
 
