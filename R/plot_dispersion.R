@@ -160,6 +160,8 @@ plot_dispersion.DGEList <- function(dat,
                                      hover = FALSE) {
 
   # Preliminaries
+  keep <- rowSums(dat$counts) > 0L               # Minimal count filter
+  dat <- dat[keep, ]
   if (is.null(dat$samples$norm.factors) |
       all(dat$samples$norm.factors == 1L)) {
     dat <- calcNormFactors(dat)
