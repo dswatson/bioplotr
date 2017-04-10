@@ -35,7 +35,7 @@
 #' y <- DGEList(cnts[keep, ])                    # Create DGEList object
 #' plot_density(y, group = colData(airway)$dex)
 #'
-#' # Real data: log2-CPM transformed counts
+#' # Real data: transformed counts
 #' y <- calcNormFactors(y)
 #' y <- cpm(y, log = TRUE)                       # Apply log2-CPM transformation
 #' plot_density(y, group = colData(airway)$dex)
@@ -94,14 +94,16 @@ plot_density <- function(dat,
 
   # Tidy data
   if (is(dat, 'DGEList')) {
-    dat <- dat$counts
+    keep <- rowSums(dat$counts) > 0L             # Minimal count filter
+    dat <- dat$counts[keep, , drop = FALSE]
     if (is.null(ylab)) {
-      xlab <- 'Raw Counts'
+      ylab <- 'Raw Counts'
     }
   } else if (is(dat, 'DESeqDataSet')) {
-    dat <- counts(dat)
+    keep <- rowSums(counts(dat) > 0L)            # Minimal count filter
+    dat <- counts(dat)[keep, , drop = FALSE]
     if (is.null(ylab)) {
-      xlab <- 'Raw Counts'
+      ylab <- 'Raw Counts'
     }
   } else if (is(dat, 'DESeqTransform')) {
     dat <- assay(dat)
