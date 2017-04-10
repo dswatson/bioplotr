@@ -4,8 +4,8 @@
 \alias{plot_similarity}
 \title{Similarity Matrix Heatmap}
 \usage{
-plot_similarity(dat, feat = NULL, dist = "euclidean",
-  hclustfun = "average", title = NULL)
+plot_similarity(dat, anno = NULL, dist = "euclidean",
+  hclustfun = "average", col = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -15,7 +15,7 @@ For count data, this means undergoing some sort of variance stabilizing
 transformation, such as \code{\link[edgeR]{cpm} (with \code{log = TRUE}),
 \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.}
 
-\item{feat}{Optional character, factor, numeric, or logical vector of length
+\item{anno}{Optional character, factor, numeric, or logical vector of length
 equal to sample size. Alternatively, a data frame or list of such vectors,
 optionally named. Values are used to color one or several annotation tracks
 atop the heatmap.}
@@ -25,6 +25,11 @@ atop the heatmap.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical clustering.
 See \code{\link[stats]{hclust}} for available options.}
+
+\item{col}{Color palette to use for heatmap tiles. Preset options include \code{
+"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
+\code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
+color palette is acceptable.}
 
 \item{title}{Optional plot title.}
 }
@@ -60,6 +65,6 @@ mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 mat <- rlog(mat)
 grp <- rep(c("A", "B"), each = 5)
-plot_similarity(mat, feat = grp, title = "Somethin' Cookin'")
+plot_similarity(mat, anno = grp, title = "Somethin' Cookin'")
 
 }

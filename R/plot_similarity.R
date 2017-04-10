@@ -8,7 +8,7 @@
 #'   For count data, this means undergoing some sort of variance stabilizing
 #'   transformation, such as \code{\link[edgeR]{cpm} (with \code{log = TRUE}),
 #'   \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
-#' @param feat Optional character, factor, numeric, or logical vector of length
+#' @param anno Optional character, factor, numeric, or logical vector of length
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
 #'   atop the heatmap.
@@ -16,6 +16,10 @@
 #'   "pearson", "MI",} or \code{"KLD"}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical clustering.
 #'   See \code{\link[stats]{hclust}} for available options.
+#' @param col Color palette to use for heatmap tiles. Preset options include \code{
+#'   "RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
+#'   \code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
+#'   color palette is acceptable.
 #' @param title Optional plot title.
 #'
 #' @details
@@ -47,10 +51,13 @@
 #'              matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
 #' mat <- rlog(mat)
 #' grp <- rep(c("A", "B"), each = 5)
-#' plot_similarity(mat, feat = grp, title = "Somethin' Cookin'")
+#' plot_similarity(mat, anno = grp, title = "Somethin' Cookin'")
 #'
 #' @export
 #' @importFrom purrr map_lgl
+#' @importFrom edgeR calcNormFactors cpm
+#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors
+#' @importFrom SummarizedExperiment assay
 #' @importFrom limma getEAWP
 #' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
@@ -59,35 +66,36 @@
 #'
 
 plot_similarity <- function(dat,
-                            feat = NULL,
+                            anno = NULL,
                             dist = 'euclidean',
                        hclustfun = 'average',
+                             col = 'RdBu',
                            title = NULL) {
 
   # Preliminaries
-  if (is.data.frame(feat)) {
-    feat <- as.list(feat)
-  } else if (!is.list(feat)) {
-    feat <- list('Variable' = feat)
+  if (is.data.frame(anno)) {
+    anno <- as.list(anno)
+  } else if (!is.list(anno)) {
+    anno <- list('Variable' = anno)
   } else {
-    if (is.null(names(feat))) {
-      if (length(feat) == 1L) {
-        names(feat) <- 'Variable'
+    if (is.null(names(anno))) {
+      if (length(anno) == 1L) {
+        names(anno) <- 'Variable'
       } else {
-        names(feat) <- paste('Variable', seq_along(feat))
+        names(anno) <- paste('Variable', seq_along(anno))
       }
     }
   }
-  if (any(map_lgl(seq_along(feat), function(j) {
-    length(feat[[j]]) != ncol(dat)
+  if (any(map_lgl(seq_along(anno), function(j) {
+    length(anno[[j]]) != ncol(dat)
   }))) {
-    stop('feat length must match number of samples in dat.')
+    stop('anno length must match number of samples in dat.')
   }
-  if (any(map_lgl(seq_along(feat), function(j) {
-    if (is.numeric(feat[[j]])) var(feat[[j]]) == 0L
-    else length(unique(feat[[j]])) == 1L
+  if (any(map_lgl(seq_along(anno), function(j) {
+    if (is.numeric(anno[[j]])) var(anno[[j]]) == 0L
+    else length(unique(anno[[j]])) == 1L
   }))) {
-    stop('feat is invariant.')
+    stop('anno is invariant.')
   }
   if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
     stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
@@ -97,14 +105,43 @@ plot_similarity <- function(dat,
     stop('hclustfun must be one of "ward.D", "ward.D2", "single", "complete", ',
          '"average", "mcquitty", "median", or "centroid". See ?hclust.')
   }
+  if (col == 'RdBu') {
+    col <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
+  } else if (col == 'GrRd') {
+    col <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
+  } else if (col == 'BuYl') {
+    col <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
+  }
   if (is.null(title)) {
     title <- 'Sample Similarity Matrix'
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
+  if (is(dat, 'DGEList')) {
+    keep <- rowSums(dat$counts) > 0L             # Minimal count filter
+    dat <- dat[keep, ]
+    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
+        all(dat$samples$norm.factors == 1L)) {
+      dat <- calcNormFactors(dat)
+    }
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqDataSet')) {
+    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+      dat <- estimateSizeFactors(dat)            # Normalize counts
+    }
+    dat <- counts(dat, normalized = TRUE)
+    keep <- rowMeans(dat) > 0L                   # Minimal count filter
+    dat <- dat[keep, , drop = FALSE]
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+  } else {
+    dat <- getEAWP(dat)$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
+  }
   if (dist == 'euclidean') {
     dm <- dist.matrix(t(dat), method = 'euclidean')
   } else if (dist == 'pearson') {
@@ -117,16 +154,17 @@ plot_similarity <- function(dat,
 
   # Plot
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
-  if (is.null(feat)) {
+  if (is.null(anno)) {
     aheatmap(dm, col = rb, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun)
   } else {
     aheatmap(dm, col = rb, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
-             annCol = feat)
+             annCol = anno)
   }
 
 }
 
 
-# Use shiny to toggle between distance measures and agglomeration methods
+# Replace aheatmap with pheatmap?
+# Rows should be centered, but not scaled, I think?
