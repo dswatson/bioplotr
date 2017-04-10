@@ -2,22 +2,54 @@
 % Please edit documentation in R/plot_md.R
 \name{plot_md}
 \alias{plot_md}
+\alias{plot_md.DGEList}
+\alias{plot_md.DESeqDataSet}
+\alias{plot_md.DESeqTransform}
+\alias{plot_md.DESeqResults}
+\alias{plot_md.TopTags}
+\alias{plot_md.data.frame}
+\alias{plot_md.default}
 \title{Mean-Difference Plot}
 \usage{
-plot_md(dat, fdr = 0.05, lfc = NULL, sample = NULL, ctrls = NULL,
-  title = NULL, legend = "outside", hover = FALSE)
+plot_md(dat, title = NULL, legend = "outside", ...)
+
+\method{plot_md}{DGEList}(dat, design = NULL, sample = 1, ctrls = NULL,
+  lfc = NULL, title = NULL, xlab = NULL, legend = "outside",
+  hover = FALSE)
+
+\method{plot_md}{DESeqDataSet}(dat, sample = 1, ctrls = NULL, lfc = NULL,
+  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
+
+\method{plot_md}{DESeqTransform}(dat, sample = 1, ctrls = NULL,
+  lfc = NULL, title = NULL, xlab = NULL, legend = "outside",
+  hover = FALSE)
+
+\method{plot_md}{DESeqResults}(dat, fdr = 0.05, lfc = NULL, title = NULL,
+  xlab = NULL, legend = "outside", hover = FALSE)
+
+\method{plot_md}{TopTags}(dat, fdr = 0.05, lfc = NULL, title = NULL,
+  xlab = NULL, legend = "outside", hover = FALSE)
+
+\method{plot_md}{data.frame}(dat, probes = NULL, fdr = 0.05, lfc = NULL,
+  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
+
+\method{plot_md}{default}(dat, sample = 1, ctrls = NULL, lfc = NULL,
+  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
 \item{dat}{Either a data frame representing the results of a test for differential
-expression, or an omic data matrix with rows corresponding to probes and columns
-to samples. The former will render a study-wide MD plot, the latter a between
-between-sample MD plot. See Details.}
+expression, or an omic data matrix or matrix-like object with rows corresponding
+to probes and columns to samples. The former will render a study-wide MD plot,
+the latter a between between-sample MD plot. See Details.}
 
-\item{fdr}{Significance threshold for declaring a probe differentially expressed. Only
-relevant for study-wide MD plots.}
+\item{title}{Optional plot title.}
 
-\item{lfc}{Optional effect size threshold for declaring a probe differentially
-expressed. Only relevant for study-wide MD plots.}
+\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
+"bottomright", "topleft",} or \code{"topright"}.}
+
+\item{design}{Optional design matrix with rows corresponding to samples and columns
+to coefficients to be estimated. Only relevant for \code{\link[edgeR]{DGEList}}
+objects. See Details.}
 
 \item{sample}{Column number or name specifying which sample in \code{dat} to
 compare with the others. Only relevant for between-sample MD plots.}
@@ -25,15 +57,18 @@ compare with the others. Only relevant for between-sample MD plots.}
 \item{ctrls}{Optional vector of length equal to \code{nrow(dat)} indicating the
 control status of each probe. Only relevant for between-sample MD plots.}
 
-\item{title}{Optional plot title.}
+\item{lfc}{Optional effect size threshold for declaring a probe differentially
+expressed. Only relevant for study-wide MD plots.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{xlab}{Optional label for x-axis.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
 the plot is rendered in HTML and will either open in your browser's graphic
 display or appear in the RStudio viewer. Probe names are extracted from
 \code{dat}.}
+
+\item{fdr}{Significance threshold for declaring a probe differentially expressed. Only
+relevant for study-wide MD plots.}
 }
 \description{
 This function plots probewise means vs. log2 fold changes for a test of
@@ -45,33 +80,57 @@ relationship between a probe's mean value and its log2 fold change versus some
 relevant reference group. These figures help to evaluate the symmetry, magnitude,
 and significance of differential effects across the full omic range.
 
-If \code{dat} is a data frame summarizing the results of a test for differential
-expression, then each point's x-coordinate correponds to its average expression
-across all samples, while y-coordinates represent the log2 fold change for the
-given contrast. Points are colored to distinguish between those that do and do not
-meet a user-defined FDR threshold. \code{plot_md} accepts output from \code{
-limma::\link[limma]{topTable}}, \code{DESeq2::\link[DESeq2]{results}}, or \code{
-edgeR::\link[edgeR]{topTags}}. Alternatively, any object with columns for log fold
-changes, probewise means, and FDR is acceptable.
+If \code{dat} summarizes the results of a test for differential expression, then
+each point's x-coordinate correponds to its average expression across all samples,
+while y-coordinates represent the log2 fold change for the given contrast. Points
+are colored to distinguish between those that do and do not meet a user-defined
+FDR threshold. \code{plot_md} accepts output from \code{limma::\link[limma]{
+topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{
+results}}. Alternatively, any object with columns for log fold changes, probewise
+means, and FDR is acceptable.
 
 If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
 must be specified. An artificial array is created by averaging probewise values for
 all other samples in the data. The figure will then represent the mean vs. the
 difference of expression values for the specified sample vs. the artificial array.
+Acceptable inputs for between-sample MD plots include all \code{limma} expression
+set objects, as well as \code{\link[edgeR]{DGEList}}, \code{\link[DESeq2]{
+DESeqDataSet}}, and \code{\link[DESeq2]{DESeqTransform}} objects.
 }
 \examples{
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 
 # Between-sample MD plot
-mat <- lcpm(counts(dds), filter = c(1, 6))
-plot_md(mat, sample = 1)
+rld <- rlog(dds)
+plot_md(rld)
 
 # Study-wide MD plot
 dds <- DESeq(dds)
 res <- results(dds)
 plot_md(res)
 
+}
+\references{
+Bolstad, B.M., Irizarry, R.A., Åstrand, M. & Speed, T.P. (2003).
+\href{https://www.ncbi.nlm.nih.gov/pubmed/12538238}{A comparison of normalization
+methods for high density oligonucleotide array data based on variance and bias}.
+\emph{Bioinformatics}, \emph{19}(2): 185–193.
+
+Dudoit, S., Yang, Y.H., Callow, M.J. & Speed, T.P. (2002).
+\href{https://pdfs.semanticscholar.org/2af3/26eabfc0e81d6f3e687e1283c32cfba25688.pdf}{
+Statistical methods for identifying differentially expressed genes in replicated cDNA
+microarray experiments}. \emph{Stat. Sin.}, \strong{12}, 111–140.
+
+Martin, B.J. & Altman, D.G. (1986).
+\href{http://www.thelancet.com/journals/lancet/article/PIIS0140-6736(86)90837-8/abstract}{
+Statistical methods for assessing agreement between two methods of clinical measurement}.
+\emph{Lancet}, 327: 307–310.
+
+Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K. (2015).
+\href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
+expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
+Acids Res.}, emph{43}(7): e47.
 }
 \seealso{
 \code{\link[limma]{plotMD}, \link[DESeq2]{plotMA}, \link[Glimma]{glMDPlot}}
