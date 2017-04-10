@@ -50,7 +50,7 @@ keep <- rowSums(cpm(cnts) > 1) >= 4           # Filter out underexpressed genes
 y <- DGEList(cnts[keep, ])                    # Create DGEList object
 plot_box(y, group = colData(airway)$dex)
 
-# Real data: log2-CPM transformed counts
+# Real data: transformed counts
 y <- calcNormFactors(y)
 y <- cpm(y, log = TRUE)                       # Apply log2-CPM transformation
 plot_box(y, group = colData(airway)$dex)
