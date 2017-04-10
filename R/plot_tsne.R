@@ -43,9 +43,6 @@
 #' method for unsupervised cluster detection. It can also aid in spotting potential
 #' outliers, and generally helps to visualize the latent structure of a data set.
 #'
-#' The \code{top} argument optionally filters probes using the leading fold change
-#' method of Smyth et al. See \code{\link{plot_mds}} for more details.
-#'
 #' \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm, which
 #' vastly accelerates the original t-SNE projection method. An exact t-SNE plot may
 #' be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
@@ -56,6 +53,9 @@
 #' distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
 #' more details. A thorough introduction to and explication of the original t-SNE
 #' method and the Barnes-Hut approximation may be found in the references below.
+#'
+#' The \code{top} argument optionally filters probes using the leading fold change
+#' method of Smyth et al. See \code{\link{plot_mds}} for more details.
 #'
 #' @references
 #' van der Maaten, L.J.P. (2014).
