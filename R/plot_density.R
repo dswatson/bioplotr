@@ -23,15 +23,22 @@
 #' or associations with phenotypic factors by using the \code{group} argument.
 #'
 #' @examples
+#' # Simulated data
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_density(mat)
 #'
-#' library(DESeq2)
-#' dds <- makeExampleDESeqDataSet()
-#' plot_density(dds, group = colData(dds)$condition)
+#' # Real data: raw counts
+#' data(airway)
+#' library(edgeR)
+#' cnts <- assay(airway)
+#' keep <- rowSums(cpm(cnts) > 1) >= 4           # Filter out underexpressed genes
+#' y <- DGEList(cnts[keep, ])                    # Create DGEList object
+#' plot_density(y, group = colData(airway)$dex)
 #'
-#' rld <- rlog(dds)
-#' plot_density(rld, group = colData(rld)$condition)
+#' # Real data: log2-CPM transformed counts
+#' y <- calcNormFactors(y)
+#' y <- cpm(y, log = TRUE)                       # Apply log2-CPM transformation
+#' plot_density(y, group = colData(airway)$dex)
 #'
 #' @seealso
 #' \code{\link[limma]{plotDensities}}

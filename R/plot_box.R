@@ -24,16 +24,22 @@
 #' or associations with phenotypic factors by using the \code{group} argument.
 #'
 #' @examples
+#' # Simulated data
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_box(mat)
 #'
-#' library(DESeq2)
-#' dds <- makeExampleDESeqDataSet()
-#' plot_box(dds, group = colData(dds)$condition)
+#' # Real data: raw counts
+#' data(airway)
+#' library(edgeR)
+#' cnts <- assay(airway)
+#' keep <- rowSums(cpm(cnts) > 1) >= 4           # Filter out underexpressed genes
+#' y <- DGEList(cnts[keep, ])                    # Create DGEList object
+#' plot_box(y, group = colData(airway)$dex)
 #'
-#' rld <- rlog(dds)
-#' plot_box(rld, group = colData(rld)$condition)
-#'
+#' # Real data: log2-CPM transformed counts
+#' y <- calcNormFactors(y)
+#' y <- cpm(y, log = TRUE)                       # Apply log2-CPM transformation
+#' plot_box(y, group = colData(airway)$dex)
 #'
 #' @export
 #' @importFrom DESeq2 counts
