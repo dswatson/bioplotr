@@ -37,10 +37,10 @@
 #' each point's x-coordinate correponds to its average expression across all samples,
 #' while y-coordinates represent the log2 fold change for the given contrast. Points
 #' are colored to distinguish between those that do and do not meet a user-defined
-#' FDR threshold. \code{plot_md} accepts output from \code{limma::\link[limma]{
-#' topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{
-#' results}}. Alternatively, any object with columns for log fold changes, probewise
-#' means, and FDR is acceptable.
+#' FDR threshold. \code{plot_md} accepts output from
+#' \code{limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or
+#' \code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object with columns for
+#' log fold changes, probewise means, and FDR is acceptable.
 #'
 #' If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
 #' must be specified. An artificial array is created by averaging probewise values for
@@ -69,7 +69,7 @@
 #' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K. (2015).
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
-#' Acids Res.}, emph{43}(7): e47.
+#' Acids Res.}, \emph{43}(7): e47.
 #'
 #' @examples
 #' library(DESeq2)
@@ -152,7 +152,7 @@ plot_md.DGEList <- function(dat,
 
   # Tidy data
   keep <- rowSums(dat$counts) > 0L               # Minimal count filter
-  dat <- dat[keep, , drop = FALSE]
+  dat <- dat[keep, ]
   other <- dat[, -sample]
   other <- calcNormFactors(other)
   if (is.null(other$tagwise.dispersion)) {       # Estimate dispersions for aveLogCPM
