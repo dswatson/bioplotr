@@ -174,7 +174,10 @@ plot_dispersion.DGEList <- function(dat,
       if (is.null(dat$common.dispersion)) {
         dat <- estimateCommonDisp(dat)
       }
-      dat <- estimateTagwiseDisp(dat, dispersion = dat$common.dispersion)
+      if (is.null(dat$trended.dispersion)) {
+        dat <- estimateTrendedDisp(dat)
+      }
+      dat <- estimateTagwiseDisp(dat)
     } else {
       dat <- estimateDisp(dat, design = design)
     }
