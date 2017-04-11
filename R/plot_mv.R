@@ -193,16 +193,22 @@ plot_mv.MArrayLM <- function(dat,
   # Built plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, text = Probe) +
+  p <- ggplot(df) +
     geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
     labs(title = title, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (any(df$Outlier)) {                         # Plot outliers
-    p <- p + geom_point(aes(Mu, Sigma, color = Outlier), size = size, alpha = alpha,
-                        color = c(pal_d3()(4)[4], 'black'))
+    suppressWarnings(
+      p <- p + geom_point(aes(Mu, Sigma, text = Probe, color = Outlier),
+                          size = size, alpha = alpha,
+                          color = c(pal_d3()(4)[4], 'black'))
+    )
   } else {
-    p <- p + geom_point(aes(Mu, Sigma), size = size, alpha = alpha)
+    suppressWarnings(
+      p <- p + geom_point(aes(Mu, Sigma, text = Probe),
+                          size = size, alpha = alpha)
+    )
   }
   if (length(dat$s2.prior) == 1L) {              # Plot prior
     p <- p + geom_hline(aes(color = 'Prior', yintercept = Prior))
@@ -289,13 +295,15 @@ plot_mv.DGEList <- function(dat,
   # Built plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, aes(text = Probe)) +
-    geom_point(aes(Mu, Sigma), size = size, alpha = alpha) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
-    scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
-    labs(title = title, x = xlab, y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
+      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   p <- locate_legend(p, legend)
 
   # Output
@@ -348,13 +356,15 @@ plot_mv.DGELM <- function(dat,
   # Built plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, aes(text = Probe)) +
-    geom_point(aes(Mu, Sigma), size = size, alpha = alpha) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
-    scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
-    labs(title = title, x = xlab, y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
+      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   p <- locate_legend(p, legend)
 
   # Output
@@ -439,13 +449,15 @@ plot_mv.DESeqDataSet <- function(dat,
   # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, aes(text = Probe)) +
-    geom_point(aes(Mu, Sigma), size = size, alpha = alpha) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
-    scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
-    labs(title = title, x = xlab, y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
+      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   p <- locate_legend(p, legend)
 
   # Output
@@ -495,13 +507,15 @@ plot_mv.DESeqTransform <- function(dat,
   # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, aes(text = Probe)) +
-    geom_point(aes(Mu, Sigma), size = size, alpha = alpha) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
-    scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
-    labs(title = title, x = xlab, y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
+      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   p <- locate_legend(p, legend)
 
   # Output
@@ -553,13 +567,15 @@ plot_mv.default <- function(dat,
   # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
-  p <- ggplot(df, aes(text = Probe)) +
-    geom_point(aes(Mu, Sigma), size = size, alpha = alpha) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
-    scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
-    labs(title = title, x = xlab, y = ylab) +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5))
+  suppressWarnings(
+    p <- ggplot(df) +
+      geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
+      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+  )
   p <- locate_legend(p, legend)
 
   # Output

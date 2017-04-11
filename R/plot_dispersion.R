@@ -195,8 +195,9 @@ plot_dispersion.DGEList <- function(dat,
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   suppressWarnings(
-    p <- p + geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
-                        size = size, alpha = alpha) +
+    p <- ggplot(df) +
+      geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
+                 size = size, alpha = alpha) +
       geom_hline(aes(color = 'Common', yintercept = cmn), size = 0.5) +
       geom_path(aes(Mean, Fit, color = 'Trend'), size = 0.5) +
       scale_color_manual(name = 'Dispersion\n Estimate',
