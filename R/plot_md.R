@@ -163,7 +163,10 @@ plot_md.DGEList <- function(dat,
       design <- design[-sample, ]
     }
     if (is.null(design)) {
-      other <- estimateTagwiseDisp(other, dispersion = estimateCommonDisp(other))
+      if (is.null(other$common.dispersion)) {
+        other <- estimateCommonDisp(other)
+      }
+      other <- estimateTagwiseDisp(other, dispersion = other$common.dispersion)
     } else {
       other <- estimateDisp(other, design = design)
     }
