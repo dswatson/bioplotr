@@ -142,7 +142,7 @@ plot_dispersion <- function(dat,
   }
 
   # Method
-  UseMethod('plot_mv')
+  UseMethod('plot_dispersion')
 
 }
 
