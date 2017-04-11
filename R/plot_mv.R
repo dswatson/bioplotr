@@ -250,16 +250,17 @@ plot_mv.DGEList <- function(dat,
     dat <- calcNormFactors(dat)
   }
   if (is.null(dat$tagwise.dispersion)) {
-    if (is.null(dat$design) & !is.null(dat$group)) {
-      dat$design <- model.matrix(~ dat$group)
+    if (is.null(design) & !is.null(dat$group)) {
+      design <- model.matrix(~ dat$group)
     }
-    if (!is.null(design)) {
-      dat$design <- design
-    }
-    if (is.null(dat$design)) {
-      dat <- estimateTagwiseDisp(dat, dispersion = estimateCommonDisp(dat))
+    if (is.null(design)) {
+      if (is.null(dat$common.dispersion)) {
+        dat <- estimateTagwiseDisp(dat, dispersion = estimateCommonDisp(dat))
+      } else {
+        dat <- estimateTagwiseDisp(dat, dispersion = dat$common.dispersion)
+      }
     } else {
-      dat <- estimateDisp(dat)
+      dat <- estimateDisp(dat, design = design)
     }
   }
   mu <- aveLogCPM(dat, prior.count = 1L, dispersion = dat$tagwise.dispersion)
@@ -317,12 +318,11 @@ plot_mv.DGELM <- function(dat,
                           hover = FALSE) {
 
   # Tidy data
-  keep <- rowSums(dat$counts) > 0L & !dat$failed      # Minimal count filter
-  dat <- dat[keep, , drop = FALSE]
+  keep <- rowSums(dat$counts) > 1L & !dat$failed      # Minimal count filter
+  dat <- dat[keep, ]
   mu <- aveLogCPM(dat, prior.count = 1L, dispersion = dat$dispersion)
-  lib.size <- with(dat$samples, lib.size * norm.factors)
   cnts <- cpm(dat, log = TRUE, prior.count = 1L)
-  fits <- cpm(dat$fitted.values, lib.size = lib.size, log = TRUE, prior.count = 1L)
+  fits <- cpm(dat$fitted.values, log = TRUE, prior.count = 1L)
   resids <- cnts - fits
   sigma <- rowSds(resids)
   if (trans == 'rank') {                              # Apply transformations

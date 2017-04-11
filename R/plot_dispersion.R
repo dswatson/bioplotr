@@ -167,16 +167,17 @@ plot_dispersion.DGEList <- function(dat,
     dat <- calcNormFactors(dat)
   }
   if (is.null(dat$tagwise.dispersion)) {
-    if (is.null(dat$design) & !is.null(dat$group)) {
-      dat$design <- model.matrix(~ dat$group)
+    if (is.null(design) & !is.null(dat$group)) {
+      design <- model.matrix(~ dat$group)
     }
-    if (!is.null(design)) {
-      dat$design <- design
-    }
-    if (is.null(dat$design)) {
-      dat <- estimateTagwiseDisp(dat, dispersion = estimateCommonDisp(dat))
+    if (is.null(design)) {
+      if (is.null(dat$common.dispersion)) {
+        dat <- estimateTagwiseDisp(dat, dispersion = estimateCommonDisp(dat))
+      } else {
+        dat <- estimateTagwiseDisp(dat, dispersion = dat$common.dispersion)
+      }
     } else {
-      dat <- estimateDisp(dat)
+      dat <- estimateDisp(dat, design = design)
     }
   }
 

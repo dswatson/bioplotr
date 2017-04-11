@@ -156,16 +156,16 @@ plot_md.DGEList <- function(dat,
   other <- dat[, -sample]
   other <- calcNormFactors(other)
   if (is.null(other$tagwise.dispersion)) {       # Estimate dispersions for aveLogCPM
-    if (is.null(dat$design) & !is.null(dat$group)) {
-      other$design <- model.matrix(~ dat$group[-sample, ])
+    if (is.null(design) & !is.null(dat$group)) {
+      design <- model.matrix(~ dat$group)
     }
     if (!is.null(design)) {
-      other$design <- design[-sample, ]
+      design <- design[-sample, ]
     }
-    if (is.null(other$design)) {
+    if (is.null(design)) {
       other <- estimateTagwiseDisp(other, dispersion = estimateCommonDisp(other))
     } else {
-      other <- estimateDisp(other)
+      other <- estimateDisp(other, design = design)
     }
   }
   other <- aveLogCPM(other, prior.count = 1L, dispersion = other$tagwise.dispersion)
