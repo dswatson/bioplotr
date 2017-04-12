@@ -58,11 +58,8 @@
 #' exactly the same as the output of \code{\link[limma]{voom}} when \code{plot = TRUE}.
 #' This is because the \code{voom} transform involves an initial modeling step in which
 #' probewise means are plotted against square-root transformed residual standard
-#' deviations on the log2-CPM scale. This plot is most closely approximated by the
-#' output of \code{plot_mv} when \code{dat} is a \code{DGELM} object fit with the
-#' same design as the proposed \code{voom} model. Even in this case, however, the
-#' plots will not be identical, as the \code{DGELM} object will have incorporated
-#' genewise dispersion estimates, which are not part of the \code{voom} pipeline.
+#' deviations on the log2-CPM scale. See \code{\link{plot_voom}} to recreate the
+#' voom transformation plot in \code{bioplotr} style.
 #'
 #' \code{plot_mv} fits a LOWESS curve to the points with a smoothing window given
 #' by \code{span}. If \code{dat} is an \code{MArrayLM} object with standard errors
