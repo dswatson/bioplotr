@@ -121,9 +121,9 @@ plot_voom <- function(dat,
   lo <- lowess(mu, sigma, f = span)                        # Fit LOWESS curve
   df <- data_frame(Probe = rownames(fit),
                       Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Build plot
   size <- probe_ptsize(df)
@@ -131,7 +131,7 @@ plot_voom <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title,
                x = expression('Mean'~log[2]*'-CPM'),

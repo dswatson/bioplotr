@@ -182,16 +182,16 @@ plot_mv.MArrayLM <- function(dat,
   df <- data_frame(Probe = rownames(dat),
                       Mu = mu,
                    Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']],
                    Prior = prior,
-                 Outlier = outliers)
+                 Outlier = outliers) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Built plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   p <- ggplot(df) +
-    geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+    geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
     labs(title = title, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
@@ -284,9 +284,9 @@ plot_mv.DGEList <- function(dat,
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
                       Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Built plot
   size <- probe_ptsize(df)
@@ -294,7 +294,7 @@ plot_mv.DGEList <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
@@ -345,9 +345,9 @@ plot_mv.DGELM <- function(dat,
   lo <- lowess(mu, sigma, f = span)                   # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
                       Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Built plot
   size <- probe_ptsize(df)
@@ -355,7 +355,7 @@ plot_mv.DGELM <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
@@ -437,10 +437,10 @@ plot_mv.DESeqDataSet <- function(dat,
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Mu = mu,
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Build plot
   size <- probe_ptsize(df)
@@ -448,7 +448,7 @@ plot_mv.DESeqDataSet <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
@@ -495,10 +495,10 @@ plot_mv.DESeqTransform <- function(dat,
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Mu = mu,
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Build plot
   size <- probe_ptsize(df)
@@ -506,7 +506,7 @@ plot_mv.DESeqTransform <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
@@ -555,10 +555,10 @@ plot_mv.default <- function(dat,
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma,
-                   Mu_lo = lo[['x']],
-                Sigma_lo = lo[['y']])
+                   Mu = mu,
+                   Sigma = sigma) %>%
+    arrange(Mu) %>%
+    mutate(lfit = lo[['y']])
 
   # Build plot
   size <- probe_ptsize(df)
@@ -566,7 +566,7 @@ plot_mv.default <- function(dat,
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
-      geom_path(aes(Mu_lo, Sigma_lo, color = 'LOWESS'), size = 0.5) +
+      geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
       scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
