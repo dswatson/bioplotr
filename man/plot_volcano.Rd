@@ -42,8 +42,16 @@ minimum absolute fold change is supplied. These figures help to evaluate the
 symmetry, magnitude, and significance of effects in an omic experiment.
 }
 \examples{
+# Simulated data
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
+dds <- DESeq(dds)
+res <- results(dds)
+plot_volcano(res)
+
+# Real data
+data(airway)
+dds <- DESeqDataSet(airway, design = ~ cell + dex)
 dds <- DESeq(dds)
 res <- results(dds)
 plot_volcano(res)

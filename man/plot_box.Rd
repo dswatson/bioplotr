@@ -38,21 +38,12 @@ especially helpful when contrasting pre- and post-normalization matrices.
 or associations with phenotypic factors by using the \code{group} argument.
 }
 \examples{
-# Simulated data
-mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
+# Box plots by sample
+mat <- matrix(rnorm(500 * 10), nrow = 500, ncol = 10)
 plot_box(mat)
 
-# Real data: raw counts
-data(airway)
-library(edgeR)
-cnts <- assay(airway)
-keep <- rowSums(cpm(cnts) > 1) >= 4           # Filter out underexpressed genes
-y <- DGEList(cnts[keep, ])                    # Create DGEList object
-plot_box(y, group = colData(airway)$dex)
-
-# Real data: transformed counts
-y <- calcNormFactors(y)
-y <- cpm(y, log = TRUE)                       # Apply log2-CPM transformation
-plot_box(y, group = colData(airway)$dex)
+# Box plots by group
+grp <- rep(c("A", "B"), each = 5)
+plot_box(mat, group = grp)
 
 }
