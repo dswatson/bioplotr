@@ -208,7 +208,10 @@ plot_dispersion.DGEList <- function(dat,
                        values = c(pal_d3()(2), 'black'),
                         guide = guide_legend(override.aes = list(
                           linetype = c('blank', rep('solid', 2L)),
-                             shape = c(16L, NA, NA), size = rep(1L, 3L))))
+                             shape = c(16L, NA, NA), size = rep(1L, 3L)))) +
+      labs(title = title, x = expression('Mean'~log[2]*'-CPM'), y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
   )
   p <- locate_legend(p, legend)
 
