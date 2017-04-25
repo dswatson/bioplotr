@@ -120,9 +120,6 @@ plot_mv <- function(dat,
   if (!trans %in% c('rank', 'log', 'sqrt')) {
     stop('trans must be one of "rank", "log", or "sqrt".')
   }
-  if (is.null(title)) {
-    title <- 'Mean-Variance Plot'
-  }
   if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
     stop('legend must be one of "outside", "bottomleft", "bottomright" ',
          '"topleft", or "topright".')
@@ -152,6 +149,9 @@ plot_mv.MArrayLM <- function(dat,
     warning('Standard errors for dat have not been moderated. Consider re-running ',
             'plot_mv after shrinking residual variance with eBayes. See ?eBayes ',
             'and ?squeezeVar for more info.')
+  }
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
   }
 
   # Tidy data
@@ -187,7 +187,7 @@ plot_mv.MArrayLM <- function(dat,
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
-  # Built plot
+  # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   p <- ggplot(df) +
@@ -245,6 +245,11 @@ plot_mv.DGEList <- function(dat,
                             legend = 'outside',
                              hover = FALSE) {
 
+  # Preliminaries
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
+  }
+
   # Tidy data
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
@@ -288,7 +293,7 @@ plot_mv.DGEList <- function(dat,
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
-  # Built plot
+  # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   suppressWarnings(
@@ -321,6 +326,11 @@ plot_mv.DGELM <- function(dat,
                          legend = 'outside',
                           hover = FALSE) {
 
+  # Preliminaries
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
+  }
+
   # Tidy data
   keep <- rowSums(dat$counts) > 1L & !dat$failed      # Minimal count filter
   dat <- dat[keep, ]
@@ -349,7 +359,7 @@ plot_mv.DGELM <- function(dat,
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
-  # Built plot
+  # Build plot
   size <- probe_ptsize(df)
   alpha <- probe_alpha(df)
   suppressWarnings(
@@ -391,6 +401,9 @@ plot_mv.DESeqDataSet <- function(dat,
   if (resid & is.null(assays(dat)[['mu']])) {
     stop('dat must be fit with a negative binomial GLM in order to extract residual
          variance.')
+  }
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
   }
 
   # Tidy data
@@ -476,6 +489,11 @@ plot_mv.DESeqTransform <- function(dat,
                                   legend = 'outside',
                                    hover = FALSE) {
 
+  # Preliminaries
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
+  }
+
   # Tidy data
   dat <- assay(dat)
   mu <- rowMeans(dat)
@@ -533,6 +551,11 @@ plot_mv.default <- function(dat,
                              ylab = NULL,
                            legend = 'outside',
                             hover = FALSE) {
+
+  # Preliminaries
+  if (is.null(title)) {
+    title <- 'Mean-Variance Plot'
+  }
 
   # Tidy data
   dat <- getEAWP(dat)$expr
