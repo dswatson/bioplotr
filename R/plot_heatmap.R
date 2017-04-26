@@ -81,7 +81,7 @@ plot_heatmap <- function(dat,
          '"average", "mcquitty", "median", or "centroid". See ?hclust.')
   }
   if (col == 'RdBu') {
-    col <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
+    col <- rev(colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L))
   } else if (col == 'GrRd') {
     col <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
   } else if (col == 'BuYl') {
