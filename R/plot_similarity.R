@@ -167,49 +167,53 @@ plot_similarity <- function(dat,
     if (is.null(top)) {
       dm <- dist.matrix(t(dat), method = 'euclidean')
     } else {
-      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
       for (i in 2L:ncol(dat)) {
         for (j in 1L:(i - 1L)) {
           tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
           dm[i, j] <- sqrt(sum((dat[tops, i] - dat[tops, j])^2))
         }
       }
+      dm <- pmax(dm, t(dm))
     }
   } else if (dist == 'pearson') {
     if (is.null(top)) {
       dm <- 1 - cor(dat)
     } else {
-      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
       for (i in 2L:ncol(dat)) {
         for (j in 1L:(i - 1L)) {
           tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
           dm[i, j] <- 1 - cor(dat[tops, i], dat[tops, j])
         }
       }
+      dm <- pmax(dm, t(dm))
     }
   } else if (dist == 'MI') {
     if (is.null(top)) {
       dm <- as.matrix(MIdist(t(dat)))
     } else {
-      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
       for (i in 2L:ncol(dat)) {
         for (j in 1L:(i - 1L)) {
           tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
           dm[i, j] <- max(as.matrix(MIdist(t(dat[tops, c(i, j)]))))
         }
       }
+      dm <- pmax(dm, t(dm))
     }
   } else if (dist == 'KLD') {
     if (is.null(top)) {
       dm <- as.matrix(KLdist.matrix(t(dat)))
     } else {
-      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
       for (i in 2L:ncol(dat)) {
         for (j in 1L:(i - 1L)) {
           tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
           dm[i, j] <- max(as.matrix(KLdist.matrix(t(dat[tops, c(i, j)]))))
         }
       }
+      dm <- pmax(dm, t(dm))
     }
   }
 
