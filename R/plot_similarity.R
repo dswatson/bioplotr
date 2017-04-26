@@ -213,15 +213,14 @@ plot_similarity <- function(dat,
   }
 
   # Plot
-  rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
   if (is.null(anno)) {
-    aheatmap(dm, col = rb, Rowv = FALSE, main = title,
+    aheatmap(dm, col = col, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
-             border_color = 'black')
+             border_color = 'grey60')
   } else {
-    aheatmap(dm, col = rb, Rowv = FALSE, main = title,
+    aheatmap(dm, col = col, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
-             annCol = anno, border_color = 'black')
+             annCol = anno, border_color = 'grey60')
   }
 
 }
