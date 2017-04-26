@@ -170,7 +170,7 @@ plot_similarity <- function(dat,
       for (i in 2L:ncol(dat)) {
         for (j in 1L:(i - 1L)) {
           tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
-          dm[i, j] <- sqrt(sum((dat[tops, i] - dat[top, j])^2))
+          dm[i, j] <- sqrt(sum((dat[tops, i] - dat[tops, j])^2))
         }
       }
     }
