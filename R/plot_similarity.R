@@ -6,8 +6,8 @@
 #'   probes and columns to samples. It is strongly recommended that data be
 #'   normalized and filtered prior to plotting the sample similarity matrix.
 #'   For count data, this means undergoing some sort of variance stabilizing
-#'   transformation, such as \code{\link[edgeR]{cpm} (with \code{log = TRUE}),
-#'   \link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.
+#'   transformation, such as \code{\link[edgeR]{cpm}} (with \code{log = TRUE}),
+#'   \code{\link[DESeq2]{vst}}, \code{\link[DESeq2]{rlog}}, etc.
 #' @param anno Optional character, factor, numeric, or logical vector of length
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
@@ -142,6 +142,7 @@ plot_similarity <- function(dat,
     keep <- rowSums(is.finite(dat)) == ncol(dat)
     dat <- dat[keep, , drop = FALSE]
   }
+  dat <- sweep(dat, 1L, apply(dat, 1L, median))  # Median center data
   if (dist == 'euclidean') {
     dm <- dist.matrix(t(dat), method = 'euclidean')
   } else if (dist == 'pearson') {
@@ -166,5 +167,3 @@ plot_similarity <- function(dat,
 }
 
 
-# Replace aheatmap with pheatmap?
-# Rows should be centered, but not scaled, I think?
