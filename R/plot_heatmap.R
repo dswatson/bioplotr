@@ -121,11 +121,11 @@ plot_heatmap <- function(dat,
   # Plot
   if (is.null(anno)) {
     aheatmap(dat, distfun = dist, scale = 'row', col = col,
-             hclustfun = hclustfun, main = title, border_color = 'black')
+             hclustfun = hclustfun, main = title, border_color = 'grey60')
   } else {
     aheatmap(dat, distfun = dist, scale = 'row', col = col,
              hclustfun = hclustfun, main = title, annCol = anno,
-             border_color = 'black')
+             border_color = 'grey60')
   }
 
 }
