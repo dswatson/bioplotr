@@ -190,8 +190,7 @@ plot_dispersion.DGEList <- function(dat,
                                     dispersion = dat$tagwise.dispersion),
                Genewise = fn(dat$tagwise.dispersion),
                     Fit = fn(dat$trended.dispersion),
-                Tagwise = rep(TRUE, nrow(dat))) %>%
-    arrange(Mean)
+                Tagwise = rep(TRUE, nrow(dat)))
 
   # Build plot
   size <- probe_ptsize(df)
@@ -201,7 +200,7 @@ plot_dispersion.DGEList <- function(dat,
       geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
                  size = size, alpha = alpha) +
       geom_hline(aes(color = 'Common', yintercept = cmn), size = 0.5) +
-      geom_path(aes(Mean, Fit, color = 'Trend'), size = 0.5) +
+      geom_point(aes(Mean, Fit, color = 'Trend'), size = 0.5) +
       scale_color_manual(name = 'Dispersion\n Estimate',
                        breaks = c(TRUE, 'Common', 'Trend'),
                        labels = c('Genewise', 'Common', 'Trend'),
