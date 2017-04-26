@@ -4,7 +4,7 @@
 \alias{plot_similarity}
 \title{Similarity Matrix Heatmap}
 \usage{
-plot_similarity(dat, anno = NULL, dist = "euclidean",
+plot_similarity(dat, anno = NULL, top = NULL, dist = "euclidean",
   hclustfun = "average", col = "RdBu", title = NULL)
 }
 \arguments{
@@ -12,13 +12,16 @@ plot_similarity(dat, anno = NULL, dist = "euclidean",
 probes and columns to samples. It is strongly recommended that data be
 normalized and filtered prior to plotting the sample similarity matrix.
 For count data, this means undergoing some sort of variance stabilizing
-transformation, such as \code{\link[edgeR]{cpm} (with \code{log = TRUE}),
-\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc.}
+transformation, such as \code{\link[edgeR]{cpm}} (with \code{log = TRUE}),
+\code{\link[DESeq2]{vst}}, \code{\link[DESeq2]{rlog}}, etc.}
 
 \item{anno}{Optional character, factor, numeric, or logical vector of length
 equal to sample size. Alternatively, a data frame or list of such vectors,
 optionally named. Values are used to color one or several annotation tracks
 atop the heatmap.}
+
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
+for distance calculations. See Details.}
 
 \item{dist}{Distance measure to be used. Currently supports \code{"euclidean",
 "pearson", "MI",} or \code{"KLD"}. See Details.}
@@ -55,6 +58,9 @@ divergence are more complicated distance metrics that require some simplifying
 assumptions to be efficiently applied to continuous data distributions. See
 \code{\link[bioDist]{MIdist}} and \code{\link[bioDist]{KLdist.matrix}}
 for more info.
+
+The \code{top} argument optionally filters probes using the leading fold change
+method of Smyth et al. See \code{\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)

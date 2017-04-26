@@ -12,6 +12,8 @@
 #'   equal to sample size. Alternatively, a data frame or list of such vectors,
 #'   optionally named. Values are used to color one or several annotation tracks
 #'   atop the heatmap.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
+#'   for distance calculations. See Details.
 #' @param dist Distance measure to be used. Currently supports \code{"euclidean",
 #'   "pearson", "MI",} or \code{"KLD"}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical clustering.
@@ -42,6 +44,9 @@
 #' \code{\link[bioDist]{MIdist}} and \code{\link[bioDist]{KLdist.matrix}}
 #' for more info.
 #'
+#' The \code{top} argument optionally filters probes using the leading fold change
+#' method of Smyth et al. See \code{\link{plot_mds}} for more details.
+#'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
 #' plot_similarity(mat, title = "Nothin' Doin'")
@@ -67,6 +72,7 @@
 
 plot_similarity <- function(dat,
                             anno = NULL,
+                             top = NULL,
                             dist = 'euclidean',
                        hclustfun = 'average',
                              col = 'RdBu',
@@ -86,8 +92,8 @@ plot_similarity <- function(dat,
       }
     }
   }
-  if (any(map_lgl(seq_along(anno), function(j) {
-    length(anno[[j]]) != ncol(dat)
+  if (!all(map_lgl(seq_along(anno), function(j) {
+    length(anno[[j]]) == ncol(dat)
   }))) {
     stop('anno length must match number of samples in dat.')
   }
@@ -97,6 +103,7 @@ plot_similarity <- function(dat,
   }))) {
     stop('anno is invariant.')
   }
+
   if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
     stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
   }
@@ -143,25 +150,78 @@ plot_similarity <- function(dat,
     dat <- dat[keep, , drop = FALSE]
   }
   dat <- sweep(dat, 1L, apply(dat, 1L, median))  # Median center data
+  if (!is.null(top)) {
+    if (top > 1L) {
+      if (top > nrow(dat)) {
+        warning(paste('top exceeds nrow(dat), at least after removing probes with
+                      missing values and/or applying a minimal expression filter.
+                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
+        top <- NULL
+      }
+    } else {
+      top <- round(top * nrow(dat))
+    }
+  }
   if (dist == 'euclidean') {
-    dm <- dist.matrix(t(dat), method = 'euclidean')
+    if (is.null(top)) {
+      dm <- dist.matrix(t(dat), method = 'euclidean')
+    } else {
+      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      for (i in 2L:ncol(dat)) {
+        for (j in 1L:(i - 1L)) {
+          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
+          dm[i, j] <- sqrt(sum((dat[tops, i] - dat[top, j])^2))
+        }
+      }
+    }
   } else if (dist == 'pearson') {
-    dm <- 1 - cor(mat)
+    if (is.null(top)) {
+      dm <- 1 - cor(dat)
+    } else {
+      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      for (i in 2L:ncol(dat)) {
+        for (j in 1L:(i - 1L)) {
+          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
+          dm[i, j] <- 1 - cor(dat[tops, i], dat[tops, j])
+        }
+      }
+    }
   } else if (dist == 'MI') {
-    dm <- as.matrix(MIdist(t(dat)))
-  } else {
-    dm <- as.matrix(KLdist.matrix(t(dat)))
+    if (is.null(top)) {
+      dm <- as.matrix(MIdist(t(dat)))
+    } else {
+      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      for (i in 2L:ncol(dat)) {
+        for (j in 1L:(i - 1L)) {
+          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
+          dm[i, j] <- max(as.matrix(MIdist(t(dat[tops, c(i, j)]))))
+        }
+      }
+    }
+  } else if (dist == 'KLD') {
+    if (is.null(top)) {
+      dm <- as.matrix(KLdist.matrix(t(dat)))
+    } else {
+      dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+      for (i in 2L:ncol(dat)) {
+        for (j in 1L:(i - 1L)) {
+          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
+          dm[i, j] <- max(as.matrix(KLdist.matrix(t(dat[tops, c(i, j)]))))
+        }
+      }
+    }
   }
 
   # Plot
   rb <- colorRampPalette(brewer.pal(10, 'RdBu'))(n = 256)
   if (is.null(anno)) {
     aheatmap(dm, col = rb, Rowv = FALSE, main = title,
-             distfun = function(x) as.dist(x), hclustfun = hclustfun)
+             distfun = function(x) as.dist(x), hclustfun = hclustfun,
+             border_color = 'black')
   } else {
     aheatmap(dm, col = rb, Rowv = FALSE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
-             annCol = anno)
+             annCol = anno, border_color = 'black')
   }
 
 }
