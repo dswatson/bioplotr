@@ -79,31 +79,32 @@ plot_similarity <- function(dat,
                            title = NULL) {
 
   # Preliminaries
-  if (is.data.frame(anno)) {
-    anno <- as.list(anno)
-  } else if (!is.list(anno)) {
-    anno <- list('Variable' = anno)
-  } else {
-    if (is.null(names(anno))) {
-      if (length(anno) == 1L) {
-        names(anno) <- 'Variable'
-      } else {
-        names(anno) <- paste('Variable', seq_along(anno))
+  if (!is.null(anno)) {
+    if (is.data.frame(anno)) {
+      anno <- as.list(anno)
+    } else if (!is.list(anno)) {
+      anno <- list('Variable' = anno)
+    } else {
+      if (is.null(names(anno))) {
+        if (length(anno) == 1L) {
+          names(anno) <- 'Variable'
+        } else {
+          names(anno) <- paste('Variable', seq_along(anno))
+        }
       }
     }
+    if (!all(map_lgl(seq_along(anno), function(j) {
+      length(anno[[j]]) == ncol(dat)
+    }))) {
+      stop('anno length must match number of samples in dat.')
+    }
+    if (any(map_lgl(seq_along(anno), function(j) {
+      if (is.numeric(anno[[j]])) var(anno[[j]]) == 0L
+      else length(unique(anno[[j]])) == 1L
+    }))) {
+      stop('anno is invariant.')
+    }
   }
-  if (!all(map_lgl(seq_along(anno), function(j) {
-    length(anno[[j]]) == ncol(dat)
-  }))) {
-    stop('anno length must match number of samples in dat.')
-  }
-  if (any(map_lgl(seq_along(anno), function(j) {
-    if (is.numeric(anno[[j]])) var(anno[[j]]) == 0L
-    else length(unique(anno[[j]])) == 1L
-  }))) {
-    stop('anno is invariant.')
-  }
-
   if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
     stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
   }
@@ -214,11 +215,11 @@ plot_similarity <- function(dat,
 
   # Plot
   if (is.null(anno)) {
-    aheatmap(dm, col = col, Rowv = FALSE, main = title,
+    aheatmap(dm, col = col, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              border_color = 'grey60')
   } else {
-    aheatmap(dm, col = col, Rowv = FALSE, main = title,
+    aheatmap(dm, col = col, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              annCol = anno, border_color = 'grey60')
   }
