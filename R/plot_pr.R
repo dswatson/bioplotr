@@ -140,7 +140,8 @@ plot_pr <- function(obs,
   }
   p <- ggplot(df, aes(Recall, Precision)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
-    geom_hline(yintercept = sum(obs) / length(obs), linetype = 2L, color = 'grey') +
+    geom_hline(yintercept = sum(obs) / length(obs),
+               linetype = 'dashed', color = 'grey') +
     labs(title = title) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
@@ -150,6 +151,7 @@ plot_pr <- function(obs,
                             group = Classifier,
                             color = Classifier)) +
         scale_color_manual(name = leg.txt,
+                         breaks = names(pred),
                          labels = map_chr(seq_along(pred), p_auc),
                          values = pal_d3()(length(pred)))
     )
