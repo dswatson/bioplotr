@@ -66,6 +66,7 @@
 #' @importFrom limma getEAWP
 #' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
+#' @importFrom KernSmooth dpih
 #' @importFrom NMF aheatmap
 #' @import RColorBrewer
 #'
@@ -217,7 +218,7 @@ plot_similarity <- function(dat,
     }
   }
 
-  # Plot
+  # Build plot
   if (is.null(anno)) {
     aheatmap(dm, col = col, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
