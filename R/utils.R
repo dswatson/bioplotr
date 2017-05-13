@@ -70,46 +70,39 @@ sample_alpha <- function(df) {
   return(out)
 }
 
-#' Locate Legend
-#'
-#' This utility function translates a user-supplied string into coordinates for
-#' legend location.
-#'
-#' @param p A \code{ggplot2} object.
-#' @param loc String specifying legend location.
-#'
-#' @importFrom ggplot2 theme
-#'
-
-locate_legend <- function(p, loc) {
-  if (loc == 'bottomleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                        legend.position = c(0.01, 0.01))
-  } else if (loc == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                        legend.position = c(0.99, 0.01))
-  } else if (loc == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                        legend.position = c(0.01, 0.99))
-  } else if (loc == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                        legend.position = c(0.99, 0.99))
-  }
-  return(p)
-}
-
 #' Output Image
 #'
-#' This utility function prints a ggplot or ggplotly figure.
+#' This utility function locates the figure legend and prints a ggplot or
+#' ggplotly figure.
 #'
 #' @param p A \code{ggplot2} object.
 #' @param hover Add text tooltip using plotly?
 #' @param loc String specifying legend location.
 #'
+#' @importFrom ggplot2 theme
 #' @importFrom plotly ggplotly
 #'
 
-gg_out <- function(p, hover, loc) {
+gg_out <- function(p,
+                   hover,
+                   loc = NULL) {
+
+  # Locate legend
+  if (loc == 'bottomleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.01),
+                   legend.position = c(0.01, 0.01))
+  } else if (loc == 'bottomright') {
+    p <- p + theme(legend.justification = c(0.99, 0.01),
+                   legend.position = c(0.99, 0.01))
+  } else if (loc == 'topleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.99),
+                   legend.position = c(0.01, 0.99))
+  } else if (loc == 'topright') {
+    p <- p + theme(legend.justification = c(0.99, 0.99),
+                   legend.position = c(0.99, 0.99))
+  }
+
+  # Print figure
   if (!hover) {
     print(p)
   } else {
@@ -120,6 +113,130 @@ gg_out <- function(p, hover, loc) {
     }
     print(p)
   }
+
+}
+
+#' Standardize Matrix
+#'
+#' This utility function takes data objects from \code{limma}, \code{edgeR}, or
+#' \code{DESeq2} pipelines and outputs a standard probe by sample matrix. Raw counts
+#' are log2-CPM transformed with a warning.
+#'
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
+#'
+#' @importFrom edgeR cpm calcNormFactors
+#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors counts
+#' @importFrom SummarizedExperiment assay
+#' @importFrom limma getEAWP
+#'
+
+matrixize <- function(dat) {
+
+
+  if (is(dat, 'DGEList')) {
+    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
+    dat <- dat[keep, ]
+    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
+        all(dat$samples$norm.factors == 1L)) {
+      dat <- calcNormFactors(dat)
+    }
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqDataSet')) {
+    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+      dat <- estimateSizeFactors(dat)            # Normalize counts
+    }
+    dat <- counts(dat, normalized = TRUE)
+    keep <- rowMeans(dat) > 0L                   # Minimal count filter
+    dat <- dat[keep, , drop = FALSE]
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    warning('Transforming raw counts to log2-CPM scale.')
+  } else if (is(dat, 'DESeqTransform')) {
+    dat <- assay(dat)
+  } else {
+    dat <- getEAWP(dat)$expr
+    keep <- rowSums(is.finite(dat)) == ncol(dat)
+    dat <- dat[keep, , drop = FALSE]
+  }
+
+  # Export
+  return(dat)
+
+}
+
+#' Create Distance Matrix
+#'
+#' This utility function calculates distance based on a user defined measure
+#' and optionally filters probes by leading log fold change.
+#'
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
+#'   for distance calculations.
+#' @param dist Distance measure to be used. Currently supports \code{"euclidean",
+#'   "pearson", "MI",} or \code{"KLD"}.
+#'
+#' @importFrom wordspace dist.matrix
+#' @importFrom bioDist MIdist KLdist.matrix
+#' @importFrom KernSmooth dpih
+#'
+
+dist_mat <- function(dat,
+                     top,
+                     dist) {
+
+  # Preliminaries
+  if (!is.null(top)) {
+    if (top > 1L) {
+      if (top > nrow(dat)) {
+        warning(paste('top exceeds nrow(dat), at least after removing probes with
+                      missing values and/or applying a minimal expression filter.
+                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
+        top <- NULL
+      }
+    } else {
+      top <- round(top * nrow(dat))
+    }
+    }
+
+  # Create matrix
+  if (is.null(top)) {
+    if (dist == 'euclidean') {
+      dm <- dist.matrix(t(dat), method = 'euclidean')
+    } else if (dist == 'pearson') {
+      dm <- 1 - cor(dat)
+    } else if (dist == 'MI') {
+      dm <- as.matrix(MIdist(t(dat)))
+    } else if (dist == 'KLD') {
+      dm <- as.matrix(KLdist.matrix(t(dat)))
+    }
+  } else {
+    dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
+    for (i in 2L:ncol(dat)) {
+      for (j in 1L:(i - 1L)) {
+        if (dist == 'euclidean') {
+          top_idx <- nrow(dat) - top + 1L
+          dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
+                                        partial = top_idx)[top_idx:nrow(dat)]))
+        } else {
+          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
+          if (dist == 'pearson') {
+            dm[i, j] <- 1 - cor(dat[tops, i], dat[tops, j])
+          } else if (dist == 'MI') {
+            dm[i, j] <- max(as.matrix(MIdist(t(dat[tops, c(i, j)]))))
+          } else if (dist == 'KLD') {
+            dm[i, j] <- max(as.matrix(KLdist.matrix(t(dat[tops, c(i, j)]))))
+          }
+        }
+      }
+    }
+    dm <- pmax(dm, t(dm))
+  }
+
+  # Export
+  return(dm)
+
 }
 
 
