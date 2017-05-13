@@ -1,4 +1,4 @@
-#' Size Probewise Data Points
+#' Size Data Points
 #'
 #' This utility function assigns a reasonable point size parameter based on data
 #' dimensionality.
@@ -6,54 +6,26 @@
 #' @param df Data frame to be passed to \code{ggplot}.
 #'
 
-probe_ptsize <- function(df) {
-  if (nrow(df) <= 1e4L) {                        # miRNA, peptides
-    out <- 0.75
-  } else if (nrow(df) <= 1e5L) {                 # mRNA, genes, metabolites
-    out <- 0.5
-  } else {                                       # transcripts, exons, methylation loci, etc.
-    out <- 0.25
-  }
-  return(out)
-}
-
-#' Set Transparency for Probewise Data Points
-#'
-#' This utility function assigns a reasonable alpha parameter based on data
-#' dimensionality.
-#'
-#' @param df Data frame to be passed to \code{ggplot}.
-#'
-
-probe_alpha <- function(df) {
-  if (nrow(df) <= 1e5L) {
-    out <- 0.5
-  } else {
-    out <- 0.25
-  }
-  return(out)
-}
-
-#' Size Samplewise Data Points
-#'
-#' This utility function assigns a reasonable point size parameter based on data
-#' dimensionality.
-#'
-#' @param df Data frame to be passed to \code{ggplot}.
-#'
-
-sample_ptsize <- function(df) {
+pt_size <- function(df) {
   if (nrow(df) <= 10L) {
     out <- 3L
   } else if (nrow(df) <= 20L) {
     out <- 2L
-  } else {
+  } else if (nrow(df) <= 100L) {
     out <- 1.5
+  } else if (nrow(df) <= 1e3L) {
+    out <- 1L
+  } else if (nrow(df) <= 1e4L) {
+    out <- 0.75
+  } else if (nrow(df) <= 1e5L) {
+    out <- 0.5
+  } else {
+    out <- 0.25
   }
   return(out)
 }
 
-#' Set Transparency for Samplewise Data Points
+#' Set Data Point Transparency
 #'
 #' This utility function assigns a reasonable alpha parameter based on data
 #' dimensionality.
@@ -61,18 +33,22 @@ sample_ptsize <- function(df) {
 #' @param df Data frame to be passed to \code{ggplot}.
 #'
 
-sample_alpha <- function(df) {
+pt_alpha <- function(df) {
   if (nrow(df) <= 20L) {
     out <- 1L
-  } else {
+  } else if (nrow(df) <= 100L) {
     out <- 0.85
+  } else if (nrow(df) <= 1e5L) {
+    out <- 0.5
+  } else {
+    out <- 0.25
   }
   return(out)
 }
 
 #' Output Image
 #'
-#' This utility function locates the figure legend and prints a ggplot or
+#' This utility function locates the legend (if supplied) and prints a ggplot or
 #' ggplotly figure.
 #'
 #' @param p A \code{ggplot2} object.
@@ -80,7 +56,6 @@ sample_alpha <- function(df) {
 #' @param loc String specifying legend location.
 #'
 #' @importFrom ggplot2 theme
-#' @importFrom plotly ggplotly
 #'
 
 gg_out <- function(p,
@@ -102,10 +77,11 @@ gg_out <- function(p,
                    legend.position = c(0.99, 0.99))
   }
 
-  # Print figure
+  # Output
   if (!hover) {
     print(p)
   } else {
+    require(plotly)
     if (loc == 'outside') {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
     } else {
@@ -119,21 +95,19 @@ gg_out <- function(p,
 #' Standardize Matrix
 #'
 #' This utility function takes data objects from \code{limma}, \code{edgeR}, or
-#' \code{DESeq2} pipelines and outputs a standard probe by sample matrix. Raw counts
-#' are log2-CPM transformed with a warning.
+#' \code{DESeq2} pipelines and outputs a standard probe by sample matrix. Raw
+#' counts are log2-CPM transformed with a warning.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
 #'
 #' @importFrom edgeR cpm calcNormFactors
-#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors counts
-#' @importFrom SummarizedExperiment assay
 #' @importFrom limma getEAWP
 #'
 
 matrixize <- function(dat) {
 
-
+  # Transform, extract
   if (is(dat, 'DGEList')) {
     keep <- rowSums(dat$counts) > 1L             # Minimal count filter
     dat <- dat[keep, ]
@@ -144,6 +118,7 @@ matrixize <- function(dat) {
     dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (is(dat, 'DESeqDataSet')) {
+    require(DESeq2)
     if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
       dat <- estimateSizeFactors(dat)            # Normalize counts
     }
@@ -153,6 +128,7 @@ matrixize <- function(dat) {
     dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (is(dat, 'DESeqTransform')) {
+    require(SummarizedExperiment)
     dat <- assay(dat)
   } else {
     dat <- getEAWP(dat)$expr
@@ -160,7 +136,7 @@ matrixize <- function(dat) {
     dat <- dat[keep, , drop = FALSE]
   }
 
-  # Export
+  # Output
   return(dat)
 
 }
@@ -190,9 +166,10 @@ dist_mat <- function(dat,
   if (!is.null(top)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes with
-                      missing values and/or applying a minimal expression filter.
-                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
+        warning(paste('top exceeds nrow(dat), at least after removing probes',
+                      'with missing values and/or applying a minimal expression',
+                      'filter. Proceeding with the complete', nrow(dat), 'x',
+                      ncol(dat), 'matrix.'))
         top <- NULL
       }
     } else {
@@ -234,8 +211,129 @@ dist_mat <- function(dat,
     dm <- pmax(dm, t(dm))
   }
 
-  # Export
+  # Output
   return(dm)
+
+}
+
+#' Format Annotation Tracks
+#'
+#' This utility function formats categorical or continuous features for
+#' plotting atop heatmaps.
+#'
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
+#' @param features Vector of length equal to sample size, or several such
+#'   vectors organized into a list or data frame.
+#' @param var_type Character string specifying whether features are categorical
+#'   or continuous.
+#'
+#' @importFrom purrr map_lgl
+#'
+
+anno_track <- function(dat,
+                       features,
+                       var_type) {
+
+  # Listify, add names
+  if (is.data.frame(features)) {
+    features <- as.list(features)
+  } else if (!is.list(features)) {
+    if (var_type == 'Categorical') {
+      features <- list('Group' = features)
+    } else if (var_type == 'Continuous') {
+      features <- list('Variable' = features)
+    }
+  } else {
+    if (var_type == 'Categorical') {
+      if (is.null(names(features))) {
+        if (length(features) == 1L) {
+          names(features) <- 'Group'
+        } else {
+          names(features) <- paste('Group', seq_along(features))
+        }
+      }
+    } else if (var_type == 'Continuous') {
+      if (is.null(names(features))) {
+        if (length(features) == 1L) {
+          names(features) <- 'Variable'
+        } else {
+          names(features) <- paste('Variable', seq_along(features))
+        }
+      }
+    }
+  }
+
+  # Check dimensions, invariance
+  if (!all(map_lgl(seq_along(features), function(x) {
+    length(features[[x]]) == ncol(dat)
+  }))) {
+    stop('Each variable must match the number of samples in dat.')
+  }
+  if (var_type == 'Categorical') {
+    if (length(features) > 10L) {
+      stop('Cannot plot more than 10 categorical covariates.')
+    }
+    if (any(map_lgl(seq_along(features), function(x) {
+      length(unique(features[[x]])) == 1L
+    }))) {
+      stop('At least one categorical feature is invariant.')
+    }
+  } else if (var_type == 'Continuous') {
+    if (length(features) > 6L) {
+      stop('Cannot plot more than 6 continuous covariates.')
+    }
+    if (any(map_lgl(seq_along(features), function(x) {
+      var(features[[x]]) == 0L
+    }))) {
+      stop('At least one continuous feature is invariant.')
+    }
+  }
+
+  # Output
+  return(features)
+
+}
+
+#' Format Annotation Track Colors
+#'
+#' This utility function formats the colors for plotting annotation tracks atop
+#' heatmaps.
+#'
+#' @param features List formatted by \code{anno_track()}.
+#' @param var_type Character string specifying whether features are categorical
+#'   or continuous.
+#'
+#' @importFrom purrr map_dbl
+#' @importFrom ggsci pal_d3
+#' @importFrom RColorBrewer brewer.pal
+#'
+
+track_cols <- function(features,
+                       var_type) {
+
+  # Create color list
+  if (var_type == 'Categorical') {
+    n.cols <- map_dbl(seq_along(features), function(x) {
+      length(unique(features[[x]]))
+    })
+    d3 <- pal_d3()(sum(n.cols))
+    cols <- split(d3, rep(seq_along(features), n.cols))
+  } else if (var_type == 'Continuous') {
+    grads <- list(
+      greens = colorRampPalette(brewer.pal(9, 'Greens'))(n = 256),
+      purples = colorRampPalette(brewer.pal(9, 'Purples'))(n = 256),
+      greys = colorRampPalette(brewer.pal(9, 'Greys'))(n = 256),
+      oranges = colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256),
+      blues = colorRampPalette(brewer.pal(9, 'Blues'))(n = 256),
+      reds = colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
+    )
+    cols <- grads[seq_along(features)]
+  }
+  names(cols) <- NULL
+
+  # Output
+  return(cols)
 
 }
 
