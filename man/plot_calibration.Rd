@@ -15,7 +15,7 @@ that the first level is assumed to be the reference.}
 
 \item{pred}{Vector of predicted probabilities, or several such vectors
 organized into a data frame or list, optionally named. Must be numeric on
-\code{(0, 1)}.}
+\code{[0, 1]}.}
 
 \item{title}{Optional plot title.}
 

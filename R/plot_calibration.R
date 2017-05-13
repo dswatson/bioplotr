@@ -9,7 +9,7 @@
 #'   that the first level is assumed to be the reference.
 #' @param pred Vector of predicted probabilities, or several such vectors
 #'   organized into a data frame or list, optionally named. Must be numeric on
-#'   \code{(0, 1)}.
+#'   \code{[0, 1]}.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"outside"}, \code{
 #'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
