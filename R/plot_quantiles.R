@@ -1,15 +1,10 @@
 #' Plot Quantiles
 #'
-#' This function plots the quantiles for either two observed vectors or one vector
-#' and a theoretical distribution against each other as a QQ or an MD plot.
+#' This function plots the quantiles of two vectors against each other as either
+#' a QQ or an MD plot.
 #'
 #' @param x Vector of numeric values.
 #' @param y Optional second vector of numeric values.
-#'
-#'Alternative options include \code{"beta",
-#'   "binom", "cauchy", "chisq", "exp",  "f", "gamma", "geom", "hyper", "lnorm",
-#'   "logis", "nbinom", "norm", "pois", "t", "unif",} and \code{"weibull"}.
-#'
 #' @param method Plot quantiles against quantiles (\code{method = "QQ"}) or mean
 #'   quantiles against difference in quantiles (\code{method = "MD"})?
 #' @param pts Number of points to plot.
@@ -18,9 +13,9 @@
 #' @param ylab Optional y-axis label.
 #'
 #' @details
-#' QQ and MD plots visualize the relationship between two numeric vectors. They are
-#' a quick and easy alternative to scatterplots when distributions are of unequal
-#' length.
+#' QQ and MD plots visualize the relationship between two numeric vectors. They
+#' are a quick and easy alternative to scatterplots when distributions are of
+#' unequal length.
 #'
 #' @examples
 #' x1 <- rnorm(100)
@@ -63,8 +58,11 @@ plot_quantiles <- function(x,
   # Tidy data
   x <- quantile(x, probs = seq(0L, 1L, length.out = pts))
   y <- quantile(y, probs = seq(0L, 1L, length.out = pts))
-  if (method == 'QQ') df <- data_frame(X = x, Y = y)
-  else df <- data_frame(X = (x + y) / 2L, Y = x - y)
+  if (method == 'QQ') {
+    df <- data_frame(X = x, Y = y)
+  } else {
+    df <- data_frame(X = (x + y) / 2L, Y = x - y)
+  }
 
   # Build plot
   p <- ggplot(df, aes(X, Y)) +
@@ -79,8 +77,11 @@ plot_quantiles <- function(x,
     p <- p + geom_hline(yintercept = 0L, color= 'red', size = 0.2)
   }
 
+  # Output
   print(p)
 
 }
 
+
+# Extend to theoretical distros
 
