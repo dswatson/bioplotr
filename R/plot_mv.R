@@ -111,7 +111,6 @@
 #' @importFrom ggsci pal_d3
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_mv <- function(dat,
@@ -138,8 +137,7 @@ plot_mv <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv MArrayLM
-#' @S3method plot_mv MArrayLM
+#' @export
 
 plot_mv.MArrayLM <- function(dat,
                              trans = 'log',
@@ -194,8 +192,8 @@ plot_mv.MArrayLM <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df) +
     geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
     labs(title = title, x = xlab, y = ylab) +
@@ -235,8 +233,7 @@ plot_mv.MArrayLM <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv DGEList
-#' @S3method plot_mv DGEList
+#' @export
 #' @importFrom edgeR calcNormFactors estimateTagwiseDisp
 #'   estimateGLMTagwiseDisp cpm aveLogCPM
 
@@ -299,8 +296,8 @@ plot_mv.DGEList <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -318,8 +315,7 @@ plot_mv.DGEList <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv DGELM
-#' @S3method plot_mv DGELM
+#' @export
 
 plot_mv.DGELM <- function(dat,
                           trans = 'sqrt',
@@ -364,8 +360,8 @@ plot_mv.DGELM <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -383,12 +379,8 @@ plot_mv.DGELM <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv DESeqDataSet
-#' @S3method plot_mv DESeqDataSet
-#' @importFrom DESeq2 counts sizeFactors normalizationFactors estimateSizeFactors
-#'   estimateDispersions dispersions
+#' @export
 #' @importFrom edgeR cpm aveLogCPM
-#' @importFrom SummarizedExperiment assays
 
 plot_mv.DESeqDataSet <- function(dat,
                                  resid = FALSE,
@@ -401,6 +393,7 @@ plot_mv.DESeqDataSet <- function(dat,
                                  hover = FALSE) {
 
   # Preliminaries
+  require(SummarizedExperiment)
   if (resid & is.null(assays(dat)[['mu']])) {
     stop('dat must be fit with a negative binomial GLM in order to extract',
          'residual variance.')
@@ -410,6 +403,7 @@ plot_mv.DESeqDataSet <- function(dat,
   }
 
   # Tidy data
+  require(DESeq2)
   if (resid) {                                   # Calculate mu, sigma
     keep <- mcols(dat)$baseMean > 0L             # Minimal count filter
     dat <- dat[keep, , drop = FALSE]
@@ -459,8 +453,8 @@ plot_mv.DESeqDataSet <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -478,9 +472,7 @@ plot_mv.DESeqDataSet <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv DESeqTransform
-#' @S3method plot_mv DESeqTransform
-#' @importFrom SummarizedExperiment assay
+#' @export
 
 plot_mv.DESeqTransform <- function(dat,
                                    trans = 'rank',
@@ -497,6 +489,7 @@ plot_mv.DESeqTransform <- function(dat,
   }
 
   # Tidy data
+  require(SummarizedExperiment)
   dat <- assay(dat)
   mu <- rowMeans(dat)
   sigma <- rowSds(dat)
@@ -521,8 +514,8 @@ plot_mv.DESeqTransform <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -540,9 +533,7 @@ plot_mv.DESeqTransform <- function(dat,
 
 
 #' @rdname plot_mv
-#' @method plot_mv default
-#' @S3method plot_mv default
-#' @importFrom limma getEAWP
+#' @export
 
 plot_mv.default <- function(dat,
                             trans = 'rank',
@@ -559,9 +550,7 @@ plot_mv.default <- function(dat,
   }
 
   # Tidy data
-  dat <- getEAWP(dat)$expr
-  keep <- rowSums(is.finite(dat)) == ncol(dat)
-  dat <- dat[keep, , drop = FALSE]
+  dat <- matrixize(dat)
   mu <- rowMeans(dat)
   sigma <- rowSds(dat)
   if (trans == 'rank') {                         # Apply transformations
@@ -585,8 +574,8 @@ plot_mv.default <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +

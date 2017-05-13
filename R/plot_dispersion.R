@@ -117,7 +117,6 @@
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
-#' @importFrom plotly ggplotly
 #'
 
 plot_dispersion <- function(dat,
@@ -150,8 +149,7 @@ plot_dispersion <- function(dat,
 
 
 #' @rdname plot_dispersion
-#' @method plot_dispersion DGEList
-#' @S3method plot_dispersion DGEList
+#' @export
 #' @importFrom edgeR calcNormFactors estimateDisp aveLogCPM
 
 plot_dispersion.DGEList <- function(dat,
@@ -195,8 +193,8 @@ plot_dispersion.DGEList <- function(dat,
                 Tagwise = rep(TRUE, nrow(dat)))
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
@@ -222,10 +220,7 @@ plot_dispersion.DGEList <- function(dat,
 
 
 #' @rdname plot_dispersion
-#' @method plot_dispersion DESeqDataSet
-#' @S3method plot_dispersion DESeqDataSet
-#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors
-#'   dispersions estimateDispersions
+#' @export
 #' @importFrom edgeR aveLogCPM
 
 plot_dispersion.DESeqDataSet <- function(dat,
@@ -235,6 +230,7 @@ plot_dispersion.DESeqDataSet <- function(dat,
                                          hover = FALSE) {
 
   # Preliminaries
+  require(DESeq2)
   if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
     dat <- estimateSizeFactors(dat)
   }
@@ -255,8 +251,8 @@ plot_dispersion.DESeqDataSet <- function(dat,
                 Outlier = mcols(dat)$dispOutlier)
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mean, Genewise, text = Gene, color = Outlier),
@@ -281,10 +277,7 @@ plot_dispersion.DESeqDataSet <- function(dat,
 
 
 #' @rdname plot_dispersion
-#' @method plot_dispersion DESeqDataSet
-#' @S3method plot_dispersion DESeqDataSet
-#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors
-#'   dispersions estimateDispersions
+#' @export
 #' @importFrom edgeR aveLogCPM
 
 plot_dispersion.default <- function(dat,
@@ -300,6 +293,7 @@ plot_dispersion.default <- function(dat,
     plot_dispersion(dat, design = design, trans = trans, title = title,
                     legend = legend, hover = hover)
   } else if (pipeline == 'DESeq2') {
+    require(DESeq2)
     if (is.null(design)) {
       cd <- data_frame(A = rep(0L, times = ncol(dat)))
       dat <- DESeqDataSetFromMatrix(dat, colData = cd, design = ~ 1L)

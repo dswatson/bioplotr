@@ -139,5 +139,6 @@ expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 Acids Res.}, \emph{43}(7): e47.
 }
 \seealso{
-\code{\link[limma]{plotMD}, \link[DESeq2]{plotMA}, \link[Glimma]{glMDPlot}}
+\code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
+\code{\link[Glimma]{glMDPlot}}
 }

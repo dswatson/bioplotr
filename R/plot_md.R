@@ -91,12 +91,12 @@
 #' plot_md(res)
 #'
 #' @seealso
-#' \code{\link[limma]{plotMD}, \link[DESeq2]{plotMA}, \link[Glimma]{glMDPlot}}
+#' \code{\link[limma]{plotMD}}, \code{\link[DESeq2]{plotMA}},
+#' \code{\link[Glimma]{glMDPlot}}
 #'
 #' @export
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_md <- function(dat,
@@ -119,8 +119,7 @@ plot_md <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md DGEList
-#' @S3method plot_md DGEList
+#' @export
 #' @importFrom edgeR calcNormFactors aveLogCPM estimateDisp cpm
 #' @importFrom ggsci scale_color_d3
 
@@ -188,8 +187,8 @@ plot_md.DGEList <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -220,10 +219,7 @@ plot_md.DGEList <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md DESeqDataSet
-#' @S3method plot_md DESeqDataSet
-#' @importFrom DESeq2 counts sizeFactors normalizationFactors estimateSizeFactors
-#'   estimateDispersions dispersions
+#' @export
 #' @importFrom edgeR aveLogCPM cpm
 #' @importFrom ggsci scale_color_d3
 
@@ -257,6 +253,7 @@ plot_md.DESeqDataSet <- function(dat,
   if (is.null(xlab)) {
     xlab <- expression('Mean'~log[2]*'-CPM')
   }
+  require(DESeq2)
   if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
     dat <- estimateSizeFactors(dat)
   }
@@ -280,8 +277,8 @@ plot_md.DESeqDataSet <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -312,9 +309,7 @@ plot_md.DESeqDataSet <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md DESeqTransform
-#' @S3method plot_md DESeqTransform
-#' @importFrom SummarizedExperiment assay
+#' @export
 
 plot_md.DESeqTransform <- function(dat,
                                    sample = 1,
@@ -331,6 +326,7 @@ plot_md.DESeqTransform <- function(dat,
   }
 
   # Tidy data
+  require(SummarizedExperiment)
   dat <- assay(dat)
 
   # Export
@@ -341,8 +337,7 @@ plot_md.DESeqTransform <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md DESeqResults
-#' @S3method plot_md DESeqResults
+#' @export
 
 plot_md.DESeqResults <- function(dat,
                                  fdr = 0.05,
@@ -377,8 +372,8 @@ plot_md.DESeqResults <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     scale_x_log10() +
     geom_hline(yintercept = 0L, color = 'grey') +
@@ -419,8 +414,7 @@ plot_md.DESeqResults <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md TopTags
-#' @S3method plot_md TopTags
+#' @export
 
 plot_md.TopTags <- function(dat,
                             fdr = 0.05,
@@ -444,8 +438,7 @@ plot_md.TopTags <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md data.frame
-#' @S3method plot_md data.frame
+#' @export
 
 plot_md.data.frame <- function(dat,
                                probes = NULL,
@@ -529,8 +522,8 @@ plot_md.data.frame <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -570,8 +563,7 @@ plot_md.data.frame <- function(dat,
 
 
 #' @rdname plot_md
-#' @method plot_md default
-#' @S3method plot_md default
+#' @export
 #' @importFrom limma getEAWP
 #' @importFrom ggsci scale_color_d3
 
@@ -620,8 +612,8 @@ plot_md.default <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +

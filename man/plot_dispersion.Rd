@@ -15,7 +15,7 @@ plot_dispersion(dat, trans = "log", title = NULL, legend = "outside", ...)
 \method{plot_dispersion}{DESeqDataSet}(dat, trans = "log", title = NULL,
   legend = "outside", hover = FALSE)
 
-\method{plot_dispersion}{DESeqDataSet}(dat, design = NULL, trans = "log",
+\method{plot_dispersion}{default}(dat, design = NULL, trans = "log",
   pipeline = NULL, title = NULL, legend = "outside", hover = FALSE)
 }
 \arguments{
