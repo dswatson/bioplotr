@@ -8,6 +8,8 @@ plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, title = NULL,
   leg.txt = NULL, legend = "outside", ...)
 }
 \arguments{
+\item{fit}{An object of class \code{\link[survival]{survfit}}.}
+
 \item{fun}{An arbitrary function defining a transformation of the survival
 curve(s). Common transformations can be specified with a character
 argument, e.g. \code{"event"} for cumulative events, \code{"cumhaz"} for
@@ -30,7 +32,8 @@ a percentage.}
 \link[survminer]{ggsurvplot}}.}
 }
 \description{
-This function plots one or several survival curves for a given time-to-event model.
+This function plots one or several survival curves for a given time-to-event
+model.
 }
 \details{
 Survival curves visualize the fit of a time-to-event model, e.g. a

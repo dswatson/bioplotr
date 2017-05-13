@@ -1,8 +1,9 @@
 #' Survival Curve(s)
 #'
-#' This function plots one or several survival curves for a given time-to-event model.
+#' This function plots one or several survival curves for a given time-to-event
+#' model.
 #'
-#' @param fit An object of class \code{\link{survival{survfit}}.
+#' @param fit An object of class \code{\link[survival]{survfit}}.
 #' @param fun An arbitrary function defining a transformation of the survival
 #'   curve(s). Common transformations can be specified with a character
 #'   argument, e.g. \code{"event"} for cumulative events, \code{"cumhaz"} for
