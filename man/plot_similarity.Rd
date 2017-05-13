@@ -24,11 +24,11 @@ Alternatively, a data frame or list of such vectors, optionally named.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for distance calculations. See Details.}
 
-\item{dist}{Distance measure to be used. Currently supports \code{"euclidean",
-"pearson", "MI",} or \code{"KLD"}. See Details.}
+\item{dist}{Distance measure to be used. Currently supports \code{
+"euclidean"}, \code{"pearson"}, \code{"MI"}, or \code{"KLD"}. See Details.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
-clustering. See \code{\link[stats]{hclust}} for available options.}
+clustering. Options are \code{"average"} and \code{"complete"}.}
 
 \item{col}{Color palette to use for heatmap tiles. Preset options include
 \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
@@ -49,19 +49,17 @@ associations with phenotypic features.
 Different distance measures and agglomeration methods can lead to different
 results. The default settings, which perform average linkage hierarchical
 clustering on a Euclidean distance matrix, are mathematically straightforward
-and commonly used for omic EDA. Complete linkage is also fairly common for
-hierarchical clustering, while other options (single linkage, Ward, etc.) are less
-informative.
+and commonly used for omic EDA. Complete linkage is also fairly common.
 
 Pearson distance, defined as 1 - the Pearson correlation, is another popular
-method for evaluating sample similarity. Mutual information and Kullback-Leibler
-divergence are more complicated distance metrics that require some simplifying
-assumptions to be efficiently applied to continuous data distributions. See
-\code{\link[bioDist]{MIdist}} and \code{\link[bioDist]{KLdist.matrix}}
-for more info.
+method for evaluating sample similarity. Mutual information and
+Kullback-Leibler divergence are more complicated distance metrics that
+require some simplifying assumptions to be efficiently applied to continuous
+data distributions. See \code{\link[bioDist]{MIdist}} and \code{
+\link[bioDist]{KLdist.matrix}} for more info.
 
-The \code{top} argument optionally filters probes using the leading fold change
-method of Smyth et al. See \code{\link{plot_mds}} for more details.
+The \code{top} argument optionally filters probes using the leading fold
+change method of Smyth et al. See \code{\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -70,6 +68,7 @@ plot_similarity(mat, title = "Nothin' Doin'")
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 dds <- rlog(dds)
-plot_similarity(dds, group = colData(dds)$condition, title = "Somethin' Cookin'")
+plot_similarity(dds, group = colData(dds)$condition,
+                title = "Somethin' Cookin'")
 
 }
