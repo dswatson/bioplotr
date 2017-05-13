@@ -18,7 +18,6 @@ Imports:
   purrr,
   limma,
   edgeR,
-  SummarizedExperiment,
   matrixStats,
   precrec,
   wordspace,
@@ -30,6 +29,7 @@ Imports:
   KernSmooth
 Suggests:
   plotly,
+  SummarizedExperiment,
   DESeq2,
   NMF
 License: GPL (>= 3)
