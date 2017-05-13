@@ -147,7 +147,7 @@ voom: precision weights unlock linear model analysis tools for RNA-seq read
 counts}. \emph{Genome Biology}, \strong{15}: R29.
 }
 \seealso{
-\code{\link[edgeR]{plotMeanVar}}, \cpde{\link[edgeR]{dglmStdResid}},
+\code{\link[edgeR]{plotMeanVar}}, \code{\link[edgeR]{dglmStdResid}},
 \code{\link[vsn]{meanSdPlot}}, \code{\link[limma]{plotSA}},
 \code{\link[limma]{voom}}
 }
