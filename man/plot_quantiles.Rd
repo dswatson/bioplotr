@@ -10,7 +10,7 @@ plot_quantiles(x, y, method = "QQ", pts = 1000, main = NULL,
 \arguments{
 \item{x}{Vector of numeric values.}
 
-\item{y}{Optional second vector of numeric values.}
+\item{y}{Second vector of numeric values for comparison.}
 
 \item{method}{Plot quantiles against quantiles (\code{method = "QQ"}) or mean
 quantiles against difference in quantiles (\code{method = "MD"})?}
@@ -28,9 +28,9 @@ This function plots the quantiles of two vectors against each other as either
 a QQ or an MD plot.
 }
 \details{
-QQ and MD plots visualize the relationship between two numeric vectors. They
-are a quick and easy alternative to scatterplots when distributions are of
-unequal length.
+Quantile-quantile (QQ) and mean-difference (MD) plots visualize the
+relationship between two numeric vectors. They are a quick and easy
+alternative to scatterplots when distributions are of unequal length.
 }
 \examples{
 x1 <- rnorm(100)

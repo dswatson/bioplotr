@@ -4,7 +4,7 @@
 #' a QQ or an MD plot.
 #'
 #' @param x Vector of numeric values.
-#' @param y Optional second vector of numeric values.
+#' @param y Second vector of numeric values for comparison.
 #' @param method Plot quantiles against quantiles (\code{method = "QQ"}) or mean
 #'   quantiles against difference in quantiles (\code{method = "MD"})?
 #' @param pts Number of points to plot.
@@ -13,9 +13,9 @@
 #' @param ylab Optional y-axis label.
 #'
 #' @details
-#' QQ and MD plots visualize the relationship between two numeric vectors. They
-#' are a quick and easy alternative to scatterplots when distributions are of
-#' unequal length.
+#' Quantile-quantile (QQ) and mean-difference (MD) plots visualize the
+#' relationship between two numeric vectors. They are a quick and easy
+#' alternative to scatterplots when distributions are of unequal length.
 #'
 #' @examples
 #' x1 <- rnorm(100)
@@ -65,8 +65,9 @@ plot_quantiles <- function(x,
   }
 
   # Build plot
+  size <- pt_size(df)
   p <- ggplot(df, aes(X, Y)) +
-    geom_point(size = 0.5) +
+    geom_point(size = size) +
     labs(title = main, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
