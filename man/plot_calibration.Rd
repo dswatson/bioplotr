@@ -9,30 +9,33 @@ plot_calibration(obs, pred, title = NULL, legend = "outside",
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
-logical, character, or factor. If numeric, \code{obs} must be coded \code{1}
-or \code{0}. If character or factor, a warning will be issued clarifying that
-the first level is assumed to be the reference.}
+logical, character, or factor. If numeric, \code{obs} must be coded \code{
+1} or \code{0}. If character or factor, a warning will be issued clarifying
+that the first level is assumed to be the reference.}
 
-\item{pred}{Vector of predicted probabilities, or several such vectors organized
-into a data frame or list, optionally named. Must be numeric on \code{(0, 1)}.}
+\item{pred}{Vector of predicted probabilities, or several such vectors
+organized into a data frame or list, optionally named. Must be numeric on
+\code{(0, 1)}.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 }
 \description{
-This functions plots probability calibration curves for one or several classifiers.
+This functions plots probability calibration curves for one or several
+classifiers.
 }
 \details{
-Calibration curves are a quick and easy way to evaluate a classifier's fit to the
-data. This function allows one or several models to be plotted in the same figure,
-with points sized by the number of observations that fall within the corresponding
-bin.
+Calibration curves are a quick and easy way to evaluate a classifier's fit to
+the data. This function allows one or several models to be plotted in the
+same figure, with points sized by the number of observations that fall within
+the corresponding bin.
 }
 \examples{
 x <- runif(1000)
