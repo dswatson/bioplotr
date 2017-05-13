@@ -3,27 +3,28 @@
 #' This function plots expected vs. observed \emph{p}-values following -log10
 #' transform.
 #'
-#' @param dat Either a vector of \emph{p}-values, optionally named, or any object
-#'   with a column for \emph{p}-values coercable to a data frame. Missing values are
-#'   silently removed.
+#' @param dat Either a vector of \emph{p}-values, optionally named, or any
+#'   object with a column for \emph{p}-values coercable to a data frame. Missing
+#'   values are silently removed.
 #' @param lambda Calculate genomic inflation factor? See Details.
 #' @param title Optional plot title.
-#' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. Probe names are extracted from
-#'   \code{dat}.
+#' @param hover Show probe name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer. Probe names are extracted
+#'   from \code{dat}.
 #'
 #' @details
-#' Q-Q plots are a common way to visually assess the applicability of a statistical
-#' test to a given data set. If the black points deviate too sharply from the red
-#' line, especially at low expected values of -log10(\emph{p}), then it suggests a
-#' violation of the assumptions upon which the test was based.
+#' Q-Q plots are a common way to visually assess the applicability of a
+#' statistical test to a given data set. If the black points deviate too sharply
+#' from the red line, especially at low expected values of -log10(\emph{p}),
+#' then it suggests a violation of the assumptions upon which the test was based.
 #'
-#' In addition, \code{plot_qq} optionally calculates the genomic inflation factor
-#' \eqn{lambda}, defined as the ratio of the median of the observed distribution of
-#' the test statistic to the expected median. Inflated \eqn{lambda}-values (i.e.,
-#' \eqn{lambda > 1}) are indicative of a high false positive rate, possibly due to
-#' some systematic and unaccounted for bias in the data.
+#' In addition, \code{plot_qq} optionally calculates the genomic inflation
+#' factor \eqn{lambda}, defined as the ratio of the median of the observed
+#' distribution of the test statistic to the expected median. Inflated \eqn{
+#' lambda}-values (i.e., \eqn{lambda > 1}) are indicative of a high false
+#' positive rate, possibly due to some systematic and unaccounted for bias in
+#' the data.
 #'
 #' @examples
 #' df <- data.frame(p.value = runif(10000))
@@ -98,19 +99,14 @@ plot_qq <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (lambda) {
-    p <- p + annotate('text', x = max(df$Expected), y = 0L, size = 5L, hjust = 1L,
-                      label = lambda_lbl, parse = TRUE)
+    p <- p + annotate('text', x = max(df$Expected), y = 0L, size = 5L,
+                      hjust = 1L, label = lambda_lbl, parse = TRUE)
   }
 
   # Output
-  if (!hover) {
-    print(p)
-  } else {
-    p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
-    print(p)
-  }
+  gg_out(p, hover)
 
 }
 
-# Use gganimate, tweenr, and shiny to toggle between tests?
+# lambda not eqn-ing right
 

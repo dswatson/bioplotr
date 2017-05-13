@@ -9,35 +9,36 @@ plot_roc(obs, pred, title = NULL, leg.txt = NULL, legend = "bottomright",
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be logical,
-numeric, character, or factor. If numeric, \code{obs} must be coded \code{1}
-or \code{0}. If character or factor, a warning will be issued clarifying that
-the first level is assumed to be the reference.}
+numeric, character, or factor. If numeric, \code{obs} must be coded \code{
+1} or \code{0}. If character or factor, a warning will be issued clarifying
+that the first level is assumed to be the reference.}
 
-\item{pred}{Vector of predicted values, or several such vectors organized into a
-data frame or list, optionally named. Must be numeric. Common examples include
-the probabilities output by a logistic model, or the expression levels of a
-particular biomarker.}
+\item{pred}{Vector of predicted values, or several such vectors organized
+into a data frame or list, optionally named. Must be numeric. Common
+examples include the probabilities output by a logistic model, or the
+expression levels of a particular biomarker.}
 
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 }
 \description{
 This functions plots ROC curves for one or several classifiers.
 }
 \details{
-ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
-positive rate (i.e., sensitivity) for a given classifier and vector of observations.
-The area under the ROC curve (AUC) is a common performance metric for binary
-classifiers. The grey diagonal line across the plot represents the performance of
-a theoretical random classifier.
+ROC curves plot the false positive rate (i.e., 1 - specificity) against the
+true positive rate (i.e., sensitivity) for a given classifier and vector of
+observations. The area under the ROC curve (AUC) is a common performance
+metric for binary classifiers. The grey diagonal line across the plot
+represents the performance of a theoretical random classifier.
 }
 \examples{
 y <- rbinom(100, size = 1, prob = 0.5)

@@ -8,18 +8,18 @@ plot_voom(dat, design = NULL, lib.size = NULL, normalize.method = "none",
   span = 0.5, title = NULL, legend = "outside", hover = FALSE, ...)
 }
 \arguments{
-\item{dat}{Raw count matrix, or an \code{\link[BioBase]{ExpressionSet}} object
-containing raw counts, or a \code{\link[edgeR]{DGEList}}. Data should be filtered
-prior to applying the \code{\link[limma]{voom}} transformation.}
+\item{dat}{Raw count matrix, or an \code{\link[BioBase]{ExpressionSet}}
+object containing raw counts, or a \code{\link[edgeR]{DGEList}}. Data
+should be filtered prior to applying the \code{\link[limma]{voom}}
+transformation.}
 
-\item{design}{Optional design matrix with rows corresponding to samples and columns
-to coefficients to be estimated. Only relevant for \code{\link[edgeR]{DGEList}}
-objects. See Details.}
+\item{design}{Optional design matrix with rows corresponding to samples and
+columns to coefficients to be estimated.}
 
-\item{lib.size}{Numeric vector containing total library sizes for each sample. If
-\code{NULL} and \code{dat} is a \code{DGEList}, then normalized library sizes are
-taken from counts. Otherwise library sizes are calculated from the columnwise
-count totals.}
+\item{lib.size}{Numeric vector containing total library sizes for each
+sample. If \code{NULL} and \code{dat} is a \code{DGEList}, then normalized
+library sizes are taken from counts. Otherwise library sizes are calculated
+from the columnwise count totals.}
 
 \item{normalize.method}{Normalization method to be applied to the transformed
 counts. Choices are the same as for the \code{method} argument of
@@ -29,13 +29,14 @@ counts. Choices are the same as for the \code{method} argument of
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}. .}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. Probe names are extracted from
-\code{dat}.}
+\item{hover}{Show probe name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer. Probe names are extracted
+from \code{dat}.}
 
 \item{...}{Additional arguments to be passed to \code{\link[limma]{lmFit}}.}
 }
@@ -44,18 +45,20 @@ This function visualizes the mean-variance relationship of count data after
 applying the voom transformation.
 }
 \details{
-The \code{voom} function from the \code{limma} package offers a unique approach to
-modeling count data. Rather than fitting negative binomial regressions directly to
-genewise counts, \code{voom} applies a log2-CPM transformation that renders the
-distribution approximately normal. A (preliminary) linear model is fit to the
-transformed counts, from which a mean-variance trend is inferred using LOWESS.
-Observation weights are then computed as inverse predicted residual variance. These
-can be applied during a final linear model fitting stage to counteract the
-heteroskedasticity inherent to count data.
+The \code{voom} function from the \code{limma} package offers a unique
+approach to modeling count data. Rather than fitting negative binomial
+regressions directly to genewise counts, \code{voom} applies a log2-CPM
+transformation that renders the distribution approximately normal. A
+(preliminary) linear model is fit to the transformed counts, from which a
+mean-variance trend is estimated using LOWESS. Observation weights are then
+computed as inverse predicted residual variance. These can be applied during
+a final linear model fitting stage to counteract the heteroskedasticity
+inherent to count data.
 
-The \code{voom} function optionally plots mean log2-CPM counts against quarter-root
-residual variance. This plot is similar in principle to the output of \code{
-\link{plot_mv}}, although the y-axis there represents raw, not residual variance.
+The \code{voom} function optionally plots mean log2-CPM counts against
+quarter-root residual variance. This plot is similar in principle to the
+output of \code{\link{plot_mv}}, although the y-axis in that case represents
+raw, not residual variance.
 }
 \examples{
 library(limma)
@@ -67,9 +70,9 @@ plot_voom(mat, design = des)
 }
 \references{
 Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
-\href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{voom:
-precision weights unlock linear model analysis tools for RNA-seq read counts}.
-\emph{Genome Biology}, \strong{15}: R29.
+\href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{
+voom: precision weights unlock linear model analysis tools for RNA-seq read
+counts}. \emph{Genome Biology}, \strong{15}: R29.
 }
 \seealso{
 \code{\link[limma]{voom}}

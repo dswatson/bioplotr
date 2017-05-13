@@ -10,36 +10,39 @@ plot_volcano(dat, fdr = 0.05, lfc = NULL, title = NULL,
 \arguments{
 \item{dat}{Data frame representing the results of a test for differential
 expression, such as the output of a call to \code{\link[limma]{topTable}},
-\code{\link[edgeR]{topTags}}, or \code{\link[DESeq2]{results}}. Alternatively,
-any object coercable to a data frame with columns for \emph{p}-values, log fold
-changes, and FDR. Missing values are silently removed.}
+\code{\link[edgeR]{topTags}}, or \code{\link[DESeq2]{results}}.
+Alternatively, any object coercable to a data frame with columns for \emph{
+p}-values, log fold changes, and FDR. Missing values are silently removed.}
 
-\item{fdr}{Significance threshold for declaring a probe differentially expressed.}
-
-\item{lfc}{Optional effect size threshold for declaring a probe differentially
+\item{fdr}{Significance threshold for declaring a probe differentially
 expressed.}
+
+\item{lfc}{Optional effect size threshold for declaring a probe
+differentially expressed.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show probe name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer. Probe names are extracted from
-\code{dat}.}
+\item{hover}{Show probe name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer. Probe names are extracted
+from \code{dat}.}
 }
 \description{
-This function plots log2 fold changes against -log10 \emph{p}-values for a given
-test of differential expression.
+This function plots log2 fold changes against -log10 \emph{p}-values for a
+given test of differential expression.
 }
 \details{
-Volcano plots visualize the relationship between each probe's log2 fold change and
--log10 \emph{p}-value for a given test of differential expression. Points are
-colored to distinguish between those that do and do not meet a user-defined FDR
-threshold. Up- and down-regulated genes may also be differentially colored if a
-minimum absolute fold change is supplied. These figures help to evaluate the
-symmetry, magnitude, and significance of effects in an omic experiment.
+Volcano plots visualize the relationship between each probe's log2 fold
+change and -log10 \emph{p}-value for a given test of differential expression.
+Points are colored to distinguish between those that do and do not meet a
+user-defined FDR threshold. Up- and down-regulated genes may also be
+differentially colored if a minimum absolute fold change is supplied. These
+figures help to evaluate the symmetry, magnitude, and significance of effects
+in an omic experiment.
 }
 \examples{
 # Simulated data

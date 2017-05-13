@@ -3,27 +3,28 @@
 #' This functions plots ROC curves for one or several classifiers.
 #'
 #' @param obs Vector of observed outcomes. Must be dichotomous. Can be logical,
-#'   numeric, character, or factor. If numeric, \code{obs} must be coded \code{1}
-#'   or \code{0}. If character or factor, a warning will be issued clarifying that
-#'   the first level is assumed to be the reference.
-#' @param pred Vector of predicted values, or several such vectors organized into a
-#'   data frame or list, optionally named. Must be numeric. Common examples include
-#'   the probabilities output by a logistic model, or the expression levels of a
-#'   particular biomarker.
+#'   numeric, character, or factor. If numeric, \code{obs} must be coded \code{
+#'   1} or \code{0}. If character or factor, a warning will be issued clarifying
+#'   that the first level is assumed to be the reference.
+#' @param pred Vector of predicted values, or several such vectors organized
+#'   into a data frame or list, optionally named. Must be numeric. Common
+#'   examples include the probabilities output by a logistic model, or the
+#'   expression levels of a particular biomarker.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show predictor name by hovering mouse over ROC curve? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show predictor name by hovering mouse over ROC curve? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #'
 #' @details
-#' ROC curves plot the false positive rate (i.e., 1 - specificity) against the true
-#' positive rate (i.e., sensitivity) for a given classifier and vector of observations.
-#' The area under the ROC curve (AUC) is a common performance metric for binary
-#' classifiers. The grey diagonal line across the plot represents the performance of
-#' a theoretical random classifier.
+#' ROC curves plot the false positive rate (i.e., 1 - specificity) against the
+#' true positive rate (i.e., sensitivity) for a given classifier and vector of
+#' observations. The area under the ROC curve (AUC) is a common performance
+#' metric for binary classifiers. The grey diagonal line across the plot
+#' represents the performance of a theoretical random classifier.
 #'
 #' @examples
 #' y <- rbinom(100, size = 1, prob = 0.5)
@@ -57,9 +58,9 @@ plot_roc <- function(obs,
     if (length(levels(obs)) != 2L) {
       stop('obs must be dichotomous.')
     } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1], '". ',
-              'To change this to obs == "', levels(obs)[2], '", either relevel the ',
-              'factor or recode response as logical or numeric (1/0).')
+      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1],
+              '". To change this to obs == "', levels(obs)[2], '", either',
+              'relevel the factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], TRUE, FALSE)
     }
   }
@@ -83,8 +84,8 @@ plot_roc <- function(obs,
   }
   for (m in seq_along(pred)) {
     if (!is.numeric(pred[[m]])) {
-      stop('pred must be a numeric vector, or several such vectors organized into ',
-           'a list or data frame.')
+      stop('pred must be a numeric vector, or several such vectors organized',
+           'into a list or data frame.')
     }
     if (length(obs) != length(pred[[m]])) {
       stop('obs and pred vectors must be of equal length.')
@@ -146,7 +147,6 @@ plot_roc <- function(obs,
                        labels = map_chr(seq_along(pred), p_auc),
                        values = 'black')
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)

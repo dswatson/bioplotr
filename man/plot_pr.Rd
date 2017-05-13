@@ -9,38 +9,39 @@ plot_pr(obs, pred, title = NULL, leg.txt = NULL, legend = "topright",
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
-character, factor, or logical. If numeric, \code{obs} must be coded \code{1}
-or \code{0}. If character or factor, a warning will be issued clarifying that
-the first level is assumed to be the reference.}
+character, factor, or logical. If numeric, \code{obs} must be coded \code{1
+} or \code{0}. If character or factor, a warning will be issued clarifying
+that the first level is assumed to be the reference.}
 
-\item{pred}{Vector of predicted values, or several such vectors organized into a
-data frame or list, optionally named. Must be numeric. Common examples include
-the probabilities output by a logistic model, or the expression levels of a
-particular biomarker.}
+\item{pred}{Vector of predicted values, or several such vectors organized
+into a data frame or list, optionally named. Must be numeric. Common
+examples include the probabilities output by a logistic model, or the
+expression levels of a particular biomarker.}
 
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show predictor name by hovering mouse over PR curve? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show predictor name by hovering mouse over PR curve? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 }
 \description{
 This function plots PR curves for one or several classifiers.
 }
 \details{
-PR curves plot the precision (i.e., positive predictive value) against the recall
-(i.e., true positive rate/sensitivity) for a given classifier and vector of
-observations. The area under the PR curve (AUC) is a useful performance metric for
-binary classifiers, especially in cases of extreme class imbalance, which is
-typical in omic contexts (Saito & Rehmsmeier, 2015). The grey horizontal line
-represents the performance of a theoretical random classifier. Interpolations
-for tied \code{pred} values are computed using the nonlinear method of Davis &
-Goadrich (2006).
+PR curves plot the precision (i.e., positive predictive value) against the
+recall (i.e., true positive rate/sensitivity) for a given classifier and
+vector of observations. The area under the PR curve (AUC) is a useful
+performance metric for binary classifiers, especially in cases of extreme
+class imbalance, which is typical in omic contexts (Saito & Rehmsmeier,
+2015). The grey horizontal line represents the performance of a theoretical
+random classifier. Interpolations for tied \code{pred} values are computed
+using the nonlinear method of Davis & Goadrich (2006).
 }
 \examples{
 y <- rbinom(1000, size = 1, prob = 0.1)
@@ -53,12 +54,14 @@ plot_pr(obs = y, pred = list("x1" = x1, "x2" = x2))
 }
 \references{
 Davis, J. & Goadrich, M. (2006).
-\href{http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf}{The Relationship
-Between Precision-Recall and ROC Curves}. In \emph{Proceedings of the 23rd
-International Conference on Machine Learning}, pp. 223-240. New York: ACM.
+\href{http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf}{The
+Relationship Between Precision-Recall and ROC Curves}. In \emph{Proceedings
+of the 23rd International Conference on Machine Learning}, pp. 223-240. New
+York: ACM.
 
 Saito, T. & Rehmsmeier, M. (2015).
-\href{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}{The
-Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary
-Classifiers on Imbalanced Datasets}. \emph{PLoS ONE, 10}(3): e0118432.
+\href{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118432}{
+The Precision-Recall Plot Is More Informative than the ROC Plot When
+Evaluating Binary Classifiers on Imbalanced Datasets}. \emph{PLoS ONE, 10}(3):
+e0118432.
 }

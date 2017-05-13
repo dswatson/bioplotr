@@ -3,70 +3,76 @@
 #' This function plots probewise means vs. log2 fold changes for a test of
 #' differential expression or between-sample comparison.
 #'
-#' @param dat Either a data frame representing the results of a test for differential
-#'   expression, or an omic data matrix or matrix-like object with rows corresponding
-#'   to probes and columns to samples. The former will render a study-wide MD plot,
-#'   the latter a between between-sample MD plot. See Details.
-#' @param design Optional design matrix with rows corresponding to samples and columns
-#'   to coefficients to be estimated. Only relevant for \code{\link[edgeR]{DGEList}}
-#'   objects. See Details.
-#' @param fdr Significance threshold for declaring a probe differentially expressed. Only
-#'   relevant for study-wide MD plots.
-#' @param lfc Optional effect size threshold for declaring a probe differentially
+#' @param dat Either a data frame representing the results of a test for
+#'   differential expression, or an omic data matrix or matrix-like object with
+#'   rows corresponding to probes and columns to samples. The former will render
+#'   a study-wide MD plot, the latter a between between-sample MD plot. See
+#'   Details.
+#' @param design Optional design matrix with rows corresponding to samples and
+#'   columns to coefficients to be estimated. Only relevant for \code{
+#'   \link[edgeR]{DGEList}} objects. See Details.
+#' @param fdr Significance threshold for declaring a probe differentially
 #'   expressed. Only relevant for study-wide MD plots.
+#' @param lfc Optional effect size threshold for declaring a probe
+#'   differentially expressed. Only relevant for study-wide MD plots.
 #' @param sample Column number or name specifying which sample in \code{dat} to
 #'   compare with the others. Only relevant for between-sample MD plots.
-#' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating the
-#'   control status of each probe. Only relevant for between-sample MD plots.
+#' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating
+#'   the control status of each probe. Only relevant for between-sample MD plots.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show probe name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer. Probe names are extracted from
-#'   \code{dat}.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show probe name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer. Probe names are extracted
+#'   from \code{dat}.
 #'
 #' @details
 #' MD plots (also known as "Bland-Altman plots" or "MA plots") visualize the
-#' relationship between a probe's mean value and its log2 fold change versus some
-#' relevant reference group. These figures help to evaluate the symmetry, magnitude,
-#' and significance of differential effects across the full omic range.
+#' relationship between a probe's mean value and its log2 fold change versus
+#' some relevant reference group. These figures help to evaluate the symmetry,
+#' magnitude, and significance of differential effects across the full omic
+#' range.
 #'
-#' If \code{dat} summarizes the results of a test for differential expression, then
-#' each point's x-coordinate correponds to its average expression across all samples,
-#' while y-coordinates represent the log2 fold change for the given contrast. Points
-#' are colored to distinguish between those that do and do not meet a user-defined
-#' FDR threshold. \code{plot_md} accepts output from
+#' If \code{dat} summarizes the results of a test for differential expression,
+#' then each point's x-coordinate correponds to its average expression across
+#' all samples, while y-coordinates represent the log2 fold change for the given
+#' contrast. Points are colored to distinguish between those that do and do not
+#' meet a user-defined FDR threshold. \code{plot_md} accepts output from
 #' \code{limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or
-#' \code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object with columns for
-#' log fold changes, probewise means, and FDR is acceptable.
+#' \code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object with columns
+#' for log fold changes, probewise means, and FDR is acceptable.
 #'
-#' If \code{dat} is probe by sample matrix or matrix-like object, then \code{sample}
-#' must be specified. An artificial array is created by averaging probewise values for
-#' all other samples in the data. The figure will then represent the mean vs. the
-#' difference of expression values for the specified sample vs. the artificial array.
-#' Acceptable inputs for between-sample MD plots include all \code{limma} expression
-#' set objects, as well as \code{\link[edgeR]{DGEList}}, \code{\link[DESeq2]{
-#' DESeqDataSet}}, and \code{\link[DESeq2]{DESeqTransform}} objects.
+#' If \code{dat} is probe by sample matrix or matrix-like object, then \code{
+#' sample} must be specified. An artificial array is created by averaging
+#' probewise values for all other samples in the data. The figure will then
+#' represent the mean vs. the difference of expression values for the specified
+#' sample vs. the artificial array. Acceptable inputs for between-sample MD
+#' plots include all \code{limma} expression set objects, as well as \code{
+#' \link[edgeR]{DGEList}}, \code{\link[DESeq2]{DESeqDataSet}}, and \code{
+#' \link[DESeq2]{DESeqTransform}} objects.
 #'
 #' @references
 #' Bolstad, B.M., Irizarry, R.A., Åstrand, M. & Speed, T.P. (2003).
-#' \href{https://www.ncbi.nlm.nih.gov/pubmed/12538238}{A comparison of normalization
-#' methods for high density oligonucleotide array data based on variance and bias}.
-#' \emph{Bioinformatics}, \emph{19}(2): 185–193.
+#' \href{https://www.ncbi.nlm.nih.gov/pubmed/12538238}{A comparison of
+#' normalization methods for high density oligonucleotide array data based on
+#' variance and bias}. \emph{Bioinformatics}, \emph{19}(2): 185–193.
 #'
 #' Dudoit, S., Yang, Y.H., Callow, M.J. & Speed, T.P. (2002).
 #' \href{https://pdfs.semanticscholar.org/2af3/26eabfc0e81d6f3e687e1283c32cfba25688.pdf}{
-#' Statistical methods for identifying differentially expressed genes in replicated cDNA
-#' microarray experiments}. \emph{Stat. Sin.}, \strong{12}, 111–140.
+#' Statistical methods for identifying differentially expressed genes in
+#' replicated cDNA microarray experiments}. \emph{Stat. Sin.}, \strong{12},
+#' 111–140.
 #'
 #' Martin, B.J. & Altman, D.G. (1986).
 #' \href{http://www.thelancet.com/journals/lancet/article/PIIS0140-6736(86)90837-8/abstract}{
-#' Statistical methods for assessing agreement between two methods of clinical measurement}.
-#' \emph{Lancet}, 327: 307–310.
+#' Statistical methods for assessing agreement between two methods of clinical
+#' measurement}. \emph{Lancet}, 327: 307–310.
 #'
-#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K. (2015).
+#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+#' (2015).
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 #' Acids Res.}, \emph{43}(7): e47.
@@ -203,10 +209,9 @@ plot_md.DGEList <- function(dat,
     )
   }
   if (!is.null(lfc)) {
-    p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
-      geom_hline(yintercept = -lfc, linetype = 2L)
+    p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
+      geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)
@@ -296,10 +301,9 @@ plot_md.DESeqDataSet <- function(dat,
     )
   }
   if (!is.null(lfc)) {
-    p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
-      geom_hline(yintercept = -lfc, linetype = 2L)
+    p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
+      geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)
@@ -354,7 +358,7 @@ plot_md.DESeqResults <- function(dat,
   }
   dat <- na.omit(dat)
   if (nrow(dat) == 0L) {
-    stop('dat must have at least one row with non-missing values for baseMean, ',
+    stop('dat must have at least one row with non-missing values for baseMean,',
          'log2FoldChange, and padj.')
   }
 
@@ -382,32 +386,31 @@ plot_md.DESeqResults <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
-    warning('No probe meets your fdr threshold. To color data points by differential ',
-            'expression, consider raising your fdr cutoff.')
+    warning('No probe meets your fdr threshold. To color data points by',
+            'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
     if (is.null(lfc)) {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = 'FDR',
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                         values = c('#444444', pal_d3()(4)[4]),
+                         values = c('#444444', pal_d3()(4L)[4L]),
                           guide = guide_legend(reverse = TRUE, override.aes = list(
                            size = rep(1L, 2L), alpha = rep(1L, 2L))))
     } else {
       suppressWarnings(
-        p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
-          geom_hline(yintercept = -lfc, linetype = 2L) +
+        p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
+          geom_hline(yintercept = -lfc, linetype = 'dashed') +
           geom_point(data = df %>% filter(Direction != 'NA'),
                      aes(Mean, Diff, color = Direction, text = Probe),
                      size = size, alpha = alpha) +
           geom_point(data = df %>% filter(Direction == 'NA'),
                      aes(Mean, Diff, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3L:4L])
       )
     }
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)
@@ -484,25 +487,25 @@ plot_md.data.frame <- function(dat,
   if (sum(avg %in% colnames(dat)) == 1L) {       # Rename AvgExpr
     colnames(dat)[colnames(dat) %in% avg] <- 'Mean'
   } else {
-    stop('dat must include a column for average expression by probe. Recognized ',
-         'colnames for this vector include "AveExpr", "baseMean", and "logCPM". ',
+    stop('dat must include a column for average expression by probe. Recognized',
+         'colnames for this vector include "AveExpr", "baseMean", and "logCPM".',
          'Make sure that dat includes exactly one such colname.')
   }
   fc <- c('logFC', 'log2FoldChange')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'Diff'
   } else {
-    stop('dat must include a log fold change column. Recognized colnames for this ',
-         'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
-         'exactly one such colname.')
+    stop('dat must include a log fold change column. Recognized colnames for',
+         'this vector include "logFC" and "log2FoldChange". Make sure that dat',
+         'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename FDR
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and "FDR". ',
-         'Make sure that dat includes exactly one such colname.')
+    stop('dat must include a column for adjusted p-values. Recognized colnames',
+         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and',
+         '"FDR". Make sure that dat includes exactly one such colname.')
   }
   if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
     stop('FDR values must be on [0, 1].')
@@ -514,8 +517,8 @@ plot_md.data.frame <- function(dat,
     select(Probe, Mean, Diff, q.value) %>%
     na.omit()
   if (nrow(dat) == 0L) {
-    stop('dat must have at least one row with non-missing values for AveExpr, logFC, ',
-         'and FDR.')
+    stop('dat must have at least one row with non-missing values for AveExpr,',
+         'logFC, and FDR.')
   }
 
   # Tidy data
@@ -534,32 +537,31 @@ plot_md.data.frame <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
-    warning('No probe meets your fdr threshold. To color data points by differential ',
-            'expression, consider raising your fdr cutoff.')
+    warning('No probe meets your fdr threshold. To color data points by',
+            'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
     if (is.null(lfc)) {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = 'FDR',
                            labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                           values = c('#444444', pal_d3()(4)[4]),
+                           values = c('#444444', pal_d3()(4L)[4L]),
                            guide = guide_legend(reverse = TRUE, override.aes = list(
                              size = rep(1L, 2L), alpha = rep(1L, 2L))))
     } else {
       suppressWarnings(
-        p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
-          geom_hline(yintercept = -lfc, linetype = 2L) +
+        p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
+          geom_hline(yintercept = -lfc, linetype = 'dashed') +
           geom_point(data = df %>% filter(Direction != 'NA'),
                      aes(Mean, Diff, color = Direction, text = Probe),
                      size = size, alpha = alpha) +
           geom_point(data = df %>% filter(Direction == 'NA'),
                      aes(Mean, Diff, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3L:4L])
       )
     }
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)
@@ -639,10 +641,9 @@ plot_md.default <- function(dat,
     )
   }
   if (!is.null(lfc)) {
-    p <- p + geom_hline(yintercept = lfc, linetype = 2L) +
-      geom_hline(yintercept = -lfc, linetype = 2L)
+    p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
+      geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)

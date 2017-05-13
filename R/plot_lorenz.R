@@ -4,29 +4,31 @@
 #'
 #' @param dat Numeric vector, or several such vectors organized into a list,
 #'   optionally named. May also be a data frame of such vectors, however in that
-#'   case each must be of equal length. Data may include negative values, but if so
-#'   a warning will be issued to proceed with caution.
+#'   case each must be of equal length. Data may include negative values, but if
+#'   so a warning will be issued to proceed with caution.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show vector name by hovering mouse over Lorenz curve? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show vector name by hovering mouse over Lorenz curve? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #'
 #' @details
-#' The Lorenz curve of a distribution plots its cumulative proportion of observations
-#' against its cumulative proportion of values. The extent to which the curve sags
-#' below the straight diagonal line indicates the variable's degree of inequality.
-#' This is measured by the Gini coefficient, which represents the ratio of the area
-#' between the line of perfect equality and the distribution's Lorenz curve to the
-#' total area under the diagonal line. The statistic has range [0, 1] for non-negative
-#' data, with higher coefficients corresponding to more unequal distributions.
+#' The Lorenz curve of a distribution plots its cumulative proportion of
+#' observations against its cumulative proportion of values. The extent to which
+#' the curve sags below the straight diagonal line indicates the variable's
+#' degree of inequality. This is measured by the Gini coefficient, which
+#' represents the ratio of the area between the line of perfect equality and the
+#' distribution's Lorenz curve to the total area under the diagonal line. The
+#' statistic has range [0, 1] for non-negative data, with higher coefficients
+#' corresponding to more unequal distributions.
 #'
-#' Lorenz curves are common in economics, where Gini coefficients are often used to
-#' measure the inequality of national income distributions. They also have sevel omic
-#' applications, e.g. to visualize the degree of biodiversity in a microbiome, or the
-#' spread of RNA-sequencing counts across libraries.
+#' Lorenz curves are common in economics, where Gini coefficients are often used
+#' to measure the inequality of national income distributions. They also have
+#' several omic applications, e.g. to visualize the degree of biodiversity in a
+#' microbiome, or the spread of RNA-sequencing counts across libraries.
 #'
 #' @examples
 #' x <- runif(100)
@@ -133,7 +135,6 @@ plot_lorenz <- function(dat,
                        labels = map_chr(seq_along(dat), p_gin),
                        values = 'black')
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)
