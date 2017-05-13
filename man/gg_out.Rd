@@ -4,7 +4,7 @@
 \alias{gg_out}
 \title{Output Image}
 \usage{
-gg_out(p, hover, loc)
+gg_out(p, hover, loc = NULL)
 }
 \arguments{
 \item{p}{A \code{ggplot2} object.}
@@ -14,5 +14,6 @@ gg_out(p, hover, loc)
 \item{loc}{String specifying legend location.}
 }
 \description{
-This utility function prints a ggplot or ggplotly figure.
+This utility function locates the figure legend and prints a ggplot or
+ggplotly figure.
 }
