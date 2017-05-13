@@ -4,18 +4,24 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, anno = NULL, dist = "pearson", hclustfun = "average",
-  col = "RdBu", title = NULL)
+plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
+  hclustfun = "average", col = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples.}
 
+\item{group}{Optional character or factor vector of length equal to sample
+size. Alternatively, a data frame or list of such vectors, optionally named.}
+
+\item{covar}{Optional continuous covariate of length equal to sample size.
+Alternatively, a data frame or list of such vectors, optionally named.}
+
 \item{dist}{Distance measure to be used. Currently supports any method
 available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
-clustering. See \code{\link[stats]{hclust}} for available options.}
+clustering. Options are \code{"average"} and \code{"complete"}.}
 
 \item{col}{Color palette to use for heatmap tiles. Preset options include
 \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
@@ -23,12 +29,6 @@ gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
 user-supplied color palette is acceptable.}
 
 \item{title}{Optional plot title.}
-
-\item{group}{Optional character or factor vector of length equal to sample
-size. Alternatively, a data frame or list of such vectors, optionally named.}
-
-\item{covar}{Optional continuous covariate of length equal to sample size.
-Alternatively, a data frame or list of such vectors, optionally named.}
 }
 \description{
 This function visualizes a probe by sample matrix as a heatmap.
@@ -43,6 +43,6 @@ the figure may be used to investigate associations with phenotypic features.
 \examples{
 mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
 grp <- rep(c("A", "B"), each = 5)
-plot_heatmap(mat, anno = grp)
+plot_heatmap(mat, group = grp)
 
 }

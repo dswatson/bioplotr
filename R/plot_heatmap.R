@@ -11,7 +11,7 @@
 #' @param dist Distance measure to be used. Currently supports any method
 #'   available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.
 #' @param hclustfun The agglomeration method to be used for hierarchical
-#'   clustering. See \code{\link[stats]{hclust}} for available options.
+#'   clustering. Options are \code{"average"} and \code{"complete"}.
 #' @param col Color palette to use for heatmap tiles. Preset options include
 #'   \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
 #'   gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
@@ -28,57 +28,40 @@
 #' @examples
 #' mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
 #' grp <- rep(c("A", "B"), each = 5)
-#' plot_heatmap(mat, anno = grp)
+#' plot_heatmap(mat, group = grp)
 #'
 #' @export
 #' @importFrom purrr map_lgl
-#' @importFrom edgeR calcNormFactors cpm
-#' @importFrom DESeq2 sizeFactors normalizationFactors estimateSizeFactors
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
-#' @importFrom NMF aheatmap
-#' @import RColorBrewer
+#' @importFrom RColorBrewer brewer.pal
 #'
 
 plot_heatmap <- function(dat,
-                         anno = NULL,
-                         dist = 'pearson',
-                    hclustfun = 'average',
-                          col = 'RdBu',
-                        title = NULL) {
+                         group = NULL,
+                         covar = NULL,
+                          dist = 'pearson',
+                     hclustfun = 'average',
+                           col = 'RdBu',
+                         title = NULL) {
 
   # Preliminaries
-  if (is.data.frame(anno)) {
-    anno <- as.list(anno)
-  } else if (!is.list(anno)) {
-    anno <- list('Variable' = anno)
+  if (!is.null(group)) {
+    group <- anno_track(dat, group, var_type = 'Categorical')
+    grp_cols <- track_cols(group, var_type = 'Categorical')
   } else {
-    if (is.null(names(anno))) {
-      if (length(anno) == 1L) {
-        names(anno) <- 'Variable'
-      } else {
-        names(anno) <- paste('Variable', seq_along(anno))
-      }
-    }
+    grp_cols <- NULL
   }
-  if (any(map_lgl(seq_along(anno), function(j) {
-    length(anno[[j]]) != ncol(dat)
-  }))) {
-    stop('anno length must match number of samples in dat.')
+  if (!is.null(covar)) {
+    covar <- anno_track(dat, covar, var_type = 'Continuous')
+    cov_cols <- track_cols(covar, var_type = 'Continuous')
+  } else {
+    cov_cols <- NULL
   }
-  if (any(map_lgl(seq_along(anno), function(j) {
-    if (is.numeric(anno[[j]])) var(anno[[j]]) == 0L
-    else length(unique(anno[[j]])) == 1L
-  }))) {
-    stop('anno is invariant.')
+  if (!is.null(c(group, covar))) {
+    anno <- c(group, covar)
+    ann_cols <- c(grp_cols, cov_cols)
   }
-  if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
-    stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
-  }
-  if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
-                        'mcquitty', 'median', 'centroid')) {
-    stop('hclustfun must be one of "ward.D", "ward.D2", "single", "complete", ',
-         '"average", "mcquitty", "median", or "centroid". See ?hclust.')
+  if (!hclustfun %in% c('average', 'complete')) {
+    stop('hclustfun must be one of "average" or "complete".')
   }
   if (col == 'RdBu') {
     col <- rev(colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L))
@@ -95,13 +78,14 @@ plot_heatmap <- function(dat,
   dat <- matrixize(dat)
 
   # Plot
+  require(NMF)
   if (is.null(anno)) {
     aheatmap(dat, distfun = dist, scale = 'row', col = col,
              hclustfun = hclustfun, main = title, border_color = 'grey60')
   } else {
     aheatmap(dat, distfun = dist, scale = 'row', col = col,
              hclustfun = hclustfun, main = title, annCol = anno,
-             border_color = 'grey60')
+             annColors = ann_cols, border_color = 'grey60')
   }
 
 }
