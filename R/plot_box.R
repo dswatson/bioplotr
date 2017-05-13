@@ -1,25 +1,30 @@
 #' Box Plots by Sample
 #'
-#' This function displays each sample's omic data distribution as a box and whisker
-#' plot.
+#' This function displays each sample's omic data distribution as a box and
+#' whisker plot.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples.
-#' @param group Optional character or factor vector of length equal to sample size.
-#'   Numeric or logical vectors will be silently coerced to factor. Levels are used
-#'   to color density curves. If supplied, legend title defaults to "Group". Override
-#'   this feature by passing a named list instead.
+#'   probes and columns to samples. It is strongly recommended that data be
+#'   filtered and normalized prior to plotting. Raw counts stored in \code{
+#'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+#'   automatically extracted and transformed to the log2-CPM scale, with a
+#'   warning.
+#' @param group Optional character or factor vector of length equal to sample
+#'   size. Numeric or logical vectors will be silently coerced to factor. Levels
+#'   are used to color density curves. If supplied, legend title defaults to
+#'   "Group". Override this feature by passing a named list instead.
 #' @param ylab Optional label for y-axis.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show sample name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #'
 #' @details
-#' Box plots are an intuitive way to visualize an omic data distribution. They are
-#' especially helpful when contrasting pre- and post-normalization matrices.
+#' Box plots are an intuitive way to visualize an omic data distribution. They
+#' are especially helpful when contrasting pre- and post-normalization matrices.
 #' \code{plot_box} may additionally be used to inspect for batch effects
 #' or associations with phenotypic factors by using the \code{group} argument.
 #'
@@ -33,9 +38,6 @@
 #' plot_box(mat, group = grp)
 #'
 #' @export
-#' @importFrom DESeq2 counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
 #' @importFrom tidyr gather
 #' @importFrom ggsci scale_fill_d3
 #' @import dplyr
@@ -83,31 +85,16 @@ plot_box <- function(dat,
   }
 
   # Tidy data
-  if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
-    dat <- dat$counts[keep, , drop = FALSE]
-    if (is.null(ylab)) {
-      ylab <- 'Raw Counts'
-    }
-  } else if (is(dat, 'DESeqDataSet')) {
-    keep <- rowSums(counts(dat) > 1L)            # Minimal count filter
-    dat <- counts(dat)[keep, , drop = FALSE]
-    if (is.null(ylab)) {
-      ylab <- 'Raw Counts'
-    }
-  } else if (is(dat, 'DESeqTransform')) {
-    dat <- assay(dat)
-    if (is.null(ylab)) {
+  if (is.null(ylab)) {
+    if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+      ylab <- expression(log[2]*'-CPM Counts')
+    } else if (is(dat, 'DESeqTransform')) {
       ylab <- 'Transformed Counts'
-    }
-  } else {
-    dat <- getEAWP(dat)$expr
-    keep <- rowSums(is.finite(dat)) == ncol(dat)
-    dat <- dat[keep, , drop = FALSE]
-    if (is.null(ylab)) {
+    } else {
       ylab <- 'Value'
     }
   }
+  dat <- matrixize(dat)
   df <- gather(tbl_df(dat), Sample, Value)
   if (!is.null(group)) {
     df <- df %>%
@@ -129,7 +116,6 @@ plot_box <- function(dat,
   } else {
     p <- p + geom_boxplot()
   }
-  p <- locate_legend(p, legend)
 
   # Output
   gg_out(p, hover, legend)

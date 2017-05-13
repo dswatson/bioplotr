@@ -4,26 +4,26 @@
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
-#' @param anno Optional character, factor, numeric, or logical vector of length
-#'   equal to sample size. Alternatively, a data frame or list of such vectors,
-#'   optionally named. Values are used to color one or several annotation tracks
-#'   atop the heatmap.
-#' @param dist Distance measure to be used. Currently supports any method available
-#'   in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.
-#' @param hclustfun The agglomeration method to be used for hierarchical clustering.
-#'   See \code{\link[stats]{hclust}} for available options.
-#' @param col Color palette to use for heatmap tiles. Preset options include \code{
-#'   "RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
-#'   \code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
-#'   color palette is acceptable.
+#' @param group Optional character or factor vector of length equal to sample
+#'   size. Alternatively, a data frame or list of such vectors, optionally named.
+#' @param covar Optional continuous covariate of length equal to sample size.
+#'   Alternatively, a data frame or list of such vectors, optionally named.
+#' @param dist Distance measure to be used. Currently supports any method
+#'   available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.
+#' @param hclustfun The agglomeration method to be used for hierarchical
+#'   clustering. See \code{\link[stats]{hclust}} for available options.
+#' @param col Color palette to use for heatmap tiles. Preset options include
+#'   \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
+#'   gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
+#'   user-supplied color palette is acceptable.
 #' @param title Optional plot title.
 #'
 #' @details
 #' Heatmaps are a common and intuitive way to display the values of an omic data
-#' matrix, especially after top probes have been selected for closer investigation.
-#' Hierarchical clustering dendrograms cluster both the rows and the columns,
-#' revealing latent structure in the data. Annotation tracks atop the figure may be
-#' used to investigate associations with phenotypic features.
+#' matrix, especially after top probes have been selected for closer
+#' investigation. Hierarchical clustering dendrograms cluster both the rows and
+#' the columns, revealing latent structure in the data. Annotation tracks atop
+#' the figure may be used to investigate associations with phenotypic features.
 #'
 #' @examples
 #' mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
@@ -92,31 +92,7 @@ plot_heatmap <- function(dat,
   }
 
   # Tidy data
-  if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
-    dat <- dat[keep, ]
-    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
-        all(dat$samples$norm.factors == 1L)) {
-      dat <- calcNormFactors(dat)
-    }
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqDataSet')) {
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
-      dat <- estimateSizeFactors(dat)            # Normalize counts
-    }
-    dat <- counts(dat, normalized = TRUE)
-    keep <- rowMeans(dat) > 0L                   # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqTransform')) {
-    dat <- assay(dat)
-  } else {
-    dat <- getEAWP(dat)$expr
-    keep <- rowSums(is.finite(dat)) == ncol(dat)
-    dat <- dat[keep, , drop = FALSE]
-  }
+  dat <- matrixize(dat)
 
   # Plot
   if (is.null(anno)) {

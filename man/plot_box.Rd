@@ -9,31 +9,36 @@ plot_box(dat, group = NULL, type = NULL, ylab = NULL, title = NULL,
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
-probes and columns to samples.}
+probes and columns to samples. It is strongly recommended that data be
+filtered and normalized prior to plotting. Raw counts stored in \code{
+\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+automatically extracted and transformed to the log2-CPM scale, with a
+warning.}
 
-\item{group}{Optional character or factor vector of length equal to sample size.
-Numeric or logical vectors will be silently coerced to factor. Levels are used
-to color density curves. If supplied, legend title defaults to "Group". Override
-this feature by passing a named list instead.}
+\item{group}{Optional character or factor vector of length equal to sample
+size. Numeric or logical vectors will be silently coerced to factor. Levels
+are used to color density curves. If supplied, legend title defaults to
+"Group". Override this feature by passing a named list instead.}
 
 \item{ylab}{Optional label for y-axis.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show sample name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 }
 \description{
-This function displays each sample's omic data distribution as a box and whisker
-plot.
+This function displays each sample's omic data distribution as a box and
+whisker plot.
 }
 \details{
-Box plots are an intuitive way to visualize an omic data distribution. They are
-especially helpful when contrasting pre- and post-normalization matrices.
+Box plots are an intuitive way to visualize an omic data distribution. They
+are especially helpful when contrasting pre- and post-normalization matrices.
 \code{plot_box} may additionally be used to inspect for batch effects
 or associations with phenotypic factors by using the \code{group} argument.
 }

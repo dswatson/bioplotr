@@ -9,40 +9,40 @@ plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
   D3 = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to probes
-and columns to samples. It is strongly recommended that data be filtered and
-normalized prior to running PCA. For count data, this means undergoing some sort
-of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-\code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-DESeqDataSet}} objects are automatically extracted and transformed to the
-log2-CPM scale, with a warning.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. It is strongly recommended that data be
+filtered and normalized prior to plotting. Raw counts stored in \code{
+\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+automatically extracted and transformed to the log2-CPM scale, with a
+warning.}
 
-\item{group}{Optional character or factor vector of length equal to sample size,
-or up to two such vectors organized into a list or data frame. Supply legend
-title(s) by passing a named list or data frame.}
+\item{group}{Optional character or factor vector of length equal to sample
+size, or up to two such vectors organized into a list or data frame. Supply
+legend title(s) by passing a named list or data frame.}
 
-\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function can
-take at most one \code{group} variable. Supply legend title by passing a named
-list or data frame.}
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function
+can take at most one \code{group} variable. Supply legend title by passing
+a named list or data frame.}
 
-\item{top}{Optional number (if > 1) or proportion (if < 1) of most variable probes
-to be used for PCA.}
+\item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
+probes to be used for PCA.}
 
-\item{pcs}{Vector specifying which principal components to plot. Must be of length
-two unless \code{D3 = TRUE}.}
+\item{pcs}{Vector specifying which principal components to plot. Must be of
+length two unless \code{D3 = TRUE}.}
 
-\item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
-\code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
+\item{label}{Label data points by sample name? Defaults to \code{FALSE}
+unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+one covariate.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show sample name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 
 \item{D3}{Render plot in three dimensions?}
 }
@@ -52,14 +52,15 @@ principal component analysis.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or
-three-dimensional principal component subspace. Axis labels include the percentage
-of variance explained by each component. PCA is an easy and popular method for
-unsupervised cluster detection. It can also aid in spotting potential outliers,
-and generally helps to visualize the latent structure of a data set.
+three-dimensional principal component subspace. Axis labels include the
+percentage of variance explained by each component. PCA is an easy and
+popular method for unsupervised cluster detection. It can also aid in
+spotting potential outliers, and generally helps to visualize the latent
+structure of a data set.
 
-By default, \code{plot_pca} performs singular value decomposition on the complete
-\code{dat} matrix. Limit the PCA to only the most variable probes by using the
-\code{top} argument.
+By default, \code{plot_pca} performs singular value decomposition on the
+complete \code{dat} matrix. Limit the PCA to only the most variable probes by
+using the \code{top} argument.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -72,12 +73,14 @@ plot_pca(dds, group = colData(dds)$condition)
 
 }
 \references{
-Hotelling, H. (1933). \href{http://psycnet.apa.org/journals/edu/24/6/417/}{Analysis
-of a complex of variables into principal components}. \emph{Journal of Educational
+Hotelling, H. (1933).
+\href{http://psycnet.apa.org/journals/edu/24/6/417/}{Analysis of a complex of
+variables into principal components}. \emph{Journal of Educational
 Psychology}, \emph{24}(6): 414:441.
 
-Pearson, K. (1901). \href{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}{On
-lines and planes of closest fit to systems of points in space}. \emph{Philosophical
+Pearson, K. (1901).
+\href{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}{On lines
+and planes of closest fit to systems of points in space}. \emph{Philosophical
 Magazine}, \emph{2}(11): 559–572.
 }
 \seealso{

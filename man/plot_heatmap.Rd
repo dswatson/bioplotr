@@ -11,33 +11,34 @@ plot_heatmap(dat, anno = NULL, dist = "pearson", hclustfun = "average",
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples.}
 
-\item{anno}{Optional character, factor, numeric, or logical vector of length
-equal to sample size. Alternatively, a data frame or list of such vectors,
-optionally named. Values are used to color one or several annotation tracks
-atop the heatmap.}
+\item{dist}{Distance measure to be used. Currently supports any method
+available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
 
-\item{dist}{Distance measure to be used. Currently supports any method available
-in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
+\item{hclustfun}{The agglomeration method to be used for hierarchical
+clustering. See \code{\link[stats]{hclust}} for available options.}
 
-\item{hclustfun}{The agglomeration method to be used for hierarchical clustering.
-See \code{\link[stats]{hclust}} for available options.}
-
-\item{col}{Color palette to use for heatmap tiles. Preset options include \code{
-"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
-\code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
-color palette is acceptable.}
+\item{col}{Color palette to use for heatmap tiles. Preset options include
+\code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
+gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
+user-supplied color palette is acceptable.}
 
 \item{title}{Optional plot title.}
+
+\item{group}{Optional character or factor vector of length equal to sample
+size. Alternatively, a data frame or list of such vectors, optionally named.}
+
+\item{covar}{Optional continuous covariate of length equal to sample size.
+Alternatively, a data frame or list of such vectors, optionally named.}
 }
 \description{
 This function visualizes a probe by sample matrix as a heatmap.
 }
 \details{
 Heatmaps are a common and intuitive way to display the values of an omic data
-matrix, especially after top probes have been selected for closer investigation.
-Hierarchical clustering dendrograms cluster both the rows and the columns,
-revealing latent structure in the data. Annotation tracks atop the figure may be
-used to investigate associations with phenotypic features.
+matrix, especially after top probes have been selected for closer
+investigation. Hierarchical clustering dendrograms cluster both the rows and
+the columns, revealing latent structure in the data. Annotation tracks atop
+the figure may be used to investigate associations with phenotypic features.
 }
 \examples{
 mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)

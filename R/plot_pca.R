@@ -3,52 +3,55 @@
 #' This function plots a low-dimensional projection of an omic data matrix using
 #' principal component analysis.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
-#'   and columns to samples. It is strongly recommended that data be filtered and
-#'   normalized prior to running PCA. For count data, this means undergoing some sort
-#'   of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-#'   \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-#'   matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-#'   DESeqDataSet}} objects are automatically extracted and transformed to the
-#'   log2-CPM scale, with a warning.
-#' @param group Optional character or factor vector of length equal to sample size,
-#'   or up to two such vectors organized into a list or data frame. Supply legend
-#'   title(s) by passing a named list or data frame.
-#' @param covar Optional continuous covariate. If non-\code{NULL}, then function can
-#'   take at most one \code{group} variable. Supply legend title by passing a named
-#'   list or data frame.
-#' @param top Optional number (if > 1) or proportion (if < 1) of most variable probes
-#'   to be used for PCA.
-#' @param pcs Vector specifying which principal components to plot. Must be of length
-#'   two unless \code{D3 = TRUE}.
-#' @param label Label data points by sample name? Defaults to \code{FALSE} unless
-#'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples. It is strongly recommended that data be
+#'   filtered and normalized prior to plotting. Raw counts stored in \code{
+#'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+#'   automatically extracted and transformed to the log2-CPM scale, with a
+#'   warning.
+#' @param group Optional character or factor vector of length equal to sample
+#'   size, or up to two such vectors organized into a list or data frame. Supply
+#'   legend title(s) by passing a named list or data frame.
+#' @param covar Optional continuous covariate. If non-\code{NULL}, then function
+#'   can take at most one \code{group} variable. Supply legend title by passing
+#'   a named list or data frame.
+#' @param top Optional number (if > 1) or proportion (if < 1) of most variable
+#'   probes to be used for PCA.
+#' @param pcs Vector specifying which principal components to plot. Must be of
+#'   length two unless \code{D3 = TRUE}.
+#' @param label Label data points by sample name? Defaults to \code{FALSE}
+#'   unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+#'   one covariate.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show sample name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #' @param D3 Render plot in three dimensions?
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or
-#' three-dimensional principal component subspace. Axis labels include the percentage
-#' of variance explained by each component. PCA is an easy and popular method for
-#' unsupervised cluster detection. It can also aid in spotting potential outliers,
-#' and generally helps to visualize the latent structure of a data set.
+#' three-dimensional principal component subspace. Axis labels include the
+#' percentage of variance explained by each component. PCA is an easy and
+#' popular method for unsupervised cluster detection. It can also aid in
+#' spotting potential outliers, and generally helps to visualize the latent
+#' structure of a data set.
 #'
-#' By default, \code{plot_pca} performs singular value decomposition on the complete
-#' \code{dat} matrix. Limit the PCA to only the most variable probes by using the
-#' \code{top} argument.
+#' By default, \code{plot_pca} performs singular value decomposition on the
+#' complete \code{dat} matrix. Limit the PCA to only the most variable probes by
+#' using the \code{top} argument.
 #'
 #' @references
-#' Hotelling, H. (1933). \href{http://psycnet.apa.org/journals/edu/24/6/417/}{Analysis
-#' of a complex of variables into principal components}. \emph{Journal of Educational
+#' Hotelling, H. (1933).
+#' \href{http://psycnet.apa.org/journals/edu/24/6/417/}{Analysis of a complex of
+#' variables into principal components}. \emph{Journal of Educational
 #' Psychology}, \emph{24}(6): 414:441.
 #'
-#' Pearson, K. (1901). \href{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}{On
-#' lines and planes of closest fit to systems of points in space}. \emph{Philosophical
+#' Pearson, K. (1901).
+#' \href{http://www.tandfonline.com/doi/abs/10.1080/14786440109462720}{On lines
+#' and planes of closest fit to systems of points in space}. \emph{Philosophical
 #' Magazine}, \emph{2}(11): 559–572.
 #'
 #' @examples
@@ -64,10 +67,6 @@
 #' \code{\link[DESeq2]{plotPCA}, \link{plot_mds}, \link{plot_tsne}}
 #'
 #' @export
-#' @importFrom edgeR calcNormFactors cpm
-#' @importFrom DESeq2 estimateSizeFactors counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
 #' @importFrom purrr map_chr
 #' @importFrom matrixStats rowVars
 #' @importFrom ggsci scale_color_d3 pal_d3
@@ -89,32 +88,8 @@ plot_pca <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for PCA.'))
-  }
-  if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
-    dat <- dat[keep, ]
-    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
-        all(dat$samples$norm.factors == 1L)) {
-      dat <- calcNormFactors(dat)
-    }
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqDataSet')) {
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
-      dat <- estimateSizeFactors(dat)            # Normalize counts
-    }
-    dat <- counts(dat, normalized = TRUE)
-    keep <- rowMeans(dat) > 0L                   # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqTransform')) {
-    dat <- assay(dat)
-  } else {
-    dat <- getEAWP(dat)$expr
-    keep <- rowSums(is.finite(dat)) == ncol(dat)
-    dat <- dat[keep, , drop = FALSE]
+    stop(paste('dat includes only', ncol(dat), 'samples;',
+               'need at least 3 for PCA.'))
   }
   if (!is.null(group)) {
     if (is.data.frame(group)) {
@@ -127,8 +102,8 @@ plot_pca <- function(dat,
     }
     if (length(group) == 2L) {
       if (!is.null(covar)) {
-        stop('Plot can render at most one categorical variable when a continuous ',
-             'covariate is also supplied.')
+        stop('Plot can render at most one categorical variable when a',
+             'continuous covariate is also supplied.')
       }
       if (is.null(names(group))) {
         names(group) <- paste('Factor', seq_len(2))
@@ -146,8 +121,8 @@ plot_pca <- function(dat,
         warning(paste(names(group)[i], 'is invariant.'))
       }
       if (!(is.character(group[[i]]) || is.factor(group[[i]]))) {
-        warning(paste0(names(group)[i], ' is of class ', class(group[[i]]), '; ',
-                       'coercing to factor.'))
+        warning(paste0(names(group)[i], ' is of class ', class(group[[i]]),
+                       '; coercing to factor.'))
         group[[i]] <- as.factor(group[[i]])
       }
     }
@@ -180,20 +155,6 @@ plot_pca <- function(dat,
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   }
-  if (!is.null(top)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes with
-                      missing values and/or applying a minimal expression filter.
-                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
-    vars <- rowVars(dat)
-    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-    dat <- dat[keep, , drop = FALSE]
-  }
   if (length(pcs) > 2L & !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
   } else if (length(pcs) > 3L) {
@@ -211,11 +172,27 @@ plot_pca <- function(dat,
   }
 
   # Tidy data
+  dat <- matrixize(dat)
   if (is.null(rownames(dat))) {
     rownames(dat) <- seq_len(nrow(dat))
   }
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
+  }
+  if (!is.null(top)) {                           # Filter by variance?
+    if (top > 1L) {
+      if (top > nrow(dat)) {
+        warning(paste('top exceeds nrow(dat), at least after removing probes',
+                      'with missing values and/or applying a minimal expression',
+                      'filter. Proceeding with the complete', nrow(dat), 'x',
+                      ncol(dat), 'matrix.'))
+      }
+    } else {
+      top <- round(top * nrow(dat))
+    }
+    vars <- rowVars(dat)
+    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
+    dat <- dat[keep, , drop = FALSE]
   }
   pca <- prcomp(t(dat))                          # PCA, % variance explained
   pve <- map_chr(seq_len(max(pcs)), function(pc) {
@@ -284,7 +261,6 @@ plot_pca <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    p <- locate_legend(p, legend)
     gg_out(p, hover, legend)
   } else {
     ### REWRITE ###
@@ -305,9 +281,4 @@ plot_pca <- function(dat,
 
 }
 
-
-# Use gganimate, tweenr, and shiny to:
-# 1) filter probes
-# 2) filter samples
-# 3) change PCs
 
