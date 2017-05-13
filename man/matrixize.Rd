@@ -12,6 +12,6 @@ probes and columns to samples.}
 }
 \description{
 This utility function takes data objects from \code{limma}, \code{edgeR}, or
-\code{DESeq2} pipelines and outputs a standard probe by sample matrix. Raw counts
-are log2-CPM transformed with a warning.
+\code{DESeq2} pipelines and outputs a standard probe by sample matrix. Raw
+counts are log2-CPM transformed with a warning.
 }
