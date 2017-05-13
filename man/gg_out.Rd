@@ -14,6 +14,6 @@ gg_out(p, hover, loc = NULL)
 \item{loc}{String specifying legend location.}
 }
 \description{
-This utility function locates the figure legend and prints a ggplot or
+This utility function locates the legend (if supplied) and prints a ggplot or
 ggplotly figure.
 }
