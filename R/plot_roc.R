@@ -40,7 +40,6 @@
 #' @importFrom purrr map_df map_chr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
-#' @importFrom plotly ggplotly
 #'
 
 plot_roc <- function(obs,

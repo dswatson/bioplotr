@@ -35,7 +35,6 @@
 #' @import dplyr
 #' @importFrom ggsci pal_d3
 #' @importFrom purrr map_chr
-#' @importFrom plotly plot_ly
 #'
 
 plot_taco <- function(dat,
@@ -106,6 +105,7 @@ plot_taco <- function(dat,
   }
 
   # Build Plot
+  require(plotly)
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
                text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4)[4], 'black'),
                type = 'scatter3d', mode = 'markers',

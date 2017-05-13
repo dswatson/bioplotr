@@ -42,7 +42,6 @@
 #' @importFrom ggsci scale_fill_d3
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_box <- function(dat,

@@ -37,7 +37,6 @@
 #' @importFrom dplyr data_frame
 #' @importFrom ggsci scale_color_d3
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_calibration <- function(obs,

@@ -42,14 +42,10 @@
 #' \code{\link[limma]{plotDensities}}
 #'
 #' @export
-#' @importFrom DESeq2 counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
 #' @importFrom tidyr gather
 #' @importFrom ggsci scale_color_d3
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_density <- function(dat,

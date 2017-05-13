@@ -43,7 +43,6 @@
 #' @importFrom purrr map map_chr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
-#' @importFrom plotly ggplotly
 #'
 
 plot_lorenz <- function(dat,

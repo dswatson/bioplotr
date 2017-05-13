@@ -53,14 +53,10 @@
 #' plot_covar(mat, clin)
 #'
 #' @export
-#' @importFrom edgeR calcNormFactors cpm
-#' @importFrom DESeq2 estimateSizeFactors counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP is.fullrank
+#' @importFrom limma is.fullrank
 #' @importFrom purrr map_chr
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_covar <- function(dat,
@@ -196,6 +192,7 @@ plot_covar <- function(dat,
   # no -log10(p) for legend
   # automate height/width?
 
+# TODO:
 # Maybe change -log10(p) to straightup p? Or map the colors anyway?
 # Fix ggplotly output to vary with n.pc
 
