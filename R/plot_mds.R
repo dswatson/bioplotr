@@ -3,53 +3,55 @@
 #' This function plots a low-dimensional projection of an omic data matrix using
 #' multi-dimensional scaling.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
-#'   and columns to samples. It is strongly recommended that data be filtered and
-#'   normalized prior to running MDS. For count data, this means undergoing some sort
-#'   of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-#'   \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-#'   matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-#'   DESeqDataSet}} objects are automatically extracted and transformed to the
-#'   log2-CPM scale, with a warning.
-#' @param group Optional character or factor vector of length equal to sample size,
-#'   or up to two such vectors organized into a list or data frame. Supply legend
-#'   title(s) by passing a named list or data frame.
-#' @param covar Optional continuous covariate. If non-\code{NULL}, then function can
-#'   take at most one \code{group} variable. Supply legend title by passing a named
-#'   list or data frame.
-#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
-#'   for MDS. See Details.
-#' @param pcs Vector specifying which principal coordinates to plot. Must be of length
-#'   two unless \code{D3 = TRUE}.
-#' @param label Label data points by sample name? Defaults to \code{FALSE} unless
-#'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples. It is strongly recommended that data be
+#'   filtered and normalized prior to plotting. Raw counts stored in \code{
+#'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+#'   automatically extracted and transformed to the log2-CPM scale, with a
+#'   warning.
+#' @param group Optional character or factor vector of length equal to sample
+#'   size, or up to two such vectors organized into a list or data frame. Supply
+#'   legend title(s) by passing a named list or data frame.
+#' @param covar Optional continuous covariate. If non-\code{NULL}, then function
+#'   can take at most one \code{group} variable. Supply legend title by passing
+#'   a named list or data frame.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
+#'   be used for MDS. See Details.
+#' @param pcs Vector specifying which principal coordinates to plot. Must be of
+#'   length two unless \code{D3 = TRUE}.
+#' @param label Label data points by sample name? Defaults to \code{FALSE}
+#'   unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+#'   one covariate.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show sample name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #' @param D3 Render plot in three dimensions?
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or
-#' three-dimensional principal coordinate subspace. MDS is an easy and popular method
-#' for unsupervised cluster detection. It can also aid in spotting potential outliers,
-#' and generally helps to visualize the latent structure of a data set.
+#' three-dimensional principal coordinate subspace. MDS is an easy and popular
+#' method for unsupervised cluster detection. It can also aid in spotting
+#' potential outliers, and generally helps to visualize the latent structure of
+#' a data set.
 #'
-#' The \code{top} argument filters probes using the leading fold change method of
-#' Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
-#' distances are calculated using the most differentially expressed probes between the
-#' two samples. This method is appropriate when different molecular pathways are
-#' relevant for distinguishing different pairs of samples. To run MDS on the complete
-#' data, set \code{top = NULL}. This is functionally equivalent to running PCA on the
-#' full matrix. See \code{\link{plot_pca}}.
+#' The \code{top} argument filters probes using the leading fold change method
+#' of Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
+#' distances are calculated using the most differentially expressed probes
+#' between the two samples. This method is appropriate when different molecular
+#' pathways are relevant for distinguishing different pairs of samples. To run
+#' MDS on the complete data, set \code{top = NULL}. This is functionally
+#' equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
 #'
 #' @references
-#' Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling.} Second edition.
-#' Chapman and Hall.
+#' Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling.} Second
+#' edition. Chapman and Hall.
 #'
-#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K. (2015).
+#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+#' (2015).
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 #' Acids Res.}, emph{43}(7): e47.
@@ -94,31 +96,6 @@ plot_mds <- function(dat,
   # Preliminaries
   if (ncol(dat) < 3L) {
     stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for MDS.'))
-  }
-  if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
-    dat <- dat[keep, ]
-    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
-        all(dat$samples$norm.factors == 1L)) {
-      dat <- calcNormFactors(dat)
-    }
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqDataSet')) {
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
-      dat <- estimateSizeFactors(dat)            # Normalize counts
-    }
-    dat <- counts(dat, normalized = TRUE)
-    keep <- rowMeans(dat) > 0L                   # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqTransform')) {
-    dat <- assay(dat)
-  } else {
-    dat <- getEAWP(dat)$expr
-    keep <- rowSums(is.finite(dat)) == ncol(dat)
-    dat <- dat[keep, , drop = FALSE]
   }
   if (!is.null(group)) {
     if (is.data.frame(group)) {
@@ -184,18 +161,6 @@ plot_mds <- function(dat,
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   }
-  if (!is.null(top)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes with
-                      missing values and/or applying a minimal expression filter.
-                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
-        top <- NULL
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
-  }
   if (length(pcs) > 2L & !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
   } else if (length(pcs) > 3L) {
@@ -219,18 +184,8 @@ plot_mds <- function(dat,
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  if (is.null(top)) {                                             # Distance matrix
-    dm <- dist.matrix(t(dat), method = 'euclidean')
-  } else {
-    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
-    top_idx <- nrow(dat) - top + 1L
-    for (i in 2L:ncol(dat)) {
-      for (j in 1L:(i - 1L)) {
-        dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
-                                      partial = top_idx)[top_idx:nrow(dat)]))
-      }
-    }
-  }
+  dat <- matrixize(dat)
+  dm <- dist_mat(dat, top, dist = 'euclidean')
   mds <- suppressWarnings(cmdscale(as.dist(dm), k = max(pcs)))    # MDS
   df <- data_frame(Sample = colnames(dat))                        # Melt
   if (length(pcs) == 2L) {
@@ -302,7 +257,6 @@ plot_mds <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    p <- locate_legend(p, legend)
     gg_out(p, hover, legend)
   } else {
     ### REWRITE ###

@@ -9,48 +9,48 @@ plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   title = NULL, legend = "outside", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to probes
-and columns to samples. It is strongly recommended that data be filtered and
-normalized prior to running t-SNE. For count data, this means undergoing some sort
-of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-\code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-DESeqDataSet}} objects are automatically extracted and transformed to the
-log2-CPM scale, with a warning.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. It is strongly recommended that data be
+filtered and normalized prior to plotting. Raw counts stored in \code{
+\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+automatically extracted and transformed to the log2-CPM scale, with a
+warning.}
 
-\item{group}{Optional character or factor vector of length equal to sample size,
-or up to two such vectors organized into a list or data frame. Supply legend
-title(s) by passing a named list or data frame.}
+\item{group}{Optional character or factor vector of length equal to sample
+size, or up to two such vectors organized into a list or data frame. Supply
+legend title(s) by passing a named list or data frame.}
 
-\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function can
-take at most one \code{group} variable. Supply legend title by passing a named
-list or data frame.}
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function
+can take at most one \code{group} variable. Supply legend title by passing
+a named list or data frame.}
 
-\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
-for t-SNE. See Details.}
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
+be used for t-SNE. See Details.}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
 
-\item{perplexity}{How many nearest neighbors should the algorithm consider when
-building projections?}
+\item{perplexity}{How many nearest neighbors should the algorithm consider
+when building projections?}
 
 \item{theta}{Speed/accuracy tradeoff of the Barnes-Hut algorithm. See Details.}
 
 \item{max_iter}{Maximum number of iterations over which to minimize the loss
 function. See Details.}
 
-\item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
-\code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
+\item{label}{Label data points by sample name? Defaults to \code{FALSE}
+unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+one covariate.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside",
-"bottomleft", "bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show sample name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 
 \item{D3}{Render plot in three dimensions?}
 
@@ -62,23 +62,25 @@ t-distributed stochastic neighbor embedding.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or
-three-dimensional stochastic neighbor subspace. t-SNE is a popular machine learning
-method for unsupervised cluster detection. It can also aid in spotting potential
-outliers, and generally helps to visualize the latent structure of a data set.
+three-dimensional stochastic neighbor subspace. t-SNE is a popular machine
+learning method for unsupervised cluster detection. It can also aid in
+spotting potential outliers, and generally helps to visualize the latent
+structure of a data set.
 
-\code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm, which
-vastly accelerates the original t-SNE projection method. An exact t-SNE plot may
-be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
-samplewise similarities based on distances in the original \emph{p}-dimensional
-space (where \emph{p} = the number of probes); generates a low-dimensional
-embedding of the samples based on the user-defined \code{perplexity} parameter;
-and iteratively minimizes the Kullback-Leibler divergence between these two
-distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
-more details. A thorough introduction to and explication of the original t-SNE
-method and the Barnes-Hut approximation may be found in the references below.
+\code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm,
+which vastly accelerates the original t-SNE projection method. An exact t-SNE
+plot may be rendered by setting \code{theta = 0}. Briefly, the algorithm
+computes samplewise similarities based on distances in the original \emph{
+p}-dimensional space (where \emph{p} = the number of probes); generates a
+low-dimensional embedding of the samples based on the user-defined \code{
+perplexity} parameter; and iteratively minimizes the Kullback-Leibler
+divergence between these two distributions using an efficient tree search.
+See \code{\link[Rtsne]{Rtsne}} for more details. A thorough introduction to
+and explication of the original t-SNE method and the Barnes-Hut approximation
+may be found in the references below.
 
-The \code{top} argument optionally filters probes using the leading fold change
-method of Smyth et al. See \code{\link{plot_mds}} for more details.
+The \code{top} argument optionally filters probes using the leading fold
+change method of Smyth et al. See \code{\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -92,14 +94,14 @@ plot_tsne(dds, group = colData(dds)$condition)
 }
 \references{
 van der Maaten, L.J.P. (2014).
-\href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{Accelerating
-t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine Learning Research},
-\emph{15}: 3221-3245.
+\href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{
+Accelerating t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine
+Learning Research}, \emph{15}: 3221-3245.
 
 van der Maaten, L.J.P. & Hinton, G.E. (2008).
-\href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{Visualizing
-High-Dimensional Data Using t-SNE}. \emph{Journal of Machine Learning Research},
-\emph{9}: 2579-2605.
+\href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{
+Visualizing High-Dimensional Data Using t-SNE}. \emph{Journal of Machine
+Learning Research}, \emph{9}: 2579-2605.
 }
 \seealso{
 \code{\link[Rtsne]{Rtsne}, \link{plot_pca}, \link{plot_mds}}

@@ -4,35 +4,36 @@
 \alias{plot_similarity}
 \title{Similarity Matrix Heatmap}
 \usage{
-plot_similarity(dat, anno = NULL, top = NULL, dist = "euclidean",
-  hclustfun = "average", col = "RdBu", title = NULL)
+plot_similarity(dat, group = NULL, covar = NULL, top = NULL,
+  dist = "euclidean", hclustfun = "average", col = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples. It is strongly recommended that data be
-normalized and filtered prior to plotting the sample similarity matrix.
-For count data, this means undergoing some sort of variance stabilizing
-transformation, such as \code{\link[edgeR]{cpm}} (with \code{log = TRUE}),
-\code{\link[DESeq2]{vst}}, \code{\link[DESeq2]{rlog}}, etc.}
+filtered and normalized prior to plotting. Raw counts stored in \code{
+\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+automatically extracted and transformed to the log2-CPM scale, with a
+warning.}
 
-\item{anno}{Optional character, factor, numeric, or logical vector of length
-equal to sample size. Alternatively, a data frame or list of such vectors,
-optionally named. Values are used to color one or several annotation tracks
-atop the heatmap.}
+\item{group}{Optional character or factor vector of length equal to sample
+size. Alternatively, a data frame or list of such vectors, optionally named.}
 
-\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
-for distance calculations. See Details.}
+\item{covar}{Optional continuous covariate of length equal to sample size.
+Alternatively, a data frame or list of such vectors, optionally named.}
+
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
+be used for distance calculations. See Details.}
 
 \item{dist}{Distance measure to be used. Currently supports \code{"euclidean",
 "pearson", "MI",} or \code{"KLD"}. See Details.}
 
-\item{hclustfun}{The agglomeration method to be used for hierarchical clustering.
-See \code{\link[stats]{hclust}} for available options.}
+\item{hclustfun}{The agglomeration method to be used for hierarchical
+clustering. See \code{\link[stats]{hclust}} for available options.}
 
-\item{col}{Color palette to use for heatmap tiles. Preset options include \code{
-"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red gradient, and
-\code{"BuYl"} for blue to yellow gradient. Alternatively, any user-supplied
-color palette is acceptable.}
+\item{col}{Color palette to use for heatmap tiles. Preset options include
+\code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
+gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
+user-supplied color palette is acceptable.}
 
 \item{title}{Optional plot title.}
 }
@@ -67,10 +68,8 @@ mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
 plot_similarity(mat, title = "Nothin' Doin'")
 
 library(DESeq2)
-mat <- cbind(matrix(rnbinom(5000, mu = 4, size = 1), nrow = 1000, ncol = 5),
-             matrix(rnbinom(5000, mu = 4, size = 10), nrow = 1000, ncol = 5))
-mat <- rlog(mat)
-grp <- rep(c("A", "B"), each = 5)
-plot_similarity(mat, anno = grp, title = "Somethin' Cookin'")
+dds <- makeExampleDESeqDataSet()
+dds <- rlog(dds)
+plot_similarity(dds, group = colData(dds)$condition, title = "Somethin' Cookin'")
 
 }

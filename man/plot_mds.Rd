@@ -9,40 +9,40 @@ plot_mds(dat, group = NULL, covar = NULL, top = 500, pcs = c(1, 2),
   D3 = FALSE)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to probes
-and columns to samples. It is strongly recommended that data be filtered and
-normalized prior to running MDS. For count data, this means undergoing some sort
-of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-\code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-DESeqDataSet}} objects are automatically extracted and transformed to the
-log2-CPM scale, with a warning.}
+\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
+probes and columns to samples. It is strongly recommended that data be
+filtered and normalized prior to plotting. Raw counts stored in \code{
+\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+automatically extracted and transformed to the log2-CPM scale, with a
+warning.}
 
-\item{group}{Optional character or factor vector of length equal to sample size,
-or up to two such vectors organized into a list or data frame. Supply legend
-title(s) by passing a named list or data frame.}
+\item{group}{Optional character or factor vector of length equal to sample
+size, or up to two such vectors organized into a list or data frame. Supply
+legend title(s) by passing a named list or data frame.}
 
-\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function can
-take at most one \code{group} variable. Supply legend title by passing a named
-list or data frame.}
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function
+can take at most one \code{group} variable. Supply legend title by passing
+a named list or data frame.}
 
-\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
-for MDS. See Details.}
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
+be used for MDS. See Details.}
 
-\item{pcs}{Vector specifying which principal coordinates to plot. Must be of length
-two unless \code{D3 = TRUE}.}
+\item{pcs}{Vector specifying which principal coordinates to plot. Must be of
+length two unless \code{D3 = TRUE}.}
 
-\item{label}{Label data points by sample name? Defaults to \code{FALSE} unless
-\code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.}
+\item{label}{Label data points by sample name? Defaults to \code{FALSE}
+unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+one covariate.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside", "bottomleft",
-"bottomright", "topleft",} or \code{"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
+"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+"topright"}.}
 
-\item{hover}{Show sample name by hovering mouse over data point? If \code{TRUE},
-the plot is rendered in HTML and will either open in your browser's graphic
-display or appear in the RStudio viewer.}
+\item{hover}{Show sample name by hovering mouse over data point? If \code{
+TRUE}, the plot is rendered in HTML and will either open in your browser's
+graphic display or appear in the RStudio viewer.}
 
 \item{D3}{Render plot in three dimensions?}
 }
@@ -52,17 +52,18 @@ multi-dimensional scaling.
 }
 \details{
 This function plots the samples of an omic data matrix in a two- or
-three-dimensional principal coordinate subspace. MDS is an easy and popular method
-for unsupervised cluster detection. It can also aid in spotting potential outliers,
-and generally helps to visualize the latent structure of a data set.
+three-dimensional principal coordinate subspace. MDS is an easy and popular
+method for unsupervised cluster detection. It can also aid in spotting
+potential outliers, and generally helps to visualize the latent structure of
+a data set.
 
-The \code{top} argument filters probes using the leading fold change method of
-Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
-distances are calculated using the most differentially expressed probes between the
-two samples. This method is appropriate when different molecular pathways are
-relevant for distinguishing different pairs of samples. To run MDS on the complete
-data, set \code{top = NULL}. This is functionally equivalent to running PCA on the
-full matrix. See \code{\link{plot_pca}}.
+The \code{top} argument filters probes using the leading fold change method
+of Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
+distances are calculated using the most differentially expressed probes
+between the two samples. This method is appropriate when different molecular
+pathways are relevant for distinguishing different pairs of samples. To run
+MDS on the complete data, set \code{top = NULL}. This is functionally
+equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -75,10 +76,11 @@ plot_mds(dds, group = colData(dds)$condition)
 
 }
 \references{
-Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling.} Second edition.
-Chapman and Hall.
+Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling.} Second
+edition. Chapman and Hall.
 
-Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K. (2015).
+Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+(2015).
 \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 Acids Res.}, emph{43}(7): e47.

@@ -3,70 +3,72 @@
 #' This function plots a low-dimensional projection of an omic data matrix using
 #' t-distributed stochastic neighbor embedding.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to probes
-#'   and columns to samples. It is strongly recommended that data be filtered and
-#'   normalized prior to running t-SNE. For count data, this means undergoing some sort
-#'   of variance stabilizing transformation, such as\code{\link[edgeR]{cpm}} (with
-#'   \code{log = TRUE}), \code{\link[DESeq2]{vst}, \link[DESeq2]{rlog}}, etc. Count
-#'   matrices stored in \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{
-#'   DESeqDataSet}} objects are automatically extracted and transformed to the
-#'   log2-CPM scale, with a warning.
-#' @param group Optional character or factor vector of length equal to sample size,
-#'   or up to two such vectors organized into a list or data frame. Supply legend
-#'   title(s) by passing a named list or data frame.
-#' @param covar Optional continuous covariate. If non-\code{NULL}, then function can
-#'   take at most one \code{group} variable. Supply legend title by passing a named
-#'   list or data frame.
-#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
-#'   for t-SNE. See Details.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples. It is strongly recommended that data be
+#'   filtered and normalized prior to plotting. Raw counts stored in \code{
+#'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
+#'   automatically extracted and transformed to the log2-CPM scale, with a
+#'   warning.
+#' @param group Optional character or factor vector of length equal to sample
+#'   size, or up to two such vectors organized into a list or data frame. Supply
+#'   legend title(s) by passing a named list or data frame.
+#' @param covar Optional continuous covariate. If non-\code{NULL}, then function
+#'   can take at most one \code{group} variable. Supply legend title by passing
+#'   a named list or data frame.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
+#'   be used for t-SNE. See Details.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
-#' @param perplexity How many nearest neighbors should the algorithm consider when
-#'   building projections?
+#' @param perplexity How many nearest neighbors should the algorithm consider
+#'   when building projections?
 #' @param theta Speed/accuracy tradeoff of the Barnes-Hut algorithm. See Details.
 #' @param max_iter Maximum number of iterations over which to minimize the loss
 #'   function. See Details.
-#' @param label Label data points by sample name? Defaults to \code{FALSE} unless
-#'   \code{covar = NULL}. If \code{TRUE}, then plot can render at most one covariate.
+#' @param label Label data points by sample name? Defaults to \code{FALSE}
+#'   unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
+#'   one covariate.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside",
-#'   "bottomleft", "bottomright", "topleft",} or \code{"topright"}.
-#' @param hover Show sample name by hovering mouse over data point? If \code{TRUE},
-#'   the plot is rendered in HTML and will either open in your browser's graphic
-#'   display or appear in the RStudio viewer.
+#' @param legend Legend position. Must be one of \code{"outside"}, \code{
+#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
+#'   "topright"}.
+#' @param hover Show sample name by hovering mouse over data point? If \code{
+#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
+#'   graphic display or appear in the RStudio viewer.
 #' @param D3 Render plot in three dimensions?
 #' @param ... Additional arguments to be passed to \code{\link[Rtsne]{Rtsne}}.
 #'
 #' @details
 #' This function plots the samples of an omic data matrix in a two- or
-#' three-dimensional stochastic neighbor subspace. t-SNE is a popular machine learning
-#' method for unsupervised cluster detection. It can also aid in spotting potential
-#' outliers, and generally helps to visualize the latent structure of a data set.
+#' three-dimensional stochastic neighbor subspace. t-SNE is a popular machine
+#' learning method for unsupervised cluster detection. It can also aid in
+#' spotting potential outliers, and generally helps to visualize the latent
+#' structure of a data set.
 #'
-#' \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm, which
-#' vastly accelerates the original t-SNE projection method. An exact t-SNE plot may
-#' be rendered by setting \code{theta = 0}. Briefly, the algorithm computes
-#' samplewise similarities based on distances in the original \emph{p}-dimensional
-#' space (where \emph{p} = the number of probes); generates a low-dimensional
-#' embedding of the samples based on the user-defined \code{perplexity} parameter;
-#' and iteratively minimizes the Kullback-Leibler divergence between these two
-#' distributions using an efficient tree search. See \code{\link[Rtsne]{Rtsne}} for
-#' more details. A thorough introduction to and explication of the original t-SNE
-#' method and the Barnes-Hut approximation may be found in the references below.
+#' \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm,
+#' which vastly accelerates the original t-SNE projection method. An exact t-SNE
+#' plot may be rendered by setting \code{theta = 0}. Briefly, the algorithm
+#' computes samplewise similarities based on distances in the original \emph{
+#' p}-dimensional space (where \emph{p} = the number of probes); generates a
+#' low-dimensional embedding of the samples based on the user-defined \code{
+#' perplexity} parameter; and iteratively minimizes the Kullback-Leibler
+#' divergence between these two distributions using an efficient tree search.
+#' See \code{\link[Rtsne]{Rtsne}} for more details. A thorough introduction to
+#' and explication of the original t-SNE method and the Barnes-Hut approximation
+#' may be found in the references below.
 #'
-#' The \code{top} argument optionally filters probes using the leading fold change
-#' method of Smyth et al. See \code{\link{plot_mds}} for more details.
+#' The \code{top} argument optionally filters probes using the leading fold
+#' change method of Smyth et al. See \code{\link{plot_mds}} for more details.
 #'
 #' @references
 #' van der Maaten, L.J.P. (2014).
-#' \href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{Accelerating
-#' t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine Learning Research},
-#' \emph{15}: 3221-3245.
+#' \href{http://www.jmlr.org/papers/volume15/vandermaaten14a/source/vandermaaten14a.pdf}{
+#' Accelerating t-SNE using Tree-Based Algorithms}. \emph{Journal of Machine
+#' Learning Research}, \emph{15}: 3221-3245.
 #'
 #' van der Maaten, L.J.P. & Hinton, G.E. (2008).
-#' \href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{Visualizing
-#' High-Dimensional Data Using t-SNE}. \emph{Journal of Machine Learning Research},
-#' \emph{9}: 2579-2605.
+#' \href{http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf}{
+#' Visualizing High-Dimensional Data Using t-SNE}. \emph{Journal of Machine
+#' Learning Research}, \emph{9}: 2579-2605.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -110,32 +112,8 @@ plot_tsne <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples; need at least 3 for t-SNE.'))
-  }
-  if (is(dat, 'DGEList')) {
-    keep <- rowSums(dat$counts) > 1L             # Minimal count filter
-    dat <- dat[keep, ]
-    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
-        all(dat$samples$norm.factors == 1L)) {
-      dat <- calcNormFactors(dat)
-    }
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqDataSet')) {
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
-      dat <- estimateSizeFactors(dat)            # Normalize counts
-    }
-    dat <- counts(dat, normalized = TRUE)
-    keep <- rowMeans(dat) > 0L                   # Minimal count filter
-    dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
-    warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqTransform')) {
-    dat <- assay(dat)
-  } else {
-    dat <- getEAWP(dat)$expr
-    keep <- rowSums(is.finite(dat)) == ncol(dat)
-    dat <- dat[keep, , drop = FALSE]
+    stop(paste('dat includes only', ncol(dat), 'samples;',
+               'need at least 3 for t-SNE.'))
   }
   if (!is.null(group)) {
     if (is.data.frame(group)) {
@@ -148,8 +126,8 @@ plot_tsne <- function(dat,
     }
     if (length(group) == 2L) {
       if (!is.null(covar)) {
-        stop('Plot can render at most one categorical variable when a continuous ',
-             'covariate is also supplied.')
+        stop('Plot can render at most one categorical variable when a',
+             'continuous covariate is also supplied.')
       }
       if (is.null(names(group))) {
         names(group) <- paste('Factor', seq_len(2))
@@ -201,18 +179,6 @@ plot_tsne <- function(dat,
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   }
-  if (!is.null(top)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes with
-                      missing values and/or applying a minimal expression filter.
-                      Proceeding with the complete', nrow(dat), 'x', ncol(dat), 'matrix.'))
-        top <- NULL
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
-  }
   if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
@@ -230,27 +196,17 @@ plot_tsne <- function(dat,
   }
 
   # Tidy data
-  set.seed(123)
+  dat <- matrixize(dat)
   if (is.null(rownames(dat))) {
     rownames(dat) <- seq_len(nrow(dat))
   }
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  if (is.null(top)) {                                      # Distance matrix
-    dm <- dist.matrix(t(dat), method = 'euclidean')
-  } else {
-    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
-    top_idx <- nrow(dat) - top + 1L
-    for (i in 2L:ncol(dat)) {
-      for (j in 1L:(i - 1L)) {
-        dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
-                                      partial = top_idx)[top_idx:nrow(dat)]))
-      }
-    }
-  }
-  tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims), theta = theta,
-                max_iter = max_iter, check_duplicates = FALSE, is_distance = TRUE, ...)
+  dm <- dist_mat(dat, top, dist = 'euclidean')
+  tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims),
+                theta = theta, max_iter = max_iter, check_duplicates = FALSE,
+                is_distance = TRUE, ...)
   tsne <- tsne$Y                                           # t-SNE
   df <- data_frame(Sample = colnames(dat))                 # Melt
   if (length(dims) == 2L) {
@@ -322,7 +278,6 @@ plot_tsne <- function(dat,
       )
     }
     p <- p + scale_color_d3()
-    p <- locate_legend(p, legend)
     gg_out(p, hover, legend)
   } else {
     # ???
@@ -336,4 +291,6 @@ plot_tsne <- function(dat,
 # 2) filter samples
 # 3) change PCs
 # 4) tweak perplexity, theta
+
+# Possible to set seed?
 
