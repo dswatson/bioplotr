@@ -83,16 +83,10 @@
 #' \code{\link[Rtsne]{Rtsne}, \link{plot_pca}, \link{plot_mds}}
 #'
 #' @export
-#' @importFrom edgeR calcNormFactors cpm
-#' @importFrom DESeq2 estimateSizeFactors counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
-#' @importFrom wordspace dist.matrix
 #' @importFrom Rtsne Rtsne
 #' @importFrom ggsci scale_color_d3 pal_d3
 #' @import dplyr
 #' @import ggplot2
-#' @import plotly
 #'
 
 plot_tsne <- function(dat,
@@ -223,8 +217,8 @@ plot_tsne <- function(dat,
   }
 
   # Build plot
-  size <- sample_ptsize(df)
-  alpha <- sample_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +

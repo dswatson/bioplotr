@@ -71,15 +71,9 @@
 #' \code{\link[limma]{plotMDS}, \link{plot_pca}, \link{plot_tsne}}
 #'
 #' @export
-#' @importFrom edgeR calcNormFactors cpm
-#' @importFrom DESeq2 estimateSizeFactors counts
-#' @importFrom SummarizedExperiment assay
-#' @importFrom limma getEAWP
-#' @importFrom wordspace dist.matrix
 #' @importFrom ggsci scale_color_d3 pal_d3
 #' @import dplyr
 #' @import ggplot2
-#' @import plotly
 #'
 
 plot_mds <- function(dat,
@@ -202,8 +196,8 @@ plot_mds <- function(dat,
   }
 
   # Build plot
-  size <- sample_ptsize(df)
-  alpha <- sample_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +

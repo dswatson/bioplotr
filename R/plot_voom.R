@@ -64,7 +64,6 @@
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
-#' @importFrom plotly ggplotly
 #'
 
 plot_voom <- function(dat,
@@ -129,8 +128,8 @@ plot_voom <- function(dat,
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +

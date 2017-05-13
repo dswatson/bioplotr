@@ -49,7 +49,6 @@
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
-#' @importFrom plotly ggplotly
 #'
 
 plot_volcano <- function(dat,
@@ -117,8 +116,8 @@ plot_volcano <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
-  alpha <- probe_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   p <- ggplot(df, aes(logFC, logP, text = Probe)) +
     labs(title = title,
              x = expression(log[2]~'Fold Change'),

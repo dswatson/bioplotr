@@ -39,7 +39,6 @@
 #' @export
 #' @import dplyr
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 
 plot_qq <- function(dat,
@@ -89,7 +88,7 @@ plot_qq <- function(dat,
   }
 
   # Build plot
-  size <- probe_ptsize(df)
+  size <- pt_size(df)
   p <- ggplot(df, aes(Expected, Observed, text = Probe)) +
     geom_point(size = size) +
     geom_abline(intercept = 0L, slope = 1L, color = 'red') +

@@ -69,10 +69,9 @@
 #' @export
 #' @importFrom purrr map_chr
 #' @importFrom matrixStats rowVars
-#' @importFrom ggsci scale_color_d3 pal_d3
+#' @importFrom ggsci scale_color_d3
 #' @import dplyr
 #' @import ggplot2
-#' @import plotly
 #'
 
 plot_pca <- function(dat,
@@ -214,8 +213,8 @@ plot_pca <- function(dat,
   }
 
   # Build plot
-  size <- sample_ptsize(df)
-  alpha <- sample_alpha(df)
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
