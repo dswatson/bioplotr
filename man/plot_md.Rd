@@ -11,30 +11,30 @@
 \alias{plot_md.default}
 \title{Mean-Difference Plot}
 \usage{
-plot_md(dat, title = NULL, legend = "outside", ...)
+plot_md(dat, title = NULL, legend = "right", ...)
 
 \method{plot_md}{DGEList}(dat, design = NULL, sample = 1, ctrls = NULL,
-  lfc = NULL, title = NULL, xlab = NULL, legend = "outside",
+  lfc = NULL, title = NULL, xlab = NULL, legend = "right",
   hover = FALSE)
 
 \method{plot_md}{DESeqDataSet}(dat, sample = 1, ctrls = NULL, lfc = NULL,
-  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
+  title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 
 \method{plot_md}{DESeqTransform}(dat, sample = 1, ctrls = NULL,
-  lfc = NULL, title = NULL, xlab = NULL, legend = "outside",
+  lfc = NULL, title = NULL, xlab = NULL, legend = "right",
   hover = FALSE)
 
 \method{plot_md}{DESeqResults}(dat, fdr = 0.05, lfc = NULL, title = NULL,
-  xlab = NULL, legend = "outside", hover = FALSE)
+  xlab = NULL, legend = "right", hover = FALSE)
 
 \method{plot_md}{TopTags}(dat, fdr = 0.05, lfc = NULL, title = NULL,
-  xlab = NULL, legend = "outside", hover = FALSE)
+  xlab = NULL, legend = "right", hover = FALSE)
 
 \method{plot_md}{data.frame}(dat, probes = NULL, fdr = 0.05, lfc = NULL,
-  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
+  title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 
 \method{plot_md}{default}(dat, sample = 1, ctrls = NULL, lfc = NULL,
-  title = NULL, xlab = NULL, legend = "outside", hover = FALSE)
+  title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Either a data frame representing the results of a test for

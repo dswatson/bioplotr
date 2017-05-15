@@ -116,7 +116,7 @@
 plot_mv <- function(dat,
                     trans = 'rank',
                     title = NULL,
-                   legend = 'outside', ...) {
+                   legend = 'right', ...) {
 
   # Preliminaries
   if (nrow(dat) < 2L) {
@@ -125,8 +125,8 @@ plot_mv <- function(dat,
   if (!trans %in% c('rank', 'log', 'sqrt')) {
     stop('trans must be one of "rank", "log", or "sqrt".')
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }
@@ -146,7 +146,7 @@ plot_mv.MArrayLM <- function(dat,
                              title = NULL,
                               xlab = NULL,
                               ylab = NULL,
-                            legend = 'outside',
+                            legend = 'right',
                              hover = FALSE) {
 
   # Preliminaries
@@ -245,7 +245,7 @@ plot_mv.DGEList <- function(dat,
                              title = NULL,
                               xlab = NULL,
                               ylab = NULL,
-                            legend = 'outside',
+                            legend = 'right',
                              hover = FALSE) {
 
   # Preliminaries
@@ -324,7 +324,7 @@ plot_mv.DGELM <- function(dat,
                           title = NULL,
                            xlab = NULL,
                            ylab = NULL,
-                         legend = 'outside',
+                         legend = 'right',
                           hover = FALSE) {
 
   # Preliminaries
@@ -390,7 +390,7 @@ plot_mv.DESeqDataSet <- function(dat,
                                  title = NULL,
                                   xlab = NULL,
                                   ylab = NULL,
-                                legend = 'outside',
+                                legend = 'right',
                                  hover = FALSE) {
 
   # Preliminaries
@@ -481,7 +481,7 @@ plot_mv.DESeqTransform <- function(dat,
                                    title = NULL,
                                     xlab = NULL,
                                     ylab = NULL,
-                                  legend = 'outside',
+                                  legend = 'right',
                                    hover = FALSE) {
 
   # Preliminaries
@@ -542,7 +542,7 @@ plot_mv.default <- function(dat,
                             title = NULL,
                              xlab = NULL,
                              ylab = NULL,
-                           legend = 'outside',
+                           legend = 'right',
                             hover = FALSE) {
 
   # Preliminaries

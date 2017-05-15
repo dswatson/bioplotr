@@ -72,7 +72,7 @@ plot_voom <- function(dat,
             normalize.method = 'none',
                         span = 0.5,
                        title = NULL,
-                      legend = 'outside',
+                      legend = 'right',
                        hover = FALSE, ...) {
 
   # Preliminaries
@@ -82,8 +82,8 @@ plot_voom <- function(dat,
   if (is.null(title)) {
     title <- 'Voom Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

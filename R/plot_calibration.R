@@ -49,7 +49,7 @@ plot_calibration <- function(obs,
                              pred,
                              pal = 'd3',
                            title = NULL,
-                          legend = 'outside',
+                          legend = 'right',
                            hover = FALSE) {
 
   # Preliminaries
@@ -119,8 +119,8 @@ plot_calibration <- function(obs,
       title <- 'Calibration Curves'
     }
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

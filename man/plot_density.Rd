@@ -5,7 +5,7 @@
 \title{Density Plots by Sample}
 \usage{
 plot_density(dat, group = NULL, pal = "d3", xlab = NULL, title = NULL,
-  legend = "outside", hover = FALSE)
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

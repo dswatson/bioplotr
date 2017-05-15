@@ -101,14 +101,14 @@
 
 plot_md <- function(dat,
                     title = NULL,
-                   legend = 'outside', ...) {
+                   legend = 'right', ...) {
 
   # Preliminaries
   if (is.null(title)) {
     title <- 'Mean-Difference Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }
@@ -131,7 +131,7 @@ plot_md.DGEList <- function(dat,
                                lfc = NULL,
                              title = NULL,
                               xlab = NULL,
-                            legend = 'outside',
+                            legend = 'right',
                              hover = FALSE) {
 
   # Preliminaries
@@ -230,7 +230,7 @@ plot_md.DESeqDataSet <- function(dat,
                                     lfc = NULL,
                                   title = NULL,
                                    xlab = NULL,
-                                 legend = 'outside',
+                                 legend = 'right',
                                   hover = FALSE) {
 
   # Preliminaries
@@ -318,7 +318,7 @@ plot_md.DESeqTransform <- function(dat,
                                       lfc = NULL,
                                     title = NULL,
                                      xlab = NULL,
-                                   legend = 'outside',
+                                   legend = 'right',
                                     hover = FALSE) {
 
   # Preliminaries
@@ -345,7 +345,7 @@ plot_md.DESeqResults <- function(dat,
                                  lfc = NULL,
                                title = NULL,
                                 xlab = NULL,
-                              legend = 'outside',
+                              legend = 'right',
                                hover = FALSE) {
 
   # Preliminaries
@@ -422,7 +422,7 @@ plot_md.TopTags <- function(dat,
                             lfc = NULL,
                           title = NULL,
                            xlab = NULL,
-                         legend = 'outside',
+                         legend = 'right',
                           hover = FALSE) {
 
   # Preliminaries
@@ -447,7 +447,7 @@ plot_md.data.frame <- function(dat,
                                   lfc = NULL,
                                 title = NULL,
                                  xlab = NULL,
-                               legend = 'outside',
+                               legend = 'right',
                                 hover = FALSE) {
 
   # Preliminaries
@@ -575,7 +575,7 @@ plot_md.default <- function(dat,
                                lfc = NULL,
                              title = NULL,
                               xlab = NULL,
-                            legend = 'outside',
+                            legend = 'right',
                              hover = FALSE) {
 
   # Preliminaries

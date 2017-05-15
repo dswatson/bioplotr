@@ -55,7 +55,7 @@ plot_volcano <- function(dat,
                          fdr = 0.05,
                          lfc = NULL,
                        title = NULL,
-                      legend = 'outside',
+                      legend = 'right',
                        hover = FALSE) {
 
   # Preliminaries
@@ -100,8 +100,8 @@ plot_volcano <- function(dat,
   if (is.null(title)) {
     title <- 'Volcano Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

@@ -6,7 +6,7 @@
 \usage{
 plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
   label = FALSE, pal_group = "d3", pal_covar = "blues", title = NULL,
-  legend = "outside", hover = FALSE, D3 = FALSE)
+  legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

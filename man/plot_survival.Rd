@@ -5,7 +5,7 @@
 \title{Survival Curve(s)}
 \usage{
 plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, pal = "d3",
-  title = NULL, leg.txt = NULL, legend = "outside", ...)
+  title = NULL, leg.txt = NULL, legend = "right", ...)
 }
 \arguments{
 \item{fit}{An object of class \code{\link[survival]{survfit}}.}

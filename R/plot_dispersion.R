@@ -122,7 +122,7 @@
 plot_dispersion <- function(dat,
                             trans = 'log',
                             title = NULL,
-                           legend = 'outside', ...) {
+                           legend = 'right', ...) {
 
   # Preliminaries
   if (trans == 'log') {
@@ -137,9 +137,10 @@ plot_dispersion <- function(dat,
   if (is.null(title)) {
     title <- 'Mean-Dispersion Plot'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Method
@@ -156,7 +157,7 @@ plot_dispersion.DGEList <- function(dat,
                                     design = NULL,
                                      trans = 'log',
                                      title = NULL,
-                                    legend = 'outside',
+                                    legend = 'right',
                                      hover = FALSE) {
 
   # Preliminaries
@@ -226,7 +227,7 @@ plot_dispersion.DGEList <- function(dat,
 plot_dispersion.DESeqDataSet <- function(dat,
                                          trans = 'log',
                                          title = NULL,
-                                        legend = 'outside',
+                                        legend = 'right',
                                          hover = FALSE) {
 
   # Preliminaries
@@ -285,7 +286,7 @@ plot_dispersion.default <- function(dat,
                                      trans = 'log',
                                   pipeline = NULL,
                                      title = NULL,
-                                    legend = 'outside',
+                                    legend = 'right',
                                      hover = FALSE) {
 
   if (pipeline == 'edgeR') {

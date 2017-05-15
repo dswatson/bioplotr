@@ -5,7 +5,7 @@
 \title{Volcano Plot}
 \usage{
 plot_volcano(dat, fdr = 0.05, lfc = NULL, title = NULL,
-  legend = "outside", hover = FALSE)
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Data frame representing the results of a test for differential

@@ -49,17 +49,17 @@ plot_taco <- function(dat,
   if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
   } else {
-    stop('dat must include a log fold change column. Recognized colnames for this ',
-         'vector include "logFC" and "log2FoldChange". Make sure that dat includes ',
-         'exactly one such colname.')
+    stop('dat must include a log fold change column. Recognized colnames for ',
+         'this vector include "logFC" and "log2FoldChange". Make sure that ',
+         'dat includes exactly one such colname.')
   }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
-    stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
-         'includes exactly one such colname.')
+    stop('dat must include a p-value column. Recognized colnames for this ',
+         'vector include "p.value", "P.Value", "PValue", and "pvalue". Make ',
+         'sure that dat includes exactly one such colname.')
   }
   if ('baseMean' %in% colnames(dat)) {
     dat$baseMean <- log2(dat$baseMean)
@@ -69,23 +69,23 @@ plot_taco <- function(dat,
     colnames(dat)[colnames(dat) %in% avg] <- 'AvgExpr'
   } else {
     stop('dat must include a column for average expression or methylation by ',
-         'probe. Recognized colnames for this vector include "AveExpr", "baseMean",
-         "logCPM", "AvgExpr", and "AvgMeth".Make sure that dat includes exactly ',
-         'one such colname.')
+         'probe. Recognized colnames for this vector include "AveExpr", ',
+         '"baseMean", "logCPM", "AvgExpr", and "AvgMeth". Make sure that dat ',
+         'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop('dat must include a column for adjusted p-values. Recognized colnames ',
-         'for this vector include "adj.P.Val", "padj", "FDR", and "q.value". ',
-         'Make sure that dat includes exactly one such colname.')
+    stop('dat must include a column for adjusted p-values. Recognized ',
+         'colnames for this vector include "adj.P.Val", "padj", "FDR", and ',
+         '"q.value". Make sure that dat includes exactly one such colname.')
   }
   if (is.null(title)) {
     title <- 'Taco Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

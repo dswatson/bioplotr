@@ -74,7 +74,7 @@ plot_survival <- function(fit,
                           pal = 'd3',
                         title = NULL,
                       leg.txt = NULL,
-                       legend = 'outside', ...) {
+                       legend = 'right', ...) {
   # Preliminaries
   if(!inherits(fit, 'survfit')) {
     stop('fit must be an object of class survfit. Load the survival package',
@@ -102,8 +102,8 @@ plot_survival <- function(fit,
   } else if (!is.null(leg.txt) && !is.null(fit$strata)) {
     leg.lbl <- names(fit$strata)
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

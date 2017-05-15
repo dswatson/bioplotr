@@ -4,7 +4,7 @@
 \alias{plot_calibration}
 \title{Probability Calibration Curve(s)}
 \usage{
-plot_calibration(obs, pred, pal = "d3", title = NULL, legend = "outside",
+plot_calibration(obs, pred, pal = "d3", title = NULL, legend = "right",
   hover = FALSE)
 }
 \arguments{

@@ -95,7 +95,7 @@ plot_pca <- function(dat,
                  pal_group = 'd3',
                  pal_covar = 'blues',
                      title = NULL,
-                    legend = 'outside',
+                    legend = 'right',
                      hover = FALSE,
                         D3 = FALSE) {
 
@@ -167,8 +167,8 @@ plot_pca <- function(dat,
   if (is.null(title)) {
     title <- 'PCA'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
-                     'bottomleft', 'topright', 'topleft')) {
+  if (!legend %in% c('right', 'left', 'top', 'bottom',
+                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
          '"bottomright", "bottomleft", "topright", or "topleft".')
   }

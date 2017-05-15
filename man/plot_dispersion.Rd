@@ -7,16 +7,16 @@
 \alias{plot_dispersion.default}
 \title{Plot Dispersion Estimates}
 \usage{
-plot_dispersion(dat, trans = "log", title = NULL, legend = "outside", ...)
+plot_dispersion(dat, trans = "log", title = NULL, legend = "right", ...)
 
 \method{plot_dispersion}{DGEList}(dat, design = NULL, trans = "log",
-  title = NULL, legend = "outside", hover = FALSE)
+  title = NULL, legend = "right", hover = FALSE)
 
 \method{plot_dispersion}{DESeqDataSet}(dat, trans = "log", title = NULL,
-  legend = "outside", hover = FALSE)
+  legend = "right", hover = FALSE)
 
 \method{plot_dispersion}{default}(dat, design = NULL, trans = "log",
-  pipeline = NULL, title = NULL, legend = "outside", hover = FALSE)
+  pipeline = NULL, title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{A \code{\link[edgeR]{DGEList}} object or \code{\link[DESeq2]{

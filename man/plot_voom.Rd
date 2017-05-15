@@ -5,7 +5,7 @@
 \title{Voom Plot}
 \usage{
 plot_voom(dat, design = NULL, lib.size = NULL, normalize.method = "none",
-  span = 0.5, title = NULL, legend = "outside", hover = FALSE, ...)
+  span = 0.5, title = NULL, legend = "right", hover = FALSE, ...)
 }
 \arguments{
 \item{dat}{Raw count matrix, or an \code{\link[BioBase]{ExpressionSet}}
