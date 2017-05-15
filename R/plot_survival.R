@@ -89,6 +89,9 @@ plot_survival <- function(fit,
   } else if (fun == 'pct') {
     ylab <- 'Survival Probability (%)'
   }
+  if (!is.null(fit$strata)) {
+    cols <- colorize(pal, var_type = 'Categorical', n = length(fit$strata))
+  }
   if (is.null(title)) {
     if (is.null(fit$strata)) {
       title <- 'Survival Curve'
@@ -129,8 +132,7 @@ plot_survival <- function(fit,
   if (!is.null(fit$strata)) {
     p <- p + scale_color_manual(name = leg.txt,
                               labels = leg.lbl,
-                              values = colorize(pal, length(fit$strata),
-                                                var_type = 'Categorical'))
+                              values = cols)
   }
   p <- p + theme(plot.title = element_text(hjust = 0.5))
 
