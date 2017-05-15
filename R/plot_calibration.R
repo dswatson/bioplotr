@@ -10,10 +10,17 @@
 #' @param pred Vector of predicted probabilities, or several such vectors
 #'   organized into a data frame or list, optionally named. Must be numeric on
 #'   \code{[0, 1]}.
+#' @param pal String specifying the color palette to use when plotting multiple
+#'   predictors. Options include \code{"ggplot"}, as well as the complete
+#'   collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
+#'   length equal to the number of vectors in \code{pred}.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show predictor name by hovering mouse over ROC curve? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -35,15 +42,15 @@
 #' @export
 #' @importFrom purrr map map_dbl map_df
 #' @importFrom dplyr data_frame
-#' @importFrom ggsci scale_color_d3
 #' @import ggplot2
 #'
 
 plot_calibration <- function(obs,
                              pred,
-                            title = NULL,
-                           legend = 'outside',
-                            hover = FALSE) {
+                             pal = 'd3',
+                           title = NULL,
+                          legend = 'outside',
+                           hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -54,7 +61,7 @@ plot_calibration <- function(obs,
       stop('Response must be dichotomous.')
     } else {
       warning('A positive outcome is hereby defined as obs == "', levels(obs)[1],
-              '". To change this to obs == "', levels(obs)[2], '", either',
+              '". To change this to obs == "', levels(obs)[2], '", either ',
               'relevel the factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
     }
@@ -79,7 +86,7 @@ plot_calibration <- function(obs,
   }
   for (x in seq_along(pred)) {
     if (!is.numeric(pred[[x]])) {
-      stop('pred must be a numeric vector, or several such vectors organized',
+      stop('pred must be a numeric vector, or several such vectors organized ',
            'into a list or data frame.')
     }
     if (max(pred[[x]] > 1L || min(pred[[x]] < 0L))) {
@@ -89,6 +96,22 @@ plot_calibration <- function(obs,
       stop('obs and pred vectors must be of equal length.')
     }
   }
+  if (length(pal) == 1L & !is.color(pal)) {
+    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
+                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
+      stop('pal not recognized.')
+    }
+  } else {
+    if (!all(is.color(pal))) {
+      stop('When passing multiple strings to pal, each must denote a valid ',
+           'color in R.')
+    }
+    if (length(pred) != length(pal)) {
+      stop('When passing individual colors to pal, length(pal) must equal the ',
+           'number of unique predictors.')
+    }
+  }
   if (is.null(title)) {
     if (length(pred) == 1L) {
       title <- 'Calibration Curve'
@@ -96,9 +119,10 @@ plot_calibration <- function(obs,
       title <- 'Calibration Curves'
     }
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -129,7 +153,8 @@ plot_calibration <- function(obs,
       p <- p + geom_point(aes(size = Frequency, color = Classifier,
                               text = Classifier)) +
         geom_path(aes(color = Classifier, text = Classifier)) +
-        scale_color_d3()
+        scale_color_manual(values = colorize(pal, length(pred),
+                                             var_type = 'Categorical'))
     )
   } else {
     p <- p + geom_point(aes(size = Frequency)) +

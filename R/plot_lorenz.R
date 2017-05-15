@@ -6,11 +6,18 @@
 #'   optionally named. May also be a data frame of such vectors, however in that
 #'   case each must be of equal length. Data may include negative values, but if
 #'   so a warning will be issued to proceed with caution.
+#' @param pal String specifying the color palette to use when plotting multiple
+#'   vectors. Options include \code{"ggplot"}, as well as the complete
+#'   collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
+#'   length equal to the number of vectors in \code{dat}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show vector name by hovering mouse over Lorenz curve? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -42,14 +49,14 @@
 #' @importFrom dplyr data_frame
 #' @importFrom purrr map map_chr
 #' @import ggplot2
-#' @importFrom ggsci pal_d3
 #'
 
 plot_lorenz <- function(dat,
-                       title = NULL,
-                     leg.txt = NULL,
-                      legend = 'topleft',
-                       hover = FALSE) {
+                        pal = 'd3',
+                      title = NULL,
+                    leg.txt = NULL,
+                     legend = 'topleft',
+                      hover = FALSE) {
 
   # Preliminaries
   if (is.data.frame(dat)) {
@@ -62,16 +69,32 @@ plot_lorenz <- function(dat,
   }
   for (i in seq_along(dat)) {
     if (!is.numeric(dat[[i]])) {
-      stop('dat must be a numeric vector, or several such vectors organized into ',
-           'a list or data frame.')
+      stop('dat must be a numeric vector, or several such vectors organized ',
+           'into a list or data frame.')
     }
     if (min(dat[[i]] < 0L)) {
-      warning('Lorenz curves and Gini coefficients for data with negative values ',
-              'should be interpreted with caution.')
+      warning('Lorenz curves and Gini coefficients for data with negative ',
+              'values should be interpreted with caution.')
     }
     if (length(na.omit(dat[[i]])) <= 2L) {
       warning('Lorenz curves and Gini coefficients for vectors of length <= 2 ',
               'should be interpreted with caution.')
+    }
+  }
+  if (length(pal) == 1L & !is.color(pal)) {
+    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
+                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
+      stop('pal not recognized.')
+    }
+  } else {
+    if (!all(is.color(pal))) {
+      stop('When passing multiple strings to pal, each must denote a valid ',
+           'color in R.')
+    }
+    if (length(dat) != length(pal)) {
+      stop('When passing individual colors to pal, length(pal) must equal the ',
+           'number of vectors in dat.')
     }
   }
   if (is.null(title)) {
@@ -84,9 +107,10 @@ plot_lorenz <- function(dat,
   if (is.null(leg.txt)) {
     leg.txt <- 'Data'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -127,7 +151,8 @@ plot_lorenz <- function(dat,
     }
     p <- p + scale_color_manual(name = leg.txt,
                               labels = map_chr(seq_along(dat), p_gin),
-                              values = pal_d3()(length(dat)))
+                              values = colorize(pal, length(dat),
+                                                var_type = 'Categorical'))
   } else {
     p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
       scale_color_manual(name = leg.txt,

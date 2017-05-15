@@ -4,8 +4,8 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, title = NULL, leg.txt = NULL, legend = "topleft",
-  hover = FALSE)
+plot_lorenz(dat, pal = "d3", title = NULL, leg.txt = NULL,
+  legend = "topleft", hover = FALSE)
 }
 \arguments{
 \item{dat}{Numeric vector, or several such vectors organized into a list,
@@ -13,13 +13,21 @@ optionally named. May also be a data frame of such vectors, however in that
 case each must be of equal length. Data may include negative values, but if
 so a warning will be issued to proceed with caution.}
 
+\item{pal}{String specifying the color palette to use when plotting multiple
+vectors. Options include \code{"ggplot"}, as well as the complete
+collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+\code{"aaas"}, etc.). Alternatively, a character vector of colors with
+length equal to the number of vectors in \code{dat}.}
+
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
-"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
 
 \item{hover}{Show vector name by hovering mouse over Lorenz curve? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

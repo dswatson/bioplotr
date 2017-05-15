@@ -4,8 +4,8 @@
 \alias{plot_roc}
 \title{Reicever Operating Characteristic Curve(s)}
 \usage{
-plot_roc(obs, pred, title = NULL, leg.txt = NULL, legend = "bottomright",
-  hover = FALSE)
+plot_roc(obs, pred, pal = "d3", title = NULL, leg.txt = NULL,
+  legend = "bottomright", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be logical,
@@ -18,13 +18,21 @@ into a data frame or list, optionally named. Must be numeric. Common
 examples include the probabilities output by a logistic model, or the
 expression levels of a particular biomarker.}
 
+\item{pal}{String specifying the color palette to use when plotting multiple
+curves. Options include \code{"ggplot"}, as well as the complete
+collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+\code{"aaas"}, etc.). Alternatively, a character vector of colors with
+length equal to the number of vectors in \code{pred}.}
+
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
-"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
 
 \item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

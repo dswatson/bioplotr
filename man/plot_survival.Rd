@@ -4,8 +4,8 @@
 \alias{plot_survival}
 \title{Survival Curve(s)}
 \usage{
-plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, title = NULL,
-  leg.txt = NULL, legend = "outside", ...)
+plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, pal = "d3",
+  title = NULL, leg.txt = NULL, legend = "outside", ...)
 }
 \arguments{
 \item{fit}{An object of class \code{\link[survival]{survfit}}.}
@@ -20,13 +20,21 @@ a percentage.}
 
 \item{censor}{Include tick-marks to indicate censored subjects?}
 
+\item{pal}{String specifying the color palette to use when plotting multiple
+curves. Options include \code{"ggplot"}, as well as the complete
+collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+\code{"aaas"}, etc.). Alternatively, a character vector of colors with
+length equal to the number of strata in \code{fit}.}
+
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
-"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
 
 \item{...}{Additional arguments to be passed to \code{
 \link[survminer]{ggsurvplot}}.}

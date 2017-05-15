@@ -10,11 +10,18 @@
 #'   into a data frame or list, optionally named. Must be numeric. Common
 #'   examples include the probabilities output by a logistic model, or the
 #'   expression levels of a particular biomarker.
+#' @param pal String specifying the color palette to use when plotting multiple
+#'   curves. Options include \code{"ggplot"}, as well as the complete
+#'   collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
+#'   length equal to the number of vectors in \code{pred}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show predictor name by hovering mouse over ROC curve? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -44,10 +51,11 @@
 
 plot_roc <- function(obs,
                      pred,
-                     title = NULL,
-                   leg.txt = NULL,
-                    legend = 'bottomright',
-                     hover = FALSE) {
+                     pal = 'd3',
+                   title = NULL,
+                 leg.txt = NULL,
+                  legend = 'bottomright',
+                   hover = FALSE) {
 
   # Preliminaries
   if (is.character(obs)) {
@@ -58,7 +66,7 @@ plot_roc <- function(obs,
       stop('obs must be dichotomous.')
     } else {
       warning('A positive outcome is hereby defined as obs == "', levels(obs)[1],
-              '". To change this to obs == "', levels(obs)[2], '", either',
+              '". To change this to obs == "', levels(obs)[2], '", either ',
               'relevel the factor or recode response as numeric (1/0).')
       obs <- ifelse(obs == levels(obs)[1], TRUE, FALSE)
     }
@@ -83,7 +91,7 @@ plot_roc <- function(obs,
   }
   for (m in seq_along(pred)) {
     if (!is.numeric(pred[[m]])) {
-      stop('pred must be a numeric vector, or several such vectors organized',
+      stop('pred must be a numeric vector, or several such vectors organized ',
            'into a list or data frame.')
     }
     if (length(obs) != length(pred[[m]])) {
@@ -96,6 +104,22 @@ plot_roc <- function(obs,
   if (is.null(names(pred))) {
     names(pred) <- paste0('M', seq_along(pred))
   }
+  if (length(pal) == 1L & !is.color(pal)) {
+    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
+                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
+      stop('pal not recognized.')
+    }
+  } else {
+    if (!all(is.color(pal))) {
+      stop('When passing multiple strings to pal, each must denote a valid ',
+           'color in R.')
+    }
+    if (length(pred) != length(pal)) {
+      stop('When passing individual colors to pal, length(pal) must equal the ',
+           'number of unique predictors.')
+    }
+  }
   if (is.null(title)) {
     if (length(pred) == 1L) {
       title <- 'ROC Curve'
@@ -106,9 +130,10 @@ plot_roc <- function(obs,
   if (is.null(leg.txt)) {
     leg.txt <- 'Classifier'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -138,7 +163,9 @@ plot_roc <- function(obs,
         scale_color_manual(name = leg.txt,
                          breaks = names(pred),
                          labels = map_chr(seq_along(pred), p_auc),
-                         values = pal_d3()(length(pred)))
+                         values = colorize(pal, length(pred),
+                                           var_type = 'Categorical'))
+
     )
   } else {
     p <- p + geom_line(aes(color = Classifier)) +

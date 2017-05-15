@@ -4,7 +4,7 @@
 \alias{plot_calibration}
 \title{Probability Calibration Curve(s)}
 \usage{
-plot_calibration(obs, pred, title = NULL, legend = "outside",
+plot_calibration(obs, pred, pal = "d3", title = NULL, legend = "outside",
   hover = FALSE)
 }
 \arguments{
@@ -17,11 +17,19 @@ that the first level is assumed to be the reference.}
 organized into a data frame or list, optionally named. Must be numeric on
 \code{[0, 1]}.}
 
+\item{pal}{String specifying the color palette to use when plotting multiple
+predictors. Options include \code{"ggplot"}, as well as the complete
+collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+\code{"aaas"}, etc.). Alternatively, a character vector of colors with
+length equal to the number of vectors in \code{pred}.}
+
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
-"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
 
 \item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

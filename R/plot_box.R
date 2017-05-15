@@ -4,29 +4,36 @@
 #' whisker plot.
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples. It is strongly recommended that data be
-#'   filtered and normalized prior to plotting. Raw counts stored in \code{
+#'   probes and columns to samples. Raw counts stored in \code{
 #'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 #'   automatically extracted and transformed to the log2-CPM scale, with a
 #'   warning.
 #' @param group Optional character or factor vector of length equal to sample
-#'   size. Numeric or logical vectors will be silently coerced to factor. Levels
-#'   are used to color density curves. If supplied, legend title defaults to
-#'   "Group". Override this feature by passing a named list instead.
+#'   size. Numeric or logical vectors are silently coerced to factor. Levels are
+#'   used to color box plots. If supplied, legend title defaults to "Group".
+#'   Override this feature by passing a named list instead.
+#' @param pal String specifying the color palette to use if \code{group} is not
+#'   \code{NULL}. Options include \code{"ggplot"}, as well as the complete
+#'   collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
+#'   length equal to the number of levels in \code{group}.
 #' @param ylab Optional label for y-axis.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
 #'
 #' @details
-#' Box plots are an intuitive way to visualize an omic data distribution. They
-#' are especially helpful when contrasting pre- and post-normalization matrices.
-#' \code{plot_box} may additionally be used to inspect for batch effects
-#' or associations with phenotypic factors by using the \code{group} argument.
+#' Box plots offer an intuitive way to visualize an omic data distribution. They
+#' are common in quality control pipelines, and may be especially helpful when
+#' contrasting pre- and post-normalization matrices. \code{plot_box} can
+#' additionally be used to inspect for batch effects or associations with
+#' phenotypic factors by using the \code{group} argument.
 #'
 #' @examples
 #' # Box plots by sample
@@ -39,13 +46,13 @@
 #'
 #' @export
 #' @importFrom tidyr gather
-#' @importFrom ggsci scale_fill_d3
 #' @import dplyr
 #' @import ggplot2
 #'
 
 plot_box <- function(dat,
                      group = NULL,
+                       pal = 'd3',
                       type = NULL,
                       ylab = NULL,
                      title = NULL,
@@ -71,6 +78,22 @@ plot_box <- function(dat,
       names(group) <- 'Group'
     }
   }
+  if (length(pal) == 1L & !is.color(pal)) {
+    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
+                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
+      stop('pal not recognized.')
+    }
+  } else {
+    if (!all(is.color(pal))) {
+      stop('When passing multiple strings to pal, each must denote a valid ',
+           'color in R.')
+    }
+    if (length(levels(group[[1]])) != length(pal)) {
+      stop('When passing individual colors to pal, length(pal) must equal the ',
+           'number of unique groups.')
+    }
+  }
   if (is.null(title)) {
     if (is.null(group)) {
       title <- 'Box Plots By Sample'
@@ -78,9 +101,10 @@ plot_box <- function(dat,
       title <- paste('Box Plots By', names(group))
     }
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -110,8 +134,9 @@ plot_box <- function(dat,
          axis.text.x = element_text(angle = 45L, hjust = 1L))
   if (!is.null(group)) {                         # Fill by group?
     p <- p + geom_boxplot(aes(fill = Group)) +
-      guides(fill = guide_legend(title = names(group))) +
-      scale_fill_d3()
+      scale_fill_manual(name = names(group),
+                      values = colorize(pal, length((levels(group[[1]]))),
+                                        var_type = 'Categorical'))
   } else {
     p <- p + geom_boxplot()
   }

@@ -11,11 +11,18 @@
 #'   a percentage.
 #' @param CI Plot confidence intervals?
 #' @param censor Include tick-marks to indicate censored subjects?
+#' @param pal String specifying the color palette to use when plotting multiple
+#'   curves. Options include \code{"ggplot"}, as well as the complete
+#'   collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
+#'   length equal to the number of strata in \code{fit}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param ... Additional arguments to be passed to \code{
 #'   \link[survminer]{ggsurvplot}}.
 #'
@@ -58,12 +65,13 @@
 #' @export
 #' @importFrom ggsci pal_d3
 #' @import ggplot2
-#' @import survminer
+#'
 
 plot_survival <- function(fit,
                           fun = NULL,
                            CI = FALSE,
                        censor = TRUE,
+                          pal = 'd3',
                         title = NULL,
                       leg.txt = NULL,
                        legend = 'outside', ...) {
@@ -94,13 +102,12 @@ plot_survival <- function(fit,
   } else if (!is.null(leg.txt) && !is.null(fit$strata)) {
     leg.lbl <- names(fit$strata)
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
-  if (legend == 'outside') {
-    legend <- 'right'
-  } else if (legend == 'bottomleft') {
+  if (legend == 'bottomleft') {
     legend <- c(0.01, 0.01)
   } else if (legend == 'bottomright') {
     legend <- c(0.99, 0.01)
@@ -114,6 +121,7 @@ plot_survival <- function(fit,
   df <- suppressWarnings(surv_summary(fit))
 
   # Build plot
+  require(surminer)
   p <- ggsurvplot(fit, data = df, fun = fun, size = 0.5, conf.int = CI,
                   censor = censor, title = title, legend = legend,
                   font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab,
@@ -121,7 +129,8 @@ plot_survival <- function(fit,
   if (!is.null(fit$strata)) {
     p <- p + scale_color_manual(name = leg.txt,
                               labels = leg.lbl,
-                              values = pal_d3()(length(fit$strata)))
+                              values = colorize(pal, length(fit$strata),
+                                                var_type = 'Categorical'))
   }
   p <- p + theme(plot.title = element_text(hjust = 0.5))
 
