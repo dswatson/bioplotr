@@ -12,8 +12,8 @@
 #'   size. Numeric or logical vectors are silently coerced to factor. Levels are
 #'   used to color density curves. If supplied, legend title defaults to
 #'   "Group". Override this feature by passing a named list instead.
-#' @param pal String specifying the color palette to use if \code{group} is not
-#'   \code{NULL}. Options include \code{"ggplot"}, as well as the complete
+#' @param pal String specifying the color palette to use if \code{group} is
+#'   non-\code{NULL}. Options include \code{"ggplot"}, as well as the complete
 #'   collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
@@ -63,38 +63,9 @@ plot_density <- function(dat,
 
   # Preliminaries
   if (!is.null(group)) {
-    if (!is.list(group)) {
-      group <- list(group)
-    }
-    if (length(group) > 1L) {
-      stop('group cannot be a list of length > 1.')
-    }
-    if (length(group[[1]]) != ncol(dat)) {
-      stop('group length must match number of samples in dat.')
-    }
-    if (length(unique(group[[1]])) == 1L) {
-      warning('group is invariant.')
-    }
-    group[[1]] <- as.factor(group[[1]])
-    if (is.null(names(group))) {
-      names(group) <- 'Group'
-    }
-  }
-  if (length(pal) == 1L & !is.color(pal)) {
-    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
-                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
-      stop('pal not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal))) {
-      stop('When passing multiple strings to pal, each must denote a valid ',
-           'color in R.')
-    }
-    if (length(levels(group[[1]])) != length(pal)) {
-      stop('When passing individual colors to pal, length(pal) must equal the ',
-           'number of unique groups.')
-    }
+    group <- format_features(dat, group, 'Categorical')
+    cols <- colorize(pal = pal_group, var_type = 'Categorical',
+                     n = length(levels(group[[1L]])))
   }
   if (is.null(title)) {
     if (is.null(group)) {
@@ -122,7 +93,7 @@ plot_density <- function(dat,
   dat <- matrixize(dat)
   df <- gather(tbl_df(dat), Sample, Value)
   if (!is.null(group)) {
-    df <- df %>% mutate(Group = rep(group[[1]], each = nrow(dat)))
+    df <- df %>% mutate(Group = rep(group[[1L]], each = nrow(dat)))
   }
 
   # Build plot
@@ -132,9 +103,7 @@ plot_density <- function(dat,
     theme(plot.title = element_text(hjust = 0.5))
   if (!is.null(group)) {                         # Color by group?
     p <- p + geom_path(stat = 'density', aes(color = Group)) +
-      scale_color_manual(name = names(group),
-                       values = colorize(pal, length((levels(group[[1]]))),
-                                         var_type = 'Categorical'))
+      scale_color_manual(name = names(group), values = cols)
   } else {
     p <- p + geom_path(stat = 'density')
   }
