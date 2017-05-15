@@ -13,8 +13,8 @@ probes and columns to samples.}
 \item{features}{Vector of length equal to sample size, or several such
 vectors organized into a list or data frame.}
 
-\item{var_type}{Character string specifying whether features are categorical
-or continuous.}
+\item{var_type}{Character string specifying whether features are \code{
+"Categorical"} or \code{"Continuous"}.}
 }
 \description{
 This utility function formats categorical and continuous features for plots.
