@@ -131,12 +131,15 @@ plot_tsne <- function(dat,
       stop('Plot can render at most one categorical feature when a continuous ',
            'covariate is also supplied.')
     }
+    group_cols <- colorize(pal = pal_group, var_type = 'Categorical',
+                           n = length(levels(group[[1L]])))
   }
   if (!is.null(covar)) {
     covar <- format_features(dat, covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
     }
+    covar_cols <- colorize(pal = pal_covar, var_type = 'Continuous')
   }
   if (!is.null(c(group, covar))) {
     features <- c(covar, group)
@@ -153,34 +156,6 @@ plot_tsne <- function(dat,
   if (label & length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
-  }
-  if (length(pal_group) == 1L & !is.color(pal_group)) {
-    if (!pal_group %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco',
-                          'ucscgb', 'd3', 'locuszoom', 'igv', 'uchicago',
-                          'startrek', 'futurama', 'rickandmorty', 'simpsons',
-                          'gsea')) {
-      stop('pal_group not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal_group))) {
-      stop('When passing multiple strings to pal_group, each must denote a ',
-           'valid color in R.')
-    }
-    if (length(levels(group[[1]])) != length(pal_group)) {
-      stop('When passing individual colors to pal_group, length(pal_group) ',
-           'must equal the number of unique groups.')
-    }
-  }
-  if (length(pal_covar) == 1L & !is.color(pal_covar)) {
-    if (!pal_covar %in% c('blues', 'greens', 'purples',
-                          'greys', 'oranges', 'reds')) {
-      stop('pal_covar not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal_covar))) {
-      stop('When passing multiple strings to pal_covar, each must denote a ',
-           'valid color in R.')
-    }
   }
   if (is.null(title)) {
     title <- 't-SNE'
@@ -273,12 +248,9 @@ plot_tsne <- function(dat,
       }
     }
     if (is.null(covar)) {
-      p <- p + scale_color_manual(values = colorize(pal_group,
-                                                    length(levels(group[[1L]])),
-                                                    'Categorical'))
+      p <- p + scale_color_manual(values = group_cols)
     } else {
-      p <- p + scale_color_gradientn(colors = colorize(pal_covar,
-                                                       var_type = 'Continuous'))
+      p <- p + scale_color_gradientn(colors = covar_cols)
     }
     gg_out(p, hover, legend)
   } else {

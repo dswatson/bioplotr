@@ -81,21 +81,8 @@ plot_lorenz <- function(dat,
               'should be interpreted with caution.')
     }
   }
-  if (length(pal) == 1L & !is.color(pal)) {
-    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
-                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
-      stop('pal not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal))) {
-      stop('When passing multiple strings to pal, each must denote a valid ',
-           'color in R.')
-    }
-    if (length(dat) != length(pal)) {
-      stop('When passing individual colors to pal, length(pal) must equal the ',
-           'number of vectors in dat.')
-    }
+  if (length(dat) > 1L) {
+    cols <- colorize(pal = pal, var_type = 'Categorical', n = length(dat))
   }
   if (is.null(title)) {
     if (length(dat) == 1L) {
@@ -151,8 +138,7 @@ plot_lorenz <- function(dat,
     }
     p <- p + scale_color_manual(name = leg.txt,
                               labels = map_chr(seq_along(dat), p_gin),
-                              values = colorize(pal, length(dat),
-                                                var_type = 'Categorical'))
+                              values = cols)
   } else {
     p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
       scale_color_manual(name = leg.txt,
