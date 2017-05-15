@@ -4,15 +4,16 @@
 \alias{colorize}
 \title{Assign Colors}
 \usage{
-colorize(pal, n, var_type)
+colorize(pal, var_type, n)
 }
 \arguments{
 \item{pal}{Color palette.}
 
-\item{n}{Number of colors.}
-
 \item{var_type}{Character string specifying whether features are categorical
 or continuous.}
+
+\item{n}{Number of unique groups for which colors must be assigned. Only
+relevant if \code{var_type = "Categorical"}.}
 }
 \description{
 This utility function applies a user selected color palette to a ggplot
