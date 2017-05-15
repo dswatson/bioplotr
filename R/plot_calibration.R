@@ -11,8 +11,8 @@
 #'   organized into a data frame or list, optionally named. Must be numeric on
 #'   \code{[0, 1]}.
 #' @param pal String specifying the color palette to use when plotting multiple
-#'   predictors. Options include \code{"ggplot"}, as well as the complete
-#'   collection of \code{
+#'   curves. Options include \code{"ggplot"}, as well as the complete collection
+#'   of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 #'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
@@ -32,15 +32,15 @@
 #' the corresponding bin.
 #'
 #' @examples
-#' x <- runif(1000)
-#' y <- rbinom(1000, size = 1, prob = x)
-#' plot_calibration(obs = y, pred = x)
+#' x1 <- runif(1000)
+#' y <- rbinom(1000, size = 1, prob = x1)
+#' plot_calibration(obs = y, pred = x1)
 #'
 #' x2 <- rbeta(1000, shape1 = 5/2, shape2 = 3/2)
-#' plot_calibration(obs = y, pred = list("Good" = x, "Bad" = x2))
+#' plot_calibration(obs = y, pred = list("Good" = x1, "Bad" = x2))
 #'
 #' @export
-#' @importFrom purrr map map_dbl map_df
+#' @importFrom purrr map_lgl map map_dbl map_df
 #' @importFrom dplyr data_frame
 #' @import ggplot2
 #'
@@ -53,64 +53,15 @@ plot_calibration <- function(obs,
                            hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) {
-    obs <- as.factor(obs)
+  obs <- format_binom(obs, vec_type = 'obs')
+  pred <- format_binom(pred, vec_type = 'pred', n = length(obs))
+  if (any(map_lgl(seq_along(pred), function(m) {
+    max(pred[[m]] > 1L | min(pred[[m]] < 0L))
+  }))) {
+    stop('pred values must be on [0, 1].')
   }
-  if (is.factor(obs)) {
-    if (length(levels(obs)) != 2L) {
-      stop('Response must be dichotomous.')
-    } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1],
-              '". To change this to obs == "', levels(obs)[2], '", either ',
-              'relevel the factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1], 1L, 0L)
-    }
-  }
-  if (is.logical(obs)) {
-    obs <- ifelse(obs, 1L, 0L)
-  }
-  if (!all(obs %in% c(0L, 1L))) {
-    stop('A numeric response can only take values of 1 or 0.')
-  }
-  if (var(obs) == 0L) {
-    stop('Response is invariant.')
-  }
-  if (is.data.frame(pred)) {
-    pred <- as.list(pred)
-  } else if (!is.list(pred)) {
-    pred <- list(pred)
-  }
-  pred <- map(pred, function(x) x <- x[is.finite(x)])
-  if (is.null(names(pred))) {
-    names(pred) <- paste0('M', seq_along(pred))
-  }
-  for (x in seq_along(pred)) {
-    if (!is.numeric(pred[[x]])) {
-      stop('pred must be a numeric vector, or several such vectors organized ',
-           'into a list or data frame.')
-    }
-    if (max(pred[[x]] > 1L || min(pred[[x]] < 0L))) {
-      stop('pred values must be on (0, 1).')
-    }
-    if (length(obs) != length(pred[[x]])) {
-      stop('obs and pred vectors must be of equal length.')
-    }
-  }
-  if (length(pal) == 1L & !is.color(pal)) {
-    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
-                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
-      stop('pal not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal))) {
-      stop('When passing multiple strings to pal, each must denote a valid ',
-           'color in R.')
-    }
-    if (length(pred) != length(pal)) {
-      stop('When passing individual colors to pal, length(pal) must equal the ',
-           'number of unique predictors.')
-    }
+  if (length(pred) > 1L) {
+    cols <- colorize(pal, var_type = 'Categorical', n = length(pred))
   }
   if (is.null(title)) {
     if (length(pred) == 1L) {
@@ -127,18 +78,18 @@ plot_calibration <- function(obs,
 
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
-  bin <- map(pred, function(x) {
-    map_dbl(seq_along(x), function(i) which.max(x[i] <= brks))
+  bin <- map(pred, function(m) {
+    map_dbl(seq_along(m), function(i) which.max(m[i] <= brks))
   })
-  exp_grps <- map(seq_along(pred), function(x) {
-    split(pred[[x]], bin[[x]])
+  exp_grps <- map(seq_along(pred), function(m) {
+    split(pred[[m]], bin[[m]])
   })
   obs_grps <- map(seq_along(bin), function(x) split(obs, bin[[x]]))
-  df <- map_df(seq_along(pred), function(x) {
-    data_frame(Y = map_dbl(obs_grps[[x]], mean),
-               X = map_dbl(exp_grps[[x]], mean),
-       Frequency = map_dbl(exp_grps[[x]], length),
-      Classifier = names(pred)[x])
+  df <- map_df(seq_along(pred), function(m) {
+    data_frame(Y = map_dbl(obs_grps[[m]], mean),
+               X = map_dbl(exp_grps[[m]], mean),
+       Frequency = map_dbl(exp_grps[[m]], length),
+      Classifier = names(pred)[m])
   })
 
   # Build plot
@@ -152,9 +103,8 @@ plot_calibration <- function(obs,
     suppressWarnings(
       p <- p + geom_point(aes(size = Frequency, color = Classifier,
                               text = Classifier)) +
-        geom_path(aes(color = Classifier, text = Classifier)) +
-        scale_color_manual(values = colorize(pal, length(pred),
-                                             var_type = 'Categorical'))
+        geom_path(aes(text = Classifier, color = Classifier)) +
+        scale_color_manual(values = cols)
     )
   } else {
     p <- p + geom_point(aes(size = Frequency)) +

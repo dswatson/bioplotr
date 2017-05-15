@@ -58,83 +58,25 @@
 #' plot_pr(obs = y, pred = list("x1" = x1, "x2" = x2))
 #'
 #' @export
-#' @import dplyr
 #' @importFrom precrec evalmod
 #' @importFrom purrr map_df map_chr
+#' @import dplyr
 #' @import ggplot2
-#' @importFrom ggsci pal_d3
 #'
 
 plot_pr <- function(obs,
                     pred,
-                      pal = 'd3',
-                    title = NULL,
-                  leg.txt = NULL,
-                   legend = 'topright',
-                    hover = FALSE) {
+                    pal = 'd3',
+                  title = NULL,
+                leg.txt = NULL,
+                 legend = 'topright',
+                  hover = FALSE) {
 
   # Preliminaries
-  if (is.character(obs)) {
-    obs <- as.factor(obs)
-  }
-  if (is.factor(obs)) {
-    if (length(levels(obs)) != 2L) {
-      stop('Response must be dichotomous.')
-    } else {
-      warning('A positive outcome is hereby defined as obs == "', levels(obs)[1],
-              '". To change this to obs == "', levels(obs)[2], '", either ',
-              'relevel the factor or recode response as numeric (1/0).')
-      obs <- ifelse(obs == levels(obs)[1], TRUE, FALSE)
-    }
-  }
-  if (is.numeric(obs)) {
-    if (!all(obs %in% c(0L, 1L))) {
-      stop('A numeric response can only take on values of 0 or 1.')
-    } else {
-      obs <- ifelse(obs == 1L, TRUE, FALSE)
-    }
-  }
-  if (any(is.na(obs))) {
-    stop('obs cannot contain missing values.')
-  }
-  if (all(obs) | all(!obs)) {
-    stop('obs is invariant.')
-  }
-  if (is.data.frame(pred)) {
-    pred <- as.list(pred)
-  } else if (!is.list(pred)) {
-    pred <- list(pred)
-  }
-  for (x in seq_along(pred)) {
-    if (!is.numeric(pred[[x]])) {
-      stop('pred must be a numeric vector, or several such vectors organized ',
-           'into a list or data frame.')
-    }
-    if (length(obs) != length(pred[[x]])) {
-      stop('obs and pred vectors must be of equal length.')
-    }
-    if (any(!is.finite(pred[[x]]))) {
-      stop('pred cannot contain missing or infinite values.')
-    }
-  }
-  if (is.null(names(pred))) {
-    names(pred) <- paste0('M', seq_along(pred))
-  }
-  if (length(pal) == 1L & !is.color(pal)) {
-    if (!pal %in% c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                    'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
-                    'futurama', 'rickandmorty', 'simpsons', 'gsea')) {
-      stop('pal not recognized.')
-    }
-  } else {
-    if (!all(is.color(pal))) {
-      stop('When passing multiple strings to pal, each must denote a valid ',
-           'color in R.')
-    }
-    if (length(pred) != length(pal)) {
-      stop('When passing individual colors to pal, length(pal) must equal the ',
-           'number of unique predictors.')
-    }
+  obs <- format_binom(obs, vec_type = 'obs')
+  pred <- format_binom(pred, vec_type = 'pred', n = length(obs))
+  if (length(pred) > 1L) {
+    cols <- colorize(pal, var_type = 'Categorical', n = length(pred))
   }
   if (is.null(title)) {
     if (length(pred) == 1L) {
@@ -175,13 +117,11 @@ plot_pr <- function(obs,
   if (length(pred) > 1L) {                       # Multiple curves?
     suppressWarnings(
       p <- p + geom_line(aes(text = Classifier,
-                            group = Classifier,
                             color = Classifier)) +
         scale_color_manual(name = leg.txt,
                          breaks = names(pred),
                          labels = map_chr(seq_along(pred), p_auc),
-                         values = colorize(pal, length(pred),
-                                           var_type = 'Categorical'))
+                         values = cols)
     )
   } else {
     p <- p + geom_line(aes(color = Classifier)) +

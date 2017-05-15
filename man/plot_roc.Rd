@@ -49,11 +49,11 @@ metric for binary classifiers. The grey diagonal line across the plot
 represents the performance of a theoretical random classifier.
 }
 \examples{
-y <- rbinom(100, size = 1, prob = 0.5)
-x1 <- rnorm(100, mean = y)
+y <- rbinom(1000, size = 1, prob = 0.5)
+x1 <- rnorm(1000, mean = y)
 plot_roc(obs = y, pred = x1)
 
-x2 <- rnorm(100, mean = y, sd = 2)
+x2 <- rnorm(1000, mean = y, sd = 2)
 plot_roc(obs = y, pred = list("x1" = x1, "x2" = x2))
 
 }

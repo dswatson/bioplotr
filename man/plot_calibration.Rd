@@ -18,8 +18,8 @@ organized into a data frame or list, optionally named. Must be numeric on
 \code{[0, 1]}.}
 
 \item{pal}{String specifying the color palette to use when plotting multiple
-predictors. Options include \code{"ggplot"}, as well as the complete
-collection of \code{
+curves. Options include \code{"ggplot"}, as well as the complete collection
+of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 \code{"aaas"}, etc.). Alternatively, a character vector of colors with
@@ -46,11 +46,11 @@ same figure, with points sized by the number of observations that fall within
 the corresponding bin.
 }
 \examples{
-x <- runif(1000)
-y <- rbinom(1000, size = 1, prob = x)
-plot_calibration(obs = y, pred = x)
+x1 <- runif(1000)
+y <- rbinom(1000, size = 1, prob = x1)
+plot_calibration(obs = y, pred = x1)
 
 x2 <- rbeta(1000, shape1 = 5/2, shape2 = 3/2)
-plot_calibration(obs = y, pred = list("Good" = x, "Bad" = x2))
+plot_calibration(obs = y, pred = list("Good" = x1, "Bad" = x2))
 
 }
