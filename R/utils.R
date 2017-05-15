@@ -1,94 +1,74 @@
-#' Size Data Points
+#' Format Features
 #'
-#' This utility function assigns a reasonable point size parameter based on data
-#' dimensionality.
+#' This utility function formats categorical and continuous features for plots.
 #'
-#' @param df Data frame to be passed to \code{ggplot}.
+#' @param dat Omic data matrix or matrix-like object with rows corresponding to
+#'   probes and columns to samples.
+#' @param features Vector of length equal to sample size, or several such
+#'   vectors organized into a list or data frame.
+#' @param var_type Character string specifying whether features are categorical
+#'   or continuous.
+#'
+#' @importFrom purrr map
 #'
 
-pt_size <- function(df) {
-  if (nrow(df) <= 10L) {
-    out <- 3L
-  } else if (nrow(df) <= 20L) {
-    out <- 2L
-  } else if (nrow(df) <= 100L) {
-    out <- 1.5
-  } else if (nrow(df) <= 1e3L) {
-    out <- 1L
-  } else if (nrow(df) <= 1e4L) {
-    out <- 0.75
-  } else if (nrow(df) <= 1e5L) {
-    out <- 0.5
-  } else {
-    out <- 0.25
+format_features <- function(dat,
+                            features,
+                            var_type) {
+
+  # Listify, add names
+  if (is.data.frame(features)) {
+    features <- as.list(features)
+  } else if (!is.list(features)) {
+    if (var_type == 'Categorical') {
+      features <- list('Group' = features)
+    } else if (var_type == 'Continuous') {
+      features <- list('Variable' = features)
+    }
   }
-  return(out)
-}
-
-#' Set Data Point Transparency
-#'
-#' This utility function assigns a reasonable alpha parameter based on data
-#' dimensionality.
-#'
-#' @param df Data frame to be passed to \code{ggplot}.
-#'
-
-pt_alpha <- function(df) {
-  if (nrow(df) <= 20L) {
-    out <- 1L
-  } else if (nrow(df) <= 100L) {
-    out <- 0.85
-  } else if (nrow(df) <= 1e5L) {
-    out <- 0.5
-  } else {
-    out <- 0.25
+  if (var_type == 'Categorical') {
+    if (is.null(names(features))) {
+      if (length(features) == 1L) {
+        names(features) <- 'Group'
+      } else {
+        names(features) <- paste('Factor', seq_along(features))
+      }
+    }
+    features <- map(features, as.factor)
+  } else if (var_type == 'Continuous') {
+    if (is.null(names(features))) {
+      if (length(features) == 1L) {
+        names(features) <- 'Variable'
+      } else {
+        names(features) <- paste('Variable', seq_along(features))
+      }
+    }
   }
-  return(out)
-}
 
-#' Output Image
-#'
-#' This utility function locates the legend (if supplied) and prints a ggplot or
-#' ggplotly figure.
-#'
-#' @param p A \code{ggplot2} object.
-#' @param hover Add text tooltip using plotly?
-#' @param loc String specifying legend location.
-#'
-#' @importFrom ggplot2 theme
-#'
-
-gg_out <- function(p,
-                   hover,
-                   loc = NULL) {
-
-  # Locate legend
-  if (loc == 'bottomleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                   legend.position = c(0.01, 0.01))
-  } else if (loc == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                   legend.position = c(0.99, 0.01))
-  } else if (loc == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                   legend.position = c(0.01, 0.99))
-  } else if (loc == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                   legend.position = c(0.99, 0.99))
+  # Check dimensions, invariance, object class
+  for (x in seq_along(features)) {
+    if (var_type == 'Categorical') {
+      if (length(features[[x]]) != ncol(dat)) {
+        stop(paste('Categorical feature', x, 'not equal to sample size.'))
+      }
+      if (length(levels(features[[x]])) == 1L) {
+        stop(paste('Categorical feature', x, 'is invariant.'))
+      }
+    } else if (var_type == 'Continuous') {
+      if (length(features[[x]]) != ncol(dat)) {
+        stop(paste('Continuous feature', x, 'not equal to sample size.'))
+      }
+      if (var(features[[x]]) == 0L) {
+        stop(paste('Continuous feature', x, 'is invariant.'))
+      }
+      if (!is.numeric(features[[x]])) {
+        stop('All variables passed to covar must be of class numeric.')
+      }
+    }
   }
 
   # Output
-  if (!hover) {
-    print(p)
-  } else {
-    require(plotly)
-    if (loc == 'outside') {
-      p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
-    } else {
-      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
-    }
-    print(p)
-  }
+  return(features)
 
 }
 
@@ -175,7 +155,7 @@ dist_mat <- function(dat,
     } else {
       top <- round(top * nrow(dat))
     }
-    }
+  }
 
   # Create matrix
   if (is.null(top)) {
@@ -216,82 +196,197 @@ dist_mat <- function(dat,
 
 }
 
-#' Format Annotation Tracks
+#' Size Data Points
 #'
-#' This utility function formats categorical or continuous features for
-#' plotting atop heatmaps.
+#' This utility function assigns a reasonable point size parameter based on data
+#' dimensionality.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples.
-#' @param features Vector of length equal to sample size, or several such
-#'   vectors organized into a list or data frame.
+#' @param df Data frame to be passed to \code{ggplot}.
+#'
+
+pt_size <- function(df) {
+  if (nrow(df) <= 10L) {
+    out <- 3L
+  } else if (nrow(df) <= 20L) {
+    out <- 2L
+  } else if (nrow(df) <= 100L) {
+    out <- 1.5
+  } else if (nrow(df) <= 1e3L) {
+    out <- 1L
+  } else if (nrow(df) <= 1e4L) {
+    out <- 0.75
+  } else if (nrow(df) <= 1e5L) {
+    out <- 0.5
+  } else {
+    out <- 0.25
+  }
+  return(out)
+}
+
+#' Set Data Point Transparency
+#'
+#' This utility function assigns a reasonable alpha parameter based on data
+#' dimensionality.
+#'
+#' @param df Data frame to be passed to \code{ggplot}.
+#'
+
+pt_alpha <- function(df) {
+  if (nrow(df) <= 20L) {
+    out <- 1L
+  } else if (nrow(df) <= 100L) {
+    out <- 0.85
+  } else if (nrow(df) <= 1e5L) {
+    out <- 0.5
+  } else {
+    out <- 0.25
+  }
+  return(out)
+}
+
+#' Test for Valid Color Representation
+#'
+#' This utility function checks whether each string in a character vector
+#' denotes a valid color in R.
+#'
+#' @param chr A character vector.
+#'
+
+is.color <- function(chr) {
+  sapply(chr, function(x) {
+    tryCatch(is.matrix(col2rgb(x)), error = function(e) FALSE)
+  })
+}
+
+#' Assign Colors
+#'
+#' This utility function applies a user selected color palette to a ggplot
+#' image.
+#'
+#' @param pal Color palette.
 #' @param var_type Character string specifying whether features are categorical
 #'   or continuous.
+#' @param n Number of colors.
 #'
-#' @importFrom purrr map_lgl
+#' @importFrom scales hue_pal
+#' @importFrom RColorBrewer brewer.pal
+#' @import ggsci
 #'
 
-anno_track <- function(dat,
-                       features,
-                       var_type) {
+colorize <- function(pal,
+                     n,
+                     var_type) {
 
-  # Listify, add names
-  if (is.data.frame(features)) {
-    features <- as.list(features)
-  } else if (!is.list(features)) {
-    if (var_type == 'Categorical') {
-      features <- list('Group' = features)
-    } else if (var_type == 'Continuous') {
-      features <- list('Variable' = features)
-    }
+  if (all(is.color(pal))) {
+    out <- pal
   } else {
     if (var_type == 'Categorical') {
-      if (is.null(names(features))) {
-        if (length(features) == 1L) {
-          names(features) <- 'Group'
-        } else {
-          names(features) <- paste('Group', seq_along(features))
-        }
+      if (pal == 'ggplot') {
+        out <- hue_pal()(n)
+      }
+      else if (pal == 'npg') {
+        out <- pal_npg()(n)
+      } else if (pal == 'aaas') {
+        out <- pal_aaas()(n)
+      } else if (pal == 'nejm') {
+        out <- pal_nejm()(n)
+      } else if (pal == 'lancet') {
+        out <- pal_lancet()(n)
+      } else if (pal == 'jco') {
+        out <- pal_jco()(n)
+      } else if (pal == 'ucscgb') {
+        out <- pal_ucscgb()(n)
+      } else if (pal == 'd3') {
+        out <- pal_d3()(n)
+      } else if (pal == 'locuszoom') {
+        out <- pal_locuszoom()(n)
+      } else if (pal == 'igv') {
+        out <- pal_igv()(n)
+      } else if (pal == 'uchicago') {
+        out <- pal_uchicago()(n)
+      } else if (pal == 'startrek') {
+        out <- pal_startrek()(n)
+      } else if (pal == 'futurama') {
+        out <- pal_futurama()(n)
+      } else if (pal == 'rickandmorty') {
+        out <- pal_rickandmorty()(n)
+      } else if (pal == 'simpsons') {
+        out <- pal_simpsons()(n)
+      } else if (pal == 'gsea') {
+        out <- pal_gsea()(n)
       }
     } else if (var_type == 'Continuous') {
-      if (is.null(names(features))) {
-        if (length(features) == 1L) {
-          names(features) <- 'Variable'
-        } else {
-          names(features) <- paste('Variable', seq_along(features))
-        }
+      if (pal == 'blues') {
+        out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
+      } else if (pal == 'greens') {
+        out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
+      } else if (pal == 'purples') {
+        out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
+      } else if (pal == 'greys') {
+        out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
+      } else if (pal == 'oranges') {
+        out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
+      } else if (pal == 'reds') {
+        out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
       }
     }
-  }
 
-  # Check dimensions, invariance
-  if (!all(map_lgl(seq_along(features), function(x) {
-    length(features[[x]]) == ncol(dat)
-  }))) {
-    stop('Each variable must match the number of samples in dat.')
-  }
-  if (var_type == 'Categorical') {
-    if (length(features) > 10L) {
-      stop('Cannot plot more than 10 categorical covariates.')
-    }
-    if (any(map_lgl(seq_along(features), function(x) {
-      length(unique(features[[x]])) == 1L
-    }))) {
-      stop('At least one categorical feature is invariant.')
-    }
-  } else if (var_type == 'Continuous') {
-    if (length(features) > 6L) {
-      stop('Cannot plot more than 6 continuous covariates.')
-    }
-    if (any(map_lgl(seq_along(features), function(x) {
-      var(features[[x]]) == 0L
-    }))) {
-      stop('At least one continuous feature is invariant.')
-    }
   }
 
   # Output
-  return(features)
+  return(out)
+
+}
+
+#' Output Image
+#'
+#' This utility function locates the legend (if supplied) and prints a ggplot or
+#' ggplotly figure.
+#'
+#' @param p A \code{ggplot2} object.
+#' @param hover Add text tooltip using plotly?
+#' @param loc String specifying legend location.
+#'
+#' @importFrom ggplot2 theme
+#'
+
+gg_out <- function(p,
+                   hover,
+                   loc = NULL) {
+
+  # Locate legend
+  if (loc == 'left') {
+    p <- p + theme(legend.position = 'left')
+  } else if (loc == 'top') {
+    p <- p + theme(legend.position = 'top', legend.box = 'horizontal')
+  } else if (loc == 'bottom') {
+    p <- p + theme(legend.position = 'bottom', legend.box = 'horizontal')
+  } else if (loc == 'bottomright') {
+    p <- p + theme(legend.justification = c(0.99, 0.01),
+                   legend.position = c(0.99, 0.01))
+  } else if (loc == 'bottomleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.01),
+                   legend.position = c(0.01, 0.01))
+  } else if (loc == 'topright') {
+    p <- p + theme(legend.justification = c(0.99, 0.99),
+                   legend.position = c(0.99, 0.99))
+  } else if (loc == 'topleft') {
+    p <- p + theme(legend.justification = c(0.01, 0.99),
+                   legend.position = c(0.01, 0.99))
+  }
+
+  # Output
+  if (!hover) {
+    print(p)
+  } else {
+    require(plotly)
+    if (loc == 'outside') {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    } else {
+      p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
+    }
+    print(p)
+  }
 
 }
 
@@ -300,33 +395,33 @@ anno_track <- function(dat,
 #' This utility function formats the colors for plotting annotation tracks atop
 #' heatmaps.
 #'
-#' @param features List formatted by \code{anno_track()}.
+#' @param features List output by \code{\link{format_features}}.
 #' @param var_type Character string specifying whether features are categorical
 #'   or continuous.
 #'
 #' @importFrom purrr map_dbl
-#' @importFrom ggsci pal_d3
 #' @importFrom RColorBrewer brewer.pal
 #'
 
 track_cols <- function(features,
+                       pal,
                        var_type) {
 
   # Create color list
   if (var_type == 'Categorical') {
     n.cols <- map_dbl(seq_along(features), function(x) {
-      length(unique(features[[x]]))
+      length(levels(features[[x]]))
     })
-    d3 <- pal_d3()(sum(n.cols))
-    cols <- split(d3, rep(seq_along(features), n.cols))
+    pal <- colorize(pal, sum(n.cols), 'Categorical')
+    cols <- split(pal, rep(seq_along(features), n.cols))
   } else if (var_type == 'Continuous') {
-    grads <- list(
-      greens = colorRampPalette(brewer.pal(9, 'Greens'))(n = 256),
-      purples = colorRampPalette(brewer.pal(9, 'Purples'))(n = 256),
-      greys = colorRampPalette(brewer.pal(9, 'Greys'))(n = 256),
-      oranges = colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256),
-      blues = colorRampPalette(brewer.pal(9, 'Blues'))(n = 256),
-      reds = colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
+    grads <- list(  # Make this customizable
+      colorRampPalette(brewer.pal(9, 'Greens'))(n = 256),
+      colorRampPalette(brewer.pal(9, 'Purples'))(n = 256),
+      colorRampPalette(brewer.pal(9, 'Greys'))(n = 256),
+      colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256),
+      colorRampPalette(brewer.pal(9, 'Blues'))(n = 256),
+      colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
     )
     cols <- grads[seq_along(features)]
   }
