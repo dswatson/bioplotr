@@ -6,8 +6,8 @@
 #'   probes and columns to samples.
 #' @param features Vector of length equal to sample size, or several such
 #'   vectors organized into a list or data frame.
-#' @param var_type Character string specifying whether features are categorical
-#'   or continuous.
+#' @param var_type Character string specifying whether features are \code{
+#'   "Categorical"} or \code{"Continuous"}.
 #'
 #' @importFrom purrr map
 #'
@@ -69,6 +69,80 @@ format_features <- function(dat,
 
   # Output
   return(features)
+
+}
+
+#' Format Binomial Things
+#'
+#' This utility function formats vectors of observed and predicted values for
+#' binomially distributed events.
+#'
+#' @param vec Vector of observed outcomes, or one or several vectors of
+#'   predicted values.
+#' @param vec_type Character string specifying whether vector is \code{"obs"}
+#'   or \code{"pred"}.
+#' @param n Number of events for which predictions are required.
+#'
+
+format_binom <- function(vec,
+                         vec_type,
+                         n) {
+
+  # Format obs
+  if (vec_type == 'obs') {
+    if (any(!is.finite(vec))) {
+      stop('Missing or infinite values detected in obs.')
+    }
+    if (is.character(vec)) {
+      vec <- as.factor(vec)
+    }
+    if (is.factor(vec)) {
+      if (length(levels(vec)) != 2L) {
+        stop('Response must be dichotomous.')
+      } else {
+        warning(paste0('A positive outcome is hereby defined as obs == "',
+                       levels(vec)[1], '". To change this to obs == "',
+                       levels(vec)[2], '", either relevel the factor or ',
+                       'recode response as numeric (1/0).'))
+        vec <- ifelse(vec == levels(vec)[1], 1L, 0L)
+      }
+    }
+    if (is.logical(vec)) {
+      vec <- ifelse(vec, 1L, 0L)
+    }
+    if (!all(vec %in% c(0L, 1L))) {
+      stop('A numeric response can only take values of 1 or 0.')
+    }
+    if (var(vec) == 0L) {
+      stop('Response is invariant.')
+    }
+
+  # Format pred
+  } else if (vec_type == 'pred') {
+    if (is.data.frame(vec)) {
+      vec <- as.list(vec)
+    } else if (!is.list(vec)) {
+      vec <- list(vec)
+    }
+    if (is.null(names(vec))) {
+      names(vec) <- paste0('M', seq_along(vec))
+    }
+    for (m in seq_along(vec)) {
+      if (any(!is.finite(vec[[m]]))) {
+        stop('Missing or infinite values detected in pred.')
+      }
+      if (!is.numeric(vec[[m]])) {
+        stop('pred must be a numeric vector, or several such vectors ',
+             'organized into a list or data frame.')
+      }
+      if (n != length(vec[[m]])) {
+        stop('obs and pred vectors must be of equal length.')
+      }
+    }
+  }
+
+  # Output
+  return(vec)
 
 }
 
@@ -266,7 +340,8 @@ is.color <- function(chr) {
 #' @param pal Color palette.
 #' @param var_type Character string specifying whether features are categorical
 #'   or continuous.
-#' @param n Number of colors.
+#' @param n Number of unique groups for which colors must be assigned. Only
+#'   relevant if \code{var_type = "Categorical"}.
 #'
 #' @importFrom scales hue_pal
 #' @importFrom RColorBrewer brewer.pal
@@ -274,63 +349,91 @@ is.color <- function(chr) {
 #'
 
 colorize <- function(pal,
-                     n,
-                     var_type) {
+                     var_type,
+                     n) {
 
-  if (all(is.color(pal))) {
-    out <- pal
-  } else {
-    if (var_type == 'Categorical') {
-      if (pal == 'ggplot') {
-        out <- hue_pal()(n)
+  # Preliminaries
+  group_pals <- c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                  'd3', 'locuszoom', 'igv', 'uchicago', 'startrek', 'futurama',
+                  'rickandmorty', 'simpsons', 'gsea')
+  covar_pals <- c('blues', 'greens', 'purples', 'greys', 'oranges', 'reds')
+  if (!all(is.color(pal))) {
+    if (length(pal) > 1L) {
+      stop('When passing multiple strings to define a color palette, ',
+           'each must denote a valid color in R.')
+    } else {
+      if (var_type == 'Categorical' & !pal %in% group_pals) {
+        stop(paste('Invalid palette for categorical features. Must be either a',
+                   'vector of valid R colors or one of the following palettes:',
+                   group_pals))
       }
-      else if (pal == 'npg') {
-        out <- pal_npg()(n)
-      } else if (pal == 'aaas') {
-        out <- pal_aaas()(n)
-      } else if (pal == 'nejm') {
-        out <- pal_nejm()(n)
-      } else if (pal == 'lancet') {
-        out <- pal_lancet()(n)
-      } else if (pal == 'jco') {
-        out <- pal_jco()(n)
-      } else if (pal == 'ucscgb') {
-        out <- pal_ucscgb()(n)
-      } else if (pal == 'd3') {
-        out <- pal_d3()(n)
-      } else if (pal == 'locuszoom') {
-        out <- pal_locuszoom()(n)
-      } else if (pal == 'igv') {
-        out <- pal_igv()(n)
-      } else if (pal == 'uchicago') {
-        out <- pal_uchicago()(n)
-      } else if (pal == 'startrek') {
-        out <- pal_startrek()(n)
-      } else if (pal == 'futurama') {
-        out <- pal_futurama()(n)
-      } else if (pal == 'rickandmorty') {
-        out <- pal_rickandmorty()(n)
-      } else if (pal == 'simpsons') {
-        out <- pal_simpsons()(n)
-      } else if (pal == 'gsea') {
-        out <- pal_gsea()(n)
-      }
-    } else if (var_type == 'Continuous') {
-      if (pal == 'blues') {
-        out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
-      } else if (pal == 'greens') {
-        out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
-      } else if (pal == 'purples') {
-        out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
-      } else if (pal == 'greys') {
-        out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
-      } else if (pal == 'oranges') {
-        out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
-      } else if (pal == 'reds') {
-        out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
+      if (var_type == 'Continuous' & !pal %in% covar_pals) {
+        stop(paste('Invalid palette for continuous features. Must be either a',
+                   'vector of valid R colors or one of the following palettes:',
+                   covar_pals))
       }
     }
+  } else {
+    if (var_type == 'Categorical' & length(pal) < n) {
+      stop(paste('Insufficient colors in palette. Need at least', n, 'for',
+                 'this plot.'))
+    }
+    if (var_type == 'Categorical' & length(pal) > n) {
+      warning(paste('Too many colors in palette. Only the first', n, 'will',
+                    'be used.'))
+    }
+    out <- pal
+  }
 
+  # Presets
+  if (var_type == 'Categorical') {
+    if (pal == 'ggplot') {
+      out <- hue_pal()(n)
+    } else if (pal == 'npg') {
+      out <- pal_npg()(n)
+    } else if (pal == 'aaas') {
+      out <- pal_aaas()(n)
+    } else if (pal == 'nejm') {
+      out <- pal_nejm()(n)
+    } else if (pal == 'lancet') {
+      out <- pal_lancet()(n)
+    } else if (pal == 'jco') {
+      out <- pal_jco()(n)
+    } else if (pal == 'ucscgb') {
+      out <- pal_ucscgb()(n)
+    } else if (pal == 'd3') {
+      out <- pal_d3()(n)
+    } else if (pal == 'locuszoom') {
+      out <- pal_locuszoom()(n)
+    } else if (pal == 'igv') {
+      out <- pal_igv()(n)
+    } else if (pal == 'uchicago') {
+      out <- pal_uchicago()(n)
+    } else if (pal == 'startrek') {
+      out <- pal_startrek()(n)
+    } else if (pal == 'futurama') {
+      out <- pal_futurama()(n)
+    } else if (pal == 'rickandmorty') {
+      out <- pal_rickandmorty()(n)
+    } else if (pal == 'simpsons') {
+      out <- pal_simpsons()(n)
+    } else if (pal == 'gsea') {
+      out <- pal_gsea()(n)
+    }
+  } else if (var_type == 'Continuous') {
+    if (pal == 'blues') {
+      out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
+    } else if (pal == 'greens') {
+      out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
+    } else if (pal == 'purples') {
+      out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
+    } else if (pal == 'greys') {
+      out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
+    } else if (pal == 'oranges') {
+      out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
+    } else if (pal == 'reds') {
+      out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
+    }
   }
 
   # Output
@@ -355,7 +458,9 @@ gg_out <- function(p,
                    loc = NULL) {
 
   # Locate legend
-  if (loc == 'left') {
+  if (loc == 'right') {
+    p <- p + theme(legend.position = 'right')
+  } else if (loc == 'left') {
     p <- p + theme(legend.position = 'left')
   } else if (loc == 'top') {
     p <- p + theme(legend.position = 'top', legend.box = 'horizontal')
@@ -430,6 +535,29 @@ track_cols <- function(features,
   # Output
   return(cols)
 
+}
+
+#' Format String
+#'
+#' This utility function formats a character vector into a string representing
+#' a well formed English list, with quotations around each element and an "and"
+#' between the penultimate and ultimate elements.
+#'
+#' @param x Character vector.
+#'
+
+stringify <- function(x) {
+  n <- length(x)
+  x <- paste0('"', x)
+  x <- paste0(x, '"')
+  x <- c(x[seq_len(n - 1L)], 'and', x[n])
+  if (n > 2L) {
+    x <- paste(x, sep = '', collapse = ', ')
+    x <- gsub('and,', 'and', x)
+  } else {
+    x <- paste(x, sep = '', collapse = ' ')
+  }
+  return(x)
 }
 
 
