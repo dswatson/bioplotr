@@ -5,8 +5,8 @@
 \title{PCA Plot}
 \usage{
 plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
-  label = FALSE, title = NULL, legend = "outside", hover = FALSE,
-  D3 = FALSE)
+  label = FALSE, pal_group = "d3", pal_covar = "blues", title = NULL,
+  legend = "outside", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -20,8 +20,8 @@ warning.}
 size, or up to two such vectors organized into a list or data frame. Supply
 legend title(s) by passing a named list or data frame.}
 
-\item{covar}{Optional continuous covariate. If non-\code{NULL}, then function
-can take at most one \code{group} variable. Supply legend title by passing
+\item{covar}{Optional continuous covariate. If non-\code{NULL}, then plot can
+render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
@@ -31,14 +31,28 @@ probes to be used for PCA.}
 length two unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE}
-unless \code{covar = NULL}. If \code{TRUE}, then plot can render at most
-one covariate.}
+unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
+then plot can render at most one phenotypic feature.}
+
+\item{pal_group}{String specifying the color palette to use if \code{group}
+is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
+complete collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
+\code{"aaas"}, etc.). Alternatively, any character vector of colors with
+length equal to the cumulative number of levels in \code{group}.}
+
+\item{pal_covar}{String specifying the color palette to use if \code{covar}
+is non-\code{NULL}. Options include \code{"blues"}, \code{"greens"}, \code{
+"purples"}, \code{"greys"}, \code{"oranges"}, and \code{"reds"}.
+Alternatively, any character vector of colors representing a smooth
+gradient.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"outside"}, \code{
-"bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-"topright"}.}
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
 
 \item{hover}{Show sample name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's
@@ -84,5 +98,6 @@ and planes of closest fit to systems of points in space}. \emph{Philosophical
 Magazine}, \emph{2}(11): 559–572.
 }
 \seealso{
-\code{\link[DESeq2]{plotPCA}, \link{plot_mds}, \link{plot_tsne}}
+\code{\link[DESeq2]{plotPCA}}, \code{\link{plot_mds}},
+\code{\link{plot_tsne}}
 }
