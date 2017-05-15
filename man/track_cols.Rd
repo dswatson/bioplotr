@@ -4,10 +4,10 @@
 \alias{track_cols}
 \title{Format Annotation Track Colors}
 \usage{
-track_cols(features, var_type)
+track_cols(features, pal, var_type)
 }
 \arguments{
-\item{features}{List formatted by \code{anno_track()}.}
+\item{features}{List output by \code{\link{format_features}}.}
 
 \item{var_type}{Character string specifying whether features are categorical
 or continuous.}
