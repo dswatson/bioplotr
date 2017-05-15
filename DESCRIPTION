@@ -24,14 +24,14 @@ Imports:
   RColorBrewer,
   ggsci,
   Rtsne,
-  survminer,
   bioDist,
   KernSmooth
 Suggests:
   plotly,
   SummarizedExperiment,
   DESeq2,
-  NMF
+  NMF,
+  survminer
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
