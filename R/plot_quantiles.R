@@ -49,11 +49,18 @@ plot_quantiles <- function(x,
     stop('method must be either "QQ" or "MD".')
   }
   if (is.null(main)) {
-    if (method == 'QQ') main <- 'QQ Plot'
-    else main <- 'MD Plot'
+    if (method == 'QQ') {
+      main <- 'QQ Plot'
+    } else {
+      main <- 'MD Plot'
+    }
   }
-  if (is.null(xlab)) xlab <- 'X'
-  if (is.null(ylab)) ylab <- 'Y'
+  if (is.null(xlab)) {
+    xlab <- 'X'
+  }
+  if (is.null(ylab)) {
+    ylab <- 'Y'
+  }
 
   # Tidy data
   x <- quantile(x, probs = seq(0L, 1L, length.out = pts))
