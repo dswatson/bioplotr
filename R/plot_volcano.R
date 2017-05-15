@@ -64,25 +64,25 @@ plot_volcano <- function(dat,
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'logFC'
   } else {
-    stop('dat must include a log fold change column. Recognized colnames for',
-         'this vector include "logFC" and "log2FoldChange". Make sure that dat',
-         'includes exactly one such colname.')
+    stop(paste0('dat must include a log fold change column. Recognized ',
+                'colnames for this vector include ', stringify(fc), '. ',
+                'Make sure that dat includes exactly one such colname.'))
   }
   p <- c('P.Value', 'pvalue', 'PValue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1L) {         # Rename p.value
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
-    stop('dat must include a p-value column. Recognized colnames for this',
-         'vector include "P.Value", "pvalue", "PValue", and "p.value". Make',
-         'sure that dat includes exactly one such colname.')
+    stop(paste0('dat must include a p-value column. Recognized colnames for ',
+                'this vector include ', stringify(p), '. Make sure that dat ',
+                'includes exactly one such colname.'))
   }
   q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename q.value
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop('dat must include a column for adjusted p-values. Recognized colnames',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and',
-         '"FDR". Make sure that dat includes exactly one such colname.')
+    stop(paste0('dat must include a column for adjusted p-values. Recognized ',
+                'colnames for this vector include ', stringify(q), '. Make ',
+                'sure that dat includes exactly one such colname.'))
   }
   dat <- dat %>%
     select(logFC, p.value, q.value) %>%

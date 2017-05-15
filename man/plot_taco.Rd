@@ -4,17 +4,18 @@
 \alias{plot_taco}
 \title{Taco Plot}
 \usage{
-plot_taco(dat, fdr = 0.05, title = NULL, legend = "outside")
+plot_taco(dat, fdr = 0.05, title = NULL, legend = "right")
 }
 \arguments{
 \item{dat}{Data frame representing the results of a test for differential
-expression, such as the output of a call to \code{limma::\link[limma]{topTable}},
-\code{edgeR::\link[edgeR]{topTags}}, or \code{DESeq2::\link[DESeq2]{results}}.
-Alternatively, any object coercable to a data frame with columns for log fold
-changes, probewise means, \emph{p}-values, and FDR. Missing values are silently
-removed.}
+expression, such as the output of a call to \code{
+limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or
+\code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object coercable
+to a data frame with columns for log fold changes, probewise means,
+\emph{p}-values, and FDR. Missing values are silently removed.}
 
-\item{fdr}{Threshold for declaring a probe differentially expressed/methylated.}
+\item{fdr}{Significance threshold for declaring a probe differentially
+expressed.}
 
 \item{title}{Optional plot title.}
 
@@ -27,10 +28,11 @@ This function plots log2 fold changes against -log10 \emph{p}-values against
 probewise means for a given test of differential expression/methylation.
 }
 \details{
-A taco plot combines the elements of a volcano plot and an MD plot into a single
-three-dimensional figure. Points are colored to distinguish between those that
-do and do not meet a user-defined FDR threshold. These figures help to evaluate
-the symmetry, magnitude, and significance of effects for a given experiment.
+A taco plot combines the elements of a volcano plot and an MD plot into a
+single three-dimensional figure. Points are colored to distinguish between
+those that do and do not meet a user-defined FDR threshold. These
+figures help to evaluate the symmetry, magnitude, and significance of effects
+in an omic experiment.
 }
 \examples{
 library(limma)

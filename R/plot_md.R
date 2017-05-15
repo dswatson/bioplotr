@@ -481,26 +481,25 @@ plot_md.data.frame <- function(dat,
   if (sum(avg %in% colnames(dat)) == 1L) {       # Rename AvgExpr
     colnames(dat)[colnames(dat) %in% avg] <- 'Mean'
   } else {
-    stop('dat must include a column for average expression by probe. ',
-         'Recognized colnames for this vector include "AveExpr", "baseMean", ',
-         'and "logCPM". Make sure that dat includes exactly one such colname.')
+    stop(paste0('dat must include a column for average expression by probe. ',
+                'Recognized colnames for this vector include ', stringify(avg),
+                '. Make sure that dat includes exactly one such colname.'))
   }
   fc <- c('logFC', 'log2FoldChange')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'Diff'
   } else {
-    stop('dat must include a log fold change column. Recognized colnames for ',
-         'this vector include "logFC" and "log2FoldChange". Make sure that ',
-         'dat includes exactly one such colname.')
+    stop(paste0('dat must include a log fold change column. Recognized ',
+                'colnames for this vector include ', stringify(fc), '. ',
+                'Make sure that dat includes exactly one such colname.'))
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename FDR
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop('dat must include a column for adjusted p-values. Recognized ',
-         'colnames for this vector include "q.value", "adj.P.Val", "FDR", ',
-         '"padj", and "FDR". Make sure that dat includes exactly one such ',
-         'colname.')
+    stop(paste0('dat must include a column for adjusted p-values. Recognized ',
+                'colnames for this vector include ', stringify(q), '. Make ',
+                'sure that dat includes exactly one such colname.'))
   }
   if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
     stop('FDR values must be on [0, 1].')
