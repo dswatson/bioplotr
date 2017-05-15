@@ -18,9 +18,9 @@
 #'   \code{\link[limma]{normalizeBetweenArrays}} when the data is single-channel.
 #' @param span Width of the LOWESS smoothing window as a proportion.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -77,14 +77,15 @@ plot_voom <- function(dat,
 
   # Preliminaries
   if (nrow(dat) < 2L) {
-    stop('plot_voom requires at least 2 probes to fit a mean-variance trend.')
+    stop('At least 2 probes required to fit a mean-variance trend.')
   }
   if (is.null(title)) {
     title <- 'Voom Plot'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -134,7 +135,7 @@ plot_voom <- function(dat,
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
       geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
-      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1L)) +
       labs(title = title,
                x = expression('Mean'~log[2]*'-CPM'),
                y = expression(sqrt(sigma))) +

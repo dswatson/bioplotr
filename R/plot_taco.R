@@ -11,8 +11,9 @@
 #'   removed.
 #' @param fdr Threshold for declaring a probe differentially expressed/methylated.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"outside", "bottomleft",
-#'   "bottomright", "topleft",} or \code{"topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #'
 #' @details
 #' A taco plot combines the elements of a volcano plot and an MD plot into a single
@@ -83,9 +84,10 @@ plot_taco <- function(dat,
   if (is.null(title)) {
     title <- 'Taco Plot'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Tidy data
@@ -100,14 +102,14 @@ plot_taco <- function(dat,
            logP = -log10(p.value)) %>%
     select(Probe, AvgExpr, logFC, logP, is.DE)
   if (sum(grepl('<', df$is.DE) == 0L)) {
-    warning('No probe meets your fdr threshold. To color data points by differential ',
-            'expression/methylation, consider raising your fdr cutoff.')
+    warning('No probe meets your fdr threshold. To color data points by ',
+            'differential expression, consider raising your fdr cutoff.')
   }
 
   # Build Plot
   require(plotly)
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
-               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4)[4], 'black'),
+               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4L)[4L], 'black'),
                type = 'scatter3d', mode = 'markers',
                alpha = 0.85, hoverinfo = 'text', marker = list(size = 1)) %>%
     layout(hovermode = 'closest', title = title, scene = list(

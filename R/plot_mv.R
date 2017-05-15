@@ -21,9 +21,9 @@
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -125,9 +125,10 @@ plot_mv <- function(dat,
   if (!trans %in% c('rank', 'log', 'sqrt')) {
     stop('trans must be one of "rank", "log", or "sqrt".')
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright" ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Method
@@ -150,9 +151,9 @@ plot_mv.MArrayLM <- function(dat,
 
   # Preliminaries
   if (is(dat, 'MArrayLM') & is.null(dat$t) & is.null(dat$F)) {
-    warning('Standard errors for dat have not been moderated. Consider',
-            're-running plot_mv after shrinking residual variance with eBayes.',
-            'See ?eBayes and ?squeezeVar for more info.')
+    warning('Standard errors for dat have not been moderated. Consider ',
+            're-running plot_mv after shrinking residual variance with ',
+            'eBayes. See ?eBayes and ?squeezeVar for more info.')
   }
   if (is.null(title)) {
     title <- 'Mean-Variance Plot'
@@ -220,7 +221,7 @@ plot_mv.MArrayLM <- function(dat,
     p <- p + scale_color_manual(name = 'Curves',
                               breaks = c('Prior', 'LOWESS', TRUE),
                               labels = c('Prior', 'LOWESS', 'Outlier'),
-                              values = c('black', pal_d3()(4)[c(1, 2, 4)]))
+                              values = c('black', pal_d3()(4L)[c(1L, 2L, 4L)]))
   } else {
     p <- p + scale_color_manual(name = 'Curves', values = pal_d3()(2L),
                                 guide = guide_legend(reverse = TRUE))
@@ -395,7 +396,7 @@ plot_mv.DESeqDataSet <- function(dat,
   # Preliminaries
   require(SummarizedExperiment)
   if (resid & is.null(assays(dat)[['mu']])) {
-    stop('dat must be fit with a negative binomial GLM in order to extract',
+    stop('dat must be fit with a negative binomial GLM in order to extract ',
          'residual variance.')
   }
   if (is.null(title)) {

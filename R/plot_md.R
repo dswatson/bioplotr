@@ -21,9 +21,9 @@
 #'   the control status of each probe. Only relevant for between-sample MD plots.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
-#' @param legend Legend position. Must be one of \code{"outside"}, \code{
-#'   "bottomleft"}, \code{"bottomright"}, \code{"topleft",} or \code{
-#'   "topright"}.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
+#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -107,9 +107,10 @@ plot_md <- function(dat,
   if (is.null(title)) {
     title <- 'Mean-Difference Plot'
   }
-  if (!legend %in% c('outside', 'bottomleft', 'bottomright', 'topleft', 'topright')) {
-    stop('legend must be one of "outside", "bottomleft", "bottomright", ',
-         '"topleft", or "topright".')
+  if (!legend %in% c('right', 'left', 'top', 'bottom', 'bottomright',
+                     'bottomleft', 'topright', 'topleft')) {
+    stop('legend must be one of "right", "left", "top", "bottom", ',
+         '"bottomright", "bottomleft", "topright", or "topleft".')
   }
 
   # Method
@@ -353,8 +354,8 @@ plot_md.DESeqResults <- function(dat,
   }
   dat <- na.omit(dat)
   if (nrow(dat) == 0L) {
-    stop('dat must have at least one row with non-missing values for baseMean,',
-         'log2FoldChange, and padj.')
+    stop('dat must have at least one row with non-missing values for ',
+         'baseMean, log2FoldChange, and padj.')
   }
 
   # Tidy data
@@ -381,7 +382,7 @@ plot_md.DESeqResults <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
-    warning('No probe meets your fdr threshold. To color data points by',
+    warning('No probe meets your fdr threshold. To color data points by ',
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
@@ -480,25 +481,26 @@ plot_md.data.frame <- function(dat,
   if (sum(avg %in% colnames(dat)) == 1L) {       # Rename AvgExpr
     colnames(dat)[colnames(dat) %in% avg] <- 'Mean'
   } else {
-    stop('dat must include a column for average expression by probe. Recognized',
-         'colnames for this vector include "AveExpr", "baseMean", and "logCPM".',
-         'Make sure that dat includes exactly one such colname.')
+    stop('dat must include a column for average expression by probe. ',
+         'Recognized colnames for this vector include "AveExpr", "baseMean", ',
+         'and "logCPM". Make sure that dat includes exactly one such colname.')
   }
   fc <- c('logFC', 'log2FoldChange')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'Diff'
   } else {
-    stop('dat must include a log fold change column. Recognized colnames for',
-         'this vector include "logFC" and "log2FoldChange". Make sure that dat',
-         'includes exactly one such colname.')
+    stop('dat must include a log fold change column. Recognized colnames for ',
+         'this vector include "logFC" and "log2FoldChange". Make sure that ',
+         'dat includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename FDR
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop('dat must include a column for adjusted p-values. Recognized colnames',
-         'for this vector include "q.value", "adj.P.Val", "FDR", "padj", and',
-         '"FDR". Make sure that dat includes exactly one such colname.')
+    stop('dat must include a column for adjusted p-values. Recognized ',
+         'colnames for this vector include "q.value", "adj.P.Val", "FDR", ',
+         '"padj", and "FDR". Make sure that dat includes exactly one such ',
+         'colname.')
   }
   if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
     stop('FDR values must be on [0, 1].')
@@ -510,7 +512,7 @@ plot_md.data.frame <- function(dat,
     select(Probe, Mean, Diff, q.value) %>%
     na.omit()
   if (nrow(dat) == 0L) {
-    stop('dat must have at least one row with non-missing values for AveExpr,',
+    stop('dat must have at least one row with non-missing values for AveExpr, ',
          'logFC, and FDR.')
   }
 
@@ -530,7 +532,7 @@ plot_md.data.frame <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {               # Color pts by differential expression?
-    warning('No probe meets your fdr threshold. To color data points by',
+    warning('No probe meets your fdr threshold. To color data points by ',
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
