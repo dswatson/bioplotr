@@ -11,11 +11,26 @@
 #' @param dist Distance measure to be used. Currently supports any method
 #'   available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.
 #' @param hclustfun The agglomeration method to be used for hierarchical
-#'   clustering. Options are \code{"average"} and \code{"complete"}.
-#' @param col Color palette to use for heatmap tiles. Preset options include
-#'   \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
-#'   gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
-#'   user-supplied color palette is acceptable.
+#'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
+#' @param pal_group String specifying the color palette to use if \code{group}
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{group}. Options include \code{'ggplot'},
+#'   as well as the complete collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{'npg'},
+#'   \code{'aaas'}, etc.). Alternatively, any character vector of colors with
+#'   length equal to the cumulative number of levels in \code{group}.
+#' @param pal_covar String specifying the color palette to use if \code{covar}
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{covar}. Options include \code{'blues'},
+#'   \code{'greens'}, \code{'purples'}, \code{'greys'}, \code{'oranges'}, and
+#'   \code{'reds'}. Alternatively, any character vector of colors representing
+#'   a smooth gradient, or a list of such vectors with length equal to the
+#'   number of continuous variables to visualize.
+#' @param pal_tiles String specifying the color palette to use for heatmap
+#'   tiles. Options include \code{'RdBu'} for red to blue gradient, \code{
+#'   'GrRd'} for green to red gradient, and \code{'BuYl'} for blue to yellow
+#'   gradient. Alternatively, any user-supplied color palette is acceptable.
 #' @param title Optional plot title.
 #'
 #' @details
@@ -40,7 +55,9 @@ plot_heatmap <- function(dat,
                          covar = NULL,
                           dist = 'pearson',
                      hclustfun = 'average',
-                           col = 'RdBu',
+                     pal_group = 'd3',
+                     pal_covar = 'blues',
+                     pal_tiles = 'RdBu',
                          title = NULL) {
 
   # Preliminaries
@@ -60,15 +77,16 @@ plot_heatmap <- function(dat,
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
   }
-  if (!hclustfun %in% c('average', 'complete')) {
-    stop('hclustfun must be one of "average" or "complete".')
+  if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
+                        'mcquitty', 'median', 'centroid')) {
+    stop('hclustfun not recognized. See ?hclust for available options.')
   }
-  if (col == 'RdBu') {
-    col <- rev(colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L))
-  } else if (col == 'GrRd') {
-    col <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
-  } else if (col == 'BuYl') {
-    col <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
+  if (pal_tiles == 'RdBu') {
+    pal_tiles <- rev(colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L))
+  } else if (pal_tiles == 'GrRd') {
+    pal_tiles <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
+  } else if (pal_tiles == 'BuYl') {
+    pal_tiles <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
   }
   if (is.null(title)) {
     title <- 'Omic Heatmap'
@@ -80,10 +98,10 @@ plot_heatmap <- function(dat,
   # Plot
   require(NMF)
   if (is.null(anno)) {
-    aheatmap(dat, distfun = dist, scale = 'row', col = col,
+    aheatmap(dat, distfun = dist, scale = 'row', col = pal_tiles,
              hclustfun = hclustfun, main = title, border_color = 'grey60')
   } else {
-    aheatmap(dat, distfun = dist, scale = 'row', col = col,
+    aheatmap(dat, distfun = dist, scale = 'row', col = pal_tiles,
              hclustfun = hclustfun, main = title, annCol = anno,
              annColors = ann_cols, border_color = 'grey60')
   }

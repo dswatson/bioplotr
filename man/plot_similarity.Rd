@@ -5,7 +5,8 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, group = NULL, covar = NULL, top = NULL,
-  dist = "euclidean", hclustfun = "average", col = "RdBu", title = NULL)
+  dist = "euclidean", hclustfun = "average", pal_group = "d3",
+  pal_covar = "blues", pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -25,15 +26,32 @@ Alternatively, a data frame or list of such vectors, optionally named.}
 be used for distance calculations. See Details.}
 
 \item{dist}{Distance measure to be used. Currently supports \code{
-"euclidean"}, \code{"pearson"}, \code{"MI"}, or \code{"KLD"}. See Details.}
+'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
-clustering. Options are \code{"average"} and \code{"complete"}.}
+clustering. Supports any method available in \code{\link[stats]{hclust}}.}
 
-\item{col}{Color palette to use for heatmap tiles. Preset options include
-\code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
-gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
-user-supplied color palette is acceptable.}
+\item{pal_group}{String specifying the color palette to use if \code{group}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{group}. Options include \code{'ggplot'},
+as well as the complete collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{'npg'},
+\code{'aaas'}, etc.). Alternatively, any character vector of colors with
+length equal to the cumulative number of levels in \code{group}.}
+
+\item{pal_covar}{String specifying the color palette to use if \code{covar}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{covar}. Options include \code{'blues'},
+\code{'greens'}, \code{'purples'}, \code{'greys'}, \code{'oranges'}, and
+\code{'reds'}. Alternatively, any character vector of colors representing
+a smooth gradient, or a list of such vectors with length equal to the
+number of continuous variables to visualize.}
+
+\item{pal_tiles}{String specifying the color palette to use for heatmap
+tiles. Options include \code{'RdBu'} for red to blue gradient, \code{
+'GrRd'} for green to red gradient, and \code{'BuYl'} for blue to yellow
+gradient. Alternatively, any user-supplied color palette is acceptable.}
 
 \item{title}{Optional plot title.}
 }
@@ -46,7 +64,7 @@ hierarchical clustering dendrogram atop the figure helps identify potential
 clusters and/or outliers in the data. Annotation tracks can help investigate
 associations with phenotypic features.
 
-Different distance measures and agglomeration methods can lead to different
+Different distance metrics and agglomeration methods can lead to different
 results. The default settings, which perform average linkage hierarchical
 clustering on a Euclidean distance matrix, are mathematically straightforward
 and commonly used for omic EDA. Complete linkage is also fairly common.
@@ -63,12 +81,12 @@ change method of Smyth et al. See \code{\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-plot_similarity(mat, title = "Nothin' Doin'")
+plot_similarity(mat, title = 'Nothin' Doin'')
 
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 dds <- rlog(dds)
 plot_similarity(dds, group = colData(dds)$condition,
-                title = "Somethin' Cookin'")
+                title = 'Somethin' Cookin'')
 
 }

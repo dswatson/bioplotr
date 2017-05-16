@@ -5,7 +5,8 @@
 \title{Omic Heatmap}
 \usage{
 plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
-  hclustfun = "average", col = "RdBu", title = NULL)
+  hclustfun = "average", pal_group = "d3", pal_covar = "blues",
+  pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -21,12 +22,29 @@ Alternatively, a data frame or list of such vectors, optionally named.}
 available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
-clustering. Options are \code{"average"} and \code{"complete"}.}
+clustering. Supports any method available in \code{\link[stats]{hclust}}.}
 
-\item{col}{Color palette to use for heatmap tiles. Preset options include
-\code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
-gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
-user-supplied color palette is acceptable.}
+\item{pal_group}{String specifying the color palette to use if \code{group}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{group}. Options include \code{'ggplot'},
+as well as the complete collection of \code{
+\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+ggsci}} palettes, which can be identified by name (e.g., \code{'npg'},
+\code{'aaas'}, etc.). Alternatively, any character vector of colors with
+length equal to the cumulative number of levels in \code{group}.}
+
+\item{pal_covar}{String specifying the color palette to use if \code{covar}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{covar}. Options include \code{'blues'},
+\code{'greens'}, \code{'purples'}, \code{'greys'}, \code{'oranges'}, and
+\code{'reds'}. Alternatively, any character vector of colors representing
+a smooth gradient, or a list of such vectors with length equal to the
+number of continuous variables to visualize.}
+
+\item{pal_tiles}{String specifying the color palette to use for heatmap
+tiles. Options include \code{'RdBu'} for red to blue gradient, \code{
+'GrRd'} for green to red gradient, and \code{'BuYl'} for blue to yellow
+gradient. Alternatively, any user-supplied color palette is acceptable.}
 
 \item{title}{Optional plot title.}
 }

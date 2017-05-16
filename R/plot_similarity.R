@@ -15,13 +15,28 @@
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations. See Details.
 #' @param dist Distance measure to be used. Currently supports \code{
-#'   "euclidean"}, \code{"pearson"}, \code{"MI"}, or \code{"KLD"}. See Details.
+#'   'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical
-#'   clustering. Options are \code{"average"} and \code{"complete"}.
-#' @param col Color palette to use for heatmap tiles. Preset options include
-#'   \code{"RdBu"} for red to blue gradient, \code{"GrRd"} for green to red
-#'   gradient, and \code{"BuYl"} for blue to yellow gradient. Alternatively, any
-#'   user-supplied color palette is acceptable.
+#'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
+#' @param pal_group String specifying the color palette to use if \code{group}
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{group}. Options include \code{'ggplot'},
+#'   as well as the complete collection of \code{
+#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
+#'   ggsci}} palettes, which can be identified by name (e.g., \code{'npg'},
+#'   \code{'aaas'}, etc.). Alternatively, any character vector of colors with
+#'   length equal to the cumulative number of levels in \code{group}.
+#' @param pal_covar String specifying the color palette to use if \code{covar}
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{covar}. Options include \code{'blues'},
+#'   \code{'greens'}, \code{'purples'}, \code{'greys'}, \code{'oranges'}, and
+#'   \code{'reds'}. Alternatively, any character vector of colors representing
+#'   a smooth gradient, or a list of such vectors with length equal to the
+#'   number of continuous variables to visualize.
+#' @param pal_tiles String specifying the color palette to use for heatmap
+#'   tiles. Options include \code{'RdBu'} for red to blue gradient, \code{
+#'   'GrRd'} for green to red gradient, and \code{'BuYl'} for blue to yellow
+#'   gradient. Alternatively, any user-supplied color palette is acceptable.
 #' @param title Optional plot title.
 #'
 #' @details
@@ -30,7 +45,7 @@
 #' clusters and/or outliers in the data. Annotation tracks can help investigate
 #' associations with phenotypic features.
 #'
-#' Different distance measures and agglomeration methods can lead to different
+#' Different distance metrics and agglomeration methods can lead to different
 #' results. The default settings, which perform average linkage hierarchical
 #' clustering on a Euclidean distance matrix, are mathematically straightforward
 #' and commonly used for omic EDA. Complete linkage is also fairly common.
@@ -47,13 +62,13 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_similarity(mat, title = "Nothin' Doin'")
+#' plot_similarity(mat, title = 'Nothin' Doin'')
 #'
 #' library(DESeq2)
 #' dds <- makeExampleDESeqDataSet()
 #' dds <- rlog(dds)
 #' plot_similarity(dds, group = colData(dds)$condition,
-#'                 title = "Somethin' Cookin'")
+#'                 title = 'Somethin' Cookin'')
 #'
 #' @export
 #' @importFrom RColorBrewer brewer.pal
@@ -65,7 +80,9 @@ plot_similarity <- function(dat,
                               top = NULL,
                              dist = 'euclidean',
                         hclustfun = 'average',
-                              col = 'RdBu',
+                        pal_group = 'd3',
+                        pal_covar = 'blues',
+                        pal_tiles = 'RdBu',
                             title = NULL) {
 
   # Preliminaries
@@ -88,15 +105,16 @@ plot_similarity <- function(dat,
   if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
     stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
   }
-  if (!hclustfun %in% c('average', 'complete')) {
-    stop('hclustfun must be one of "average" or "complete".')
+  if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
+                        'mcquitty', 'median', 'centroid')) {
+    stop('hclustfun not recognized. See ?hclust for available options.')
   }
-  if (col == 'RdBu') {
-    col <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
-  } else if (col == 'GrRd') {
-    col <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
-  } else if (col == 'BuYl') {
-    col <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
+  if (pal_tiles == 'RdBu') {
+    pal_tiles <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
+  } else if (pal_tiles == 'GrRd') {
+    pal_tiles <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
+  } else if (pal_tiles == 'BuYl') {
+    pal_tiles <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
   }
   if (is.null(title)) {
     title <- 'Sample Similarity Matrix'
@@ -110,11 +128,11 @@ plot_similarity <- function(dat,
   # Build plot
   require(NMF)
   if (is.null(anno)) {
-    aheatmap(dm, col = col, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dm, col = pal_tiles, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              border_color = 'grey60')
   } else {
-    aheatmap(dm, col = col, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dm, col = pal_tiles, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              annCol = anno, annColors = ann_cols, border_color = 'grey60')
   }
