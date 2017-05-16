@@ -504,7 +504,7 @@ gg_out <- function(p,
 #' @param var_type Character string specifying whether features are categorical
 #'   or continuous.
 #'
-#' @importFrom purrr map_dbl
+#' @importFrom purrr map_dbl map
 #' @importFrom RColorBrewer brewer.pal
 #'
 
@@ -517,18 +517,21 @@ track_cols <- function(features,
     n.cols <- map_dbl(seq_along(features), function(x) {
       length(levels(features[[x]]))
     })
-    pal <- colorize(pal, sum(n.cols), 'Categorical')
+    pal <- colorize(pal, 'Categorical', sum(n.cols))
     cols <- split(pal, rep(seq_along(features), n.cols))
   } else if (var_type == 'Continuous') {
-    grads <- list(  # Make this customizable
-      colorRampPalette(brewer.pal(9, 'Greens'))(n = 256),
-      colorRampPalette(brewer.pal(9, 'Purples'))(n = 256),
-      colorRampPalette(brewer.pal(9, 'Greys'))(n = 256),
-      colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256),
-      colorRampPalette(brewer.pal(9, 'Blues'))(n = 256),
-      colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
-    )
-    cols <- grads[seq_along(features)]
+    if (length(pal) != length(features)) {
+      stop('Number of palettes passed to pal_covar must match number of
+           continuous features passed to covar.')
+    } else if (is.list(pal)) {
+      cols <- map(seq_along(features), function(x) {
+        colorize(pal[[x]], 'Continuous')
+      })
+    } else {
+      cols <- map(seq_along(features), function(x) {
+        colorize(pal[x], 'Continuous')
+      })
+    }
   }
   names(cols) <- NULL
 
