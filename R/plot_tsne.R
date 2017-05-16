@@ -33,7 +33,7 @@
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 #'   \code{"aaas"}, etc.). Alternatively, any character vector of colors with
-#'   length equal to the cumulative number of levels in \code{group}.
+#'   length equal to the number of levels in \code{group}.
 #' @param pal_covar String specifying the color palette to use if \code{covar}
 #'   is non-\code{NULL}. Options include \code{"blues"}, \code{"greens"}, \code{
 #'   "purples"}, \code{"greys"}, \code{"oranges"}, and \code{"reds"}.
