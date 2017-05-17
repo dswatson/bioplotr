@@ -121,10 +121,10 @@ plot_survival <- function(fit,
   }
 
   # Tidy data
+  require(survminer)
   df <- suppressWarnings(surv_summary(fit))
 
   # Build plot
-  require(surminer)
   p <- ggsurvplot(fit, data = df, fun = fun, size = 0.5, conf.int = CI,
                   censor = censor, title = title, legend = legend,
                   font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab,
