@@ -5,7 +5,8 @@
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
 #' @param group Optional character or factor vector of length equal to sample
-#'   size. Alternatively, a data frame or list of such vectors, optionally named.
+#'   size. Alternatively, a data frame or list of such vectors, optionally
+#'   named.
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param dist Distance measure to be used. Currently supports any method
@@ -76,6 +77,11 @@ plot_heatmap <- function(dat,
   if (!is.null(c(group, covar))) {
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
+  }
+  if (!dist %in% c('euclidean', 'maximum', 'manhattan', 'canberra', 'binary',
+                   'minkowski', 'pearson', 'kendall', 'spearman')) {
+    stop('dist measure not recognized. See ?dist and ?cor for available ',
+         'options.')
   }
   if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
                         'mcquitty', 'median', 'centroid')) {

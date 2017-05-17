@@ -9,7 +9,8 @@
 #'   automatically extracted and transformed to the log2-CPM scale, with a
 #'   warning.
 #' @param group Optional character or factor vector of length equal to sample
-#'   size. Alternatively, a data frame or list of such vectors, optionally named.
+#'   size. Alternatively, a data frame or list of such vectors, optionally
+#'   named.
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
