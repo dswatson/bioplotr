@@ -89,13 +89,13 @@ plot_similarity <- function(dat,
   # Preliminaries
   if (!is.null(group)) {
     group <- format_features(dat, group, var_type = 'Categorical')
-    grp_cols <- track_cols(group, var_type = 'Categorical')
+    grp_cols <- track_cols(group, pal_group, var_type = 'Categorical')
   } else {
     grp_cols <- NULL
   }
   if (!is.null(covar)) {
     covar <- format_features(dat, covar, var_type = 'Continuous')
-    cov_cols <- track_cols(covar, var_type = 'Continuous')
+    cov_cols <- track_cols(covar, pal_covar, var_type = 'Continuous')
   } else {
     cov_cols <- NULL
   }
