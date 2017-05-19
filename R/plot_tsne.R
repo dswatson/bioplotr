@@ -217,7 +217,8 @@ plot_tsne <- function(dat,
     } else if (length(features) == 1L) {
       if (label) {
         p <- p + geom_text(aes(label = Sample, color = Feature1), alpha = alpha,
-                           hjust = 'inward', vjust = 'inward')
+                           hjust = 'inward', vjust = 'inward') +
+          labs(color = feature_names[1L])
       } else {
         if (!is.null(covar)) {
           suppressWarnings(
