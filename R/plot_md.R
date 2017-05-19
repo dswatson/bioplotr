@@ -18,7 +18,8 @@
 #' @param sample Column number or name specifying which sample in \code{dat} to
 #'   compare with the others. Only relevant for between-sample MD plots.
 #' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating
-#'   the control status of each probe. Only relevant for between-sample MD plots.
+#'   the control status of each probe. Only relevant for between-sample MD
+#'   plots.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{

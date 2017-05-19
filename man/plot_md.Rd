@@ -57,7 +57,8 @@ columns to coefficients to be estimated. Only relevant for \code{
 compare with the others. Only relevant for between-sample MD plots.}
 
 \item{ctrls}{Optional vector of length equal to \code{nrow(dat)} indicating
-the control status of each probe. Only relevant for between-sample MD plots.}
+the control status of each probe. Only relevant for between-sample MD
+plots.}
 
 \item{lfc}{Optional effect size threshold for declaring a probe
 differentially expressed. Only relevant for study-wide MD plots.}
