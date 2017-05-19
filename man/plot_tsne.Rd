@@ -6,8 +6,8 @@
 \usage{
 plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
   perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
-  pal_group = "d3", pal_covar = "blues", title = NULL, legend = "right",
-  hover = FALSE, D3 = FALSE, ...)
+  pal_group = "npg", pal_covar = "blues", title = NULL,
+  legend = "right", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

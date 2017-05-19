@@ -5,7 +5,7 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, group = NULL, covar = NULL, top = NULL,
-  dist = "euclidean", hclustfun = "average", pal_group = "d3",
+  dist = "euclidean", hclustfun = "average", pal_group = "npg",
   pal_covar = "blues", pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
@@ -17,7 +17,8 @@ automatically extracted and transformed to the log2-CPM scale, with a
 warning.}
 
 \item{group}{Optional character or factor vector of length equal to sample
-size. Alternatively, a data frame or list of such vectors, optionally named.}
+size. Alternatively, a data frame or list of such vectors, optionally
+named.}
 
 \item{covar}{Optional continuous covariate of length equal to sample size.
 Alternatively, a data frame or list of such vectors, optionally named.}

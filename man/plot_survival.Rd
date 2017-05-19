@@ -4,8 +4,9 @@
 \alias{plot_survival}
 \title{Survival Curve(s)}
 \usage{
-plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE, pal = "d3",
-  title = NULL, leg.txt = NULL, legend = "right", ...)
+plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE,
+  pal_curves = "npg", title = NULL, leg.txt = NULL, legend = "right",
+  ...)
 }
 \arguments{
 \item{fit}{An object of class \code{\link[survival]{survfit}}.}
@@ -20,8 +21,8 @@ a percentage.}
 
 \item{censor}{Include tick-marks to indicate censored subjects?}
 
-\item{pal}{String specifying the color palette to use when plotting multiple
-curves. Options include \code{"ggplot"}, as well as the complete
+\item{pal_curves}{String specifying the color palette to use when plotting
+multiple curves. Options include \code{"ggplot"}, as well as the complete
 collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
