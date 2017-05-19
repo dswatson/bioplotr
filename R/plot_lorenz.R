@@ -6,8 +6,8 @@
 #'   optionally named. May also be a data frame of such vectors, however in that
 #'   case each must be of equal length. Data may include negative values, but if
 #'   so a warning will be issued to proceed with caution.
-#' @param pal String specifying the color palette to use when plotting multiple
-#'   vectors. Options include \code{"ggplot"}, as well as the complete
+#' @param pal_curves String specifying the color palette to use when plotting
+#'   multiple vectors. Options include \code{"ggplot"}, as well as the complete
 #'   collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
@@ -52,11 +52,11 @@
 #'
 
 plot_lorenz <- function(dat,
-                        pal = 'd3',
-                      title = NULL,
-                    leg.txt = NULL,
-                     legend = 'topleft',
-                      hover = FALSE) {
+                        pal_curves = 'npg',
+                             title = NULL,
+                           leg.txt = NULL,
+                            legend = 'topleft',
+                             hover = FALSE) {
 
   # Preliminaries
   if (is.data.frame(dat)) {
@@ -82,7 +82,7 @@ plot_lorenz <- function(dat,
     }
   }
   if (length(dat) > 1L) {
-    cols <- colorize(pal = pal, var_type = 'Categorical', n = length(dat))
+    cols <- colorize(pal_curves, var_type = 'Categorical', n = length(dat))
   }
   if (is.null(title)) {
     if (length(dat) == 1L) {

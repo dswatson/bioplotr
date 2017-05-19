@@ -11,8 +11,8 @@
 #'   a percentage.
 #' @param CI Plot confidence intervals?
 #' @param censor Include tick-marks to indicate censored subjects?
-#' @param pal String specifying the color palette to use when plotting multiple
-#'   curves. Options include \code{"ggplot"}, as well as the complete
+#' @param pal_curves String specifying the color palette to use when plotting
+#'   multiple curves. Options include \code{"ggplot"}, as well as the complete
 #'   collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
@@ -71,7 +71,7 @@ plot_survival <- function(fit,
                           fun = NULL,
                            CI = FALSE,
                        censor = TRUE,
-                          pal = 'd3',
+                   pal_curves = 'npg',
                         title = NULL,
                       leg.txt = NULL,
                        legend = 'right', ...) {
@@ -90,7 +90,8 @@ plot_survival <- function(fit,
     ylab <- 'Survival Probability (%)'
   }
   if (!is.null(fit$strata)) {
-    cols <- colorize(pal, var_type = 'Categorical', n = length(fit$strata))
+    cols <- colorize(pal_curves, var_type = 'Categorical',
+                     n = length(fit$strata))
   }
   if (is.null(title)) {
     if (is.null(fit$strata)) {

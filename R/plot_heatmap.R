@@ -56,7 +56,7 @@ plot_heatmap <- function(dat,
                          covar = NULL,
                           dist = 'pearson',
                      hclustfun = 'average',
-                     pal_group = 'd3',
+                     pal_group = 'npg',
                      pal_covar = 'blues',
                      pal_tiles = 'RdBu',
                          title = NULL) {

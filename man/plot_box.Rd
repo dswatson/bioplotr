@@ -4,7 +4,7 @@
 \alias{plot_box}
 \title{Box Plots by Sample}
 \usage{
-plot_box(dat, group = NULL, pal = "d3", type = NULL, ylab = NULL,
+plot_box(dat, group = NULL, pal_group = "npg", type = NULL, ylab = NULL,
   title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
@@ -19,9 +19,9 @@ size. Numeric or logical vectors are silently coerced to factor. Levels are
 used to color box plots. If supplied, legend title defaults to "Group".
 Override this feature by passing a named list instead.}
 
-\item{pal}{String specifying the color palette to use if \code{group} is
-non-\code{NULL}. Options include \code{"ggplot"}, as well as the complete
-collection of \code{
+\item{pal_group}{String specifying the color palette to use if \code{group}
+is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
+complete collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 \code{"aaas"}, etc.). Alternatively, a character vector of colors with

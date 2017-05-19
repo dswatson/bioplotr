@@ -81,7 +81,7 @@ plot_similarity <- function(dat,
                               top = NULL,
                              dist = 'euclidean',
                         hclustfun = 'average',
-                        pal_group = 'd3',
+                        pal_group = 'npg',
                         pal_covar = 'blues',
                         pal_tiles = 'RdBu',
                             title = NULL) {

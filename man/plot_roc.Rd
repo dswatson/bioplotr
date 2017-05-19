@@ -4,7 +4,7 @@
 \alias{plot_roc}
 \title{Reicever Operating Characteristic Curve(s)}
 \usage{
-plot_roc(obs, pred, pal = "d3", title = NULL, leg.txt = NULL,
+plot_roc(obs, pred, pal_curves = "npg", title = NULL, leg.txt = NULL,
   legend = "bottomright", hover = FALSE)
 }
 \arguments{
@@ -18,8 +18,8 @@ into a data frame or list, optionally named. Must be numeric. Common
 examples include the probabilities output by a logistic model, or the
 expression levels of a particular biomarker.}
 
-\item{pal}{String specifying the color palette to use when plotting multiple
-curves. Options include \code{"ggplot"}, as well as the complete
+\item{pal_curves}{String specifying the color palette to use when plotting
+multiple curves. Options include \code{"ggplot"}, as well as the complete
 collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},

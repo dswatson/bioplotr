@@ -4,8 +4,8 @@
 \alias{plot_calibration}
 \title{Probability Calibration Curve(s)}
 \usage{
-plot_calibration(obs, pred, pal = "d3", title = NULL, legend = "right",
-  hover = FALSE)
+plot_calibration(obs, pred, pal_curves = "npg", title = NULL,
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,
@@ -17,9 +17,9 @@ that the first level is assumed to be the reference.}
 organized into a data frame or list, optionally named. Must be numeric on
 \code{[0, 1]}.}
 
-\item{pal}{String specifying the color palette to use when plotting multiple
-curves. Options include \code{"ggplot"}, as well as the complete collection
-of \code{
+\item{pal_curves}{String specifying the color palette to use when plotting
+multiple curves. Options include \code{"ggplot"}, as well as the complete
+collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 \code{"aaas"}, etc.). Alternatively, a character vector of colors with

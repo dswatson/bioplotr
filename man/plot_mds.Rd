@@ -5,7 +5,7 @@
 \title{MDS Plot}
 \usage{
 plot_mds(dat, group = NULL, covar = NULL, top = 500, pcs = c(1, 2),
-  label = FALSE, pal_group = "d3", pal_covar = "blues", title = NULL,
+  label = FALSE, pal_group = "npg", pal_covar = "blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{

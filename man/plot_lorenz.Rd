@@ -4,7 +4,7 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, pal = "d3", title = NULL, leg.txt = NULL,
+plot_lorenz(dat, pal_curves = "npg", title = NULL, leg.txt = NULL,
   legend = "topleft", hover = FALSE)
 }
 \arguments{
@@ -13,8 +13,8 @@ optionally named. May also be a data frame of such vectors, however in that
 case each must be of equal length. Data may include negative values, but if
 so a warning will be issued to proceed with caution.}
 
-\item{pal}{String specifying the color palette to use when plotting multiple
-vectors. Options include \code{"ggplot"}, as well as the complete
+\item{pal_curves}{String specifying the color palette to use when plotting
+multiple vectors. Options include \code{"ggplot"}, as well as the complete
 collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},

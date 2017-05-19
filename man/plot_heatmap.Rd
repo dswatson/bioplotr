@@ -5,7 +5,7 @@
 \title{Omic Heatmap}
 \usage{
 plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
-  hclustfun = "average", pal_group = "d3", pal_covar = "blues",
+  hclustfun = "average", pal_group = "npg", pal_covar = "blues",
   pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
@@ -13,7 +13,8 @@ plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
 probes and columns to samples.}
 
 \item{group}{Optional character or factor vector of length equal to sample
-size. Alternatively, a data frame or list of such vectors, optionally named.}
+size. Alternatively, a data frame or list of such vectors, optionally
+named.}
 
 \item{covar}{Optional continuous covariate of length equal to sample size.
 Alternatively, a data frame or list of such vectors, optionally named.}

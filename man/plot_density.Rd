@@ -4,8 +4,8 @@
 \alias{plot_density}
 \title{Density Plots by Sample}
 \usage{
-plot_density(dat, group = NULL, pal = "d3", xlab = NULL, title = NULL,
-  legend = "right", hover = FALSE)
+plot_density(dat, group = NULL, pal_group = "npg", xlab = NULL,
+  title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -19,9 +19,9 @@ size. Numeric or logical vectors are silently coerced to factor. Levels are
 used to color density curves. If supplied, legend title defaults to
 "Group". Override this feature by passing a named list instead.}
 
-\item{pal}{String specifying the color palette to use if \code{group} is
-non-\code{NULL}. Options include \code{"ggplot"}, as well as the complete
-collection of \code{
+\item{pal_group}{String specifying the color palette to use if \code{group}
+is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
+complete collection of \code{
 \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 \code{"aaas"}, etc.). Alternatively, a character vector of colors with

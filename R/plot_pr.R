@@ -10,8 +10,8 @@
 #'   into a data frame or list, optionally named. Must be numeric. Common
 #'   examples include the probabilities output by a logistic model, or the
 #'   expression levels of a particular biomarker.
-#' @param pal String specifying the color palette to use when plotting multiple
-#'   curves. Options include \code{"ggplot"}, as well as the complete
+#' @param pal_curves String specifying the color palette to use when plotting
+#'   multiple curves. Options include \code{"ggplot"}, as well as the complete
 #'   collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
@@ -66,17 +66,17 @@
 
 plot_pr <- function(obs,
                     pred,
-                    pal = 'd3',
-                  title = NULL,
-                leg.txt = NULL,
-                 legend = 'topright',
-                  hover = FALSE) {
+                    pal_curves = 'npg',
+                         title = NULL,
+                       leg.txt = NULL,
+                        legend = 'topright',
+                         hover = FALSE) {
 
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
   pred <- format_binom(pred, vec_type = 'pred', n = length(obs))
   if (length(pred) > 1L) {
-    cols <- colorize(pal, var_type = 'Categorical', n = length(pred))
+    cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
   if (is.null(title)) {
     if (length(pred) == 1L) {

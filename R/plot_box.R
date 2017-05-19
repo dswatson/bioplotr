@@ -12,9 +12,9 @@
 #'   size. Numeric or logical vectors are silently coerced to factor. Levels are
 #'   used to color box plots. If supplied, legend title defaults to "Group".
 #'   Override this feature by passing a named list instead.
-#' @param pal String specifying the color palette to use if \code{group} is
-#'   non-\code{NULL}. Options include \code{"ggplot"}, as well as the complete
-#'   collection of \code{
+#' @param pal_group String specifying the color palette to use if \code{group}
+#'   is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
+#'   complete collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
 #'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
 #'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
@@ -52,7 +52,7 @@
 
 plot_box <- function(dat,
                      group = NULL,
-                       pal = 'd3',
+                 pal_group = 'npg',
                       type = NULL,
                       ylab = NULL,
                      title = NULL,
@@ -62,7 +62,7 @@ plot_box <- function(dat,
   # Preliminaries
   if (!is.null(group)) {
     group <- format_features(dat, group, 'Categorical')
-    cols <- colorize(pal = pal_group, var_type = 'Categorical',
+    cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1L]])))
   }
   if (is.null(title)) {

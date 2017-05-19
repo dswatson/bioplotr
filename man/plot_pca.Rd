@@ -5,7 +5,7 @@
 \title{PCA Plot}
 \usage{
 plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
-  label = FALSE, pal_group = "d3", pal_covar = "blues", title = NULL,
+  label = FALSE, pal_group = "npg", pal_covar = "blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
