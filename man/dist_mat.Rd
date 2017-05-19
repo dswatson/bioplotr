@@ -20,3 +20,10 @@ for distance calculations.}
 This utility function calculates distance based on a user defined measure
 and optionally filters probes by leading log fold change.
 }
+\references{
+Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+(2015).
+\href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
+expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
+Acids Res.}, emph{43}(7): e47.
+}

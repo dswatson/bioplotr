@@ -207,6 +207,13 @@ matrixize <- function(dat) {
 #' @param dist Distance measure to be used. Currently supports \code{"euclidean",
 #'   "pearson", "MI",} or \code{"KLD"}.
 #'
+#' @references
+#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
+#' (2015).
+#' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
+#' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
+#' Acids Res.}, emph{43}(7): e47.
+#'
 #' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
 #' @importFrom KernSmooth dpih
@@ -417,8 +424,6 @@ colorize <- function(pal,
       out <- pal_rickandmorty()(n)
     } else if (pal == 'simpsons') {
       out <- pal_simpsons()(n)
-    } else if (pal == 'gsea') {
-      out <- pal_gsea()(n)
     }
   } else if (var_type == 'Continuous') {
     if (pal == 'blues') {
@@ -485,8 +490,10 @@ gg_out <- function(p,
     print(p)
   } else {
     require(plotly)
-    if (loc == 'outside') {
+    if (loc %in% c('right', 'left')) {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
+    } else if (loc %in% c('top', 'bottom')) {
+      p <- ggplotly(p, tooltip = 'text', height = 650, width = 600)
     } else {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 600)
     }
