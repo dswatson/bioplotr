@@ -4,17 +4,17 @@
 \alias{dist_mat}
 \title{Create Distance Matrix}
 \usage{
-dist_mat(dat, top, dist)
+dist_mat(dat, top, filter_method, dist)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples.}
 
-\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to be used
-for distance calculations.}
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
+be used for distance calculations.}
 
-\item{dist}{Distance measure to be used. Currently supports \code{"euclidean",
-"pearson", "MI",} or \code{"KLD"}.}
+\item{dist}{Distance measure to be used. Currently supports \code{
+"euclidean", "pearson", "MI",} or \code{"KLD"}.}
 }
 \description{
 This utility function calculates distance based on a user defined measure
