@@ -57,7 +57,7 @@ x1 <- rnorm(1000, mean = y)
 plot_pr(obs = y, pred = x1)
 
 x2 <- rnorm(1000, mean = y, sd = 2)
-plot_pr(obs = y, pred = list("x1" = x1, "x2" = x2))
+plot_pr(obs = y, pred = list("Better" = x1, "Worse" = x2))
 
 }
 \references{
