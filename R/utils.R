@@ -202,10 +202,11 @@ matrixize <- function(dat) {
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples.
-#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to be used
-#'   for distance calculations.
-#' @param dist Distance measure to be used. Currently supports \code{"euclidean",
-#'   "pearson", "MI",} or \code{"KLD"}.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
+#'   be used for distance calculations.
+#' @param filter_method
+#' @param dist Distance measure to be used. Currently supports \code{
+#'   "euclidean", "pearson", "MI",} or \code{"KLD"}.
 #'
 #' @references
 #' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
@@ -214,6 +215,7 @@ matrixize <- function(dat) {
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 #' Acids Res.}, emph{43}(7): e47.
 #'
+#' @importFrom matrixStats rowVars
 #' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
 #' @importFrom KernSmooth dpih
@@ -221,16 +223,18 @@ matrixize <- function(dat) {
 
 dist_mat <- function(dat,
                      top,
+                     filter_method,
                      dist) {
 
   # Preliminaries
   if (!is.null(top)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes',
-                      'with missing values and/or applying a minimal expression',
-                      'filter. Proceeding with the complete', nrow(dat), 'x',
-                      ncol(dat), 'matrix.'))
+        warning(paste(
+          'top exceeds nrow(dat), at least after removing probes with missing',
+          'values and/or applying a minimal expression filter. Proceeding with',
+          'the complete', nrow(dat), 'x', ncol(dat), 'matrix.'
+          ))
         top <- NULL
       }
     } else {
@@ -239,7 +243,12 @@ dist_mat <- function(dat,
   }
 
   # Create matrix
-  if (is.null(top)) {
+  if (!is.null(top) & filter_method == 'common') {
+    vars <- rowVars(dat)
+    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
+    dat <- dat[keep, , drop = FALSE]
+  }
+  if (is.null(top) | filter_method == 'common') {
     if (dist == 'euclidean') {
       dm <- dist.matrix(t(dat), method = 'euclidean')
     } else if (dist == 'pearson') {
@@ -249,7 +258,7 @@ dist_mat <- function(dat,
     } else if (dist == 'KLD') {
       dm <- as.matrix(KLdist.matrix(t(dat)))
     }
-  } else {
+  } else if (!is.null(top)) {
     dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
