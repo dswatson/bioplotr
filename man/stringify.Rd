@@ -12,5 +12,5 @@ stringify(x)
 \description{
 This utility function formats a character vector into a string representing
 a well formed English list, with quotations around each element and an "and"
-between the penultimate and ultimate elements.
+between the penultimate and final elements.
 }
