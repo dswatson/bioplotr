@@ -4,8 +4,9 @@
 \alias{plot_mds}
 \title{MDS Plot}
 \usage{
-plot_mds(dat, group = NULL, covar = NULL, top = 500, pcs = c(1, 2),
-  label = FALSE, pal_group = "npg", pal_covar = "blues", title = NULL,
+plot_mds(dat, group = NULL, covar = NULL, top = 500,
+  filter_method = "pairwise", pcs = c(1, 2), label = FALSE,
+  pal_group = "npg", pal_covar = "blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
@@ -25,7 +26,10 @@ render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
-be used for MDS. See Details.}
+be used for MDS.}
+
+\item{filter_method}{String specifying whether to apply a pairwise or common
+filter if \code{top} is non-\code{NULL}. See Details.}
 
 \item{pcs}{Vector specifying which principal coordinates to plot. Must be of
 length two unless \code{D3 = TRUE}.}
@@ -71,12 +75,15 @@ method for unsupervised cluster detection. It can also aid in spotting
 potential outliers, and generally helps to visualize the latent structure of
 a data set.
 
-The \code{top} argument filters probes using the leading fold change method
-of Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
-distances are calculated using the most differentially expressed probes
-between the two samples. This method is appropriate when different molecular
-pathways are relevant for distinguishing different pairs of samples. To run
-MDS on the complete data, set \code{top = NULL}. This is functionally
+If \code{top} is non-\code{NULL}, then data can either be filtered by
+probewise variance (\code{filter_method = "common"}) or using the leading
+fold change method of Smyth et al. (\code{filter_method = "pairwise"}). In
+the latter case, pairwise Euclidean distances are calculated using only the
+\code{top} most differentially expressed probes between the two samples. This
+method is appropriate when different molecular pathways are relevant for
+distinguishing different pairs of samples.
+
+To run MDS on the complete data, set \code{top = NULL}. This is functionally
 equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
 }
 \examples{
@@ -99,7 +106,8 @@ Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 Acids Res.}, emph{43}(7): e47.
 
-Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York: Wiley.
+Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York:
+Wiley.
 }
 \seealso{
 \code{\link[limma]{plotMDS}}, \code{\link{plot_pca}}, \code{\link{plot_tsne}}

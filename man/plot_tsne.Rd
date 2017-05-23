@@ -4,10 +4,11 @@
 \alias{plot_tsne}
 \title{t-SNE Plot}
 \usage{
-plot_tsne(dat, group = NULL, covar = NULL, top = NULL, dims = c(1, 2),
-  perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
-  pal_group = "npg", pal_covar = "blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE, ...)
+plot_tsne(dat, group = NULL, covar = NULL, top = NULL,
+  filter_method = "pairwise", dims = c(1, 2), perplexity = ncol(dat)/4,
+  theta = 0.1, max_iter = 1000, label = FALSE, pal_group = "npg",
+  pal_covar = "blues", title = NULL, legend = "right", hover = FALSE,
+  D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -26,7 +27,10 @@ render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
-be used for t-SNE. See Details.}
+be used for t-SNE.}
+
+\item{filter_method}{String specifying whether to apply a pairwise or common
+filter if \code{top} is non-\code{NULL}. See Details.}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
@@ -94,8 +98,10 @@ See \code{\link[Rtsne]{Rtsne}} for more details. A thorough introduction to
 and explication of the original t-SNE method and the Barnes-Hut approximation
 may be found in the references below.
 
-The \code{top} argument optionally filters probes using the leading fold
-change method of Smyth et al. See \code{\link{plot_mds}} for more details.
+The \code{top} argument optionally filters data using either probewise
+variance (if \code{filter_method = "common"'}) or the leading fold change
+method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
+\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)

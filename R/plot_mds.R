@@ -16,7 +16,9 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
-#'   be used for MDS. See Details.
+#'   be used for MDS.
+#' @param filter_method String specifying whether to apply a pairwise or common
+#'   filter if \code{top} is non-\code{NULL}. See Details.
 #' @param pcs Vector specifying which principal coordinates to plot. Must be of
 #'   length two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
@@ -50,12 +52,15 @@
 #' potential outliers, and generally helps to visualize the latent structure of
 #' a data set.
 #'
-#' The \code{top} argument filters probes using the leading fold change method
-#' of Smyth et al. (See \code{limma::\link[limma]{plotMDS}}). Pairwise Euclidean
-#' distances are calculated using the most differentially expressed probes
-#' between the two samples. This method is appropriate when different molecular
-#' pathways are relevant for distinguishing different pairs of samples. To run
-#' MDS on the complete data, set \code{top = NULL}. This is functionally
+#' If \code{top} is non-\code{NULL}, then data can either be filtered by
+#' probewise variance (\code{filter_method = "common"}) or using the leading
+#' fold change method of Smyth et al. (\code{filter_method = "pairwise"}). In
+#' the latter case, pairwise Euclidean distances are calculated using only the
+#' \code{top} most differentially expressed probes between the two samples. This
+#' method is appropriate when different molecular pathways are relevant for
+#' distinguishing different pairs of samples.
+#'
+#' To run MDS on the complete data, set \code{top = NULL}. This is functionally
 #' equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
 #'
 #' @references
@@ -68,7 +73,8 @@
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 #' Acids Res.}, emph{43}(7): e47.
 #'
-#' Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York: Wiley.
+#' Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York:
+#' Wiley.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -91,6 +97,7 @@ plot_mds <- function(dat,
                      group = NULL,
                      covar = NULL,
                        top = 500,
+             filter_method = 'pairwise',
                        pcs = c(1, 2),
                      label = FALSE,
                  pal_group = 'npg',
@@ -130,6 +137,9 @@ plot_mds <- function(dat,
     names(features) <- paste0('Feature', seq_along(features))
   } else {
     features <- NULL
+  }
+  if (!filter_method %in% c('pairwise', 'common')) {
+    stop('filter_method must be either "pairwise" or "common".')
   }
   if (length(pcs) > 2L & !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')

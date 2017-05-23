@@ -14,7 +14,9 @@
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
-#'   be used for distance calculations. See Details.
+#'   be used for distance calculations.
+#' @param filter_method String specifying whether to apply a pairwise or common
+#'   filter if \code{top} is non-\code{NULL}. See Details.
 #' @param dist Distance measure to be used. Currently supports \code{
 #'   'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical
@@ -58,8 +60,10 @@
 #' data distributions. See \code{\link[bioDist]{MIdist}} and \code{
 #' \link[bioDist]{KLdist.matrix}} for more info.
 #'
-#' The \code{top} argument optionally filters probes using the leading fold
-#' change method of Smyth et al. See \code{\link{plot_mds}} for more details.
+#' The \code{top} argument optionally filters data using either probewise
+#' variance (if \code{filter_method = "common"'}) or the leading fold change
+#' method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
+#' \link{plot_mds}} for more details.
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
@@ -79,6 +83,7 @@ plot_similarity <- function(dat,
                             group = NULL,
                             covar = NULL,
                               top = NULL,
+                    filter_method = 'pairwise',
                              dist = 'euclidean',
                         hclustfun = 'average',
                         pal_group = 'npg',

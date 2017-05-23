@@ -16,7 +16,9 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
-#'   be used for t-SNE. See Details.
+#'   be used for t-SNE.
+#' @param filter_method String specifying whether to apply a pairwise or common
+#'   filter if \code{top} is non-\code{NULL}. See Details.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
 #' @param perplexity How many nearest neighbors should the algorithm consider
@@ -68,8 +70,10 @@
 #' and explication of the original t-SNE method and the Barnes-Hut approximation
 #' may be found in the references below.
 #'
-#' The \code{top} argument optionally filters probes using the leading fold
-#' change method of Smyth et al. See \code{\link{plot_mds}} for more details.
+#' The \code{top} argument optionally filters data using either probewise
+#' variance (if \code{filter_method = "common"'}) or the leading fold change
+#' method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
+#' \link{plot_mds}} for more details.
 #'
 #' @references
 #' van der Maaten, L.J.P. (2014).
@@ -104,6 +108,7 @@ plot_tsne <- function(dat,
                       group = NULL,
                       covar = NULL,
                         top = NULL,
+              filter_method = 'pairwise',
                        dims = c(1, 2),
                  perplexity = ncol(dat) / 4,
                       theta = 0.1,
@@ -114,8 +119,7 @@ plot_tsne <- function(dat,
                       title = NULL,
                      legend = 'right',
                       hover = FALSE,
-                         D3 = FALSE,
-                        ...) {
+                         D3 = FALSE, ...) {
 
   # Preliminaries
   if (ncol(dat) < 3L) {
@@ -260,5 +264,5 @@ plot_tsne <- function(dat,
 
 }
 
-# Sed seed?
+# Set seed?
 
