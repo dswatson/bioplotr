@@ -82,7 +82,7 @@ data distributions. See \code{\link[bioDist]{MIdist}} and \code{
 \link[bioDist]{KLdist.matrix}} for more info.
 
 The \code{top} argument optionally filters data using either probewise
-variance (if \code{filter_method = "common"'}) or the leading fold change
+variance (if \code{filter_method = "common"}) or the leading fold change
 method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
 \link{plot_mds}} for more details.
 }
