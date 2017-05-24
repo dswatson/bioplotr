@@ -15,7 +15,8 @@
 #'   from the columnwise count totals.
 #' @param normalize.method Normalization method to be applied to the transformed
 #'   counts. Choices are the same as for the \code{method} argument of
-#'   \code{\link[limma]{normalizeBetweenArrays}} when the data is single-channel.
+#'   \code{\link[limma]{normalizeBetweenArrays}} when the data is
+#'   single-channel.
 #' @param span Width of the LOWESS smoothing window as a proportion.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
