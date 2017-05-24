@@ -178,7 +178,7 @@ plot_tsne <- function(dat,
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  dm <- dist_mat(dat, top, dist = 'euclidean')
+  dm <- dist_mat(dat, top, filter_method, dist = 'euclidean')
   tsne <- Rtsne(as.dist(dm), perplexity = perplexity, dims = max(dims),
                 theta = theta, max_iter = max_iter, check_duplicates = FALSE,
                 is_distance = TRUE, ...)

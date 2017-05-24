@@ -167,7 +167,7 @@ plot_mds <- function(dat,
   if (is.null(colnames(dat))) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  dm <- dist_mat(dat, top, dist = 'euclidean')
+  dm <- dist_mat(dat, top, filter_method, dist = 'euclidean')
   mds <- suppressWarnings(cmdscale(as.dist(dm), k = max(pcs)))    # MDS
   df <- data_frame(Sample = colnames(dat))                        # Melt
   if (length(pcs) == 2L) {

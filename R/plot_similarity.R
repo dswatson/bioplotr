@@ -129,7 +129,7 @@ plot_similarity <- function(dat,
   # Tidy data
   dat <- matrixize(dat)
   dat <- sweep(dat, 1L, apply(dat, 1L, median))  # Median center data
-  dm <- dist_mat(dat, top, dist)
+  dm <- dist_mat(dat, top, filter_method, dist)
 
   # Build plot
   require(NMF)
