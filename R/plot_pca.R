@@ -36,8 +36,8 @@
 #'   gradient.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -143,9 +143,9 @@ plot_pca <- function(dat,
     title <- 'PCA'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
+                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"bottomright", "bottomleft", "topright", or "topleft".')
+         '"topright", "topleft", "bottomright", or "bottomleft".')
   }
 
   # Tidy data
@@ -191,74 +191,10 @@ plot_pca <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
-  if (!D3) {
-    p <- ggplot(df, aes(PC1, PC2)) +
-      geom_hline(yintercept = 0L, color = 'grey') +
-      geom_vline(xintercept = 0L, color = 'grey') +
-      labs(title = title, x = pve[min(pcs)], y = pve[max(pcs)]) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-    if (is.null(features)) {
-      p <- p + geom_text(aes(label = Sample), alpha = alpha,
-                         hjust = 'inward', vjust = 'inward')
-    } else if (length(features) == 1L) {
-      if (label) {
-        p <- p + geom_text(aes(label = Sample, color = Feature1), alpha = alpha,
-                           hjust = 'inward', vjust = 'inward') +
-          labs(color = feature_names[1L])
-      } else {
-        if (!is.null(covar)) {
-          suppressWarnings(
-            p <- p + geom_point(aes(text = Sample, color = Feature1),
-                                size = size, alpha = alpha) +
-              labs(color = feature_names[1L])
-          )
-        } else {
-          suppressWarnings(
-            p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
-                                size = size, alpha = alpha) +
-              labs(color = feature_names[1L], shape = feature_names[1L])
-          )
-        }
-      }
-    } else {
-      suppressWarnings(
-        p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
-                            size = size, alpha = alpha) +
-          labs(color = feature_names[1L], shape = feature_names[2L])
-      )
-      if (is.null(covar)) {
-        p <- p + guides(color = guide_legend(order = 1L),
-                        shape = guide_legend(order = 2L))
-      } else {
-        p <- p + guides(color = guide_colorbar(order = 1L),
-                        shape = guide_legend(order = 2L))
-      }
-    }
-    if (is.null(covar)) {
-      p <- p + scale_color_manual(values = group_cols)
-    } else {
-      p <- p + scale_color_gradientn(colors = covar_cols)
-    }
-    gg_out(p, hover, legend)
-  } else {
-    ### REWRITE ###
-    # symbls <- c(16, 17, 15, 3, 7, 8)           # This would be right if plotly worked
-    symbls <- c(16, 18, 15, 3, 7, 8)
-    p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
-                 text = ~Sample, color = ~Group, symbol = ~Group,
-                 colors = pal_d3()(length(unique(df$Group))),
-                 symbols = symbls[1:length(unique(df$Group))],
-                 type = 'scatter3d', mode = 'markers',
-                 alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
-      layout(hovermode = 'closest', title = title, scene = list(
-        xaxis = list(title = pve[min(pcs)]),
-        yaxis = list(title = pve[other]),
-        zaxis = list(title = pve[max(pcs)])))
-    print(p)
-  }
+  xlab <- pve[min(pcs)]
+  ylab <- pve[max(pcs)]
+  embed(df, group, covar, group_cols, covar_cols, feature_names,
+        label, title, xlab, ylab, legend, hover, D3)
 
 }
 

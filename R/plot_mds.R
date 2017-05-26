@@ -38,8 +38,8 @@
 #'   gradient.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -154,9 +154,9 @@ plot_mds <- function(dat,
     title <- 'MDS'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
+                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"bottomright", "bottomleft", "topright", or "topleft".')
+         '"topright", "topleft", "bottomright", or "bottomleft".')
   }
 
   # Tidy data
@@ -184,69 +184,15 @@ plot_mds <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
-  if (!D3) {
-    p <- ggplot(df, aes(PC1, PC2)) +
-      geom_hline(yintercept = 0L, color = 'grey') +
-      geom_vline(xintercept = 0L, color = 'grey') +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-    if (is.null(top)) {
-      p <- p + labs(title = title,
-                        x = paste0('PC', min(pcs)),
-                        y = paste0('PC', max(pcs)))
-    } else {
-      p <- p + labs(title = title,
-                        x = paste('Leading logFC, MDS Dim', min(pcs)),
-                        y = paste('Leading logFC, MDS Dim', max(pcs)))
-    }
-    if (is.null(features)) {
-      p <- p + geom_text(aes(label = Sample), alpha = alpha,
-                         hjust = 'inward', vjust = 'inward')
-    } else if (length(features) == 1L) {
-      if (label) {
-        p <- p + geom_text(aes(label = Sample, color = Feature1), alpha = alpha,
-                           hjust = 'inward', vjust = 'inward') +
-          labs(color = feature_names[1L])
-      } else {
-        if (!is.null(covar)) {
-          suppressWarnings(
-            p <- p + geom_point(aes(text = Sample, color = Feature1),
-                                size = size, alpha = alpha) +
-              labs(color = feature_names[1L])
-          )
-        } else {
-          suppressWarnings(
-            p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
-                                size = size, alpha = alpha) +
-              labs(color = feature_names[1L], shape = feature_names[1L])
-          )
-        }
-      }
-    } else {
-      suppressWarnings(
-        p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
-                            size = size, alpha = alpha) +
-          labs(color = feature_names[1L], shape = feature_names[2L])
-      )
-      if (is.null(covar)) {
-        p <- p + guides(color = guide_legend(order = 1L),
-                        shape = guide_legend(order = 2L))
-      } else {
-        p <- p + guides(color = guide_colorbar(order = 1L),
-                        shape = guide_legend(order = 2L))
-      }
-    }
-    if (is.null(covar)) {
-      p <- p + scale_color_manual(values = group_cols)
-    } else {
-      p <- p + scale_color_gradientn(colors = covar_cols)
-    }
-    gg_out(p, hover, legend)
+  if (is.null(top)) {
+    xlab <- paste0('PC', min(pcs))
+    ylab <- paste0('PC', max(pcs))
   } else {
-    # ???
+    xlab <- paste('Leading logFC, MDS Dim', min(pcs))
+    ylab <- paste('Leading logFC, MDS Dim', max(pcs))
   }
+  embed(df, group, covar, group_cols, covar_cols, feature_names,
+        label, title, xlab, ylab, legend, hover, D3)
 
 }
 
