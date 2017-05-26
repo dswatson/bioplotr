@@ -76,6 +76,7 @@
 #'                 title = 'Somethin' Cookin'')
 #'
 #' @export
+#' @importFrom matrixStats rowMedians
 #' @importFrom RColorBrewer brewer.pal
 #'
 
@@ -128,7 +129,7 @@ plot_similarity <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  dat <- sweep(dat, 1L, apply(dat, 1L, median))  # Median center data
+  dat <- dat - rowMedians(dat)                   # Median center data
   dm <- dist_mat(dat, top, filter_method, dist)
 
   # Build plot

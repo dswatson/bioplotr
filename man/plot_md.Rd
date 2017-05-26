@@ -46,8 +46,8 @@ Details.}
 \item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
+"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
 
 \item{design}{Optional design matrix with rows corresponding to samples and
 columns to coefficients to be estimated. Only relevant for \code{

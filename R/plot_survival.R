@@ -21,8 +21,8 @@
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
 #' @param ... Additional arguments to be passed to \code{
 #'   \link[survminer]{ggsurvplot}}.
 #'
@@ -107,9 +107,9 @@ plot_survival <- function(fit,
     leg.lbl <- names(fit$strata)
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
+                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"bottomright", "bottomleft", "topright", or "topleft".')
+         '"topright", "topleft", "bottomright", or "bottomleft".')
   }
   if (legend == 'bottomleft') {
     legend <- c(0.01, 0.01)

@@ -31,8 +31,8 @@ length equal to the number of vectors in \code{pred}.}
 \item{leg.txt}{Optional legend title.}
 
 \item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-\code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.}
+"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
 
 \item{hover}{Show predictor name by hovering mouse over ROC curve? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

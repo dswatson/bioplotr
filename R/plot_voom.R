@@ -20,8 +20,8 @@
 #' @param span Width of the LOWESS smoothing window as a proportion.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"bottomright"},
-#'   \code{"bottomleft"}, \code{"topright"}, or \code{"topleft"}.
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -84,9 +84,9 @@ plot_voom <- function(dat,
     title <- 'Voom Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'bottomright', 'bottomleft', 'topright', 'topleft')) {
+                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
     stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"bottomright", "bottomleft", "topright", or "topleft".')
+         '"topright", "topleft", "bottomright", or "bottomleft".')
   }
 
   # Tidy data
