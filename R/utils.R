@@ -146,6 +146,127 @@ format_binom <- function(vec,
 
 }
 
+#' Test for Valid Color Representation
+#'
+#' This utility function checks whether each string in a character vector
+#' denotes a valid color in R.
+#'
+#' @param chr A character vector.
+#'
+
+is.color <- function(chr) {
+  sapply(chr, function(x) {
+    tryCatch(is.matrix(col2rgb(x)), error = function(e) FALSE)
+  })
+}
+
+#' Assign Colors
+#'
+#' This utility function applies a user selected color palette to a ggplot
+#' image.
+#'
+#' @param pal Color palette.
+#' @param var_type Character string specifying whether features are categorical
+#'   or continuous.
+#' @param n Number of unique groups for which colors must be assigned. Only
+#'   relevant if \code{var_type = "Categorical"}.
+#'
+#' @importFrom scales hue_pal
+#' @importFrom RColorBrewer brewer.pal
+#' @import ggsci
+#'
+
+colorize <- function(pal,
+                     var_type,
+                     n) {
+
+  # Preliminaries
+  group_pals <- c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
+                  'd3', 'locuszoom', 'igv', 'uchicago', 'startrek', 'futurama',
+                  'rickandmorty', 'simpsons', 'gsea')
+  covar_pals <- c('blues', 'greens', 'purples', 'greys', 'oranges', 'reds')
+  if (!all(is.color(pal))) {
+    if (length(pal) > 1L) {
+      stop('When passing multiple strings to define a color palette, ',
+           'each must denote a valid color in R.')
+    } else {
+      if (var_type == 'Categorical' & !pal %in% group_pals) {
+        stop(paste('Invalid palette for categorical features. Must be either a',
+                   'vector of valid R colors or one of the following palettes:',
+                   group_pals))
+      }
+      if (var_type == 'Continuous' & !pal %in% covar_pals) {
+        stop(paste('Invalid palette for continuous features. Must be either a',
+                   'vector of valid R colors or one of the following palettes:',
+                   covar_pals))
+      }
+    }
+  } else {
+    if (var_type == 'Categorical' & length(pal) < n) {
+      stop(paste('Insufficient colors in palette. Need at least', n, 'for',
+                 'this plot.'))
+    }
+    if (var_type == 'Categorical' & length(pal) > n) {
+      warning(paste('Too many colors in palette. Only the first', n, 'will',
+                    'be used.'))
+    }
+    out <- pal
+  }
+
+  # Presets
+  if (var_type == 'Categorical') {
+    if (pal == 'ggplot') {
+      out <- hue_pal()(n)
+    } else if (pal == 'npg') {
+      out <- pal_npg()(n)
+    } else if (pal == 'aaas') {
+      out <- pal_aaas()(n)
+    } else if (pal == 'nejm') {
+      out <- pal_nejm()(n)
+    } else if (pal == 'lancet') {
+      out <- pal_lancet()(n)
+    } else if (pal == 'jco') {
+      out <- pal_jco()(n)
+    } else if (pal == 'ucscgb') {
+      out <- pal_ucscgb()(n)
+    } else if (pal == 'd3') {
+      out <- pal_d3()(n)
+    } else if (pal == 'locuszoom') {
+      out <- pal_locuszoom()(n)
+    } else if (pal == 'igv') {
+      out <- pal_igv()(n)
+    } else if (pal == 'uchicago') {
+      out <- pal_uchicago()(n)
+    } else if (pal == 'startrek') {
+      out <- pal_startrek()(n)
+    } else if (pal == 'futurama') {
+      out <- pal_futurama()(n)
+    } else if (pal == 'rickandmorty') {
+      out <- pal_rickandmorty()(n)
+    } else if (pal == 'simpsons') {
+      out <- pal_simpsons()(n)
+    }
+  } else if (var_type == 'Continuous') {
+    if (pal == 'blues') {
+      out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
+    } else if (pal == 'greens') {
+      out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
+    } else if (pal == 'purples') {
+      out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
+    } else if (pal == 'greys') {
+      out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
+    } else if (pal == 'oranges') {
+      out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
+    } else if (pal == 'reds') {
+      out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
+    }
+  }
+
+  # Output
+  return(out)
+
+}
+
 #' Standardize Matrix
 #'
 #' This utility function takes data objects from \code{limma}, \code{edgeR}, or
@@ -334,127 +455,6 @@ pt_alpha <- function(df) {
   return(out)
 }
 
-#' Test for Valid Color Representation
-#'
-#' This utility function checks whether each string in a character vector
-#' denotes a valid color in R.
-#'
-#' @param chr A character vector.
-#'
-
-is.color <- function(chr) {
-  sapply(chr, function(x) {
-    tryCatch(is.matrix(col2rgb(x)), error = function(e) FALSE)
-  })
-}
-
-#' Assign Colors
-#'
-#' This utility function applies a user selected color palette to a ggplot
-#' image.
-#'
-#' @param pal Color palette.
-#' @param var_type Character string specifying whether features are categorical
-#'   or continuous.
-#' @param n Number of unique groups for which colors must be assigned. Only
-#'   relevant if \code{var_type = "Categorical"}.
-#'
-#' @importFrom scales hue_pal
-#' @importFrom RColorBrewer brewer.pal
-#' @import ggsci
-#'
-
-colorize <- function(pal,
-                     var_type,
-                     n) {
-
-  # Preliminaries
-  group_pals <- c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                  'd3', 'locuszoom', 'igv', 'uchicago', 'startrek', 'futurama',
-                  'rickandmorty', 'simpsons', 'gsea')
-  covar_pals <- c('blues', 'greens', 'purples', 'greys', 'oranges', 'reds')
-  if (!all(is.color(pal))) {
-    if (length(pal) > 1L) {
-      stop('When passing multiple strings to define a color palette, ',
-           'each must denote a valid color in R.')
-    } else {
-      if (var_type == 'Categorical' & !pal %in% group_pals) {
-        stop(paste('Invalid palette for categorical features. Must be either a',
-                   'vector of valid R colors or one of the following palettes:',
-                   group_pals))
-      }
-      if (var_type == 'Continuous' & !pal %in% covar_pals) {
-        stop(paste('Invalid palette for continuous features. Must be either a',
-                   'vector of valid R colors or one of the following palettes:',
-                   covar_pals))
-      }
-    }
-  } else {
-    if (var_type == 'Categorical' & length(pal) < n) {
-      stop(paste('Insufficient colors in palette. Need at least', n, 'for',
-                 'this plot.'))
-    }
-    if (var_type == 'Categorical' & length(pal) > n) {
-      warning(paste('Too many colors in palette. Only the first', n, 'will',
-                    'be used.'))
-    }
-    out <- pal
-  }
-
-  # Presets
-  if (var_type == 'Categorical') {
-    if (pal == 'ggplot') {
-      out <- hue_pal()(n)
-    } else if (pal == 'npg') {
-      out <- pal_npg()(n)
-    } else if (pal == 'aaas') {
-      out <- pal_aaas()(n)
-    } else if (pal == 'nejm') {
-      out <- pal_nejm()(n)
-    } else if (pal == 'lancet') {
-      out <- pal_lancet()(n)
-    } else if (pal == 'jco') {
-      out <- pal_jco()(n)
-    } else if (pal == 'ucscgb') {
-      out <- pal_ucscgb()(n)
-    } else if (pal == 'd3') {
-      out <- pal_d3()(n)
-    } else if (pal == 'locuszoom') {
-      out <- pal_locuszoom()(n)
-    } else if (pal == 'igv') {
-      out <- pal_igv()(n)
-    } else if (pal == 'uchicago') {
-      out <- pal_uchicago()(n)
-    } else if (pal == 'startrek') {
-      out <- pal_startrek()(n)
-    } else if (pal == 'futurama') {
-      out <- pal_futurama()(n)
-    } else if (pal == 'rickandmorty') {
-      out <- pal_rickandmorty()(n)
-    } else if (pal == 'simpsons') {
-      out <- pal_simpsons()(n)
-    }
-  } else if (var_type == 'Continuous') {
-    if (pal == 'blues') {
-      out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
-    } else if (pal == 'greens') {
-      out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
-    } else if (pal == 'purples') {
-      out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
-    } else if (pal == 'greys') {
-      out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
-    } else if (pal == 'oranges') {
-      out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
-    } else if (pal == 'reds') {
-      out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
-    }
-  }
-
-  # Output
-  return(out)
-
-}
-
 #' Output Image
 #'
 #' This utility function locates the legend (if supplied) and prints a ggplot or
@@ -510,6 +510,115 @@ gg_out <- function(p,
   }
 
 }
+
+#' Embed Manifold
+#'
+#' This utility function formats the output for \code{bioplotr}'s projection
+#' functions (\code{plot_pca}, \code{plot_mds}, and \code{plot_tsne}).
+#'
+#' @param df Data frame formatted for \code{ggplot}ing.
+#' @param group Optional factor variable formatted by \code{format_features}.
+#' @param covar Optional continuous variable formatted by \code{format_features}.
+#' @param group_cols Palette for \code{group} formatted by \code{colorize}.
+#' @param covar_cols Palette for \code{covar} formatted by \code{colorize}.
+#' @param feature_names Feature names.
+#' @param label Label data points by sample name?
+#' @param title Plot title.
+#' @param xlab X-axis label.
+#' @param ylab Y-axis label.
+#' @param legend Legend location.
+#' @param hover Show sample name by hovering mouse over data point?
+#' @param D3 Render plot in three dimensions?
+#'
+#' @import ggplot2
+#'
+
+embed <- function(df,
+                  group,
+                  covar,
+                  group_cols,
+                  covar_cols,
+                  feature_names,
+                  label,
+                  title,
+                  xlab,
+                  ylab,
+                  legend,
+                  hover,
+                  D3) {
+
+  size <- pt_size(df)
+  alpha <- pt_alpha(df)
+  if (!D3) {
+    p <- ggplot(df, aes(PC1, PC2)) +
+      geom_hline(yintercept = 0L, color = 'grey') +
+      geom_vline(xintercept = 0L, color = 'grey') +
+      labs(title = title, x = xlab, y = ylab) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+    if (is.null(c(group, covar))) {
+      p <- p + geom_text(aes(label = Sample), alpha = alpha,
+                         hjust = 'inward', vjust = 'inward')
+    } else if (length(c(group, covar)) == 1L) {
+      if (label) {
+        p <- p + geom_text(aes(label = Sample, color = Feature1), alpha = alpha,
+                           hjust = 'inward', vjust = 'inward') +
+          labs(color = feature_names[1L])
+      } else {
+        if (!is.null(covar)) {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1),
+                                size = size, alpha = alpha) +
+              labs(color = feature_names[1L])
+          )
+        } else {
+          suppressWarnings(
+            p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature1),
+                                size = size, alpha = alpha) +
+              labs(color = feature_names[1L], shape = feature_names[1L])
+          )
+        }
+      }
+    } else {
+      suppressWarnings(
+        p <- p + geom_point(aes(text = Sample, color = Feature1, shape = Feature2),
+                            size = size, alpha = alpha) +
+          labs(color = feature_names[1L], shape = feature_names[2L])
+      )
+      if (is.null(covar)) {
+        p <- p + guides(color = guide_legend(order = 1L),
+                        shape = guide_legend(order = 2L))
+      } else {
+        p <- p + guides(color = guide_colorbar(order = 1L),
+                        shape = guide_legend(order = 2L))
+      }
+    }
+    if (is.null(covar)) {
+      p <- p + scale_color_manual(values = group_cols)
+    } else {
+      p <- p + scale_color_gradientn(colors = covar_cols)
+    }
+    gg_out(p, hover, legend)
+  } else {
+    ### REWRITE ###
+    # symbls <- c(16, 17, 15, 3, 7, 8)           # This would be right if plotly worked
+    symbls <- c(16, 18, 15, 3, 7, 8)
+    require(plotly)
+    p <- plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3,
+                 text = ~Sample, color = ~Group, symbol = ~Group,
+                 colors = pal_d3()(length(unique(df$Group))),
+                 symbols = symbls[1:length(unique(df$Group))],
+                 type = 'scatter3d', mode = 'markers',
+                 alpha = 0.85, hoverinfo = 'text', marker = list(size = 5)) %>%
+      layout(hovermode = 'closest', title = title, scene = list(
+        xaxis = list(title = pve[min(pcs)]),
+        yaxis = list(title = pve[other]),
+        zaxis = list(title = pve[max(pcs)])))
+    print(p)
+  }
+
+}
+
 
 #' Format Annotation Track Colors
 #'
