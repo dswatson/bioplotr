@@ -325,7 +325,8 @@ matrixize <- function(dat) {
 #'   probes and columns to samples.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
-#' @param filter_method
+#' @param filter_method String specifying whether to apply a \code{"pairwise"}
+#'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
 #' @param dist Distance measure to be used. Currently supports \code{
 #'   "euclidean", "pearson", "MI",} or \code{"KLD"}.
 #'
@@ -363,12 +364,17 @@ dist_mat <- function(dat,
     }
   }
 
-  # Create matrix
+  # Variance filter?
   if (!is.null(top) & filter_method == 'common') {
     vars <- rowVars(dat)
     keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
     dat <- dat[keep, , drop = FALSE]
   }
+
+  # Median center
+  dat <- sweep(dat, 1, apply(dat, 1, median))
+
+  # Create distance matrix
   if (is.null(top) | filter_method == 'common') {
     if (dist == 'euclidean') {
       dm <- dist.matrix(t(dat), method = 'euclidean')
