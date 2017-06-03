@@ -15,8 +15,8 @@
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
-#' @param filter_method String specifying whether to apply a pairwise or common
-#'   filter if \code{top} is non-\code{NULL}. See Details.
+#' @param filter_method String specifying whether to apply a \code{"pairwise"}
+#'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
 #' @param dist Distance measure to be used. Currently supports \code{
 #'   'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical

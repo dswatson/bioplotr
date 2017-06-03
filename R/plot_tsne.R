@@ -17,8 +17,8 @@
 #'   a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for t-SNE.
-#' @param filter_method String specifying whether to apply a pairwise or common
-#'   filter if \code{top} is non-\code{NULL}. See Details.
+#' @param filter_method String specifying whether to apply a \code{"pairwise"}
+#'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
 #' @param perplexity How many nearest neighbors should the algorithm consider

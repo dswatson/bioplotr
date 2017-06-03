@@ -13,6 +13,9 @@ probes and columns to samples.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for distance calculations.}
 
+\item{filter_method}{String specifying whether to apply a \code{"pairwise"}
+or \code{"common"} filter if \code{top} is non-\code{NULL}.}
+
 \item{dist}{Distance measure to be used. Currently supports \code{
 "euclidean", "pearson", "MI",} or \code{"KLD"}.}
 }

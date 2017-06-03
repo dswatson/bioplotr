@@ -29,8 +29,8 @@ a named list or data frame.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for t-SNE.}
 
-\item{filter_method}{String specifying whether to apply a pairwise or common
-filter if \code{top} is non-\code{NULL}. See Details.}
+\item{filter_method}{String specifying whether to apply a \code{"pairwise"}
+or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
