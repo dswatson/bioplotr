@@ -108,6 +108,8 @@ plot_similarity <- function(dat,
   if (!is.null(c(group, covar))) {
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
+  } else {
+    anno <- NULL
   }
   if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
     stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
