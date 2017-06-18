@@ -2,11 +2,11 @@
 #'
 #' This function plots pairwise correlations between variables.
 #'
-#' @param dat A data frame or matrix of features, e.g. a clinical .
+#' @param dat A sample by feature data frame or matrix, e.g. of clinical
+#'   variables. Non-numeric features are dropped with a warning.
 #' @param geom Character string specifying whether to visualize correlation
 #'   coefficients as \code{"tile"} or \code{"circle"}.
-#' @param diag Include principal diagonal of the correlation matrix? Only
-#'   relevant if \code{shape = "triangle"}.
+#' @param diag Include principal diagonal of the correlation matrix?
 #' @param method Character string specifying which correlation coefficient to
 #'   compute. Must be one of \code{"pearson"}, \code{"kendall"}, or \code{
 #'   "spearman"}. See \code{\link[stats]{cor}}.

@@ -9,13 +9,13 @@ plot_corr(dat, geom = "tile", diag = FALSE, method = "pearson",
   legend = "right", hover = FALSE)
 }
 \arguments{
-\item{dat}{A data frame or matrix of features, e.g. a clinical .}
+\item{dat}{A sample by feature data frame or matrix, e.g. of clinical
+variables. Non-numeric features are dropped with a warning.}
 
 \item{geom}{Character string specifying whether to visualize correlation
 coefficients as \code{"tile"} or \code{"circle"}.}
 
-\item{diag}{Include principal diagonal of the correlation matrix? Only
-relevant if \code{shape = "triangle"}.}
+\item{diag}{Include principal diagonal of the correlation matrix?}
 
 \item{method}{Character string specifying which correlation coefficient to
 compute. Must be one of \code{"pearson"}, \code{"kendall"}, or \code{
