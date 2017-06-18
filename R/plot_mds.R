@@ -73,7 +73,7 @@
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
 #' Acids Res.}, emph{43}(7): e47.
 #'
-#' Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York:
+#' Hefner, R. (1958). \emph{Theory and Methods of Scaling}. New York:
 #' Wiley.
 #'
 #' @examples
