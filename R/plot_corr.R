@@ -108,16 +108,18 @@ plot_corr <- function(dat,
     na.omit()
   if (!is.null(alpha)) {
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
-    for (i in 2:ncol(p_mat)) {
-      for (j in 1:(i - 1)) {
+    for (i in 2L:ncol(p_mat)) {
+      for (j in 1L:(i - 1L)) {
         p_mat[i, j] <- cor.test(dat[, i], dat[, j], method = method)$p.value
       }
     }
-    p <- p_mat[lower.tri(p_mat)]
-    if (!is.null(p.adjust)) {
-      p <- p.adjust(p, method = p.adj)
+    if (!is.null(p.adj)) {
+      p_mat[lower.tri(p_mat)] <- p.adjust(p_mat[lower.tri(p_mat)], method = p.adj)
     }
-    df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
+    if (diag) {
+      diag(p_mat) <- 1L
+    }
+    df <- df %>% mutate(Significant = ifelse(p_mat[!is.na(p_mat)] <= alpha, TRUE, FALSE))
   } else {
     df <- df %>% mutate(Significant = FALSE)
   }
