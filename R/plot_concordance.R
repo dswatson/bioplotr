@@ -147,13 +147,13 @@ plot_concordance <- function(dat,
         for (j in 1L:(i - 1L)) {
           tmp <- na.omit(dat[, c(i, j)])
           if (method == 'MI') {
-            sim_mi <- numeric(length = B)
+            null <- numeric(length = B)
             for (i in seq_len(B)) {
               x <- sample(tmp[[1L]], nrow(tmp))
               y <- sample(tmp[[2L]], nrow(tmp))
-              sim_mi[i] <- natstobits(mutinformation(x, y))
+              null[i] <- natstobits(mutinformation(x, y))
             }
-            p_mat[i, j] <- sum(sim_mi > mat[i, j]) / B
+            p_mat[i, j] <- sum(null >= mat[i, j]) / B
           } else if (method == 'chisq') {
             p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$p.value
           }
