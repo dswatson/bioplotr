@@ -4,19 +4,20 @@
 #'
 #' @param dat A sample by feature data frame or matrix, e.g. of clinical
 #'   variables. Non-numeric features are dropped with a warning.
-#' @param geom Character string specifying whether to visualize correlation
-#'   coefficients as \code{"tile"} or \code{"circle"}.
+#' @param geom String specifying whether to visualize correlation coefficients
+#'   as \code{"tile"} or \code{"circle"}.
+#' @param label Print correlation coefficient over \code{geom}?
 #' @param diag Include principal diagonal of the correlation matrix?
-#' @param method Character string specifying which correlation coefficient to
-#'   compute. Must be one of \code{"pearson"}, \code{"kendall"}, or \code{
-#'   "spearman"}. See \code{\link[stats]{cor}}.
+#' @param method String specifying which correlation coefficient to compute.
+#'   Must be one of \code{"pearson"}, \code{"kendall"}, or \code{"spearman"}.
+#'   See \code{\link[stats]{cor}}.
 #' @param alpha Optional significance threshold to impose on correlations.
-#'   Coefficients less than or equal to alpha will be outlined in black.
+#'   Those with \emph{p}-values (optionally adjusted) less than or equal to
+#'   \code{alpha} are outlined in black.
 #' @param p.adj Optional \emph{p}-value adjustment for multiple testing. Options
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
-#' @param label Print correlation coefficient over tiles?
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
 #'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
@@ -46,11 +47,11 @@
 
 plot_corr <- function(dat,
                       geom = 'tile',
+                     label = FALSE,
                       diag = FALSE,
                     method = 'pearson',
                      alpha = NULL,
                      p.adj = NULL,
-                     label = FALSE,
                      title = NULL,
                     legend = 'right',
                      hover = FALSE) {
@@ -103,25 +104,25 @@ plot_corr <- function(dat,
     gather(x, Correlation) %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
-           y = factor(y, levels = rev(unique(x)))) %>%
+           y = factor(y, levels = rev(unique(x))),
+           Significant = FALSE) %>%
     select(x, y, Correlation) %>%
     na.omit()
-  if (!is.null(alpha)) {
+  if (!is.null(alpha)) {                         # p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2L:ncol(p_mat)) {
       for (j in 1L:(i - 1L)) {
         p_mat[i, j] <- cor.test(dat[, i], dat[, j], method = method)$p.value
       }
     }
+    p <- p_mat[lower.tri(p_mat)]
     if (!is.null(p.adj)) {
-      p_mat[lower.tri(p_mat)] <- p.adjust(p_mat[lower.tri(p_mat)], method = p.adj)
+      p <- p.adjust(p, method = p.adj)
     }
     if (diag) {
       diag(p_mat) <- 1L
     }
-    df <- df %>% mutate(Significant = ifelse(p_mat[!is.na(p_mat)] <= alpha, TRUE, FALSE))
-  } else {
-    df <- df %>% mutate(Significant = FALSE)
+    df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
   }
 
   # Build plot
@@ -133,7 +134,7 @@ plot_corr <- function(dat,
           axis.text.x = element_text(angle = 45L, hjust = 1L))
   if (geom == 'tile') {
     p <- p + geom_tile(aes(fill = Correlation, color = Significant),
-                       size = 1, width = 0.9, height = 0.9) +
+                       size = 1L, width = 0.9, height = 0.9) +
       scale_fill_gradientn(colors = brewer.pal(10L, 'RdBu')) +
       scale_color_manual(values = c('grey90', 'black')) +
       guides(color = FALSE)
@@ -157,4 +158,4 @@ plot_corr <- function(dat,
 
 }
 
-
+# NAs?

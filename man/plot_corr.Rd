@@ -4,32 +4,33 @@
 \alias{plot_corr}
 \title{Correlation Plot}
 \usage{
-plot_corr(dat, geom = "tile", diag = FALSE, method = "pearson",
-  alpha = NULL, p.adj = NULL, label = FALSE, title = NULL,
+plot_corr(dat, geom = "tile", label = FALSE, diag = FALSE,
+  method = "pearson", alpha = NULL, p.adj = NULL, title = NULL,
   legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
 variables. Non-numeric features are dropped with a warning.}
 
-\item{geom}{Character string specifying whether to visualize correlation
-coefficients as \code{"tile"} or \code{"circle"}.}
+\item{geom}{String specifying whether to visualize correlation coefficients
+as \code{"tile"} or \code{"circle"}.}
+
+\item{label}{Print correlation coefficient over \code{geom}?}
 
 \item{diag}{Include principal diagonal of the correlation matrix?}
 
-\item{method}{Character string specifying which correlation coefficient to
-compute. Must be one of \code{"pearson"}, \code{"kendall"}, or \code{
-"spearman"}. See \code{\link[stats]{cor}}.}
+\item{method}{String specifying which correlation coefficient to compute.
+Must be one of \code{"pearson"}, \code{"kendall"}, or \code{"spearman"}.
+See \code{\link[stats]{cor}}.}
 
 \item{alpha}{Optional significance threshold to impose on correlations.
-Coefficients less than or equal to alpha will be outlined in black.}
+Those with \emph{p}-values (optionally adjusted) less than or equal to
+\code{alpha} are outlined in black.}
 
 \item{p.adj}{Optional \emph{p}-value adjustment for multiple testing. Options
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
-
-\item{label}{Print correlation coefficient over tiles?}
 
 \item{title}{Optional plot title.}
 
