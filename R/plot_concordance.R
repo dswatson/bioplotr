@@ -125,6 +125,11 @@ plot_concordance <- function(dat,
   if (title %>% is.null) {
     title <- 'Concordance Plot'
   }
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
+  }
 
 
   # Tidy Data

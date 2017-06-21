@@ -106,10 +106,10 @@ plot_survival <- function(fit,
   } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
     leg.lbl <- names(fit$strata)
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
   if (legend == 'bottomleft') {
     legend <- c(0.01, 0.01)
