@@ -18,8 +18,10 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
-#' @param B Number of permutations to generate when computing \emph{p}-values
-#'   via Monte Carlo simulation. See Details.
+#' @param sim.p Calculate \emph{p}-values via Monte Carlo simulation? Only
+#'   relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.
+#' @param B Number of replicates or permutations to generate when computing
+#'   \emph{p}-values. See Details.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
 #'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
@@ -30,20 +32,27 @@
 #'   RStudio viewer.
 #'
 #' @details
-#' Concordance plots visualize the
+#' Concordance plots visualize associations between categorical features. They
+#' may help in evaluating the dependencies between clinical factors and/or
+#' patient clusters.
 #'
 #' When \code{method = "fisher"}, concordance is measured by the negative
-#' logarithm of the test's \emph{p}-value. If this cannot be computed in the
-#' available workspace, then it is estimated via simulation using \code{B}
-#' Monte Carlo permutations.
+#' logarithm of the test's \emph{p}-value. If \code{sim.p = FALSE}, then the
+#' function will attempt to calculate an exact \emph{p}-value. If this cannot be
+#' executed in the available workspace, or if \code{sim.p = TRUE}, then \emph{
+#' p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 #'
 #' When \code{method = "chisq"}, concordance is measured by the Pearson
-#' chi-squared statistic. This is easier to compute than Fisher exact tests, but
-#' may be inappropriate if BLAH
+#' chi-squared statistic. This test is based on several assumptions that may not
+#' be met in practice (see
+#' \href{https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test#Assumptions}{
+#' Wikipedia} for a quick overview). When one or several of these assumptions
+#' are violated, more accurate \emph{p}-values can be estimated via Monte Carlo
+#' simulation with \code{B} replicates.
 #'
 #' When \code{method = "MI"}, concordance is measured by the mutual information
-#' statistic. If \code{alpha} is non-\code{NULL}, then \code{p}-values are
-#' estimated via simulation using \code{B} Monte Carlo permutations.
+#' statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
+#' estimated via permutation testing with \code{B} permutations.
 #'
 #' @examples
 #' df <- data.frame(A = sample(1:2, 20, replace = TRUE),
@@ -52,7 +61,7 @@
 #' plot_concordance(df)
 #'
 #' @export
-#' @importFrom purrr map map_lgl
+#' @importFrom purrr map_lgl some
 #' @importFrom tidyr gather
 #' @importFrom infotheo mutinformation natstobits
 #' @import dplyr
@@ -65,6 +74,7 @@ plot_concordance <- function(dat,
                             method = 'MI',
                              alpha = NULL,
                              p.adj = NULL,
+                             sim.p = FALSE,
                                  B = 2000,
                              title = NULL,
                             legend = 'right',
@@ -74,7 +84,13 @@ plot_concordance <- function(dat,
   if (ncol(dat) < 2) {
     stop('dat must have at least two columns to generate a concordance matrix.')
   }
-  if (!all(map_lgl(dat, is.numeric))) {
+  if (dat %>% some(is.numeric)) {
+    for (j in seq_along(dat[, map_lgl(dat, is.numeric)])) {
+      if (!all.equal(dat[[j]], as.integer(dat[[j]]))) {
+        dat <- dat[[-j]]
+      }
+      if (ncol(dat) < 2)
+    }
     dat <- dat[, map_lgl(dat, is.numeric)]
     if (ncol(dat) < 2) {
       stop('dat must have at least two numeric columns to generate a ',
@@ -115,24 +131,29 @@ plot_concordance <- function(dat,
     for (j in 1L:(i - 1L)) {
       tmp <- na.omit(dat[, c(i, j)])
       if (method == 'MI') {
-        mat[i, j] <- natstobits(mutinformation(tmp[[1L]], tmp[[2L]]))
+        mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits
       } else if (method == 'fisher') {
-        p <- try(fisher.test(tmp[[1L]], tmp[[2L]], workspace = 2e8L)$p.value,
-                 silent = TRUE)
-        if (is(p, 'try-error')) {
-          mat[i, j] <- fisher.test(tmp[[1L]], tmp[[2L]], simulate.p.value = TRUE,
-                                   B = B)$p.value
+        if (sim.p) {
+          p <- fisher.test(tmp[[1]], tmp[[2]],
+                           simulate.p.value = TRUE, B = B)$p.value
         } else {
-          mat[i, j] <- p
+          p <- try(fisher.test(tmp[[1L]], tmp[[2L]], workspace = 2e8L)$p.value,
+                   silent = TRUE)
+          if (is(p, 'try-error')) {
+            mat[i, j] <- fisher.test(tmp[[1L]], tmp[[2L]],
+                                     simulate.p.value = TRUE, B = B)$p.value
+          } else {
+            mat[i, j] <- p
+          }
         }
         p_mat <- mat
-        mat[lower.tri(mat)] <- -log(mat[lower.tri(mat)])
+        mat[lower.tri(mat)] <- mat[lower.tri(mat)] %>% -log
       } else if (method == 'chisq') {
-        mat[i, j] <- as.numeric(chisq.test(tmp[[1L]], tmp[[2L]])$statistic)
+        mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$statistic
       }
     }
   }
-  df <- data.frame(mat) %>%
+  df <- data.frame(mat) %>%                      # Melt concordance matrix
     gather(x, Association) %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
@@ -140,22 +161,24 @@ plot_concordance <- function(dat,
            Significant = FALSE) %>%
     select(x, y, Association) %>%
     na.omit()
-  if (!is.null(alpha)) {                         # p-value matrix?
+  if (!is.null(alpha)) {                         # Calculate p-value matrix?
     if (!method == 'fisher') {
       p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
       for (i in 2L:ncol(p_mat)) {
         for (j in 1L:(i - 1L)) {
           tmp <- na.omit(dat[, c(i, j)])
           if (method == 'MI') {
-            null <- numeric(length = B)
-            for (i in seq_len(B)) {
-              x <- sample(tmp[[1L]], nrow(tmp))
-              y <- sample(tmp[[2L]], nrow(tmp))
-              null[i] <- natstobits(mutinformation(x, y))
-            }
-            p_mat[i, j] <- sum(null >= mat[i, j]) / B
+            null <- replicate(B, sample(tmp[[1L]], nrow(tmp)) %>%
+                                mutinformation(tmp[[2L]]) %>%
+                                natstobits)
+            p_mat[i, j] <- (sum(null >= mat[i, j]) + 1L) / (B + 1L)
           } else if (method == 'chisq') {
-            p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$p.value
+            if (sim.p) {
+              p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]],
+                                        simulate.p.value = TRUE, B = B)$p.value
+            } else {
+              p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$p.value
+            }
           }
         }
       }
