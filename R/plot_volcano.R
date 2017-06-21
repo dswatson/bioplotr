@@ -64,25 +64,25 @@ plot_volcano <- function(dat,
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'logFC'
   } else {
-    stop(paste0('dat must include a log fold change column. Recognized ',
-                'colnames for this vector include ', stringify(fc), '. ',
-                'Make sure that dat includes exactly one such colname.'))
+    stop('dat must include a log fold change column. Recognized colnames for ',
+         'this vector include ', stringify(fc, 'and'), '. Make sure that dat ',
+         'includes exactly one such colname.')
   }
   p <- c('P.Value', 'pvalue', 'PValue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1L) {         # Rename p.value
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
-    stop(paste0('dat must include a p-value column. Recognized colnames for ',
-                'this vector include ', stringify(p), '. Make sure that dat ',
-                'includes exactly one such colname.'))
+    stop('dat must include a p-value column. Recognized colnames for this ',
+         'vector include ', stringify(p, 'and'), '. Make sure that dat ',
+         'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename q.value
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop(paste0('dat must include a column for adjusted p-values. Recognized ',
-                'colnames for this vector include ', stringify(q), '. Make ',
-                'sure that dat includes exactly one such colname.'))
+    stop('dat must include a column for adjusted p-values. Recognized ',
+         'colnames for this vector include ', stringify(q, 'and'), '. ',
+         'Make sure that dat includes exactly one such colname.')
   }
   dat <- dat %>%
     select(logFC, p.value, q.value) %>%
@@ -100,10 +100,10 @@ plot_volcano <- function(dat,
   if (title %>% is.null) {
     title <- 'Volcano Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
 
   # Tidy data
@@ -126,7 +126,7 @@ plot_volcano <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
-    warning('No probe meets your fdr threshold. To color data points by',
+    warning('No probe meets your fdr threshold. To color data points by ',
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha, color = 'black')
   } else {                                       # Separate up- and down-regulated probes?
@@ -158,8 +158,8 @@ plot_volcano <- function(dat,
                          values = c('black', pal_d3()(4L)[4L])) +
         guides(color = guide_legend(reverse = TRUE))
       if (!(lfc %>% is.null) & all(df$Direction == 'NA')) {
-        warning('No probe meets both your fdr and lfc criteria. To color',
-                'probes by the direction of their differential expression,',
+        warning('No probe meets both your fdr and lfc criteria. To color ',
+                'probes by the direction of their differential expression, ',
                 'consider lowering your lfc threshold.')
       }
     }

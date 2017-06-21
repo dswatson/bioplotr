@@ -108,10 +108,10 @@ plot_md <- function(dat,
   if (title %>% is.null) {
     title <- 'Mean-Difference Plot'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
 
   # Method
@@ -141,7 +141,7 @@ plot_md.DGEList <- function(dat,
   }
   if (sample %>% is.character) {
     if (!sample %in% colnames(dat)) {
-      stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
+      stop('Could not detect a sample named "', sample, '" in dat.')
     } else {
       sample <- which(colnames(dat) == sample)
     }
@@ -241,7 +241,7 @@ plot_md.DESeqDataSet <- function(dat,
   }
   if (sample %>% is.character) {
     if (!sample %in% colnames(dat)) {
-      stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
+      stop('Could not detect a sample named "', sample, '" in dat.')
     } else {
       sample <- which(colnames(dat) == sample)
     }
@@ -470,7 +470,7 @@ plot_md.data.frame <- function(dat,
       }
     } else {
       if (!probes %in% colnames(dat)) {
-        stop(paste0('Could not detect a column named "', probes, '" in dat.'))
+        stop('Could not detect a column named "', probes, '" in dat.')
       } else {
         colnames(dat)[colnames(dat) == probes] <- 'Probe'
       }
@@ -483,25 +483,25 @@ plot_md.data.frame <- function(dat,
   if (sum(avg %in% colnames(dat)) == 1L) {       # Rename AvgExpr
     colnames(dat)[colnames(dat) %in% avg] <- 'Mean'
   } else {
-    stop(paste0('dat must include a column for average expression by probe. ',
-                'Recognized colnames for this vector include ', stringify(avg),
-                '. Make sure that dat includes exactly one such colname.'))
+    stop('dat must include a column for average expression by probe. ',
+         'Recognized colnames for this vector include ', stringify(avg, 'and'),
+         '. Make sure that dat includes exactly one such colname.')
   }
   fc <- c('logFC', 'log2FoldChange')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'Diff'
   } else {
-    stop(paste0('dat must include a log fold change column. Recognized ',
-                'colnames for this vector include ', stringify(fc), '. ',
-                'Make sure that dat includes exactly one such colname.'))
+    stop('dat must include a log fold change column. Recognized colnames for ',
+         'this vector include ', stringify(fc, 'and'), '. Make sure that dat ',
+         'includes exactly one such colname.')
   }
   q <- c('adj.P.Val', 'FDR', 'padj', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename FDR
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
-    stop(paste0('dat must include a column for adjusted p-values. Recognized ',
-                'colnames for this vector include ', stringify(q), '. Make ',
-                'sure that dat includes exactly one such colname.'))
+    stop('dat must include a column for adjusted p-values. Recognized ',
+         'colnames for this vector include ', stringify(q, 'and'), '. Make ',
+         'sure that dat includes exactly one such colname.')
   }
   if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
     stop('Adjusted p-values must be on [0, 1].')
@@ -585,7 +585,7 @@ plot_md.default <- function(dat,
   }
   if (sample %>% is.charater) {
     if (!sample %in% colnames(dat)) {
-      stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
+      stop('Could not detect a sample named "', sample, '" in dat.')
     } else {
       sample <- which(colnames(dat) == sample)
     }
