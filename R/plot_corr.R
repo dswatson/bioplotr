@@ -38,7 +38,7 @@
 #' plot_corr(mat)
 #'
 #' @export
-#' @importFrom purrr map map_lgl
+#' @importFrom purrr some keep
 #' @importFrom tidyr gather
 #' @importFrom RColorBrewer brewer.pal
 #' @import dplyr
@@ -57,19 +57,19 @@ plot_corr <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (ncol(dat) < 2) {
+  if (ncol(dat) < 2L) {
     stop('dat must have at least two columns to generate a correlation matrix.')
   }
   if (dat %>% some(!is.numeric)) {
-    dat <- dat[, map_lgl(dat, is.numeric)]
-    if (ncol(dat) < 2) {
+    dat <- dat %>% keep(is.numeric)
+    if (ncol(dat) < 2L) {
       stop('dat must have at least two numeric columns to generate a ',
            'correlation matrix.')
     } else {
       warning('Non-numeric variables have been detected and removed.')
     }
   }
-  if (is.null(colnames(dat))) {
+  if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
   if (!geom %in% c('tile', 'circle')) {
@@ -78,19 +78,19 @@ plot_corr <- function(dat,
   if (!method %in% c('pearson', 'kendall', 'spearman')) {
     stop('method must be one of "pearson", "kendall", or "spearman". See ?cor.')
   }
-  if (!is.null(alpha)) {
+  if (!(alpha %>% is.null)) {
     if (alpha <= 0 | alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!is.null(p.adj)) {
+  if (!(p.adj %>% is.null)) {
     if (!p.adj %in% c('holm', 'hochberg', 'hommel',
                       'bonferroni', 'BH', 'BY', 'fdr')) {
       stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
            '"BH", "BY", or "fdr". See ?p.adjust.')
     }
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Correlation Plot'
   }
 
@@ -100,15 +100,16 @@ plot_corr <- function(dat,
   if (diag) {
     diag(mat) <- 1L
   }
-  df <- data.frame(mat) %>%                      # Melt correlation matrix
-    gather(x, Correlation) %>%
+  df <- mat %>%                                  # Melt correlation matrix
+    tbl_df(.) %>%
+    gather('x', 'Correlation') %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
     select(x, y, Correlation) %>%
     na.omit()
-  if (!is.null(alpha)) {                         # Calculate p-value matrix?
+  if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2L:ncol(p_mat)) {
       for (j in 1L:(i - 1L)) {
@@ -116,7 +117,7 @@ plot_corr <- function(dat,
       }
     }
     p <- p_mat[lower.tri(p_mat)]
-    if (!is.null(p.adj)) {
+    if (!(p.adj %>% is.null)) {
       p <- p.adjust(p, method = p.adj)
     }
     if (diag) {
