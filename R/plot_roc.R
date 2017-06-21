@@ -72,10 +72,10 @@ plot_roc <- function(obs,
   if (leg.txt %>% is.null) {
     leg.txt <- 'Classifier'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
 
   # Tidy data
@@ -89,7 +89,10 @@ plot_roc <- function(obs,
 
   # Build plot
   p_auc <- function(m) {                         # Print AUC
-    paste0(names(pred)[m], ', AUC = ', round(attr(rocs[[m]], 'auc'), 2L))
+    paste0(names(pred)[m], ', AUC = ',
+           rocs[[m]] %>%
+             attr('auc') %>%
+             round(2L))
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
