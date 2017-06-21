@@ -164,20 +164,14 @@ plot_tsne <- function(dat,
   if (title %>% is.null) {
     title <- 't-SNE'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
 
   # Tidy data
   dat <- matrixize(dat)
-  if (rownames(dat) %>% is.null) {
-    rownames(dat) <- seq_len(nrow(dat))
-  }
-  if (colnames(dat) %>% is.null) {
-    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
-  }
   dm <- dist_mat(dat, top, filter_method, dist = 'euclidean') %>% as.dist(.)
   tsne <- Rtsne(dm, perplexity = perplexity, dims = max(dims),
                 theta = theta, max_iter = max_iter, check_duplicates = FALSE,
