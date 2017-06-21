@@ -56,8 +56,8 @@ plot_qq <- function(dat,
   if (sum(p %in% colnames(dat)) == 1) {
     colnames(dat)[colnames(dat) %in% p] <- 'p.value'
   } else {
-    stop('dat must include a p-value column. Recognized colnames for this vector ',
-         'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
+    stop('dat must include a p-value column. Recognized colnames for this ',
+         'vector include ', stringify(p, 'and'), '. Make sure that dat ',
          'includes exactly one such colname.')
   }
   dat <- dat %>% na.omit(.)
