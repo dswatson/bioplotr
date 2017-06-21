@@ -60,7 +60,7 @@ plot_corr <- function(dat,
   if (ncol(dat) < 2) {
     stop('dat must have at least two columns to generate a correlation matrix.')
   }
-  if (!all(map_lgl(dat, is.numeric))) {
+  if (dat %>% some(!is.numeric)) {
     dat <- dat[, map_lgl(dat, is.numeric)]
     if (ncol(dat) < 2) {
       stop('dat must have at least two numeric columns to generate a ',
@@ -100,7 +100,7 @@ plot_corr <- function(dat,
   if (diag) {
     diag(mat) <- 1L
   }
-  df <- data.frame(mat) %>%
+  df <- data.frame(mat) %>%                      # Melt correlation matrix
     gather(x, Correlation) %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
@@ -108,7 +108,7 @@ plot_corr <- function(dat,
            Significant = FALSE) %>%
     select(x, y, Correlation) %>%
     na.omit()
-  if (!is.null(alpha)) {                         # p-value matrix?
+  if (!is.null(alpha)) {                         # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2L:ncol(p_mat)) {
       for (j in 1L:(i - 1L)) {
