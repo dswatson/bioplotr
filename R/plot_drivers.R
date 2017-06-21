@@ -30,6 +30,9 @@
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
 #' @param title Optional plot title.
+#' @param legend Legend position. Must be one of \code{"right"}, \code{
+#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -77,6 +80,7 @@ plot_drivers <- function(dat,
                          alpha = NULL,
                          p.adj = NULL,
                          title = NULL,
+                        legend = 'right',
                          hover = FALSE) {
 
   # Preliminaries
@@ -142,11 +146,6 @@ plot_drivers <- function(dat,
   if (n.pc > max(nrow(dat), ncol(dat))) {
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
-  data_frame(Feature = colnames(clin),
-               Class = seq_along(clin) %>% map_chr(function(j) {
-                 ifelse(clin[[j]] %>% is.numeric, 'numeric', 'factor')
-               })) %>%
-    print(n = nrow(.))
   if (!(alpha %>% is.null)) {
     if (alpha <= 0 | alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
@@ -162,6 +161,14 @@ plot_drivers <- function(dat,
   if (title %>% is.null) {
     title <- 'Variation By Feature'
   }
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
+  }
+  data_frame(Feature = colnames(clin),           # Be apprised
+               Class = clin %>% map_chr(class)) %>%
+    print(n = nrow(.))
 
   # Tidy data
   pca <- prcomp(t(dat))                          # PCA, % variance explained
