@@ -47,10 +47,10 @@ plot_qq <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (is.numeric(dat)) {
+  if (dat  %>% is.numeric) {
     dat <- data.frame(p.value = dat)
   } else {
-    dat <- as.data.frame(dat)
+    dat <- dat %>% as.data.frame(.)
   }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1) {
@@ -60,19 +60,19 @@ plot_qq <- function(dat,
          'include "p.value", "P.Value", "PValue", and "pvalue". Make sure that dat',
          'includes exactly one such colname.')
   }
-  dat <- na.omit(dat)
+  dat <- dat %>% na.omit(.)
   if (nrow(dat) == 0L) {
     stop('No non-missing p-values.')
   }
   if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
     stop('P-values must be on [0, 1].')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Q-Q Plot'
   }
 
   # Tidy
-  if (is.null(rownames(dat))) {
+  if (rownames(dat) %>% is.null) {
     dat <- dat %>% mutate(Probe = seq_len(nrow(dat)))
   } else {
     dat <- dat %>% mutate(Probe = rownames(dat))
@@ -84,7 +84,7 @@ plot_qq <- function(dat,
   if (lambda) {
     chisq <- qchisq(p = 1L - dat$p.value, df = 1L)
     lambda_val <- median(chisq) / qchisq(p = 0.5, df = 1L)
-    lambda_lbl <- paste('lambda ==',  round(lambda_val, 2))
+    lambda_lbl <- paste('lambda ==',  round(lambda_val, 2L))
   }
 
   # Build plot

@@ -24,7 +24,8 @@
 #' plot_quantiles(x1, x2, method = "MD")
 #'
 #' @export
-#' @importFrom dplyr data_frame
+#' @importFrom purrr keep
+#' @import dplyr
 #' @import ggplot2
 #'
 
@@ -37,28 +38,28 @@ plot_quantiles <- function(x,
                              ylab = NULL) {
 
   # Preliminaries
-  x <- x[is.finite(x)]
+  x <- keep(x, is.finite)
   if (length(x) < 1L) {
     stop('x must have at least one finite, non-missing value.')
   }
-  y <- y[is.finite(y)]
+  y <- keep(y, is.finite)
   if (length(y) < 1L) {
     stop('y must have at least one finite, non-missing value.')
   }
   if (!method %in% c('QQ', 'MD')) {
     stop('method must be either "QQ" or "MD".')
   }
-  if (is.null(main)) {
+  if (main %>% is.null) {
     if (method == 'QQ') {
       main <- 'QQ Plot'
     } else {
       main <- 'MD Plot'
     }
   }
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- 'X'
   }
-  if (is.null(ylab)) {
+  if (ylab %>% is.null) {
     ylab <- 'Y'
   }
 
@@ -82,7 +83,7 @@ plot_quantiles <- function(x,
   if (method == 'QQ') {
     p <- p + geom_abline(intercept = 0L, slope = 1L, color = 'red', size = 0.2)
   } else {
-    p <- p + geom_hline(yintercept = 0L, color= 'red', size = 0.2)
+    p <- p + geom_hline(yintercept = 0L, color = 'red', size = 0.2)
   }
 
   # Output
@@ -91,5 +92,5 @@ plot_quantiles <- function(x,
 }
 
 
-# Extend to theoretical distros
+# Extend to theoretical distros?
 

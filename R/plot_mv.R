@@ -150,12 +150,12 @@ plot_mv.MArrayLM <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (is(dat, 'MArrayLM') & is.null(dat$t) & is.null(dat$F)) {
+  if (dat %>% is('MArrayLM') && dat$t %>% is.null && dat$F %>% is.null) {
     warning('Standard errors for dat have not been moderated. Consider ',
             're-running plot_mv after shrinking residual variance with ',
             'eBayes. See ?eBayes and ?squeezeVar for more info.')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
@@ -166,22 +166,22 @@ plot_mv.MArrayLM <- function(dat,
   s2 <- dat$sigma^2L / dat$s2.prior              # Check for outliers
   pdn <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior))
   pup <- pf(s2, df1 = dat$df.residual, df2 = max(dat$df.prior), lower.tail = FALSE)
-  FDR <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
-  outliers <- FDR <= 0.05
+  q <- p.adjust(2L * pmin(pdn, pup), method = 'BH')
+  outliers <- q <= 0.05
   if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
     prior <- log2(prior)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
     prior <- sqrt(prior)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
@@ -249,23 +249,23 @@ plot_mv.DGEList <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
   # Tidy data
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
-  if (is.null(dat$samples$norm.factors) |        # Calculate size factors
-      all(dat$samples$norm.factors == 1L)) {
+  nf <- dat$samples$norm.factors               # Calculate size factors
+  if (nf %>% is.null || all(nf == 1L)) {
     dat <- calcNormFactors(dat)
   }
-  if (is.null(dat$tagwise.dispersion)) {
-    if (is.null(design) & !is.null(dat$group)) {
+  if (dat$tagwise.dispersion %>% is.null) {
+    if (design %>% is.null && !(dat$group %>% is.null)) {
       design <- model.matrix(~ dat$group)
     }
-    if (is.null(design)) {
-      if (is.null(dat$common.dispersion)) {
+    if (design %>% is.null) {
+      if (dat$common.dispersion %>% is.null) {
         dat <- estimateCommonDisp(dat)
       }
       dat <- estimateTagwiseDisp(dat)
@@ -278,16 +278,16 @@ plot_mv.DGEList <- function(dat,
   sigma <- rowSds(lcpm)
   if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
@@ -328,7 +328,7 @@ plot_mv.DGELM <- function(dat,
                           hover = FALSE) {
 
   # Preliminaries
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
@@ -342,16 +342,16 @@ plot_mv.DGELM <- function(dat,
   sigma <- rowSds(resids)
   if (trans == 'rank') {                              # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)                   # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
@@ -395,11 +395,11 @@ plot_mv.DESeqDataSet <- function(dat,
 
   # Preliminaries
   require(SummarizedExperiment)
-  if (resid & is.null(assays(dat)[['mu']])) {
+  if (resid && assays(dat)[['mu']] %>% is.null) {
     stop('dat must be fit with a negative binomial GLM in order to extract ',
          'residual variance.')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
@@ -410,7 +410,7 @@ plot_mv.DESeqDataSet <- function(dat,
     dat <- dat[keep, , drop = FALSE]
     cnts <- counts(dat, normalized = TRUE)
     cnts_lcpm <- cpm(cnts, log = TRUE, prior.count = 1L)
-    if (!is.null(sizeFactors(dat))) {
+    if (!sizeFactors(dat) %>% is.null) {
       fits <- t(t(assays(dat)[['mu']]) / sizeFactors(dat))
     } else {
       fits <- assays(dat)[['mu']] / normalizationFactors(dat)
@@ -420,10 +420,10 @@ plot_mv.DESeqDataSet <- function(dat,
     mu <- aveLogCPM(cnts, prior.count = 1L, dispersion = dispersions(dat))
     sigma <- rowSds(resids)
   } else {
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+    if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
       dat <- estimateSizeFactors(dat)
     }
-    if (is.null(dispersions(dat))) {
+    if (dispersions(dat) %>% is.null) {
       dat <- estimateDispersions(dat, quiet = TRUE)
     }
     keep <- mcols(dat)$baseMean > 0L             # Minimal count filter
@@ -435,16 +435,16 @@ plot_mv.DESeqDataSet <- function(dat,
   }
   if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
@@ -485,7 +485,7 @@ plot_mv.DESeqTransform <- function(dat,
                                    hover = FALSE) {
 
   # Preliminaries
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
@@ -496,16 +496,16 @@ plot_mv.DESeqTransform <- function(dat,
   sigma <- rowSds(dat)
   if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),
@@ -546,7 +546,7 @@ plot_mv.default <- function(dat,
                             hover = FALSE) {
 
   # Preliminaries
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Variance Plot'
   }
 
@@ -556,16 +556,16 @@ plot_mv.default <- function(dat,
   sigma <- rowSds(dat)
   if (trans == 'rank') {                         # Apply transformations
     mu <- rank(mu, ties.method = 'random')
-    if (is.null(xlab)) xlab <- expression('Rank'*(mu))
-    if (is.null(ylab)) ylab <- expression(sigma)
+    if (xlab %>% is.null) xlab <- expression('Rank'*(mu))
+    if (ylab %>% is.null) ylab <- expression(sigma)
   } else if (trans == 'log') {
     sigma <- log2(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression('log'[2]*(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression('log'[2]*(sigma))
   } else if (trans == 'sqrt') {
     sigma <- sqrt(sigma)
-    if (is.null(xlab)) xlab <- expression(mu)
-    if (is.null(ylab)) ylab <- expression(sqrt(sigma))
+    if (xlab %>% is.null) xlab <- expression(mu)
+    if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
   df <- data_frame(Probe = rownames(dat),

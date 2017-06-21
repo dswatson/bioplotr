@@ -78,14 +78,14 @@ plot_pr <- function(obs,
   if (length(pred) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     if (length(pred) == 1L) {
       title <- 'Precision-Recall Curve'
     } else {
       title <- 'Precision-Recall Curves'
     }
   }
-  if (is.null(leg.txt)) {
+  if (leg.txt %>% is.null) {
     leg.txt <- 'Classifier'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -96,11 +96,11 @@ plot_pr <- function(obs,
 
   # Tidy data
   prcs <- evalmod(scores = pred, labels = obs)$prcs
-  df <- map_df(seq_along(pred), function(m) {
+  df <- seq_along(pred) %>% map_df(function(m) {
     data_frame(Recall = prcs[[m]]$x,
             Precision = prcs[[m]]$y,
            Classifier = names(pred)[m]) %>%
-      return()
+      return(.)
   })
 
   # Build plot
@@ -120,13 +120,13 @@ plot_pr <- function(obs,
                             color = Classifier)) +
         scale_color_manual(name = leg.txt,
                          breaks = names(pred),
-                         labels = map_chr(seq_along(pred), p_auc),
+                         labels = seq_along(pred) %>% map_chr(p_auc),
                          values = cols)
     )
   } else {
     p <- p + geom_line(aes(color = Classifier)) +
       scale_color_manual(name = leg.txt,
-                       labels = map_chr(seq_along(pred), p_auc),
+                       labels = seq_along(pred) %>% map_chr(p_auc),
                        values = 'black')
   }
 

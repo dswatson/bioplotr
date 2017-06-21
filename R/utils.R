@@ -294,17 +294,17 @@ matrixize <- function(dat) {
     if (nf %>% is.null || all(nf == 1L)) {
       dat <- calcNormFactors(dat)
     }
-    dat <- dat %>% cpm(log = TRUE, prior.count = 1L)
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (dat %>% is('DESeqDataSet')) {
     require(DESeq2)
     if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
       dat <- estimateSizeFactors(dat)            # Normalize counts
     }
-    dat <- dat %>% counts(normalized = TRUE)
+    dat <- counts(dat, normalized = TRUE)
     keep <- rowMeans(dat) > 0L                   # Minimal count filter
     dat <- dat[keep, , drop = FALSE]
-    dat <- dat %>% cpm(log = TRUE, prior.count = 1L)
+    dat <- cpm(dat, log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (dat %>% is('DESeqTransform')) {
     require(SummarizedExperiment)

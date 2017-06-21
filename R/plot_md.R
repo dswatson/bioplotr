@@ -105,7 +105,7 @@ plot_md <- function(dat,
                    legend = 'right', ...) {
 
   # Preliminaries
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Difference Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -136,24 +136,24 @@ plot_md.DGEList <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (is.numeric(sample) & sample > ncol(dat)) {
+  if (sample %>% is.numeric && sample > ncol(dat)) {
     stop('Sample number exceeds ncol(dat).')
   }
-  if (is.character(sample)) {
+  if (sample %>% is.character) {
     if (!sample %in% colnames(dat)) {
       stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
     } else {
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
-    ctrls <- as.character(ctrls)
-    ctrls[ctrls == names(table(ctrls)[which.max(table(ctrls))])] <- '0'
+    ctrls <- ctrl %>% as.character(.)
+    ctrls[ctrls == names(which.max(table(ctrls)))] <- '0'
   }
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- expression('Mean'~log[2]*'-CPM')
   }
 
@@ -162,15 +162,15 @@ plot_md.DGEList <- function(dat,
   dat <- dat[keep, ]
   other <- dat[, -sample]
   other <- calcNormFactors(other)
-  if (is.null(other$tagwise.dispersion)) {       # Estimate dispersions for aveLogCPM
-    if (is.null(design) & !is.null(dat$group)) {
+  if (other$tagwise.dispersion %>% is.null) {    # Estimate dispersions for aveLogCPM
+    if (design %>% is.null && !(dat$group %>% is.null)) {
       design <- model.matrix(~ dat$group)
     }
-    if (!is.null(design)) {
+    if (!(design %>% is.null)) {
       design <- design[-sample, ]
     }
-    if (is.null(design)) {
-      if (is.null(other$common.dispersion)) {
+    if (design %>% is.null) {
+      if (other$common.dispersion %>% is.null) {
         other <- estimateCommonDisp(other)
       }
       other <- estimateTagwiseDisp(other)
@@ -178,12 +178,13 @@ plot_md.DGEList <- function(dat,
       other <- estimateDisp(other, design = design)
     }
   }
-  other <- aveLogCPM(other, prior.count = 1L, dispersion = other$tagwise.dispersion)
+  other <- aveLogCPM(other, prior.count = 1L,
+                     dispersion = other$tagwise.dispersion)
   dat <- cpm(dat, log = TRUE, prior.count = 1L)
   df <- data_frame(Probe = rownames(dat),
                     Mean = (other + dat[, sample]) / 2L,
                     Diff = dat[, sample] - other)
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -235,31 +236,31 @@ plot_md.DESeqDataSet <- function(dat,
                                   hover = FALSE) {
 
   # Preliminaries
-  if (is.numeric(sample) & sample > ncol(dat)) {
+  if (sample %>% is.null && sample > ncol(dat)) {
     stop('Sample number exceeds ncol(dat).')
   }
-  if (is.character(sample)) {
+  if (sample %>% is.character) {
     if (!sample %in% colnames(dat)) {
       stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
     } else {
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
-    ctrls <- as.character(ctrls)
-    ctrls[ctrls == names(table(ctrls)[which.max(table(ctrls))])] <- '0'
+    ctrls <- ctrls %>% as.character(.)
+    ctrls[ctrls == names(which.max(table(ctrls)))] <- '0'
   }
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- expression('Mean'~log[2]*'-CPM')
   }
   require(DESeq2)
-  if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+  if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
     dat <- estimateSizeFactors(dat)
   }
-  if (is.null(dispersions(dat))) {
+  if (dispersions(dat) %>% is.null) {
     dat <- estimateDispersions(dat, quiet = TRUE)
   }
 
@@ -273,7 +274,7 @@ plot_md.DESeqDataSet <- function(dat,
   df <- data_frame(Probe = rownames(dat),
                     Mean = (other + dat[, sample]) / 2L,
                     Diff = dat[, sample] - other)
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -299,7 +300,7 @@ plot_md.DESeqDataSet <- function(dat,
         scale_color_d3()
     )
   }
-  if (!is.null(lfc)) {
+  if (!(lfc %>% is.null)) {
     p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
       geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
@@ -323,7 +324,7 @@ plot_md.DESeqTransform <- function(dat,
                                     hover = FALSE) {
 
   # Preliminaries
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- expression('Mean Transformed Counts')
   }
 
@@ -350,27 +351,27 @@ plot_md.DESeqResults <- function(dat,
                                hover = FALSE) {
 
   # Preliminaries
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- 'Mean of Normalized Counts'
   }
-  dat <- na.omit(dat)
+  dat <- dat %>% na.omit(.)
   if (nrow(dat) == 0L) {
     stop('dat must have at least one row with non-missing values for ',
          'baseMean, log2FoldChange, and padj.')
   }
 
   # Tidy data
-  df <- as.data.frame(dat) %>%
-    na.omit() %>%
+  df <- dat %>%
+    as.data.frame(.) %>%
     mutate(Probe = rownames(dat)) %>%
     rename(Mean = baseMean,
            Diff = log2FoldChange,
         q.value = padj) %>%
     select(Probe, Mean, Diff, q.value)
-  if (!is.null(lfc)) {
+  if (!(lfc %>% is.null)) {
     df <- df %>%
-      mutate(Direction = ifelse(q.value <= fdr & Diff >= lfc, 'Up',
-                                ifelse(q.value <= fdr & -Diff >= lfc, 'Down', 'NA')))
+      mutate(Direction = ifelse(q.value <= fdr && Diff >= lfc, 'Up',
+                                ifelse(q.value <= fdr && -Diff >= lfc, 'Down', 'NA')))
   }
 
   # Build plot
@@ -387,9 +388,9 @@ plot_md.DESeqResults <- function(dat,
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
-    if (is.null(lfc)) {
+    if (lfc %>% is.null) {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
-        scale_color_manual(name = 'FDR',
+        scale_color_manual(name = expression(italic(q)*'-value'),
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
                          values = c('#444444', pal_d3()(4L)[4L]),
                           guide = guide_legend(reverse = TRUE, override.aes = list(
@@ -427,12 +428,12 @@ plot_md.TopTags <- function(dat,
                           hover = FALSE) {
 
   # Preliminaries
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- expression('Mean'~log[2]*'-CPM')
   }
 
   # Export
-  dat <- as.data.frame(dat)
+  dat <- dat %>% as.data.frame(.)
   plot_md.data.frame(dat = dat, fdr = fdr, lfc = lfc,
                      title = title, xlab = xlab, legend = legend, hover = hover)
 
@@ -452,16 +453,16 @@ plot_md.data.frame <- function(dat,
                                 hover = FALSE) {
 
   # Preliminaries
-  if (is.null(probes)) {
-    if (is.null(rownames(dat)) |
-        identical(rownames(dat), as.character(seq_len(nrow(dat))))) {
+  if (probes %>% is.null) {
+    if (rownames(dat) %>% is.null ||
+        rownames(dat) %>% identical(seq_len(nrow(dat)) %>% as.character(.))) {
       stop('If dat does not have rownames, then the column of unique probe ',
            'identifiers must be specified using the probes argument.')
     } else {
       dat$Probe <- rownames(dat)
     }
   } else {
-    if (is.numeric(probes)) {
+    if (probes %>% is.null) {
       if (probes > ncol(dat)) {
         stop('Column number for probes exceeds ncol(dat).')
       } else {
@@ -476,7 +477,7 @@ plot_md.data.frame <- function(dat,
     }
   }
   if ('baseMean' %in% colnames(dat)) {
-    dat$baseMean <- log2(dat$baseMean)
+    dat$baseMean <- log2(dat$baseMean / 1e6L)
   }
   avg <- c('AveExpr', 'baseMean', 'logCPM', 'AvgExpr', 'AvgMeth')
   if (sum(avg %in% colnames(dat)) == 1L) {       # Rename AvgExpr
@@ -502,22 +503,22 @@ plot_md.data.frame <- function(dat,
                 'colnames for this vector include ', stringify(q), '. Make ',
                 'sure that dat includes exactly one such colname.'))
   }
-  if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
-    stop('FDR values must be on [0, 1].')
+  if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
+    stop('Adjusted p-values must be on [0, 1].')
   }
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- 'Mean Expression'
   }
   df <- dat %>%
     select(Probe, Mean, Diff, q.value) %>%
-    na.omit()
+    na.omit(.)
   if (nrow(dat) == 0L) {
     stop('dat must have at least one row with non-missing values for AveExpr, ',
          'logFC, and FDR.')
   }
 
   # Tidy data
-  if (!is.null(lfc)) {
+  if (!(lfc) %>% is.null) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & Diff >= lfc, 'Up',
                                 ifelse(q.value <= fdr & -Diff >= lfc, 'Down', 'NA')))
@@ -536,13 +537,13 @@ plot_md.data.frame <- function(dat,
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
-    if (is.null(lfc)) {
+    if (lfc %>% is.null) {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
-        scale_color_manual(name = 'FDR',
-                           labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                           values = c('#444444', pal_d3()(4L)[4L]),
-                           guide = guide_legend(reverse = TRUE, override.aes = list(
-                             size = rep(1L, 2L), alpha = rep(1L, 2L))))
+        scale_color_manual(name = expression(italic(q)*'-value'),
+                         labels = c(paste('>', fdr), paste('\u2264', fdr)),
+                         values = c('#444444', pal_d3()(4L)[4L]),
+                          guide = guide_legend(reverse = TRUE, override.aes = list(
+                           size = rep(1L, 2L), alpha = rep(1L, 2L))))
     } else {
       suppressWarnings(
         p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
@@ -579,24 +580,24 @@ plot_md.default <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (is.numeric(sample) & sample > ncol(dat)) {
+  if (sample %>% is.numeric && sample > ncol(dat)) {
     stop('Sample number exceeds ncol(dat).')
   }
-  if (is.character(sample)) {
+  if (sample %>% is.charater) {
     if (!sample %in% colnames(dat)) {
       stop(paste0('Could not detect a sample named "', sample, '" in dat.'))
     } else {
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
-    ctrls <- as.character(ctrls)
-    ctrls[ctrls == names(table(ctrls)[which.max(table(ctrls))])] <- '0'
+    ctrls <- ctrls %>% as.character(.)
+    ctrls[ctrls == names(which.max(table(ctrls)))] <- '0'
   }
-  if (is.null(xlab)) {
+  if (xlab %>% is.null) {
     xlab <- 'Mean Expression'
   }
 
@@ -608,7 +609,7 @@ plot_md.default <- function(dat,
   df <- data_frame(Probe = rownames(dat),
                     Mean = (other + dat[, sample]) / 2L,
                     Diff = dat[, sample] - other)
-  if (!is.null(ctrls)) {
+  if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -621,7 +622,7 @@ plot_md.default <- function(dat,
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (is.null(ctrls)) {
+  if (ctrls %>% is.null) {
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
     suppressWarnings(
@@ -634,7 +635,7 @@ plot_md.default <- function(dat,
         scale_color_d3()
     )
   }
-  if (!is.null(lfc)) {
+  if (!(lfc %>% is.null)) {
     p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
       geom_hline(yintercept = -lfc, linetype = 'dashed')
   }

@@ -59,7 +59,7 @@ plot_volcano <- function(dat,
                        hover = FALSE) {
 
   # Preliminaries
-  dat <- as.data.frame(dat)
+  dat <- dat %>% as.data.frame(.)
   fc <- c('log2FoldChange', 'logFC')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'logFC'
@@ -86,18 +86,18 @@ plot_volcano <- function(dat,
   }
   dat <- dat %>%
     select(logFC, p.value, q.value) %>%
-    na.omit()
+    na.omit(.)
   if (nrow(dat) == 0L) {
     stop('dat must have at least one row with non-missing values for logFC, ',
          'p.value, and FDR.')
   }
-  if (min(dat$p.value) < 0L | max(dat$p.value) > 1L) {
+  if (min(dat$p.value) < 0L || max(dat$p.value) > 1L) {
     stop('P-values must be on [0, 1].')
   }
-  if (min(dat$q.value) < 0L | max(dat$q.value) > 1L) {
+  if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
     stop('FDR values must be on [0, 1].')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Volcano Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -108,9 +108,9 @@ plot_volcano <- function(dat,
 
   # Tidy data
   df <- dat %>%
-    mutate(Probe = ifelse(is.null(rownames(dat)), row_number(), rownames(dat)),
+    mutate(Probe = ifelse(is.null(rownames(dat)), row_number(.), rownames(dat)),
             logP = -log10(p.value))
-  if (!is.null(lfc)) {
+  if (!(lfc %>% is.null)) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
                                 ifelse(q.value <= fdr & -logFC >= lfc, 'Down', 'NA')))
@@ -130,12 +130,12 @@ plot_volcano <- function(dat,
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha, color = 'black')
   } else {                                       # Separate up- and down-regulated probes?
-    if (!is.null(lfc) & any(df$Direction != 'NA')) {
+    if (!(lfc %>% is.null) && any(df$Direction != 'NA')) {
       y <- df %>%
         filter(q.value <= fdr) %>%
         filter(logP == min(logP)) %>%
         select(logP) %>%
-        as.numeric()
+        as.numeric(.)
       suppressWarnings(
         p <- p + geom_point(data = df %>% filter(Direction != 'NA'),
                             aes(logFC, logP, color = Direction, text = Probe),
@@ -149,15 +149,15 @@ plot_volcano <- function(dat,
           geom_segment(x = lfc, xend = lfc, y = y, yend = Inf, linetype = 2L) +
           annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
                    hjust = 0L, vjust = -1L) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
       )
     } else {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
-        scale_color_manual(name = 'FDR',
+        scale_color_manual(name = expression(italic(q)*'-value'),
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                         values = c('black', pal_d3()(4)[4])) +
+                         values = c('black', pal_d3()(4L)[4L])) +
         guides(color = guide_legend(reverse = TRUE))
-      if (!is.null(lfc) & all(df$Direction == 'NA')) {
+      if (!(lfc %>% is.null) & all(df$Direction == 'NA')) {
         warning('No probe meets both your fdr and lfc criteria. To color',
                 'probes by the direction of their differential expression,',
                 'consider lowering your lfc threshold.')

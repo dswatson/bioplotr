@@ -62,6 +62,7 @@
 #'
 #' @export
 #' @importFrom limma getEAWP normalizeBetweenArrays lmFit
+#' @importFrom purrr discard
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom ggsci pal_d3
@@ -80,7 +81,7 @@ plot_voom <- function(dat,
   if (nrow(dat) < 2L) {
     stop('At least 2 probes required to fit a mean-variance trend.')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Voom Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -90,37 +91,37 @@ plot_voom <- function(dat,
   }
 
   # Tidy data
-  if (is(dat, 'DGEList')) {
-    if (is.null(design) && diff(range(as.numeric(dat$sample$group))) > 0L) {
+  if (dat %>% is('DGEList')) {
+    if (design %>% is.null && length(dat$sample$group %>% levels) > 1L) {
       design <- model.matrix(~ group, data = dat$samples)
     }
-    if (is.null(lib.size)) {
+    if (lib.size %>% is.null) {
       lib.size <- with(dat$samples, lib.size * norm.factors)
       dat <- dat$counts
     }
   } else {
     dat <- getEAWP(dat)$expr
   }
-  if (is.null(design)) {
+  if (design %>% is.null) {
     design <- matrix(1L, ncol(dat), 1L)
     rownames(design) <- colnames(dat)
     colnames(design) <- 'GrandMean'
   }
-  if (is.null(lib.size)) {
+  if (lib.size %>% is.null) {
     lib.size <- colSums(dat)
   }
   y <- t(log2(t(dat + 0.5) / (lib.size + 1L) * 1e6L))      # Fit linear model on log2-CPM scale
   y <- normalizeBetweenArrays(y, method = normalize.method)
   fit <- lmFit(y, design, ...)
-  if (is.null(fit$Amean)) {
+  if (fit$Amean %>% is.null) {
     fit$Amean <- rowMeans(y, na.rm = TRUE)
   }
   mu <- fit$Amean + mean(log2(lib.size + 1L)) - log2(1e6L)
   sigma <- sqrt(fit$sigma)
   allzero <- rowSums(dat) == 0L
   if (any(allzero)) {
-    mu <- mu[!allzero]
-    sigma <- sigma[!allzero]
+    mu <- mu %>% discard(allzero)
+    sigma <- sigma %>% discard(allzero)
   }
   lo <- lowess(mu, sigma, f = span)                        # Fit LOWESS curve
   df <- data_frame(Probe = rownames(fit),

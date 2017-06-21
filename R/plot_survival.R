@@ -76,11 +76,11 @@ plot_survival <- function(fit,
                       leg.txt = NULL,
                        legend = 'right', ...) {
   # Preliminaries
-  if(!inherits(fit, 'survfit')) {
-    stop('fit must be an object of class survfit. Load the survival package',
+  if(!(fit %>% inherits('survfit'))) {
+    stop('fit must be an object of class survfit. Load the survival package ',
          'and see ?survfit for more details.')
   }
-  if (is.null(fun)) {
+  if (fun %>% is.null) {
     ylab <- 'Survival Probability'
   } else if (fun == 'event') {
     ylab <- 'Cumulative Event'
@@ -89,21 +89,21 @@ plot_survival <- function(fit,
   } else if (fun == 'pct') {
     ylab <- 'Survival Probability (%)'
   }
-  if (!is.null(fit$strata)) {
+  if (!(fit$strata %>% is.null)) {
     cols <- colorize(pal_curves, var_type = 'Categorical',
                      n = length(fit$strata))
   }
-  if (is.null(title)) {
-    if (is.null(fit$strata)) {
+  if (title %>% is.null) {
+    if (fit$strata %>% is.null) {
       title <- 'Survival Curve'
     } else {
       title <- 'Survival Curves'
     }
   }
-  if (is.null(leg.txt) && !is.null(fit$strata)) {
+  if (leg.txt %>% is.null && !(fit$strata %>% is.null)) {
     leg.txt <- gsub('=.*', '', names(fit$strata))[1L]
     leg.lbl <- gsub('.*=', '', names(fit$strata))
-  } else if (!is.null(leg.txt) && !is.null(fit$strata)) {
+  } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
     leg.lbl <- names(fit$strata)
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -130,7 +130,7 @@ plot_survival <- function(fit,
                   censor = censor, title = title, legend = legend,
                   font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab,
                   ...)$plot
-  if (!is.null(fit$strata)) {
+  if (!(fit$strata %>% is.null)) {
     p <- p + scale_color_manual(name = leg.txt,
                               labels = leg.lbl,
                               values = cols)

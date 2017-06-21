@@ -104,42 +104,42 @@ plot_pca <- function(dat,
     stop(paste('dat includes only', ncol(dat), 'samples;',
                'need at least 3 for PCA.'))
   }
-  if (!is.null(group)) {
-    group <- format_features(dat, group, var_type = 'Categorical')
+  if (!(group %>% is.null)) {
+    group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
     }
-    if (length(group) == 2L & !is.null(covar)) {
+    if (length(group) == 2L && !(covar %>% is.null)) {
       stop('Plot can render at most one categorical feature when a continuous ',
            'covariate is also supplied.')
     }
     group_cols <- colorize(pal = pal_group, var_type = 'Categorical',
                            n = length(levels(group[[1L]])))
   }
-  if (!is.null(covar)) {
-    covar <- format_features(dat, covar, var_type = 'Continuous')
+  if (!(covar %>% is.null)) {
+    covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
     }
     covar_cols <- colorize(pal = pal_covar, var_type = 'Continuous')
   }
-  if (!is.null(c(group, covar))) {
+  if (!(c(group, covar) %>% is.null)) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   } else {
     features <- NULL
   }
-  if (length(pcs) > 2L & !D3) {
+  if (length(pcs) > 2L && !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
   } else if (length(pcs) > 3L) {
     stop('pcs must be a vector of length <= 3.')
   }
-  if (label & length(features) == 2L) {
+  if (label && length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'PCA'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -150,13 +150,13 @@ plot_pca <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (is.null(rownames(dat))) {
+  if (rownames(dat) %>% is.null) {
     rownames(dat) <- seq_len(nrow(dat))
   }
-  if (is.null(colnames(dat))) {
+  if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
   }
-  if (!is.null(top)) {                           # Filter by variance?
+  if (!(top %>% is.null)) {                      # Filter by variance?
     if (top > 1L) {
       if (top > nrow(dat)) {
         warning(paste('top exceeds nrow(dat), at least after removing probes',
@@ -172,9 +172,9 @@ plot_pca <- function(dat,
     dat <- dat[keep, , drop = FALSE]
   }
   pca <- prcomp(t(dat))                          # PCA, % variance explained
-  pve <- map_chr(seq_len(max(pcs)), function(pc) {
-    p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
-    paste0('PC', pc, ' (', p, '%)')
+  pve <- seq_len(max(pcs)) %>% map_chr(function(pc) {
+    p <- pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L
+    paste0('PC', pc, ' (', round(p, 2L), '%)')
   })
   df <- data_frame(Sample = colnames(dat))       # Melt
   if (length(pcs) == 2L) {
@@ -186,7 +186,7 @@ plot_pca <- function(dat,
                         PC2 = pca$x[, other],
                         PC3 = pca$x[, max(pcs)])
   }
-  if (!is.null(features)) {
+  if (!(features %>% is.null)) {
     df <- df %>% cbind(tbl_df(features))
   }
 

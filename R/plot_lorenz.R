@@ -46,8 +46,8 @@
 #' plot_lorenz(X)
 #'
 #' @export
-#' @importFrom dplyr data_frame
-#' @importFrom purrr map map_chr
+#' @importFrom purrr map keep map_chr
+#' @import dplyr
 #' @import ggplot2
 #'
 
@@ -60,7 +60,7 @@ plot_lorenz <- function(dat,
 
   # Preliminaries
   if (dat %>% is.data.frame) {
-    dat <- as.list(dat)
+    dat <- dat %>% as.list(.)
   } else if (!(dat %>% is.list)) {
     dat <- list(dat)
   }
@@ -68,15 +68,15 @@ plot_lorenz <- function(dat,
     names(dat) <- paste0('x', seq_along(dat))
   }
   for (i in seq_along(dat)) {
-    if (!is.numeric(dat[[i]])) {
+    if (!(dat[[i]] %>% is.numeric)) {
       stop('dat must be a numeric vector, or several such vectors organized ',
            'into a list or data frame.')
     }
-    if (min(dat[[i]] < 0L)) {
+    if (min(dat[[i]]) < 0L) {
       warning('Lorenz curves and Gini coefficients for data with negative ',
               'values should be interpreted with caution.')
     }
-    if (length(na.omit(dat[[i]])) <= 2L) {
+    if (length(dat[[i]] %>% na.omit(.)) <= 2L) {
       warning('Lorenz curves and Gini coefficients for vectors of length <= 2 ',
               'should be interpreted with caution.')
     }
@@ -84,14 +84,14 @@ plot_lorenz <- function(dat,
   if (length(dat) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(dat))
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     if (length(dat) == 1L) {
       title <- 'Lorenz Curve'
     } else {
       title <- 'Lorenz Curves'
     }
   }
-  if (is.null(leg.txt)) {
+  if (leg.txt %>% is.null) {
     leg.txt <- 'Data'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -101,26 +101,32 @@ plot_lorenz <- function(dat,
   }
 
   # Tidy data
-  dfs <- map(seq_along(dat), function(i) {
-    x <- sort(dat[[i]][is.finite(dat[[i]])])
+  dfs <- seq_along(dat) %>% map(function(j) {
+    x <- dat[[j]] %>%
+      keep(is.finite) %>%
+      sort(.)
     n <- rep(1L, length(x))
     p <- c(0L, cumsum(n) / sum(n))
     L <- c(0L, cumsum(x) / sum(x))
-    df <- data_frame(Title = names(dat)[i],
-                Proportion = p,
-                    Lorenz = L)
-    return(df)
+    data_frame(Title = names(dat)[j],
+          Proportion = p,
+              Lorenz = L) %>%
+      return(.)
   })
 
   # Build plot
   gini <- function(x) {                     # Calculate Gini coefficient
-    x <- as.numeric(sort(x[is.finite(x)]))
+    x <- x %>%
+      keep(is.finite) %>%
+      sort(.) %>%
+      as.numeric(.)
     n <- length(x)
     g <- (2L * sum(x * seq_len(n)) / sum(x) - (n + 1L)) / n
-    return(round(g, 2L))
+    return(g)
   }
   p_gin <- function(i) {                    # Print Gini coefficient
-    paste0(names(dat)[i], ', Gini = ', gini(dat[[i]]))
+    paste0(names(dat)[i], ', Gini = ',
+           gini(dat[[i]]) %>% round(2L))
   }
   p <- ggplot() +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
@@ -137,12 +143,12 @@ plot_lorenz <- function(dat,
       )
     }
     p <- p + scale_color_manual(name = leg.txt,
-                              labels = map_chr(seq_along(dat), p_gin),
+                              labels = seq_along(dat) %>% map_chr(p_gin),
                               values = cols)
   } else {
-    p <- p + geom_path(data = dfs[[1]], aes(Proportion, Lorenz, color = Title)) +
+    p <- p + geom_path(data = dfs[[1L]], aes(Proportion, Lorenz, color = Title)) +
       scale_color_manual(name = leg.txt,
-                       labels = map_chr(seq_along(dat), p_gin),
+                       labels = seq_along(dat) %>% map_chr(p_gin),
                        values = 'black')
   }
 

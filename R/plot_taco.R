@@ -46,7 +46,9 @@ plot_taco <- function(dat,
                    legend = 'right') {
 
   # Preliminaries
-  dat <- as.data.frame(dat) %>% na.omit()
+  dat <- dat %>%
+    as.data.frame(.) %>%
+    na.omit(.)
   lfc <- c('logFC', 'log2FoldChange')
   if (sum(lfc %in% colnames(dat)) == 1L) {
     colnames(dat)[colnames(dat) %in% lfc] <- 'logFC'
@@ -82,7 +84,7 @@ plot_taco <- function(dat,
                 'colnames for this vector include ', stringify(q), '. Make ',
                 'sure that dat includes exactly one such colname.'))
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Taco Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -92,7 +94,7 @@ plot_taco <- function(dat,
   }
 
   # Tidy data
-  if (is.null(rownames(dat))) {
+  if (rownames(dat) %>% is.null) {
     dat <- dat %>% mutate(Probe = row_number())
   } else {
     dat <- dat %>% mutate(Probe = rownames(dat))
