@@ -18,7 +18,7 @@
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
 #' @param dist Distance measure to be used. Currently supports \code{
-#'   'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.
+#'   "euclidean"}, \code{"pearson"}, \code{"MI"}, or \code{"KLD"}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical
 #'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
@@ -131,8 +131,7 @@ plot_similarity <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  dat <- dat - rowMedians(dat)                   # Median center data
-  dm <- dist_mat(dat, top, filter_method, dist)
+  dm <- dist_mat(dat, dist, top, filter_method)
 
   # Build plot
   require(NMF)
