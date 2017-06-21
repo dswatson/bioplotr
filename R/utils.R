@@ -10,6 +10,7 @@
 #'   "Categorical"} or \code{"Continuous"}.
 #'
 #' @importFrom purrr map
+#' @import dplyr
 #'
 
 format_features <- function(dat,
@@ -17,9 +18,9 @@ format_features <- function(dat,
                             var_type) {
 
   # Listify, add names
-  if (is.data.frame(features)) {
-    features <- as.list(features)
-  } else if (!is.list(features)) {
+  if (features %>% is.data.frame) {
+    features <- features %>% as.list(.)
+  } else if (!(features %>% is.list)) {
     if (var_type == 'Categorical') {
       features <- list('Group' = features)
     } else if (var_type == 'Continuous') {
@@ -27,16 +28,16 @@ format_features <- function(dat,
     }
   }
   if (var_type == 'Categorical') {
-    if (is.null(names(features))) {
+    if (names(features) %>% is.null) {
       if (length(features) == 1L) {
         names(features) <- 'Group'
       } else {
         names(features) <- paste('Factor', seq_along(features))
       }
     }
-    features <- map(features, as.factor)
+    features <- features %>% map(as.factor)
   } else if (var_type == 'Continuous') {
-    if (is.null(names(features))) {
+    if (names(features) %>% is.null) {
       if (length(features) == 1L) {
         names(features) <- 'Variable'
       } else {
@@ -61,7 +62,7 @@ format_features <- function(dat,
       if (var(features[[x]]) == 0L) {
         stop(paste('Continuous feature', x, 'is invariant.'))
       }
-      if (!is.numeric(features[[x]])) {
+      if (!(features[[x]] %>% is.numeric)) {
         stop('All variables passed to covar must be of class numeric.')
       }
     }
@@ -75,7 +76,7 @@ format_features <- function(dat,
 #' Format Binomial Things
 #'
 #' This utility function formats vectors of observed and predicted values for
-#' binomially distributed events.
+#' binomially distributed data.
 #'
 #' @param vec Vector of observed outcomes, or one or several vectors of
 #'   predicted values.
@@ -83,6 +84,7 @@ format_features <- function(dat,
 #'   or \code{"pred"}.
 #' @param n Number of events for which predictions are required.
 #'
+#' @importFrom purrr every
 
 format_binom <- function(vec,
                          vec_type,
@@ -90,11 +92,11 @@ format_binom <- function(vec,
 
   # Format obs
   if (vec_type == 'obs') {
-    if (any(!is.finite(vec))) {
+    if (!(every(vec, is.finite))) {
       stop('Missing or infinite values detected in obs.')
     }
-    if (is.character(vec)) {
-      vec <- as.factor(vec)
+    if (vec %>% is.character) {
+      vec <- vec %>% as.factor(.)
     }
     if (is.factor(vec)) {
       if (length(levels(vec)) != 2L) {
@@ -107,7 +109,7 @@ format_binom <- function(vec,
         vec <- ifelse(vec == levels(vec)[1], 1L, 0L)
       }
     }
-    if (is.logical(vec)) {
+    if (vec %>% is.logical) {
       vec <- ifelse(vec, 1L, 0L)
     }
     if (!all(vec %in% c(0L, 1L))) {
@@ -119,19 +121,19 @@ format_binom <- function(vec,
 
   # Format pred
   } else if (vec_type == 'pred') {
-    if (is.data.frame(vec)) {
-      vec <- as.list(vec)
-    } else if (!is.list(vec)) {
+    if (vec %>% is.data.frame) {
+      vec <- vec %>% as.list(.)
+    } else if (!(vec %>% is.list)) {
       vec <- list(vec)
     }
-    if (is.null(names(vec))) {
+    if (names(vec) %>% is.null) {
       names(vec) <- paste0('M', seq_along(vec))
     }
     for (m in seq_along(vec)) {
-      if (any(!is.finite(vec[[m]]))) {
+      if (!every(vec[[m]], is.finite)) {
         stop('Missing or infinite values detected in pred.')
       }
-      if (!is.numeric(vec[[m]])) {
+      if (!(vec[[m]] %>% is.numeric)) {
         stop('pred must be a numeric vector, or several such vectors ',
              'organized into a list or data frame.')
       }
@@ -171,6 +173,7 @@ is.color <- function(chr) {
 #' @param n Number of unique groups for which colors must be assigned. Only
 #'   relevant if \code{var_type = "Categorical"}.
 #'
+#' @importFrom purrr every
 #' @importFrom scales hue_pal
 #' @importFrom RColorBrewer brewer.pal
 #' @import ggsci
@@ -185,28 +188,28 @@ colorize <- function(pal,
                   'd3', 'locuszoom', 'igv', 'uchicago', 'startrek', 'futurama',
                   'rickandmorty', 'simpsons', 'gsea')
   covar_pals <- c('blues', 'greens', 'purples', 'greys', 'oranges', 'reds')
-  if (!all(is.color(pal))) {
+  if (!every(pal, is.color)) {
     if (length(pal) > 1L) {
       stop('When passing multiple strings to define a color palette, ',
            'each must denote a valid color in R.')
     } else {
-      if (var_type == 'Categorical' & !pal %in% group_pals) {
+      if (var_type == 'Categorical' && !pal %in% group_pals) {
         stop(paste('Invalid palette for categorical features. Must be either a',
                    'vector of valid R colors or one of the following palettes:',
                    group_pals))
       }
-      if (var_type == 'Continuous' & !pal %in% covar_pals) {
+      if (var_type == 'Continuous' && !pal %in% covar_pals) {
         stop(paste('Invalid palette for continuous features. Must be either a',
                    'vector of valid R colors or one of the following palettes:',
                    covar_pals))
       }
     }
   } else {
-    if (var_type == 'Categorical' & length(pal) < n) {
+    if (var_type == 'Categorical' && length(pal) < n) {
       stop(paste('Insufficient colors in palette. Need at least', n, 'for',
                  'this plot.'))
     }
-    if (var_type == 'Categorical' & length(pal) > n) {
+    if (var_type == 'Categorical' && length(pal) > n) {
       warning(paste('Too many colors in palette. Only the first', n, 'will',
                     'be used.'))
     }
@@ -278,31 +281,32 @@ colorize <- function(pal,
 #'
 #' @importFrom edgeR cpm calcNormFactors
 #' @importFrom limma getEAWP
+#' @import dplyr
 #'
 
 matrixize <- function(dat) {
 
   # Transform, extract
-  if (is(dat, 'DGEList')) {
+  if (dat %>% is('DGEList')) {
     keep <- rowSums(dat$counts) > 1L             # Minimal count filter
     dat <- dat[keep, ]
-    if (is.null(dat$samples$norm.factors) |      # Calculate size factors
-        all(dat$samples$norm.factors == 1L)) {
+    nf <- dat$samples$norm.factors               # Calculate size factors
+    if (nf %>% is.null || all(nf == 1L)) {
       dat <- calcNormFactors(dat)
     }
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    dat <- dat %>% cpm(log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqDataSet')) {
+  } else if (dat %>% is('DESeqDataSet')) {
     require(DESeq2)
-    if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+    if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
       dat <- estimateSizeFactors(dat)            # Normalize counts
     }
-    dat <- counts(dat, normalized = TRUE)
+    dat <- dat %>% counts(normalized = TRUE)
     keep <- rowMeans(dat) > 0L                   # Minimal count filter
     dat <- dat[keep, , drop = FALSE]
-    dat <- cpm(dat, log = TRUE, prior.count = 1L)
+    dat <- dat %>% cpm(log = TRUE, prior.count = 1L)
     warning('Transforming raw counts to log2-CPM scale.')
-  } else if (is(dat, 'DESeqTransform')) {
+  } else if (dat %>% is('DESeqTransform')) {
     require(SummarizedExperiment)
     dat <- assay(dat)
   } else {
@@ -341,6 +345,7 @@ matrixize <- function(dat) {
 #' @importFrom wordspace dist.matrix
 #' @importFrom bioDist MIdist KLdist.matrix
 #' @importFrom KernSmooth dpih
+#' @import dplyr
 #'
 
 dist_mat <- function(dat,
@@ -349,7 +354,7 @@ dist_mat <- function(dat,
                      dist) {
 
   # Preliminaries
-  if (!is.null(top)) {
+  if (!(top %>% is.null)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
         warning(paste(
@@ -365,7 +370,7 @@ dist_mat <- function(dat,
   }
 
   # Variance filter?
-  if (!is.null(top) & filter_method == 'common') {
+  if (!(top %>% is.null) && filter_method == 'common') {
     vars <- rowVars(dat)
     keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
     dat <- dat[keep, , drop = FALSE]
@@ -375,17 +380,17 @@ dist_mat <- function(dat,
   dat <- sweep(dat, 1, apply(dat, 1, median))
 
   # Create distance matrix
-  if (is.null(top) | filter_method == 'common') {
+  if (top %>% is.null || filter_method == 'common') {
     if (dist == 'euclidean') {
       dm <- dist.matrix(t(dat), method = 'euclidean')
     } else if (dist == 'pearson') {
       dm <- 1 - cor(dat)
     } else if (dist == 'MI') {
-      dm <- as.matrix(MIdist(t(dat)))
+      dm <- MIdist(t(dat)) %>% as.matrix(.)
     } else if (dist == 'KLD') {
-      dm <- as.matrix(KLdist.matrix(t(dat)))
+      dm <- KLdist.matrix(t(dat)) %>% as.matrix(.)
     }
-  } else if (!is.null(top)) {
+  } else if (!(top %>% is.null)) {
     dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
@@ -398,9 +403,9 @@ dist_mat <- function(dat,
           if (dist == 'pearson') {
             dm[i, j] <- 1 - cor(dat[tops, i], dat[tops, j])
           } else if (dist == 'MI') {
-            dm[i, j] <- max(as.matrix(MIdist(t(dat[tops, c(i, j)]))))
+            dm[i, j] <- MIdist(t(dat[top, c(i, j)])) %>% max(.)
           } else if (dist == 'KLD') {
-            dm[i, j] <- max(as.matrix(KLdist.matrix(t(dat[tops, c(i, j)]))))
+            dm[i, j] <- KLdist.matrix(t(dat[tops, c(i, j)])) %>% max(.)
           }
         }
       }
@@ -562,7 +567,7 @@ embed <- function(df,
       labs(title = title, x = xlab, y = ylab) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
-    if (is.null(c(group, covar))) {
+    if (c(group, covar) %>% is.null) {
       p <- p + geom_text(aes(label = Sample), alpha = alpha,
                          hjust = 'inward', vjust = 'inward')
     } else if (length(c(group, covar)) == 1L) {
@@ -571,7 +576,7 @@ embed <- function(df,
                            hjust = 'inward', vjust = 'inward') +
           labs(color = feature_names[1L])
       } else {
-        if (!is.null(covar)) {
+        if (!(covar %>% is.null)) {
           suppressWarnings(
             p <- p + geom_point(aes(text = Sample, color = Feature1),
                                 size = size, alpha = alpha) +
@@ -591,7 +596,7 @@ embed <- function(df,
                             size = size, alpha = alpha) +
           labs(color = feature_names[1L], shape = feature_names[2L])
       )
-      if (is.null(covar)) {
+      if (covar %>% is.null) {
         p <- p + guides(color = guide_legend(order = 1L),
                         shape = guide_legend(order = 2L))
       } else {
@@ -599,7 +604,7 @@ embed <- function(df,
                         shape = guide_legend(order = 2L))
       }
     }
-    if (is.null(covar)) {
+    if (covar %>% is.null) {
       p <- p + scale_color_manual(values = group_cols)
     } else {
       p <- p + scale_color_gradientn(colors = covar_cols)
@@ -645,23 +650,20 @@ track_cols <- function(features,
 
   # Create color list
   if (var_type == 'Categorical') {
-    n.cols <- map_dbl(seq_along(features), function(x) {
-      length(levels(features[[x]]))
-    })
+    n.cols <- seq_along(features) %>%
+      map_dbl(function(x) length(levels(features[[x]])))
     pal <- colorize(pal, 'Categorical', sum(n.cols))
     cols <- split(pal, rep(seq_along(features), n.cols))
   } else if (var_type == 'Continuous') {
     if (length(pal) != length(features)) {
       stop('Number of palettes passed to pal_covar must match number of
            continuous features passed to covar.')
-    } else if (is.list(pal)) {
-      cols <- map(seq_along(features), function(x) {
-        colorize(pal[[x]], 'Continuous')
-      })
+    } else if (pal %>% is.list) {
+      cols <- seq_along(features) %>%
+        map(function(x) colorize(pal[[x]], 'Continuous'))
     } else {
-      cols <- map(seq_along(features), function(x) {
-        colorize(pal[x], 'Continuous')
-      })
+      cols <- seq_along(features) %>%
+        map(function(x) colorize(pal[x], 'Continuous'))
     }
   }
   names(cols) <- NULL

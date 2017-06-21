@@ -62,13 +62,13 @@ plot_density <- function(dat,
                          hover = FALSE) {
 
   # Preliminaries
-  if (!is.null(group)) {
-    group <- format_features(dat, group, 'Categorical')
+  if (!(group %>% is.null)) {
+    group <- dat %>% format_features(group, 'Categorical')
     cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1L]])))
   }
-  if (is.null(title)) {
-    if (is.null(group)) {
+  if (title %>% is.null) {
+    if (group %>% is.null) {
       title <- 'Density by Sample'
     } else {
       title <- paste('Density by', names(group))
@@ -81,18 +81,18 @@ plot_density <- function(dat,
   }
 
   # Tidy data
-  if (is.null(xlab)) {
-    if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+  if (xlab %>% is.null) {
+    if (dat %>% is('DGEList') || dat %>% is('DESeqDataSet')) {
       xlab <- expression(log[2]*'-CPM Counts')
-    } else if (is(dat, 'DESeqTransform')) {
+    } else if (dat %>% is('DESeqTransform')) {
       xlab <- 'Transformed Counts'
     } else {
       xlab <- 'Value'
     }
   }
   dat <- matrixize(dat)
-  df <- gather(tbl_df(dat), Sample, Value)
-  if (!is.null(group)) {
+  df <- tbl_df(dat) %>% gather('Sample', 'Value')
+  if (!(group %>% is.null)) {
     df <- df %>% mutate(Group = rep(group[[1L]], each = nrow(dat)))
   }
 

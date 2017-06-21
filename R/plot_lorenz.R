@@ -59,12 +59,12 @@ plot_lorenz <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (is.data.frame(dat)) {
+  if (dat %>% is.data.frame) {
     dat <- as.list(dat)
-  } else if (!is.list(dat)) {
+  } else if (!(dat %>% is.list)) {
     dat <- list(dat)
   }
-  if (is.null(names(dat))) {
+  if (names(dat) %>% is.null) {
     names(dat) <- paste0('x', seq_along(dat))
   }
   for (i in seq_along(dat)) {

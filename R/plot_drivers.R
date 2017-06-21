@@ -89,7 +89,7 @@ plot_drivers <- function(dat,
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
   }
-  if (clin[[index]] %>% any(duplicated)) {
+  if (any(clin[[index]], duplicated)) {
     stop('Duplicate sample names detected in index.')
   }
   if (!any(clin[[index]] %in% colnames(dat))) {
@@ -124,7 +124,7 @@ plot_drivers <- function(dat,
       }
     }
   }
-  if (!is.null(top)) {
+  if (!(top %>% is.null)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
         warning(paste('top exceeds nrow(dat), at least after removing probes',
@@ -143,29 +143,29 @@ plot_drivers <- function(dat,
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
   data_frame(Feature = colnames(clin),
-               Class = map_chr(seq_along(clin), function(j) {
-                 ifelse(is.numeric(clin[[j]]), 'numeric', 'factor')
+               Class = seq_along(clin) %>% map_chr(function(j) {
+                 ifelse(clin[[j]] %>% is.numeric, 'numeric', 'factor')
                })) %>%
     print(n = nrow(.))
-  if (!is.null(alpha)) {
+  if (!(alpha %>% is.null)) {
     if (alpha <= 0 | alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!is.null(p.adj)) {
+  if (!(p.adj %>% is.null)) {
     if (!p.adj %in% c('holm', 'hochberg', 'hommel',
                       'bonferroni', 'BH', 'BY', 'fdr')) {
       stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
            '"BH", "BY", or "fdr". See ?p.adjust.')
     }
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Variation By Feature'
   }
 
   # Tidy data
   pca <- prcomp(t(dat))                          # PCA, % variance explained
-  pve <- map_chr(seq_len(n.pc), function(pc) {
+  pve <- seq_len(n.pc) %>% map_chr(function(pc) {
     p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
     paste0('\n(', p, '%)')
   })
@@ -189,8 +189,8 @@ plot_drivers <- function(dat,
     rowwise() %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
-  if (!is.null(alpha)) {
-    if (!is.null(p.adj)) {
+  if (!(alpha %>% is.null)) {
+    if (!(p.adj %>% is.null)) {
       df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
     }
     df <- df %>% mutate(Significant = ifelse(Association <= alpha, TRUE, FALSE))

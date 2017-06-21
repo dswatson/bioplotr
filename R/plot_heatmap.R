@@ -62,19 +62,19 @@ plot_heatmap <- function(dat,
                          title = NULL) {
 
   # Preliminaries
-  if (!is.null(group)) {
-    group <- format_features(dat, group, var_type = 'Categorical')
-    grp_cols <- track_cols(group, pal_group, var_type = 'Categorical')
+  if (!(group %>% is.null)) {
+    group <-  dat %>% format_features(group, var_type = 'Categorical')
+    grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
   } else {
     grp_cols <- NULL
   }
-  if (!is.null(covar)) {
+  if (!(covar %>% is.null)) {
     covar <- format_features(dat, covar, var_type = 'Continuous')
     cov_cols <- track_cols(covar, pal_covar, var_type = 'Continuous')
   } else {
     cov_cols <- NULL
   }
-  if (!is.null(c(group, covar))) {
+  if (!c(group, covar) %>% is.null) {
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
   }
@@ -94,7 +94,7 @@ plot_heatmap <- function(dat,
   } else if (pal_tiles == 'BuYl') {
     pal_tiles <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Omic Heatmap'
   }
 

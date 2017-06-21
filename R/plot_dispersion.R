@@ -134,7 +134,7 @@ plot_dispersion <- function(dat,
   } else {
     stop('trans must be either "log" or "sqrt".')
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Mean-Dispersion Plot'
   }
   if (!legend %in% c('right', 'left', 'top', 'bottom',
@@ -163,19 +163,19 @@ plot_dispersion.DGEList <- function(dat,
   # Preliminaries
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
-  if (is.null(dat$samples$norm.factors) |
-      all(dat$samples$norm.factors == 1L)) {
+  nf <- dat$samples$norm.factors               # Calculate size factors
+  if (nf %>% is.null || all(nf == 1L)) {
     dat <- calcNormFactors(dat)
   }
-  if (is.null(dat$tagwise.dispersion)) {
-    if (is.null(design) & !is.null(dat$group)) {
+  if (dat$tagwise.dispersion %>% is.null) {
+    if (design %>% is.null && !(dat$group %>% is.null)) {
       design <- model.matrix(~ dat$group)
     }
-    if (is.null(design)) {
-      if (is.null(dat$common.dispersion)) {
+    if (design %>% is.null) {
+      if (dat$common.dispersion %>% is.null) {
         dat <- estimateCommonDisp(dat)
       }
-      if (is.null(dat$trended.dispersion)) {
+      if (dat$trended.dispersion %>% is.null) {
         dat <- estimateTrendedDisp(dat)
       }
       dat <- estimateTagwiseDisp(dat)
@@ -205,7 +205,7 @@ plot_dispersion.DGEList <- function(dat,
       scale_color_manual(name = 'Dispersion\n Estimate',
                        breaks = c(TRUE, 'Common', 'Trend'),
                        labels = c('Genewise', 'Common', 'Trend'),
-                       values = c(pal_d3()(2), 'black'),
+                       values = c(pal_d3()(2L), 'black'),
                         guide = guide_legend(override.aes = list(
                           linetype = c('blank', rep('solid', 2L)),
                              shape = c(16L, NA, NA), size = rep(1L, 3L)))) +
@@ -232,10 +232,10 @@ plot_dispersion.DESeqDataSet <- function(dat,
 
   # Preliminaries
   require(DESeq2)
-  if (is.null(sizeFactors(dat)) & is.null(normalizationFactors(dat))) {
+  if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
     dat <- estimateSizeFactors(dat)
   }
-  if (is.null(dispersions(dat))) {
+  if (dispersions(dat) %>% is.null) {
     dat <- estimateDispersions(dat, quiet = TRUE)
   }
 
@@ -258,13 +258,13 @@ plot_dispersion.DESeqDataSet <- function(dat,
     p <- ggplot(df) +
       geom_point(aes(Mean, Genewise, text = Gene, color = Outlier),
                  size = size, alpha = alpha) +
-      geom_point(data = df %>% filter(Outlier == FALSE),
+      geom_point(data = df %>% filter(!Outlier),
                  aes(Mean, Final, color = 'Final'), size = size, alpha = alpha) +
       geom_point(aes(Mean, Fit, color = 'Trend'), size = size) +
       scale_color_manual(name = 'Dispersion\n Estimate',
                        breaks = c(FALSE, 'Trend', 'Final', TRUE),
                        labels = c('Genewise', 'Trend', 'Final', 'Outlier'),
-                       values = c('black', pal_d3()(4)[c(1:2, 4)]),
+                       values = c('black', pal_d3()(4L)[c(1L:2L, 4L)]),
                         guide = guide_legend(override.aes = list(size = rep(1L, 4L)))) +
       labs(title = title, x = expression('Mean'~log[2]*'-CPM'), y = ylab) +
       theme_bw() +

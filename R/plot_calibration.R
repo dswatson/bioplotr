@@ -40,7 +40,7 @@
 #' plot_calibration(obs = y, pred = list("Good" = x1, "Bad" = x2))
 #'
 #' @export
-#' @importFrom purrr map_lgl map map_dbl map_df
+#' @importFrom purrr some map_lgl map map_dbl map_df
 #' @importFrom dplyr data_frame
 #' @import ggplot2
 #'
@@ -55,15 +55,13 @@ plot_calibration <- function(obs,
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
   pred <- format_binom(pred, vec_type = 'pred', n = length(obs))
-  if (any(map_lgl(seq_along(pred), function(m) {
-    max(pred[[m]] > 1L | min(pred[[m]] < 0L))
-  }))) {
+  if (pred %>% some(function(m) max(m > 1L) || min(m < 0L))) {
     stop('pred values must be on [0, 1].')
   }
   if (length(pred) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     if (length(pred) == 1L) {
       title <- 'Calibration Curve'
     } else {
@@ -78,17 +76,15 @@ plot_calibration <- function(obs,
 
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
-  bin <- map(pred, function(m) {
-    map_dbl(seq_along(m), function(i) which.max(m[i] <= brks))
+  bin <- pred %>% map(function(m) {
+    seq_along(m) %>% map_dbl(function(i) which.max(m[i] <= brks))
   })
-  exp_grps <- map(seq_along(pred), function(m) {
-    split(pred[[m]], bin[[m]])
-  })
-  obs_grps <- map(seq_along(bin), function(x) split(obs, bin[[x]]))
-  df <- map_df(seq_along(pred), function(m) {
-    data_frame(Y = map_dbl(obs_grps[[m]], mean),
-               X = map_dbl(exp_grps[[m]], mean),
-       Frequency = map_dbl(exp_grps[[m]], length),
+  exp_grps <- seq_along(pred) %>% map(function(m) split(pred[[m]], bin[[m]]))
+  obs_grps <- seq_along(bin) %>% map(function(x) split(obs, bin[[x]]))
+  df <- seq_along(pred) %>% map_df(function(m) {
+    data_frame(Y = obs_grps[[m]] %>% map_dbl(mean),
+               X = exp_grps[[m]] %>% map_dbl(mean),
+       Frequency = exp_grps[[m]] %>% map_dbl(length),
       Classifier = names(pred)[m])
   })
 

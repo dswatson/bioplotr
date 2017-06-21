@@ -60,13 +60,13 @@ plot_box <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (!is.null(group)) {
-    group <- format_features(dat, group, 'Categorical')
+  if (!(group %>% is.null)) {
+    group <- dat %>% format_features(group, 'Categorical')
     cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1L]])))
   }
-  if (is.null(title)) {
-    if (is.null(group)) {
+  if (title %>% is.null) {
+    if (group %>% is.null) {
       title <- 'Box Plots by Sample'
     } else {
       title <- paste('Box Plots by', names(group))
@@ -79,18 +79,18 @@ plot_box <- function(dat,
   }
 
   # Tidy data
-  if (is.null(ylab)) {
-    if (is(dat, 'DGEList') | is(dat, 'DESeqDataSet')) {
+  if (ylab %>% is.null) {
+    if (dat %>% is('DGEList') || dat %>% is('DESeqDataSet')) {
       ylab <- expression(log[2]*'-CPM Counts')
-    } else if (is(dat, 'DESeqTransform')) {
+    } else if (dat %>% is('DESeqTransform')) {
       ylab <- 'Transformed Counts'
     } else {
       ylab <- 'Value'
     }
   }
   dat <- matrixize(dat)
-  df <- gather(tbl_df(dat), Sample, Value)
-  if (!is.null(group)) {
+  df <- tbl_df(dat) %>% gather('Sample', 'Value')
+  if (!(group %>% is.null)) {
     df <- df %>%
       mutate(Group = rep(group[[1L]], each = nrow(dat))) %>%
       arrange(Group) %>%
@@ -103,7 +103,7 @@ plot_box <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
          axis.text.x = element_text(angle = 45L, hjust = 1L))
-  if (!is.null(group)) {                         # Fill by group?
+  if (!(group %>% is.null)) {                    # Fill by group?
     p <- p + geom_boxplot(aes(fill = Group)) +
       scale_fill_manual(name = names(group), values = cols)
   } else {
