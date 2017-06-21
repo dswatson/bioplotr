@@ -150,7 +150,7 @@ plot_concordance <- function(dat,
           }
         }
         p_mat <- mat
-        mat[lower.tri(mat)] <- mat[lower.tri(mat)] %>% -log
+        mat[lower.tri(mat)] <- -log(mat[lower.tri(mat)])
       } else if (method == 'chisq') {
         mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$statistic
       }
