@@ -89,7 +89,7 @@ plot_drivers <- function(dat,
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
   }
-  if (any(duplicated(clin[[index]]))) {
+  if (clin[[index]] %>% any(duplicated)) {
     stop('Duplicate sample names detected in index.')
   }
   if (!any(clin[[index]] %in% colnames(dat))) {
@@ -172,22 +172,30 @@ plot_drivers <- function(dat,
   sig <- function(var, pc) {                     # p-val fn
     if (is.null(block)) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
-      ifelse(is.numeric(clin[[var]]),
-             -log(summary(mod)$coef[2L, 4L]), -log(anova(mod)[1L, 5L]))
+      ifelse(clin[[var]] %>% is.numeric,
+             summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
     } else {
       mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
-      if (identical(clin[[var]], clin[[block]])) {
-        -log10(anova(mod)[1L, 5L])
+      if (clin[[var]] %>% identical(clin[[block]])) {
+        anova(mod)[1L, 5L]
       } else {
-        ifelse(is.numeric(clin[[var]]),
-               -log(summary(mod)$coef[2L, 4L]), -log(anova(mod)[1L, 5L]))
+        ifelse(clin[[var]] %>% is.numeric,
+               summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
       }
     }
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise() %>%
-    mutate(Association = sig(Feature, PC))       # Populate
+    mutate(Association = sig(Feature, PC),       # Populate
+           Significant = FALSE)
+  if (!is.null(alpha)) {
+    if (!is.null(p.adj)) {
+      df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
+    }
+    df <- df %>% mutate(Significant = ifelse(Association <= alpha, TRUE, FALSE))
+  }
+  df <- df %>% mutate(Association = -log(Association))
 
   # Build plot
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
