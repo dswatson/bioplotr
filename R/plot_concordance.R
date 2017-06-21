@@ -61,7 +61,7 @@
 #' plot_concordance(df)
 #'
 #' @export
-#' @importFrom purrr map_lgl some
+#' @importFrom purrr some
 #' @importFrom tidyr gather
 #' @importFrom infotheo mutinformation natstobits
 #' @import dplyr
@@ -81,25 +81,27 @@ plot_concordance <- function(dat,
                              hover = FALSE) {
 
   # Preliminaries
-  if (ncol(dat) < 2) {
+  p <- ncol(dat)
+  if (p < 2L) {
     stop('dat must have at least two columns to generate a concordance matrix.')
   }
   if (dat %>% some(is.numeric)) {
-    for (j in seq_along(dat[, map_lgl(dat, is.numeric)])) {
-      if (!all.equal(dat[[j]], as.integer(dat[[j]]))) {
-        dat <- dat[[-j]]
+    for (j in seq_along(dat)) {
+      if (dat[[j]] %>% is.numeric) {
+        if (!all.equal(dat[[j]], as.integer(dat[[j]]))) {
+          dat <- dat[[-j]]
+        }
       }
-      if (ncol(dat) < 2)
     }
-    dat <- dat[, map_lgl(dat, is.numeric)]
-    if (ncol(dat) < 2) {
-      stop('dat must have at least two numeric columns to generate a ',
+    if (ncol(dat) < 2L) {
+      stop('dat must have at least two non-numeric columns to generate a ',
            'concordance matrix.')
-    } else {
-      warning('Non-numeric variables have been detected and removed.')
+    }
+    if (p != ncol(dat)) {
+      warning('Continuous features have been detected and removed.')
     }
   }
-  if (is.null(colnames(dat))) {
+  if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
   if (!geom %in% c('tile', 'circle')) {
@@ -108,30 +110,31 @@ plot_concordance <- function(dat,
   if (!method %in% c('MI', 'fisher', 'chisq')) {
     stop('method must be one of "MI", "fisher", or "chisq".')
   }
-  if (!is.null(alpha)) {
-    if (alpha <= 0 | alpha >= 1) {
+  if (!(alpha %>% is.null)) {
+    if (alpha <= 0 || alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!is.null(p.adj)) {
+  if (!(p.adj %>% is.null)) {
     if (!p.adj %in% c('holm', 'hochberg', 'hommel',
                       'bonferroni', 'BH', 'BY', 'fdr')) {
       stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
            '"BH", "BY", or "fdr". See ?p.adjust.')
     }
   }
-  if (is.null(title)) {
+  if (title %>% is.null) {
     title <- 'Concordance Plot'
   }
 
-  # Tidy data
+
+  # Tidy Data
   mat <- matrix(nrow = ncol(dat), ncol = ncol(dat),
                 dimnames = list(colnames(dat), colnames(dat)))
   for (i in 2L:ncol(dat)) {
     for (j in 1L:(i - 1L)) {
-      tmp <- na.omit(dat[, c(i, j)])
+      tmp <- dat[, c(i, j)] %>% na.omit(.)
       if (method == 'MI') {
-        mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits
+        mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits(.)
       } else if (method == 'fisher') {
         if (sim.p) {
           p <- fisher.test(tmp[[1]], tmp[[2]],
@@ -139,7 +142,7 @@ plot_concordance <- function(dat,
         } else {
           p <- try(fisher.test(tmp[[1L]], tmp[[2L]], workspace = 2e8L)$p.value,
                    silent = TRUE)
-          if (is(p, 'try-error')) {
+          if (p %>% is('try-error')) {
             mat[i, j] <- fisher.test(tmp[[1L]], tmp[[2L]],
                                      simulate.p.value = TRUE, B = B)$p.value
           } else {
@@ -153,24 +156,26 @@ plot_concordance <- function(dat,
       }
     }
   }
-  df <- data.frame(mat) %>%                      # Melt concordance matrix
-    gather(x, Association) %>%
+  df <- mat %>%                                  # Melt concordance matrix
+    tbl_df(.) %>%
+    gather('x', 'Association') %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
     select(x, y, Association) %>%
-    na.omit()
-  if (!is.null(alpha)) {                         # Calculate p-value matrix?
+    na.omit(.)
+  if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     if (!method == 'fisher') {
       p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
       for (i in 2L:ncol(p_mat)) {
         for (j in 1L:(i - 1L)) {
-          tmp <- na.omit(dat[, c(i, j)])
+          tmp <- dat[, c(i, j)] %>% na.omit()
           if (method == 'MI') {
-            null <- replicate(B, sample(tmp[[1L]], nrow(tmp)) %>%
-                                mutinformation(tmp[[2L]]) %>%
-                                natstobits)
+            null <- B %>%
+              replicate(sample(tmp[[1L]], nrow(tmp)) %>%
+                          mutinformation(tmp[[2L]]) %>%
+                          natstobits(.))
             p_mat[i, j] <- (sum(null >= mat[i, j]) + 1L) / (B + 1L)
           } else if (method == 'chisq') {
             if (sim.p) {
@@ -184,13 +189,13 @@ plot_concordance <- function(dat,
       }
     }
     p <- p_mat[lower.tri(p_mat)]
-    if (!is.null(p.adjust)) {
+    if (!(p.adjust %>% is.null)) {
       p <- p.adjust(p, method = p.adj)
     }
     df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
   }
 
-  # Build plot
+  # Build Plot
   if (method == 'MI') {
     leg.txt <- 'Mutual Information (Bits)'
   } else if (method == 'fisher') {
