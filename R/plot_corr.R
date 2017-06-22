@@ -113,7 +113,7 @@ plot_corr <- function(dat,
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
     select(x, y, Correlation) %>%
-    na.omit()
+    na.omit(.)
   if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2L:ncol(p_mat)) {
@@ -137,7 +137,7 @@ plot_corr <- function(dat,
     labs(x = NULL, y = NULL, title = title) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(angle = 45L, hjust = 1L))
+         axis.text.x = element_text(angle = 45L, hjust = 1L))
   if (geom == 'tile') {
     p <- p + geom_tile(aes(fill = Correlation, color = Significant),
                        size = 1L, width = 0.9, height = 0.9) +
