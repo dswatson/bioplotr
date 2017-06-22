@@ -6,7 +6,7 @@
 \usage{
 plot_drivers(dat, clin, index = "Sample", block = NULL, top = NULL,
   n.pc = 10, label = FALSE, alpha = NULL, p.adj = NULL, title = NULL,
-  hover = FALSE)
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -44,6 +44,10 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 \link[stats]{p.adjust}}.}
 
 \item{title}{Optional plot title.}
+
+\item{legend}{Legend position. Must be one of \code{"right"}, \code{
+"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
+"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
 
 \item{hover}{Show \emph{p}-values by hovering mouse over tiles? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's
