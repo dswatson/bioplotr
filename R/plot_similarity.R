@@ -13,12 +13,14 @@
 #'   named.
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
+#' @param dist Distance measure to be used. Supports all methods available in
+#'   \code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+#'   those implemented in the \code{bioDist} package. See Details.
+#' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
-#' @param dist Distance measure to be used. Currently supports \code{
-#'   "euclidean"}, \code{"pearson"}, \code{"MI"}, or \code{"KLD"}. See Details.
 #' @param hclustfun The agglomeration method to be used for hierarchical
 #'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
@@ -76,16 +78,16 @@
 #'                 title = 'Somethin' Cookin'')
 #'
 #' @export
-#' @importFrom matrixStats rowMedians
 #' @importFrom RColorBrewer brewer.pal
 #'
 
 plot_similarity <- function(dat,
                             group = NULL,
                             covar = NULL,
+                             dist = 'euclidean',
+                                p = 2,
                               top = NULL,
                     filter_method = 'pairwise',
-                             dist = 'euclidean',
                         hclustfun = 'average',
                         pal_group = 'npg',
                         pal_covar = 'blues',
@@ -111,12 +113,18 @@ plot_similarity <- function(dat,
   } else {
     anno <- NULL
   }
-  if (!dist %in% c('euclidean', 'pearson', 'MI', 'KLD')) {
-    stop('dist must be one of "euclidean", "pearson", "MI", or "KLD".')
+  d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
+         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+  if (!dist %in% d) {
+    stop('dist must be one of ', stringify(d, 'or'), '.')
   }
-  if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
-                        'mcquitty', 'median', 'centroid')) {
-    stop('hclustfun not recognized. See ?hclust for available options.')
+  hclusts <- c('ward.D', 'ward.D2', 'single', 'complete', 'average',
+               'mcquitty', 'median', 'centroid')
+  if (!hclustfun %in% hclusts) {
+    stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
+         'See ?hclust.')
   }
   if (pal_tiles == 'RdBu') {
     pal_tiles <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
@@ -131,7 +139,7 @@ plot_similarity <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  dm <- dist_mat(dat, dist, top, filter_method)
+  dm <- dist_mat(dat, dist, p, top, filter_method)
 
   # Build plot
   require(NMF)

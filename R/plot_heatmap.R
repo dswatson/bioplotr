@@ -9,8 +9,10 @@
 #'   named.
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
-#' @param dist Distance measure to be used. Currently supports any method
-#'   available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.
+#' @param dist Distance measure to be used. Supports all methods available in
+#'   \code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+#'   those implemented in the \code{bioDist} package. See Details.
+#' @param p Power of the Minkowski distance.
 #' @param hclustfun The agglomeration method to be used for hierarchical
 #'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
@@ -55,6 +57,7 @@ plot_heatmap <- function(dat,
                          group = NULL,
                          covar = NULL,
                           dist = 'pearson',
+                             p = 2,
                      hclustfun = 'average',
                      pal_group = 'npg',
                      pal_covar = 'blues',
@@ -78,14 +81,18 @@ plot_heatmap <- function(dat,
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
   }
-  if (!dist %in% c('euclidean', 'maximum', 'manhattan', 'canberra', 'binary',
-                   'minkowski', 'pearson', 'kendall', 'spearman')) {
-    stop('dist measure not recognized. See ?dist and ?cor for available ',
-         'options.')
+  d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
+         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+  if (!dist %in% d) {
+    stop('dist must be one of ', stringify(d, 'or'), '.')
   }
-  if (!hclustfun %in% c('ward.D', 'ward.D2', 'single', 'complete', 'average',
-                        'mcquitty', 'median', 'centroid')) {
-    stop('hclustfun not recognized. See ?hclust for available options.')
+  hclusts <- c('ward.D', 'ward.D2', 'single', 'complete', 'average',
+               'mcquitty', 'median', 'centroid')
+  if (!hclustfun %in% hclusts) {
+    stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
+         'See ?hclust.')
   }
   if (pal_tiles == 'RdBu') {
     pal_tiles <- rev(colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L))
@@ -100,14 +107,15 @@ plot_heatmap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
+  dm <- dist_mat(dat, dist, p, top = NULL, filter_method = NULL) %>% as.dist(.)
 
   # Plot
   require(NMF)
   if (is.null(anno)) {
-    aheatmap(dat, distfun = dist, scale = 'row', col = pal_tiles,
+    aheatmap(dat, distfun = dm, scale = 'row', col = pal_tiles,
              hclustfun = hclustfun, main = title, border_color = 'grey60')
   } else {
-    aheatmap(dat, distfun = dist, scale = 'row', col = pal_tiles,
+    aheatmap(dat, distfun = dm, scale = 'row', col = pal_tiles,
              hclustfun = hclustfun, main = title, annCol = anno,
              annColors = ann_cols, border_color = 'grey60')
   }
