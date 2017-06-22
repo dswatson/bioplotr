@@ -175,8 +175,7 @@ plot_tsne <- function(dat,
   dm <- dist_mat(dat, top, filter_method, dist = 'euclidean') %>% as.dist(.)
   tsne <- Rtsne(dm, perplexity = perplexity, dims = max(dims),
                 theta = theta, max_iter = max_iter, check_duplicates = FALSE,
-                is_distance = TRUE, ...)
-  tsne <- tsne$Y                                           # t-SNE
+                is_distance = TRUE, ...)$Y                 # t-SNE
   df <- data_frame(Sample = colnames(dat))                 # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = tsne[, min(dims)],
