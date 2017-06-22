@@ -23,8 +23,8 @@
 #'   be used for mapping.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
-#' @param pcs Vector specifying which dimensions to plot. Must be of length two
-#'   unless \code{D3 = TRUE}.
+#' @param dims Vector specifying which dimensions to plot. Must be of length
+#'   two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
@@ -83,7 +83,7 @@
 #' library(DESeq2)
 #' dds <- makeExampleDESeqDataSet()
 #' dds <- rlog(dds)
-#' plot_mds(dds, group = colData(dds)$condition)
+#' plot_sammon(dds, group = colData(dds)$condition)
 #'
 #' @seealso
 #' \code{\link[limma]{plot_mds}}, \code{\link{plot_tsne}}
@@ -101,7 +101,7 @@ plot_sammon <- function(dat,
                             p = 2,
                           top = 500,
                 filter_method = 'pairwise',
-                          pcs = c(1, 2),
+                         dims = c(1, 2),
                         label = FALSE,
                     pal_group = 'npg',
                     pal_covar = 'blues',
@@ -151,10 +151,10 @@ plot_sammon <- function(dat,
   if (!filter_method %in% c('pairwise', 'common')) {
     stop('filter_method must be either "pairwise" or "common".')
   }
-  if (length(pcs) > 2L & !D3) {
-    stop('pcs must be of length 2 when D3 = FALSE.')
-  } else if (length(pcs) > 3L) {
-    stop('pcs must be a vector of length <= 3.')
+  if (length(dims) > 2L & !D3) {
+    stop('dims must be of length 2 when D3 = FALSE.')
+  } else if (length(dims) > 3L) {
+    stop('dims must be a vector of length <= 3.')
   }
   if (label && length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
@@ -172,16 +172,16 @@ plot_sammon <- function(dat,
   # Tidy data
   dat <- matrixize(dat)
   dm <- dist_mat(dat, dist, p, top, filter_method)
-  sm <- sammon(dm, k = max(pcs), trace = FALSE)$points     # Project
+  sm <- sammon(dm, k = max(dims), trace = FALSE)$points     # Project
   df <- data_frame(Sample = colnames(dat))                 # Melt
-  if (length(pcs) == 2L) {
-    df <- df %>% mutate(PC1 = sm[, min(pcs)],
-                        PC2 = sm[, max(pcs)])
+  if (length(dims) == 2L) {
+    df <- df %>% mutate(PC1 = sm[, min(dims)],
+                        PC2 = sm[, max(dims)])
   } else {
-    other <- setdiff(pcs, c(min(pcs), max(pcs)))
-    df <- df %>% mutate(PC1 = sm[, min(pcs)],
+    other <- setdiff(dims, c(min(dims), max(dims)))
+    df <- df %>% mutate(PC1 = sm[, min(dims)],
                         PC2 = sm[, other],
-                        PC3 = sm[, max(pcs)])
+                        PC3 = sm[, max(dims)])
   }
   if (!(features %>% is.null)) {
     df <- df %>% cbind(tbl_df(features))
@@ -198,5 +198,5 @@ plot_sammon <- function(dat,
 # Interactive options:
 # 1) filter probes
 # 2) filter samples
-# 3) change PCs
+# 3) change dims
 
