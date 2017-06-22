@@ -5,7 +5,7 @@
 \title{Concordance Plot}
 \usage{
 plot_concordance(dat, label = FALSE, diag = FALSE, method = "MI",
-  alpha = NULL, p.adj = NULL, B = 2000, title = NULL,
+  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, title = NULL,
   legend = "right", hover = FALSE)
 }
 \arguments{
@@ -31,8 +31,11 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
-\item{B}{Number of permutations to generate when computing \emph{p}-values
-via Monte Carlo simulation. See Details.}
+\item{sim.p}{Calculate \emph{p}-values via Monte Carlo simulation? Only
+relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
+
+\item{B}{Number of replicates or permutations to generate when computing
+\emph{p}-values. See Details.}
 
 \item{title}{Optional plot title.}
 
@@ -49,20 +52,27 @@ RStudio viewer.}
 This function plots the pairwise concordance between categorical features.
 }
 \details{
-Concordance plots visualize the
+Concordance plots visualize associations between categorical features. They
+may help in evaluating the dependencies between clinical factors and/or
+patient clusters.
 
 When \code{method = "fisher"}, concordance is measured by the negative
-logarithm of the test's \emph{p}-value. If this cannot be computed in the
-available workspace, then it is estimated via simulation using \code{B}
-Monte Carlo permutations.
+logarithm of the test's \emph{p}-value. If \code{sim.p = FALSE}, then the
+function will attempt to calculate an exact \emph{p}-value. If this cannot be
+executed in the available workspace, or if \code{sim.p = TRUE}, then \emph{
+p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 
 When \code{method = "chisq"}, concordance is measured by the Pearson
-chi-squared statistic. This is easier to compute than Fisher exact tests, but
-may be inappropriate if BLAH
+chi-squared statistic. This test is based on several assumptions that may not
+be met in practice (see
+\href{https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test#Assumptions}{
+Wikipedia} for a quick overview). When one or several of these assumptions
+are violated, more accurate \emph{p}-values can be estimated via Monte Carlo
+simulation with \code{B} replicates.
 
 When \code{method = "MI"}, concordance is measured by the mutual information
-statistic. If \code{alpha} is non-\code{NULL}, then \code{p}-values are
-estimated via simulation using \code{B} Monte Carlo permutations.
+statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
+estimated via permutation testing with \code{B} permutations.
 }
 \examples{
 df <- data.frame(A = sample(1:2, 20, replace = TRUE),
