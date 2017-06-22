@@ -33,7 +33,7 @@
 #'
 #' @details
 #' Concordance plots visualize associations between categorical features. They
-#' may help in evaluating the dependencies between clinical factors and/or
+#' are useful when evaluating the dependencies between clinical factors and/or
 #' patient clusters.
 #'
 #' When \code{method = "fisher"}, concordance is measured by the negative
@@ -103,9 +103,6 @@ plot_concordance <- function(dat,
   }
   if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
-  }
-  if (!geom %in% c('tile', 'circle')) {
-    stop('geom must be either "tile" or "circle".')
   }
   if (!method %in% c('MI', 'fisher', 'chisq')) {
     stop('method must be one of "MI", "fisher", or "chisq".')

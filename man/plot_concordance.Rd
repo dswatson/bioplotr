@@ -53,7 +53,7 @@ This function plots the pairwise concordance between categorical features.
 }
 \details{
 Concordance plots visualize associations between categorical features. They
-may help in evaluating the dependencies between clinical factors and/or
+are useful when evaluating the dependencies between clinical factors and/or
 patient clusters.
 
 When \code{method = "fisher"}, concordance is measured by the negative
