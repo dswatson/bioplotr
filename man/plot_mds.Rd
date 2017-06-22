@@ -4,10 +4,10 @@
 \alias{plot_mds}
 \title{MDS Plot}
 \usage{
-plot_mds(dat, group = NULL, covar = NULL, top = 500,
-  filter_method = "pairwise", pcs = c(1, 2), label = FALSE,
-  pal_group = "npg", pal_covar = "blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE)
+plot_mds(dat, group = NULL, covar = NULL, metric = TRUE,
+  dist = "euclidean", p = 2, top = 500, filter_method = "pairwise",
+  pcs = c(1, 2), label = FALSE, pal_group = "npg", pal_covar = "blues",
+  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -24,6 +24,15 @@ legend title(s) by passing a named list or data frame.}
 \item{covar}{Optional continuous covariate. If non-\code{NULL}, then plot can
 render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
+
+\item{metric}{Logical. Perform classical (i.e. metric) MDS or nonmetric MDS?
+See Details.}
+
+\item{dist}{Distance measure to be used. Supports all methods available in
+\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+those implemented in the \code{bioDist} package. See Details.}
+
+\item{p}{Power of the Minkowski distance.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for MDS.}
@@ -75,16 +84,32 @@ method for unsupervised cluster detection. It can also aid in spotting
 potential outliers, and generally helps to visualize the latent structure of
 a data set.
 
+Classical MDS is implemented by the \code{\link[stats]{cmdscale}} function,
+which finds the optimal two-dimensional projection of a distance matrix by
+minimizing the strain of the coordinate mapping (Torgerson, 1958).
+Nonmetric MDS (NMDS) is implemented by the \code{\link[vegan]{monoMDS}}
+function, which uses isotonic regression to find the monotonic transformation
+that minimizes the stress of the embedding (Kruskal, 1964).
+
+MDS requires a distance matrix as input. Available distance measures include:
+\code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{"canberra"},
+\code{"minkowski"}, \code{"cosine"}, \code{"pearson"}, \code{"kendall"},
+\code{"spearman"}, \code{"bray"}, \code{"kulczynski"}, \code{"jaccard"},
+\code{"gower"}, \code{"altGower"}, \code{"morisita"}, \code{"horn"}, \code{
+"mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"},
+\code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some distance measures
+are unsuitable for certain types of data. See \code{\link{dist_mat}} for more
+details on these methods and links to documentation on each.
+
 If \code{top} is non-\code{NULL}, then data can either be filtered by
 probewise variance (\code{filter_method = "common"}) or using the leading
 fold change method of Smyth et al. (\code{filter_method = "pairwise"}). In
-the latter case, pairwise Euclidean distances are calculated using only the
-\code{top} most differentially expressed probes between the two samples. This
-method is appropriate when different molecular pathways are relevant for
-distinguishing different pairs of samples.
-
-To run MDS on the complete data, set \code{top = NULL}. This is functionally
-equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
+the latter case, pairwise distances are calculated using only the \code{top}
+most differentially expressed probes between the two samples. This method is
+appropriate when different molecular pathways are relevant for distinguishing
+different pairs of samples. To run MDS on the complete data, set \code{
+top = NULL}. This is functionally equivalent to running PCA on the full
+matrix. See \code{\link{plot_pca}}.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -100,15 +125,20 @@ plot_mds(dds, group = colData(dds)$condition)
 Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling}. Second
 edition. Chapman and Hall.
 
+Kruskal, J.B. (1964).
+\href{https://pdfs.semanticscholar.org/e041/08dc293c9cd7cabf32ee1524eaab0d4641b3.pdf}{
+Multidimensional scaling by optimizing goodness of fit to a nonmetric
+hypothesis}. \emph{Psychometrika}, \emph{29}(1): 1-27.
+
 Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 (2015).
 \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
-Acids Res.}, emph{43}(7): e47.
+Acids Res.}, \emph{43}(7): e47.
 
-Hefner, R. (1958). \emph{Theory and Methods of Scaling}. New York:
+Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York:
 Wiley.
 }
 \seealso{
-\code{\link[limma]{plotMDS}}, \code{\link{plot_pca}}, \code{\link{plot_tsne}}
+\code{\link[limma]{plotMDS}}, \code{\link{plot_pca}}
 }
