@@ -4,8 +4,8 @@
 \alias{plot_similarity}
 \title{Similarity Matrix Heatmap}
 \usage{
-plot_similarity(dat, group = NULL, covar = NULL, top = NULL,
-  filter_method = "pairwise", dist = "euclidean", hclustfun = "average",
+plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
+  p = 2, top = NULL, filter_method = "pairwise", hclustfun = "average",
   pal_group = "npg", pal_covar = "blues", pal_tiles = "RdBu",
   title = NULL)
 }
@@ -24,14 +24,17 @@ named.}
 \item{covar}{Optional continuous covariate of length equal to sample size.
 Alternatively, a data frame or list of such vectors, optionally named.}
 
+\item{dist}{Distance measure to be used. Supports all methods available in
+\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+those implemented in the \code{bioDist} package. See Details.}
+
+\item{p}{Power of the Minkowski distance.}
+
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for distance calculations.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.}
-
-\item{dist}{Distance measure to be used. Currently supports \code{
-'euclidean'}, \code{'pearson'}, \code{'MI'}, or \code{'KLD'}. See Details.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
 clustering. Supports any method available in \code{\link[stats]{hclust}}.}
