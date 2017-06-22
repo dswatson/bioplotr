@@ -165,7 +165,7 @@ plot_concordance <- function(dat,
     mutate(x = factor(x, levels = unique(x)),
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
-    select(x, y, Association) %>%
+    select(x, y, Association, Significant) %>%
     na.omit(.)
   if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     if (!method == 'fisher') {
