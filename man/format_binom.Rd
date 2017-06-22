@@ -17,5 +17,5 @@ or \code{"pred"}.}
 }
 \description{
 This utility function formats vectors of observed and predicted values for
-binomially distributed events.
+binomially distributed data.
 }
