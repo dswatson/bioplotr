@@ -6,13 +6,12 @@
 #' @param dat Either a data frame representing the results of a test for
 #'   differential expression, or an omic data matrix or matrix-like object with
 #'   rows corresponding to probes and columns to samples. The former will render
-#'   a study-wide MD plot, the latter a between between-sample MD plot. See
-#'   Details.
+#'   a study-wide MD plot, the latter a between-sample MD plot. See Details.
 #' @param design Optional design matrix with rows corresponding to samples and
 #'   columns to coefficients to be estimated. Only relevant for \code{
 #'   \link[edgeR]{DGEList}} objects. See Details.
-#' @param fdr Significance threshold for declaring a probe differentially
-#'   expressed. Only relevant for study-wide MD plots.
+#' @param fdr Optional significance threshold for declaring a probe
+#'   differentially expressed. Only relevant for study-wide MD plots.
 #' @param lfc Optional effect size threshold for declaring a probe
 #'   differentially expressed. Only relevant for study-wide MD plots.
 #' @param sample Column number or name specifying which sample in \code{dat} to
@@ -96,6 +95,7 @@
 #' \code{\link[Glimma]{glMDPlot}}
 #'
 #' @export
+#' @importFrom ggsci scale_color_d3 pal_d3
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -123,7 +123,6 @@ plot_md <- function(dat,
 #' @rdname plot_md
 #' @export
 #' @importFrom edgeR calcNormFactors aveLogCPM estimateDisp cpm
-#' @importFrom ggsci scale_color_d3
 
 plot_md.DGEList <- function(dat,
                             design = NULL,
@@ -224,7 +223,6 @@ plot_md.DGEList <- function(dat,
 #' @rdname plot_md
 #' @export
 #' @importFrom edgeR aveLogCPM cpm
-#' @importFrom ggsci scale_color_d3
 
 plot_md.DESeqDataSet <- function(dat,
                                  sample = 1,
@@ -568,7 +566,6 @@ plot_md.data.frame <- function(dat,
 #' @rdname plot_md
 #' @export
 #' @importFrom limma getEAWP
-#' @importFrom ggsci scale_color_d3
 
 plot_md.default <- function(dat,
                             sample = 1,
