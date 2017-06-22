@@ -4,7 +4,7 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
+plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson", p = 2,
   hclustfun = "average", pal_group = "npg", pal_covar = "blues",
   pal_tiles = "RdBu", title = NULL)
 }
@@ -19,8 +19,11 @@ named.}
 \item{covar}{Optional continuous covariate of length equal to sample size.
 Alternatively, a data frame or list of such vectors, optionally named.}
 
-\item{dist}{Distance measure to be used. Currently supports any method
-available in \code{\link[stats]{dist}} or \code{\link[stats]{cor}}.}
+\item{dist}{Distance measure to be used. Supports all methods available in
+\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+those implemented in the \code{bioDist} package. See Details.}
+
+\item{p}{Power of the Minkowski distance.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
 clustering. Supports any method available in \code{\link[stats]{hclust}}.}
