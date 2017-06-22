@@ -5,7 +5,7 @@
 \title{Sammon Map}
 \usage{
 plot_sammon(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2,
-  top = 500, filter_method = "pairwise", pcs = c(1, 2), label = FALSE,
+  top = 500, filter_method = "pairwise", dims = c(1, 2), label = FALSE,
   pal_group = "npg", pal_covar = "blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }
@@ -37,8 +37,8 @@ be used for mapping.}
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.}
 
-\item{pcs}{Vector specifying which dimensions to plot. Must be of length two
-unless \code{D3 = TRUE}.}
+\item{dims}{Vector specifying which dimensions to plot. Must be of length
+two unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE}
 unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
@@ -102,7 +102,7 @@ plot_sammon(mat)
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 dds <- rlog(dds)
-plot_mds(dds, group = colData(dds)$condition)
+plot_sammon(dds, group = colData(dds)$condition)
 
 }
 \references{
