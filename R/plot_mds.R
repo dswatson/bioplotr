@@ -15,6 +15,12 @@
 #' @param covar Optional continuous covariate. If non-\code{NULL}, then plot can
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
+#' @param metric Logical. Perform classical (i.e. metric) MDS or nonmetric MDS?
+#'   See Details.
+#' @param dist Distance measure to be used. Supports all methods available in
+#'   \code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+#'   those implemented in the \code{bioDist} package. See Details.
+#' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for MDS.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
@@ -52,28 +58,51 @@
 #' potential outliers, and generally helps to visualize the latent structure of
 #' a data set.
 #'
+#' Classical MDS is implemented by the \code{\link[stats]{cmdscale}} function,
+#' which finds the optimal two-dimensional projection of a distance matrix by
+#' minimizing the strain of the coordinate mapping (Torgerson, 1958).
+#' Nonmetric MDS (NMDS) is implemented by the \code{\link[vegan]{monoMDS}}
+#' function, which uses isotonic regression to find the monotonic transformation
+#' that minimizes the stress of the embedding (Kruskal, 1964).
+#'
+#' MDS requires a distance matrix as input. Internal functions median centre the
+#' probe vectors and compute samplewise distances using one of the following
+#' methods: \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
+#' "canberra"}, \code{"minkowski"}, \code{"cosine"}, \code{"pearson"}, \code{
+#' "kendall"}, \code{"spearman"}, \code{"bray"}, \code{"kulczynski"}, \code{
+#' "jaccard"}, \code{"gower"}, \code{"altGower"}, \code{"morisita"}, \code{
+#' "horn"}, \code{"mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"},
+#' \code{"cao"}, \code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some
+#' distance measures are unsuitable for certain types of data. See \code{
+#' \link{dist_mat}} for more details on these methods and links to full
+#' documentation on each.
+#'
 #' If \code{top} is non-\code{NULL}, then data can either be filtered by
 #' probewise variance (\code{filter_method = "common"}) or using the leading
 #' fold change method of Smyth et al. (\code{filter_method = "pairwise"}). In
-#' the latter case, pairwise Euclidean distances are calculated using only the
-#' \code{top} most differentially expressed probes between the two samples. This
-#' method is appropriate when different molecular pathways are relevant for
-#' distinguishing different pairs of samples.
-#'
-#' To run MDS on the complete data, set \code{top = NULL}. This is functionally
-#' equivalent to running PCA on the full matrix. See \code{\link{plot_pca}}.
+#' the latter case, pairwise distances are calculated using only the \code{top}
+#' most differentially expressed probes between the two samples. This method is
+#' appropriate when different molecular pathways are relevant for distinguishing
+#' different pairs of samples. To run MDS on the complete data, set \code{
+#' top = NULL}. This is functionally equivalent to running PCA on the full
+#' matrix. See \code{\link{plot_pca}}.
 #'
 #' @references
 #' Cox, T.F. & Cox, M.A.A. (2001). \emph{Multidimensional Scaling}. Second
 #' edition. Chapman and Hall.
 #'
+#' Kruskal, J.B. (1964).
+#' \href{https://pdfs.semanticscholar.org/e041/08dc293c9cd7cabf32ee1524eaab0d4641b3.pdf}{
+#' Multidimensional scaling by optimizing goodness of fit to a nonmetric
+#' hypothesis}. \emph{Psychometrika}, \emph{29}(1): 1-27.
+#'
 #' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 #' (2015).
 #' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
 #' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
-#' Acids Res.}, emph{43}(7): e47.
+#' Acids Res.}, \emph{43}(7): e47.
 #'
-#' Hefner, R. (1958). \emph{Theory and Methods of Scaling}. New York:
+#' Torgerson, W.S. (1958). \emph{Theory and Methods of Scaling}. New York:
 #' Wiley.
 #'
 #' @examples
@@ -86,9 +115,10 @@
 #' plot_mds(dds, group = colData(dds)$condition)
 #'
 #' @seealso
-#' \code{\link[limma]{plotMDS}}, \code{\link{plot_pca}}, \code{\link{plot_tsne}}
+#' \code{\link[limma]{plotMDS}}, \code{\link{plot_pca}}
 #'
 #' @export
+#' @importFrom vegan metaMDS
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -96,6 +126,9 @@
 plot_mds <- function(dat,
                      group = NULL,
                      covar = NULL,
+                      dist = 'euclidean',
+                         p = 2,
+                    metric = TRUE,
                        top = 500,
              filter_method = 'pairwise',
                        pcs = c(1, 2),
@@ -138,6 +171,13 @@ plot_mds <- function(dat,
   } else {
     features <- NULL
   }
+  d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
+         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+  if (!dist %in% d) {
+    stop('dist must be one of ', stringify(d, 'or'), '.')
+  }
   if (!filter_method %in% c('pairwise', 'common')) {
     stop('filter_method must be either "pairwise" or "common".')
   }
@@ -153,23 +193,34 @@ plot_mds <- function(dat,
   if (title %>% is.null) {
     title <- 'MDS'
   }
-  if (!legend %in% c('right', 'left', 'top', 'bottom',
-                     'topright', 'topleft', 'bottomright', 'bottomleft')) {
-    stop('legend must be one of "right", "left", "top", "bottom", ',
-         '"topright", "topleft", "bottomright", or "bottomleft".')
+  loc <- c('right', 'left', 'top', 'bottom',
+           'topright', 'topleft', 'bottomright', 'bottomleft')
+  if (!legend %in% loc) {
+    stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
 
   # Tidy data
   dat <- matrixize(dat)
-  if (rownames(dat) %>% is.null) {
-    rownames(dat) <- seq_len(nrow(dat))
+  dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
+  if (metric) {                                  # MDS
+    mds <- suppressWarnings(cmdscale(dm, k = max(pcs)))
+  } else {
+    converged <- FALSE
+    max_iter <- 20L
+    while(!converged) {
+      mds <- suppressWarnings(
+        metaMDS(dm, k = max(pcs), trace = 0L, trymax = max_iter,
+                autotransform = FALSE)
+      )
+      if (mds$converged) {
+        converged <- TRUE
+      } else {
+        max_iter <- max_iter + 20L
+      }
+    }
+    mds <- mds$points
   }
-  if (colnames(dat) %>% is.null) {
-    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
-  }
-  dm <- dist_mat(dat, top, filter_method, dist = 'euclidean')
-  mds <- suppressWarnings(cmdscale(as.dist(dm), k = max(pcs)))    # MDS
-  df <- data_frame(Sample = colnames(dat))                        # Melt
+  df <- data_frame(Sample = colnames(dat))       # Melt
   if (length(pcs) == 2L) {
     df <- df %>% mutate(PC1 = mds[, min(pcs)],
                         PC2 = mds[, max(pcs)])
@@ -185,11 +236,21 @@ plot_mds <- function(dat,
 
   # Build plot
   if (top %>% is.null) {
-    xlab <- paste0('PC', min(pcs))
-    ylab <- paste0('PC', max(pcs))
+    if (metric) {
+      xlab <- paste0('MDS', min(pcs))
+      ylab <- paste0('MDS', max(pcs))
+    } else {
+      xlab <- paste0('NMDS', min(pcs))
+      ylab <- paste0('NMDS', max(pcs))
+    }
   } else {
-    xlab <- paste('Leading logFC, MDS Dim', min(pcs))
-    ylab <- paste('Leading logFC, MDS Dim', max(pcs))
+    if (metric) {
+      xlab <- paste0('Leading logFC, MDS', min(pcs))
+      ylab <- paste0('Leading logFC, MDS', max(pcs))
+    } else {
+      xlab <- paste0('Leading logFC, NMDS', min(pcs))
+      ylab <- paste0('Leading logFC, NMDS', max(pcs))
+    }
   }
   embed(df, group, covar, group_cols, covar_cols, feature_names,
         label, title, xlab, ylab, legend, hover, D3)
