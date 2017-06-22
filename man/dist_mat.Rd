@@ -4,29 +4,49 @@
 \alias{dist_mat}
 \title{Create Distance Matrix}
 \usage{
-dist_mat(dat, top, filter_method, dist)
+dist_mat(dat, dist, p, top, filter_method)
 }
 \arguments{
-\item{dat}{Omic data matrix or matrix-like object with rows corresponding to
-probes and columns to samples.}
+\item{dat}{Omic data matrix.}
+
+\item{dist}{Distance measure to be used.}
+
+\item{p}{Power of the Minkowski distance.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for distance calculations.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}.}
-
-\item{dist}{Distance measure to be used. Currently supports \code{
-"euclidean", "pearson", "MI",} or \code{"KLD"}.}
 }
 \description{
 This utility function calculates distance based on a user defined measure
 and optionally filters probes by leading log fold change.
 }
-\references{
-Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
-(2015).
-\href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
-expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
-Acids Res.}, emph{43}(7): e47.
+\details{
+Data are median centred by probe and samplewise distance calculated using
+one of the following methods:
+
+\itemize{
+  \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
+    "canberra"}, and \code{"minkowski"} are all documented in the \code{
+    \link[stats]{dist}} function. \code{bioplotr} relies on a lower level
+    implementation via \code{wordspace::\link[wordspace]{dist.matrix}} to
+    speed up computations. This latter function also documents the \code{
+    "cosine"} distance.
+  \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
+    to various forms of correlation distance, generally defined as 1 - the
+    correlation coefficient. See \code{\link[stats]{cor}} for more details.
+  \item \code{"bray"}, \code{"kulczynski"}, \code{"jaccard"}, \code{"gower"},
+    \code{"altGower"}, \code{"morisita"}, \code{"horn"}, \code{"mountford"},
+    \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"}, and
+    \code{"mahalanobis"} are all available and documented in the \code{
+    vegan::\link[vegan]{vegdist}} function. These are designed for use with
+    ecological data, e.g. a matrix of microbial OTU counts.
+  \item \code{"MI"} and \code{"KLD"} are information theoretic distance
+    metrics based on the mutual information and Kullback-Leibler divergence
+    between vectors, respectively. They are implemented in the \code{bioDist}
+    package using the \code{\link[bioDist]{MIdist}} and \code{
+    \link[bioDist]{KLdist.matrix}} functions.
+}
 }
