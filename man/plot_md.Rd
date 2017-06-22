@@ -40,8 +40,7 @@ plot_md(dat, title = NULL, legend = "right", ...)
 \item{dat}{Either a data frame representing the results of a test for
 differential expression, or an omic data matrix or matrix-like object with
 rows corresponding to probes and columns to samples. The former will render
-a study-wide MD plot, the latter a between between-sample MD plot. See
-Details.}
+a study-wide MD plot, the latter a between-sample MD plot. See Details.}
 
 \item{title}{Optional plot title.}
 
@@ -70,8 +69,8 @@ TRUE}, the plot is rendered in HTML and will either open in your browser's
 graphic display or appear in the RStudio viewer. Probe names are extracted
 from \code{dat}.}
 
-\item{fdr}{Significance threshold for declaring a probe differentially
-expressed. Only relevant for study-wide MD plots.}
+\item{fdr}{Optional significance threshold for declaring a probe
+differentially expressed. Only relevant for study-wide MD plots.}
 }
 \description{
 This function plots probewise means vs. log2 fold changes for a test of
