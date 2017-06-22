@@ -50,17 +50,17 @@ format_features <- function(dat,
   for (x in seq_along(features)) {
     if (var_type == 'Categorical') {
       if (length(features[[x]]) != ncol(dat)) {
-        stop(paste('Categorical feature', x, 'not equal to sample size.'))
+        stop('Categorical feature ', x, ' not equal to sample size.')
       }
       if (length(levels(features[[x]])) == 1L) {
-        stop(paste('Categorical feature', x, 'is invariant.'))
+        stop('Categorical feature ', x, ' is invariant.')
       }
     } else if (var_type == 'Continuous') {
       if (length(features[[x]]) != ncol(dat)) {
-        stop(paste('Continuous feature', x, 'not equal to sample size.'))
+        stop('Continuous feature ', x, ' not equal to sample size.')
       }
       if (var(features[[x]]) == 0L) {
-        stop(paste('Continuous feature', x, 'is invariant.'))
+        stop('Continuous feature ', x, ' is invariant.')
       }
       if (!(features[[x]] %>% is.numeric)) {
         stop('All variables passed to covar must be of class numeric.')
@@ -102,11 +102,11 @@ format_binom <- function(vec,
       if (length(levels(vec)) != 2L) {
         stop('Response must be dichotomous.')
       } else {
-        warning(paste0('A positive outcome is hereby defined as obs == "',
-                       levels(vec)[1], '". To change this to obs == "',
-                       levels(vec)[2], '", either relevel the factor or ',
-                       'recode response as numeric (1/0).'))
-        vec <- ifelse(vec == levels(vec)[1], 1L, 0L)
+        warning('A positive outcome is hereby defined as obs == "',
+                levels(vec)[1], '". To change this to obs == "', levels(vec)[2],
+                '", either relevel the factor or recode response as numeric ',
+                '(1/0).')
+        vec <- ifelse(vec == levels(vec)[1L], 1L, 0L)
       }
     }
     if (vec %>% is.logical) {
@@ -194,24 +194,24 @@ colorize <- function(pal,
            'each must denote a valid color in R.')
     } else {
       if (var_type == 'Categorical' && !pal %in% group_pals) {
-        stop(paste('Invalid palette for categorical features. Must be either a',
-                   'vector of valid R colors or one of the following palettes:',
-                   group_pals))
+        stop('Invalid palette for categorical features. Must be either a ',
+             'vector of valid R colors or one of the following palettes: ',
+             stringify(group_pals, 'or'), '.')
       }
       if (var_type == 'Continuous' && !pal %in% covar_pals) {
-        stop(paste('Invalid palette for continuous features. Must be either a',
-                   'vector of valid R colors or one of the following palettes:',
-                   covar_pals))
+        stop('Invalid palette for continuous features. Must be either a ',
+             'vector of valid R colors or one of the following palettes: ',
+             stringify(covar_pals, 'or'), '.')
       }
     }
   } else {
     if (var_type == 'Categorical' && length(pal) < n) {
-      stop(paste('Insufficient colors in palette. Need at least', n, 'for',
-                 'this plot.'))
+      stop('Insufficient colors in palette. ',
+           'Need at least ', n, ' for this plot.')
     }
     if (var_type == 'Categorical' && length(pal) > n) {
-      warning(paste('Too many colors in palette. Only the first', n, 'will',
-                    'be used.'))
+      warning('Too many colors in palette. ',
+              'Only the first ', n, ' will be used.')
     }
     out <- pal
   }
@@ -314,6 +314,12 @@ matrixize <- function(dat) {
     keep <- rowSums(is.finite(dat)) == ncol(dat)
     dat <- dat[keep, , drop = FALSE]
   }
+  if (rownames(dat) %>% is.null) {
+    rownames(dat) <- seq_len(nrow(dat))
+  }
+  if (colnames(dat) %>% is.null) {
+    colnames(dat) <- paste0('Sample', seq_len(ncol(dat)))
+  }
 
   # Output
   return(dat)
@@ -325,43 +331,61 @@ matrixize <- function(dat) {
 #' This utility function calculates distance based on a user defined measure
 #' and optionally filters probes by leading log fold change.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples.
+#' @param dat Omic data matrix.
+#' @param dist Distance measure to be used.
+#' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
-#' @param dist Distance measure to be used. Currently supports \code{
-#'   "euclidean", "pearson", "MI",} or \code{"KLD"}.
 #'
-#' @references
-#' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
-#' (2015).
-#' \href{https://www.ncbi.nlm.nih.gov/pubmed/25605792}{limma powers differential
-#' expression analyses for RNA-sequencing and microarray studies}. \emph{Nucleic
-#' Acids Res.}, emph{43}(7): e47.
+#' @details
+#' Data are median centred by probe and samplewise distance calculated using
+#' one of the following methods:
+#'
+#' \itemize{
+#'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
+#'     "canberra"}, and \code{"minkowski"} are all documented in the \code{
+#'     \link[stats]{dist}} function. \code{bioplotr} relies on a lower level
+#'     implementation via \code{wordspace::\link[wordspace]{dist.matrix}} to
+#'     speed up computations. This latter function also documents the \code{
+#'     "cosine"} distance.
+#'   \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
+#'     to various forms of correlation distance, generally defined as 1 - the
+#'     correlation coefficient. See \code{\link[stats]{cor}} for more details.
+#'   \item \code{"bray"}, \code{"kulczynski"}, \code{"jaccard"}, \code{"gower"},
+#'     \code{"altGower"}, \code{"morisita"}, \code{"horn"}, \code{"mountford"},
+#'     \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"}, and
+#'     \code{"mahalanobis"} are all available and documented in the \code{
+#'     vegan::\link[vegan]{vegdist}} function. These are designed for use with
+#'     ecological data, e.g. a matrix of microbial OTU counts.
+#'   \item \code{"MI"} and \code{"KLD"} are information theoretic distance
+#'     metrics based on the mutual information and Kullback-Leibler divergence
+#'     between vectors, respectively. They are implemented in the \code{bioDist}
+#'     package using the \code{\link[bioDist]{MIdist}} and \code{
+#'     \link[bioDist]{KLdist.matrix}} functions.
+#' }
 #'
 #' @importFrom matrixStats rowVars
 #' @importFrom wordspace dist.matrix
-#' @importFrom bioDist MIdist KLdist.matrix
-#' @importFrom KernSmooth dpih
+#' @importFrom vegan vegdist
 #' @import dplyr
 #'
 
 dist_mat <- function(dat,
+                     dist,
+                     p,
                      top,
-                     filter_method,
-                     dist) {
+                     filter_method) {
 
   # Preliminaries
   if (!(top %>% is.null)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste(
-          'top exceeds nrow(dat), at least after removing probes with missing',
-          'values and/or applying a minimal expression filter. Proceeding with',
-          'the complete', nrow(dat), 'x', ncol(dat), 'matrix.'
-          ))
+        warning('top exceeds nrow(dat), at least after removing probes with ',
+                'missing values and/or applying a minimal expression filter. ',
+                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
+                ' matrix.')
         top <- NULL
       }
     } else {
@@ -381,31 +405,56 @@ dist_mat <- function(dat,
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
-    if (dist == 'euclidean') {
-      dm <- dist.matrix(t(dat), method = 'euclidean')
-    } else if (dist == 'pearson') {
-      dm <- 1 - cor(dat)
-    } else if (dist == 'MI') {
-      dm <- MIdist(t(dat)) %>% as.matrix(.)
-    } else if (dist == 'KLD') {
-      dm <- KLdist.matrix(t(dat)) %>% as.matrix(.)
+    if (dist %in% c('euclidean', 'maximum', 'manhattan',
+                    'canberra', 'minkowski', 'cosine')) {
+      dm <- dist.matrix(dat, method = dist, p = p, byrow = FALSE)
+    } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+                           'morisita', 'horn', 'mountford', 'raup' , 'binomial',
+                           'chao', 'cao', 'mahalanobis')) {
+      dm <- as.matrix(vegdist(t(dat), method = dist))
+    } else if (dist %in% c('pearson', 'kendall', 'spearman')) {
+      dm <- 1L - cor(dat, method = dist)
+    } else {
+      require(bioDist)
+      if (dist == 'MI') {
+        dm <- as.matrix(MIdist(t(dat)))
+      } else if (dist == 'KLD') {
+        dm <- as.matrix(KLdist.matrix(t(dat)))
+      }
     }
   } else if (!(top %>% is.null)) {
     dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
+        top_idx <- nrow(dat) - top + 1L
         if (dist == 'euclidean') {
-          top_idx <- nrow(dat) - top + 1L
           dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
                                         partial = top_idx)[top_idx:nrow(dat)]))
+        } else if (dist == 'maximum') {
+          dm[i, j] <- max(sort.int(abs(dat[, i] - dat[, j]),
+                                   partial = top_idx)[top_idx:nrow(dat)])
+        } else if (dist == 'manhattan') {
+          dm[i, j] <- sum(sort.int(abs(dat[, i] - dat[, j]),
+                                   partial = top_idx)[top_idx:nrow(dat)])
+        } else if (dist == 'minkowski') {
+          dm[i, j] <- (sum(sort.int(abs(dat[, i] - dat[, j]),
+                                    partial = top_idx)[top_idx:nrow(dat)]^p))^(1L / p)
         } else {
-          tops <- order((dat[, i] - dat[, j])^2, decreasing = TRUE)[seq_len(top)]
-          if (dist == 'pearson') {
-            dm[i, j] <- 1 - cor(dat[tops, i], dat[tops, j])
+          tops <- order(abs(dat[, i] - dat[, j]), decreasing = TRUE)[seq_len(top)]
+          m <- dat[tops, c(i, j)]
+          if (dist %in% c('pearson', 'kendall', 'spearman')) {
+            dm[i, j] <- max(1L - cor(m, method = dist))
+          } else if (dist %in% c('canberra', 'cosine')) {
+            dm[i, j] <- max(dist.matrix(m, method = dist, byrow = FALSE))
+          } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower',
+                                 'altGower', 'morisita', 'horn', 'mountford',
+                                 'raup', 'binomial', 'chao', 'cao',
+                                 'mahalanobis')) {
+            dm[i, j] <- max(vegdist(t(m), method = dist))
           } else if (dist == 'MI') {
-            dm[i, j] <- MIdist(t(dat[top, c(i, j)])) %>% max(.)
+            dm[i, j] <- max(MIdist(t(m)))
           } else if (dist == 'KLD') {
-            dm[i, j] <- KLdist.matrix(t(dat[tops, c(i, j)])) %>% max(.)
+            dm[i, j] <- max(KLdist.matrix(t(m)))
           }
         }
       }
@@ -656,8 +705,8 @@ track_cols <- function(features,
     cols <- split(pal, rep(seq_along(features), n.cols))
   } else if (var_type == 'Continuous') {
     if (length(pal) != length(features)) {
-      stop('Number of palettes passed to pal_covar must match number of
-           continuous features passed to covar.')
+      stop('Number of palettes passed to pal_covar must match number of ',
+           'continuous features passed to covar.')
     } else if (pal %>% is.list) {
       cols <- seq_along(features) %>%
         map(function(x) colorize(pal[[x]], 'Continuous'))
@@ -676,20 +725,25 @@ track_cols <- function(features,
 #' Format String
 #'
 #' This utility function formats a character vector into a string representing
-#' a well formed English list, with quotations around each element and an "and"
-#' between the penultimate and final elements.
+#' a well formed English list, with quotations around each element and the
+#' appropriate conjunction between the penultimate and final elements.
 #'
 #' @param x Character vector.
 #'
 
-stringify <- function(x) {
+stringify <- function(x,
+                      conjunct) {
   n <- length(x)
   x <- paste0('"', x)
   x <- paste0(x, '"')
-  x <- c(x[seq_len(n - 1L)], 'and', x[n])
+  x <- c(x[seq_len(n - 1L)], conjunct, x[n])
   if (n > 2L) {
     x <- paste(x, sep = '', collapse = ', ')
-    x <- gsub('and,', 'and', x)
+    if (conjunct == 'and') {
+      x <- gsub('and,', 'and', x)
+    } else {
+      x <- gsub('or,', 'or', x)
+    }
   } else {
     x <- paste(x, sep = '', collapse = ' ')
   }
