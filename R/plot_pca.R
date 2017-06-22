@@ -101,8 +101,7 @@ plot_pca <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples;',
-               'need at least 3 for PCA.'))
+    stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
   }
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
@@ -153,10 +152,10 @@ plot_pca <- function(dat,
   if (!(top %>% is.null)) {                      # Filter by variance?
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes',
-                      'with missing values and/or applying a minimal expression',
-                      'filter. Proceeding with the complete', nrow(dat), 'x',
-                      ncol(dat), 'matrix.'))
+        warning('top exceeds nrow(dat), at least after removing probes with ',
+                'missing values and/or applying a minimal expression filter. ',
+                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
+                'matrix.')
       }
     } else {
       top <- round(top * nrow(dat))
