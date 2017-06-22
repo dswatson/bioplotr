@@ -4,11 +4,11 @@
 \alias{plot_tsne}
 \title{t-SNE Plot}
 \usage{
-plot_tsne(dat, group = NULL, covar = NULL, top = NULL,
-  filter_method = "pairwise", dims = c(1, 2), perplexity = ncol(dat)/4,
-  theta = 0.1, max_iter = 1000, label = FALSE, pal_group = "npg",
-  pal_covar = "blues", title = NULL, legend = "right", hover = FALSE,
-  D3 = FALSE, ...)
+plot_tsne(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2,
+  top = NULL, filter_method = "pairwise", dims = c(1, 2),
+  perplexity = ncol(dat)/4, theta = 0.1, max_iter = 1000, label = FALSE,
+  pal_group = "npg", pal_covar = "blues", title = NULL,
+  legend = "right", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -25,6 +25,12 @@ legend title(s) by passing a named list or data frame.}
 \item{covar}{Optional continuous covariate. If non-\code{NULL}, then plot can
 render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
+
+\item{dist}{Distance measure to be used. Supports all methods available in
+\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
+those implemented in the \code{bioDist} package. See Details.}
+
+\item{p}{Power of the Minkowski distance.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for t-SNE.}
@@ -80,11 +86,9 @@ This function plots a low-dimensional projection of an omic data matrix using
 t-distributed stochastic neighbor embedding.
 }
 \details{
-This function plots the samples of an omic data matrix in a two- or
-three-dimensional stochastic neighbor subspace. t-SNE is a popular machine
-learning method for unsupervised cluster detection. It can also aid in
-spotting potential outliers, and generally helps to visualize the latent
-structure of a data set.
+t-SNE is a popular machine learning method for visualizing high-dimensional
+datasets. It is designed to preserve local structure and aids in revealing
+unsupervised clusters.
 
 \code{plot_tsne} relies on a C++ implementation of the Barnes-Hut algorithm,
 which vastly accelerates the original t-SNE projection method. An exact t-SNE
@@ -97,6 +101,17 @@ divergence between these two distributions using an efficient tree search.
 See \code{\link[Rtsne]{Rtsne}} for more details. A thorough introduction to
 and explication of the original t-SNE method and the Barnes-Hut approximation
 may be found in the references below.
+
+The \code{Rtsne} function can operate directly on a distance matrix.
+Available distance measures include: \code{"euclidean"}, \code{"maximum"},
+\code{"manhattan"}, \code{"canberra"}, \code{"minkowski"}, \code{"cosine"},
+\code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"bray"}, \code{
+"kulczynski"}, \code{"jaccard"}, \code{"gower"}, \code{"altGower"}, \code{
+"morisita"}, \code{"horn"}, \code{"mountford"}, \code{"raup"}, \code{
+"binomial"}, \code{"chao"}, \code{"cao"}, \code{"mahalanobis"}, \code{"MI"},
+or \code{"KLD"}. Some distance measures are unsuitable for certain types of
+data. See \code{\link{dist_mat}} for more details on these methods and links
+to documentation on each.
 
 The \code{top} argument optionally filters data using either probewise
 variance (if \code{filter_method = "common"}) or the leading fold change
