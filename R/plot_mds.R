@@ -65,17 +65,15 @@
 #' function, which uses isotonic regression to find the monotonic transformation
 #' that minimizes the stress of the embedding (Kruskal, 1964).
 #'
-#' MDS requires a distance matrix as input. Internal functions median centre the
-#' probe vectors and compute samplewise distances using one of the following
-#' methods: \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
-#' "canberra"}, \code{"minkowski"}, \code{"cosine"}, \code{"pearson"}, \code{
-#' "kendall"}, \code{"spearman"}, \code{"bray"}, \code{"kulczynski"}, \code{
-#' "jaccard"}, \code{"gower"}, \code{"altGower"}, \code{"morisita"}, \code{
-#' "horn"}, \code{"mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"},
-#' \code{"cao"}, \code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some
-#' distance measures are unsuitable for certain types of data. See \code{
-#' \link{dist_mat}} for more details on these methods and links to full
-#' documentation on each.
+#' MDS requires a distance matrix as input. Available distance measures include:
+#' \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{"canberra"},
+#' \code{"minkowski"}, \code{"cosine"}, \code{"pearson"}, \code{"kendall"},
+#' \code{"spearman"}, \code{"bray"}, \code{"kulczynski"}, \code{"jaccard"},
+#' \code{"gower"}, \code{"altGower"}, \code{"morisita"}, \code{"horn"}, \code{
+#' "mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"},
+#' \code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some distance measures
+#' are unsuitable for certain types of data. See \code{\link{dist_mat}} for more
+#' details on these methods and links to documentation on each.
 #'
 #' If \code{top} is non-\code{NULL}, then data can either be filtered by
 #' probewise variance (\code{filter_method = "common"}) or using the leading
@@ -126,9 +124,9 @@
 plot_mds <- function(dat,
                      group = NULL,
                      covar = NULL,
+                    metric = TRUE,
                       dist = 'euclidean',
                          p = 2,
-                    metric = TRUE,
                        top = 500,
              filter_method = 'pairwise',
                        pcs = c(1, 2),
@@ -142,8 +140,7 @@ plot_mds <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples; ',
-               'need at least 3 for MDS.'))
+    stop('dat includes only ', ncol(dat), ' samples; need at least 3 for MDS.')
   }
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
