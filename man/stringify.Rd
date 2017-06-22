@@ -4,13 +4,13 @@
 \alias{stringify}
 \title{Format String}
 \usage{
-stringify(x)
+stringify(x, conjunct)
 }
 \arguments{
 \item{x}{Character vector.}
 }
 \description{
 This utility function formats a character vector into a string representing
-a well formed English list, with quotations around each element and an "and"
-between the penultimate and final elements.
+a well formed English list, with quotations around each element and the
+appropriate conjunction between the penultimate and final elements.
 }
