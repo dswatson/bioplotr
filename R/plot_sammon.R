@@ -172,7 +172,7 @@ plot_sammon <- function(dat,
   # Tidy data
   dat <- matrixize(dat)
   dm <- dist_mat(dat, dist, p, top, filter_method)
-  sm <- sammon(dm, k = max(dims), trace = FALSE)$points     # Project
+  sm <- sammon(dm, k = max(dims), trace = FALSE)$points    # Project
   df <- data_frame(Sample = colnames(dat))                 # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = sm[, min(dims)],
@@ -188,15 +188,11 @@ plot_sammon <- function(dat,
   }
 
   # Build plot
-  xlab <- paste('Dim', min(dims))
-  ylab <- paste('Dim', max(dims))
+  xlab <- paste('Sammon Mapping Dim', min(dims))
+  ylab <- paste('Sammon Mapping Dim', max(dims))
   embed(df, group, covar, group_cols, covar_cols, feature_names,
         label, title, xlab, ylab, legend, hover, D3)
 
 }
 
-# Interactive options:
-# 1) filter probes
-# 2) filter samples
-# 3) change dims
 

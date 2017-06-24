@@ -78,18 +78,14 @@ This function plots a low-dimensional projection of an omic data matrix using
 multi-dimensional scaling.
 }
 \details{
-This function plots the samples of an omic data matrix in a two- or
-three-dimensional principal coordinate subspace. MDS is an easy and popular
-method for unsupervised cluster detection. It can also aid in spotting
-potential outliers, and generally helps to visualize the latent structure of
-a data set.
-
-Classical MDS is implemented by the \code{\link[stats]{cmdscale}} function,
-which finds the optimal two-dimensional projection of a distance matrix by
-minimizing the strain of the coordinate mapping (Torgerson, 1958).
-Nonmetric MDS (NMDS) is implemented by the \code{\link[vegan]{monoMDS}}
-function, which uses isotonic regression to find the monotonic transformation
-that minimizes the stress of the embedding (Kruskal, 1964).
+MDS is an iterative algorithm for embedding high-dimensional manifolds in
+two or three dimensions. Classical MDS is implemented by the \code{
+\link[stats]{cmdscale}} function, which finds the optimal two-dimensional
+projection of a distance matrix by minimizing the strain of the coordinate
+mapping (Torgerson, 1958). Nonmetric MDS (NMDS) is implemented by the \code{
+\link[vegan]{monoMDS}} function, which uses isotonic regression to find the
+monotonic transformation that minimizes the stress of the embedding
+(Kruskal, 1964).
 
 MDS requires a distance matrix as input. Available distance measures include:
 \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{"canberra"},
@@ -109,7 +105,7 @@ most differentially expressed probes between the two samples. This method is
 appropriate when different molecular pathways are relevant for distinguishing
 different pairs of samples. To run MDS on the complete data, set \code{
 top = NULL}. This is functionally equivalent to running PCA on the full
-matrix. See \code{\link{plot_pca}}.
+matrix when \code{dist = "euclidean"}. See \code{\link{plot_pca}}.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)

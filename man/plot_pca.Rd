@@ -68,9 +68,8 @@ principal component analysis.
 This function plots the samples of an omic data matrix in a two- or
 three-dimensional principal component subspace. Axis labels include the
 percentage of variance explained by each component. PCA is an easy and
-popular method for unsupervised cluster detection. It can also aid in
-spotting potential outliers, and generally helps to visualize the latent
-structure of a data set.
+popular projection method that can aid in identifying clusters, detecting
+outliers, and visualizing the latent structure of a dataset.
 
 By default, \code{plot_pca} performs singular value decomposition on the
 complete \code{dat} matrix. Limit the PCA to only the most variable probes by
