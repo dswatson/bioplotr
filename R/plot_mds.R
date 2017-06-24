@@ -203,12 +203,20 @@ plot_mds <- function(dat,
     mds <- suppressWarnings(cmdscale(dm, k = max(pcs)))
   } else {
     converged <- FALSE
+    mds <- NULL
     max_iter <- 20L
     while(!converged) {
-      mds <- suppressWarnings(
-        metaMDS(dm, k = max(pcs), trace = 0L, trymax = max_iter,
-                autotransform = FALSE)
-      )
+      if (mds %>% is.null) {
+        mds <- suppressWarnings(
+          metaMDS(dm, k = max(pcs), trace = 0L, trymax = max_iter,
+                  autotransform = FALSE)
+        )
+      } else {
+        mds <- suppressWarnings(
+          metaMDS(dm, k = max(pcs), trace = 0L, trymax = max_iter,
+                  autotransform = FALSE, previous.best = mds)
+        )
+      }
       if (mds$converged) {
         converged <- TRUE
       } else {
