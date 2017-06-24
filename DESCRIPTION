@@ -19,15 +19,14 @@ Imports:
   limma,
   edgeR,
   matrixStats,
-  precrec,
   wordspace,
   vegan,
-  Rtsne,
   RColorBrewer,
   ggsci,
   Rtsne,
+  lle,
   MASS,
-  som
+  precrec
 Suggests:
   plotly,
   bioDist,
