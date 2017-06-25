@@ -61,7 +61,7 @@
 #' plot_concordance(df)
 #'
 #' @export
-#' @importFrom purrr some
+#' @importFrom purrr some rerun map_dbl
 #' @importFrom tidyr gather
 #' @importFrom infotheo mutinformation natstobits
 #' @import dplyr
@@ -174,9 +174,11 @@ plot_concordance <- function(dat,
         for (j in 1L:(i - 1L)) {
           tmp <- dat[, c(i, j)] %>% na.omit()
           if (method == 'MI') {
-            null <- replicate(B, sample(tmp[[1L]], nrow(tmp)) %>%
-                                mutinformation(tmp[[2L]]) %>%
-                                natstobits(.))
+            null <- B %>%
+              rerun(x = sample(tmp[[1L]], nrow(tmp)),
+                    y = tmp[[2L]]) %>%
+              map_dbl(~ mutinformation(.x$x, .x$y)) %>%
+              natstobits(.)
             p_mat[i, j] <- (sum(null >= mat[i, j]) + 1L) / (B + 1L)
           } else if (method == 'chisq') {
             if (sim.p) {
