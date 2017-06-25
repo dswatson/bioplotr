@@ -93,7 +93,7 @@ plot_drivers <- function(dat,
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
   }
-  if (any(clin[[index]], duplicated)) {
+  if (any(clin[[index]] %>% duplicated)) {
     stop('Duplicate sample names detected in index.')
   }
   if (!any(clin[[index]] %in% colnames(dat))) {
