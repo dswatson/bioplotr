@@ -4,9 +4,9 @@
 \alias{plot_concordance}
 \title{Concordance Plot}
 \usage{
-plot_concordance(dat, label = FALSE, diag = FALSE, method = "MI",
-  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, title = NULL,
-  legend = "right", hover = FALSE)
+plot_concordance(dat, label = FALSE, diag = FALSE, method = "fisher",
+  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, export = FALSE,
+  title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
@@ -19,8 +19,8 @@ factors with a warning, if possible.}
 advisable if \code{method = "MI"}.}
 
 \item{method}{String specifying which measure of association to
-compute. Currently supports \code{"MI"}, \code{"fisher"}, and \code{
-"chisq"}. See Details.}
+compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
+"MI"}. See Details.}
 
 \item{alpha}{Optional significance threshold to impose on association
 statistics. Those with \emph{p}-values (optionally adjusted) less than or
@@ -36,6 +36,10 @@ relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
 
 \item{B}{Number of replicates or permutations to generate when computing
 \emph{p}-values. See Details.}
+
+\item{export}{Export concordance matrix? If \code{TRUE} and \code{alpha} is
+non-\code{NULL}, then the function will also return the \emph{p}-value
+matrix.}
 
 \item{title}{Optional plot title.}
 

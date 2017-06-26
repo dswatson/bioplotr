@@ -9,8 +9,8 @@
 #' @param diag Include principal diagonal of the concordance matrix? Only
 #'   advisable if \code{method = "MI"}.
 #' @param method String specifying which measure of association to
-#'   compute. Currently supports \code{"MI"}, \code{"fisher"}, and \code{
-#'   "chisq"}. See Details.
+#'   compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
+#'   "MI"}. See Details.
 #' @param alpha Optional significance threshold to impose on association
 #'   statistics. Those with \emph{p}-values (optionally adjusted) less than or
 #'   equal to \code{alpha} are outlined in black.
@@ -22,6 +22,9 @@
 #'   relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.
 #' @param B Number of replicates or permutations to generate when computing
 #'   \emph{p}-values. See Details.
+#' @param export Export concordance matrix? If \code{TRUE} and \code{alpha} is
+#'   non-\code{NULL}, then the function will also return the \emph{p}-value
+#'   matrix.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
 #'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
@@ -54,6 +57,14 @@
 #' statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
 #' estimated via permutation testing with \code{B} permutations.
 #'
+#' @value
+#' If \code{export = TRUE}, a list with up to two elements:
+#' \itemize{
+#'   \item The concordance matrix, computed via the chosen \code{method}.
+#'   \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
+#'   is non-\code{NULL}.
+#' }
+#'
 #' @examples
 #' df <- data.frame(A = sample(1:2, 20, replace = TRUE),
 #'                  B = sample(1:3, 20, replace = TRUE),
@@ -71,11 +82,12 @@
 plot_concordance <- function(dat,
                              label = FALSE,
                               diag = FALSE,
-                            method = 'MI',
+                            method = 'fisher',
                              alpha = NULL,
                              p.adj = NULL,
                              sim.p = FALSE,
                                  B = 2000,
+                            export = FALSE,
                              title = NULL,
                             legend = 'right',
                              hover = FALSE) {
@@ -85,7 +97,7 @@ plot_concordance <- function(dat,
   if (p < 2L) {
     stop('dat must have at least two columns to generate a concordance matrix.')
   }
-  if (dat %>% some(is.numeric)) {
+  if (some(dat, is.numeric)) {
     for (j in seq_along(dat)) {
       if (dat[[j]] %>% is.numeric) {
         if (!all.equal(dat[[j]], as.integer(dat[[j]]))) {
@@ -104,8 +116,8 @@ plot_concordance <- function(dat,
   if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
-  if (!method %in% c('MI', 'fisher', 'chisq')) {
-    stop('method must be one of "MI", "fisher", or "chisq".')
+  if (!method %in% c('fisher', 'chisq', 'MI')) {
+    stop('method must be one of "fisher", "chisq", or "MI".')
   }
   if (!(alpha %>% is.null)) {
     if (alpha <= 0 || alpha >= 1) {
@@ -113,10 +125,9 @@ plot_concordance <- function(dat,
     }
   }
   if (!(p.adj %>% is.null)) {
-    if (!p.adj %in% c('holm', 'hochberg', 'hommel',
-                      'bonferroni', 'BH', 'BY', 'fdr')) {
-      stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
-           '"BH", "BY", or "fdr". See ?p.adjust.')
+    p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p.adj %in% p_adj) {
+      stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
     }
   }
   if (title %>% is.null) {
@@ -197,6 +208,12 @@ plot_concordance <- function(dat,
     }
     df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
   }
+  if (export) {
+    out <- list(Concordance = mat)
+    if (!(alpha %>% is.null)) {
+      out$p_mat <- p_mat
+    }
+  }
 
   # Build Plot
   if (method == 'MI') {
@@ -224,6 +241,9 @@ plot_concordance <- function(dat,
 
   # Output
   gg_out(p, hover, legend)
+  if (export) {
+    return(out)
+  }
 
 }
 
