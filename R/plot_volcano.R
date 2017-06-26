@@ -201,10 +201,16 @@ plot_volcano <- function(dat,
         )
       }
     } else {
-      p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
-        scale_color_manual(name = expression(italic(q)*'-value'),
-                         labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                         values = c('black', pal_d3()(4L)[4L])) +
+      if (y == 'p') {
+        p <- p + geom_point(aes(logFC, logP, colo = q.value <= fdr),
+                            size = size, alpha = alpha)
+      } else {
+        p <- p + geom_point(aes(logFC, logQ, colo = q.value <= fdr),
+                            size = size, alpha = alpha)
+      }
+      p <- p + scale_color_manual(name = expression(italic(q)*'-value'),
+                                labels = c(paste('>', fdr), paste('\u2264', fdr)),
+                                values = c('black', pal_d3()(4L)[4L])) +
         guides(color = guide_legend(reverse = TRUE))
       if (!(lfc %>% is.null) && all(df$Direction == 'None')) {
         warning('No probe meets both your fdr and lfc criteria. To color ',
