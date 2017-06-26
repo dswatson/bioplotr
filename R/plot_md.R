@@ -4,9 +4,9 @@
 #' differential expression or between-sample comparison.
 #'
 #' @param dat Either a data frame representing the results of a test for
-#'   differential expression, or an omic data matrix or matrix-like object with
-#'   rows corresponding to probes and columns to samples. The former will render
-#'   a study-wide MD plot, the latter a between-sample MD plot. See Details.
+#'   differential expression, or a probe by sample omic data matrix. The former
+#'   will render a study-wide MD plot, the latter a between-sample MD plot.
+#'   Suitable objects from familiar packages are also acceptable. See Details.
 #' @param design Optional design matrix with rows corresponding to samples and
 #'   columns to coefficients to be estimated. Only relevant for \code{
 #'   \link[edgeR]{DGEList}} objects. See Details.

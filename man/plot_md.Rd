@@ -38,9 +38,9 @@ plot_md(dat, title = NULL, legend = "right", ...)
 }
 \arguments{
 \item{dat}{Either a data frame representing the results of a test for
-differential expression, or an omic data matrix or matrix-like object with
-rows corresponding to probes and columns to samples. The former will render
-a study-wide MD plot, the latter a between-sample MD plot. See Details.}
+differential expression, or a probe by sample omic data matrix. The former
+will render a study-wide MD plot, the latter a between-sample MD plot.
+Suitable objects from familiar packages are also acceptable. See Details.}
 
 \item{title}{Optional plot title.}
 
