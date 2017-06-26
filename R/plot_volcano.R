@@ -1,17 +1,22 @@
 #' Volcano Plot
 #'
-#' This function plots log2 fold changes against -log10 \emph{p}-values for a
-#' given test of differential expression.
+#' This function plots effect size against significance for a given test of
+#' differential expression.
 #'
-#' @param dat Data frame representing the results of a test for differential
-#'   expression, such as the output of a call to \code{\link[limma]{topTable}},
-#'   \code{\link[edgeR]{topTags}}, or \code{\link[DESeq2]{results}}.
-#'   Alternatively, any object coercable to a data frame with columns for \emph{
-#'   p}-values, log fold changes, and FDR. Missing values are silently removed.
+#' @param dat Data frame or similar object representing the results of a test
+#'   for differential expression, such as the output of a call to \code{
+#'   limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or
+#'   \code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object coercable
+#'   to a data frame with columns for \emph{p}-values, \emph{q}-values, and log
+#'   fold changes. Missing values are silently removed.
+#' @param y Plot \emph{p}-values (\code{y = "p"}) or \emph{q}-values (\code{
+#'   y = "q"}) on the y-axis?
 #' @param fdr Significance threshold for declaring a probe differentially
 #'   expressed.
 #' @param lfc Optional effect size threshold for declaring a probe
 #'   differentially expressed.
+#' @param probe Name of column in which to find probe IDs, presuming they are
+#'   not stored in \code{rownames(dat)}.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
 #'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
@@ -23,12 +28,12 @@
 #'
 #' @details
 #' Volcano plots visualize the relationship between each probe's log2 fold
-#' change and -log10 \emph{p}-value for a given test of differential expression.
-#' Points are colored to distinguish between those that do and do not meet a
-#' user-defined FDR threshold. Up- and down-regulated genes may also be
-#' differentially colored if a minimum absolute fold change is supplied. These
-#' figures help to evaluate the symmetry, magnitude, and significance of effects
-#' in an omic experiment.
+#' change and -log10 \emph{p}- or \emph{q}-value for a given test of
+#' differential expression. Points are colored to distinguish between those that
+#' do and do not meet a user-defined FDR threshold. Up- and down-regulated genes
+#' may also be differentially colored if a minimum absolute fold change is
+#' supplied. These figures help to evaluate the symmetry, magnitude, and
+#' significance of effects in an omic experiment.
 #'
 #' @examples
 #' # Simulated data
@@ -52,14 +57,16 @@
 #'
 
 plot_volcano <- function(dat,
-                         fdr = 0.05,
-                         lfc = NULL,
-                       title = NULL,
-                      legend = 'right',
-                       hover = FALSE) {
+                         y = 'q',
+                       fdr = 0.05,
+                       lfc = NULL,
+                     probe = NULL,
+                     title = NULL,
+                    legend = 'right',
+                     hover = FALSE) {
 
   # Preliminaries
-  dat <- dat %>% as.data.frame(.)
+  dat <- as.data.frame(dat)
   fc <- c('log2FoldChange', 'logFC')
   if (sum(fc %in% colnames(dat)) == 1L) {        # Rename logFC
     colnames(dat)[colnames(dat) %in% fc] <- 'logFC'
@@ -76,7 +83,7 @@ plot_volcano <- function(dat,
          'vector include ', stringify(p, 'and'), '. Make sure that dat ',
          'includes exactly one such colname.')
   }
-  q <- c('adj.P.Val', 'padj', 'FDR', 'q.value')
+  q <- c('adj.P.Val', 'padj', 'FDR', 'qvalue', 'q.value')
   if (sum(q %in% colnames(dat)) == 1L) {         # Rename q.value
     colnames(dat)[colnames(dat) %in% q] <- 'q.value'
   } else {
@@ -84,18 +91,30 @@ plot_volcano <- function(dat,
          'colnames for this vector include ', stringify(q, 'and'), '. ',
          'Make sure that dat includes exactly one such colname.')
   }
+  if (!y %in% c('p', 'q')) {
+    stop('y must be one of "p" or "q".')
+  }
+  if (!(probe %>% is.null)) {
+    if (!probe %in% colnames(dat)) {
+      stop('Column "', probe, '" not detected.')
+    } else {
+      colnames(dat)[which(colnames(dat)) == probe] <- 'Probe'
+    }
+  } else {
+    dat <- dat %>% mutate(Probe = rownames(.))
+  }
   dat <- dat %>%
-    select(logFC, p.value, q.value) %>%
+    select(Probe, logFC, p.value, q.value) %>%
     na.omit(.)
   if (nrow(dat) == 0L) {
     stop('dat must have at least one row with non-missing values for logFC, ',
-         'p.value, and FDR.')
+         'p.value, and q.value.')
   }
   if (min(dat$p.value) < 0L || max(dat$p.value) > 1L) {
     stop('P-values must be on [0, 1].')
   }
   if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
-    stop('FDR values must be on [0, 1].')
+    stop('Q-values values must be on [0, 1].')
   }
   if (title %>% is.null) {
     title <- 'Volcano Plot'
@@ -108,56 +127,86 @@ plot_volcano <- function(dat,
 
   # Tidy data
   df <- dat %>%
-    mutate(Probe = ifelse(is.null(rownames(dat)), row_number(.), rownames(dat)),
-            logP = -log10(p.value))
+    mutate(logP = -log10(p.value),
+           logQ = -log10(q.value))
   if (!(lfc %>% is.null)) {
     df <- df %>%
-      mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
-                                ifelse(q.value <= fdr & -logFC >= lfc, 'Down', 'NA')))
+      mutate(Direction = ifelse(q.value <= fdr && logFC >= lfc, 'Up',
+                                ifelse(q.value <= fdr && -logFC >= lfc, 'Down',
+                                       'None')))
   }
 
   # Build plot
   size <- pt_size(df)
   alpha <- pt_alpha(df)
-  p <- ggplot(df, aes(logFC, logP, text = Probe)) +
-    labs(title = title,
-             x = expression(log[2]~'Fold Change'),
-             y = expression(~-log[10](italic(p)))) +
+  p <- ggplot(df) +
+    labs(title = title, x = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by ',
             'differential expression, consider raising your fdr cutoff.')
-    p <- p + geom_point(size = size, alpha = alpha, color = 'black')
-  } else {                                       # Separate up- and down-regulated probes?
-    if (!(lfc %>% is.null) && any(df$Direction != 'NA')) {
-      y <- df %>%
-        filter(q.value <= fdr) %>%
-        filter(logP == min(logP)) %>%
-        select(logP) %>%
-        as.numeric(.)
+    if (y == 'p') {
       suppressWarnings(
-        p <- p + geom_point(data = df %>% filter(Direction != 'NA'),
-                            aes(logFC, logP, color = Direction, text = Probe),
-                            size = size, alpha = alpha) +
-          geom_point(data = df %>% filter(Direction == 'NA'),
-                     aes(logFC, logP, text = Probe),
-                     color = '#444444', size = size, alpha = alpha) +
-          geom_segment(x = -Inf, xend = -lfc, y = y, yend = y, linetype = 2L) +
-          geom_segment(x = lfc, xend = Inf, y = y, yend = y, linetype = 2L) +
-          geom_segment(x = -lfc, xend = -lfc, y = y, yend = Inf, linetype = 2L) +
-          geom_segment(x = lfc, xend = lfc, y = y, yend = Inf, linetype = 2L) +
-          annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
-                   hjust = 0L, vjust = -1L) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
+        p <- p + geom_point(aes(logFC, logP, text = Probe),
+                            size = size, alpha = alpha, color = 'black') +
+          ylab(expression(~-log[10](italic(p))))
       )
+    } else {
+      suppressWarnings(
+        p <- p + geom_point(aes(logFC, logQ, text = Probe),
+                            size = size, alpha = alpha, color = 'black') +
+          ylab(expression(~-log[10](italic(q))))
+      )
+    }
+  } else {                                       # Separate up- and down-regulated probes?
+    if (!(lfc %>% is.null) && any(df$Direction != 'None')) {
+      if (y == 'p') {
+        y_pt <- df %>%
+          filter(q.value <= fdr) %>%
+          filter(logP == min(logP)) %>%
+          select(logP) %>%
+          as.numeric(.)
+        suppressWarnings(
+          p <- p + geom_point(data = df %>% filter(Direction != 'None'),
+                              aes(logFC, logP, color = Direction, text = Probe),
+                              size = size, alpha = alpha) +
+            geom_point(data = df %>% filter(Direction == 'None'),
+                       aes(logFC, logP, text = Probe),
+                       color = '#444444', size = size, alpha = alpha) +
+            geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
+            geom_segment(x = lfc, xend = Inf, y = y_pt, yend = y_pt, linetype = 2L) +
+            geom_segment(x = -lfc, xend = -lfc, y = y_pt, yend = Inf, linetype = 2L) +
+            geom_segment(x = lfc, xend = lfc, y = y_pt, yend = Inf, linetype = 2L) +
+            # annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
+            #          hjust = 0L, vjust = -1L) +
+            scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
+        )
+      } else {
+        y_pt <- -log10(fdr)
+        suppressWarnings(
+          p <- p + geom_point(data = df %>% filter(Direction != 'None'),
+                              aes(logFC, logQ, color = Direction, text = Probe),
+                              size = size, alpha = alpha) +
+            geom_point(data = df %>% filter(Direction == 'None'),
+                       aes(logFC, logQ, text = Probe),
+                       color = '#444444', size = size, alpha = alpha) +
+            geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
+            geom_segment(x = lfc, xend = Inf, y = y_pt, yend = y_pt, linetype = 2L) +
+            geom_segment(x = -lfc, xend = -lfc, y = y_pt, yend = Inf, linetype = 2L) +
+            geom_segment(x = lfc, xend = lfc, y = y_pt, yend = Inf, linetype = 2L) +
+            # annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
+            #          hjust = 0L, vjust = -1L) +
+            scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
+        )
+      }
     } else {
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = expression(italic(q)*'-value'),
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
                          values = c('black', pal_d3()(4L)[4L])) +
         guides(color = guide_legend(reverse = TRUE))
-      if (!(lfc %>% is.null) & all(df$Direction == 'NA')) {
+      if (!(lfc %>% is.null) && all(df$Direction == 'None')) {
         warning('No probe meets both your fdr and lfc criteria. To color ',
                 'probes by the direction of their differential expression, ',
                 'consider lowering your lfc threshold.')
