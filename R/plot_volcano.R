@@ -126,91 +126,63 @@ plot_volcano <- function(dat,
   }
 
   # Tidy data
-  df <- dat %>%
-    mutate(logP = -log10(p.value),
-           logQ = -log10(q.value))
+  if (y == 'p') {
+    df <- dat %>% mutate(Y = -log10(p.value))
+  } else {
+    df <- dat %>% mutate(Y = -log10(q.value))
+  }
   if (!(lfc %>% is.null)) {
     df <- df %>%
-      mutate(Direction = ifelse(q.value <= fdr && logFC >= lfc, 'Up',
-                                ifelse(q.value <= fdr && -logFC >= lfc, 'Down',
+      mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
+                                ifelse(q.value <= fdr & -logFC >= lfc, 'Down',
                                        'None')))
   }
 
   # Build plot
   size <- pt_size(df)
   alpha <- pt_alpha(df)
-  p <- ggplot(df) +
+  p <- ggplot(df, aes(logFC, Y, text = Probe)) +
     labs(title = title, x = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
+  if (y == 'p') {
+    p <- p + ylab(expression(~-log[10](italic(p))))
+    y_pt <- df %>%
+      filter(q.value <= fdr) %>%
+      filter(Y == min(Y)) %>%
+      select(Y) %>%
+      as.numeric(.)
+  } else {
+    p <- p + ylab(expression(~-log[10](italic(q))))
+    y_pt <- -log10(fdr)
+  }
   if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by ',
             'differential expression, consider raising your fdr cutoff.')
-    if (y == 'p') {
-      suppressWarnings(
-        p <- p + geom_point(aes(logFC, logP, text = Probe),
-                            size = size, alpha = alpha, color = 'black') +
-          ylab(expression(~-log[10](italic(p))))
-      )
-    } else {
-      suppressWarnings(
-        p <- p + geom_point(aes(logFC, logQ, text = Probe),
-                            size = size, alpha = alpha, color = 'black') +
-          ylab(expression(~-log[10](italic(q))))
-      )
-    }
+    p <- p + geom_point(size = size, alpha = alpha, color = 'black')
   } else {                                       # Separate up- and down-regulated probes?
     if (!(lfc %>% is.null) && any(df$Direction != 'None')) {
-      if (y == 'p') {
-        y_pt <- df %>%
-          filter(q.value <= fdr) %>%
-          filter(logP == min(logP)) %>%
-          select(logP) %>%
-          as.numeric(.)
-        suppressWarnings(
-          p <- p + geom_point(data = df %>% filter(Direction != 'None'),
-                              aes(logFC, logP, color = Direction, text = Probe),
-                              size = size, alpha = alpha) +
-            geom_point(data = df %>% filter(Direction == 'None'),
-                       aes(logFC, logP, text = Probe),
-                       color = '#444444', size = size, alpha = alpha) +
-            geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
-            geom_segment(x = lfc, xend = Inf, y = y_pt, yend = y_pt, linetype = 2L) +
-            geom_segment(x = -lfc, xend = -lfc, y = y_pt, yend = Inf, linetype = 2L) +
-            geom_segment(x = lfc, xend = lfc, y = y_pt, yend = Inf, linetype = 2L) +
-            # annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
-            #          hjust = 0L, vjust = -1L) +
-            scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
-        )
-      } else {
-        y_pt <- -log10(fdr)
-        suppressWarnings(
-          p <- p + geom_point(data = df %>% filter(Direction != 'None'),
-                              aes(logFC, logQ, color = Direction, text = Probe),
-                              size = size, alpha = alpha) +
-            geom_point(data = df %>% filter(Direction == 'None'),
-                       aes(logFC, logQ, text = Probe),
-                       color = '#444444', size = size, alpha = alpha) +
-            geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
-            geom_segment(x = lfc, xend = Inf, y = y_pt, yend = y_pt, linetype = 2L) +
-            geom_segment(x = -lfc, xend = -lfc, y = y_pt, yend = Inf, linetype = 2L) +
-            geom_segment(x = lfc, xend = lfc, y = y_pt, yend = Inf, linetype = 2L) +
-            # annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
-            #          hjust = 0L, vjust = -1L) +
-            scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
-        )
-      }
+      suppressWarnings(
+        p <- p + geom_point(data = df %>% filter(Direction != 'None'),
+                            aes(logFC, Y, color = Direction, text = Probe),
+                            size = size, alpha = alpha) +
+          geom_point(data = df %>% filter(Direction == 'None'),
+                     aes(logFC, Y, text = Probe),
+                     color = '#444444', size = size, alpha = alpha) +
+          geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
+          geom_segment(x = lfc, xend = Inf, y = y_pt, yend = y_pt, linetype = 2L) +
+          geom_segment(x = -lfc, xend = -lfc, y = y_pt, yend = Inf, linetype = 2L) +
+          geom_segment(x = lfc, xend = lfc, y = y_pt, yend = Inf, linetype = 2L) +
+          # annotate('text', x = min(df$logFC), y, label = paste('FDR =', fdr),
+          #          hjust = 0L, vjust = -1L) +
+          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
+      )
     } else {
-      if (y == 'p') {
-        p <- p + geom_point(aes(logFC, logP, colo = q.value <= fdr),
-                            size = size, alpha = alpha)
-      } else {
-        p <- p + geom_point(aes(logFC, logQ, colo = q.value <= fdr),
-                            size = size, alpha = alpha)
-      }
-      p <- p + scale_color_manual(name = expression(italic(q)*'-value'),
-                                labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                                values = c('black', pal_d3()(4L)[4L])) +
+      p <- p + geom_point(aes(color = q.value <= fdr),
+                          size = size, alpha = alpha) +
+        scale_color_manual(name = expression(italic(q)*'-value'),
+                         labels = c(paste('>', fdr), paste('\u2264', fdr)),
+                         values = c('black', pal_d3()(4L)[4L])) +
         guides(color = guide_legend(reverse = TRUE))
       if (!(lfc %>% is.null) && all(df$Direction == 'None')) {
         warning('No probe meets both your fdr and lfc criteria. To color ',
