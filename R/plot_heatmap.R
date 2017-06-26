@@ -10,11 +10,9 @@
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param dist Distance measure to be used. Supports all methods available in
-#'   \code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
-#'   those implemented in the \code{bioDist} package. See Details.
-#' @param p Power of the Minkowski distance.
+#'   \code{\link[stats]{dist}} and \code{\link[stats]{cor}}.
 #' @param hclustfun The agglomeration method to be used for hierarchical
-#'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
+#'   clustering. Supports all methods available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
 #'   number of vectors passed to \code{group}. Options include \code{'ggplot'},
@@ -57,7 +55,6 @@ plot_heatmap <- function(dat,
                          group = NULL,
                          covar = NULL,
                           dist = 'pearson',
-                             p = 2,
                      hclustfun = 'average',
                      pal_group = 'npg',
                      pal_covar = 'blues',
@@ -82,9 +79,7 @@ plot_heatmap <- function(dat,
     ann_cols <- c(grp_cols, cov_cols)
   }
   d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
-         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
-         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+         'pearson', 'kendall', 'spearman')
   if (!dist %in% d) {
     stop('dist must be one of ', stringify(d, 'or'), '.')
   }
@@ -107,19 +102,20 @@ plot_heatmap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  dm <- dist_mat(dat, dist, p, top = NULL, filter_method = NULL) %>% as.dist(.)
 
   # Plot
-  require(NMF)
-  if (is.null(anno)) {
-    aheatmap(dat, distfun = dm, scale = 'row', col = pal_tiles,
-             hclustfun = hclustfun, main = title, border_color = 'grey60')
+  suppressPackageStartupMessages(require(NMF))
+  if (anno %>% is.null) {
+    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
+             col = pal_tiles, main = title, border_color = 'grey60')
   } else {
-    aheatmap(dat, distfun = dm, scale = 'row', col = pal_tiles,
-             hclustfun = hclustfun, main = title, annCol = anno,
-             annColors = ann_cols, border_color = 'grey60')
+    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
+             annCol = anno, annColors = ann_cols, col = pal_tiles,
+             main = title, border_color = 'grey60')
   }
 
 }
 
+
+### REPLACE AHEATMAP WITH PHEATMAP ###
 
