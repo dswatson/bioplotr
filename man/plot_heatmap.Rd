@@ -4,7 +4,7 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson", p = 2,
+plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
   hclustfun = "average", pal_group = "npg", pal_covar = "blues",
   pal_tiles = "RdBu", title = NULL)
 }
@@ -20,13 +20,10 @@ named.}
 Alternatively, a data frame or list of such vectors, optionally named.}
 
 \item{dist}{Distance measure to be used. Supports all methods available in
-\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
-those implemented in the \code{bioDist} package. See Details.}
-
-\item{p}{Power of the Minkowski distance.}
+\code{\link[stats]{dist}} and \code{\link[stats]{cor}}.}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
-clustering. Supports any method available in \code{\link[stats]{hclust}}.}
+clustering. Supports all methods available in \code{\link[stats]{hclust}}.}
 
 \item{pal_group}{String specifying the color palette to use if \code{group}
 is non-\code{NULL}, or a vector of such strings with length equal to the
