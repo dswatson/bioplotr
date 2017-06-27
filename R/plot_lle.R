@@ -16,9 +16,7 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param k How many nearest neighbors should the algorithm consider when
-#'   building projections? See Details.
-#' @param k_bounds Numeric vector of length two specifying the minimum and
-#'   maximum values of \code{k} to test if \code{k = "test"}. See Details.
+#'   building projections?
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for LLE.
 #' @param dims Vector specifying which principal components to plot. Must be of
@@ -55,11 +53,8 @@
 #'
 #' By default, the number of nearest neighbors \emph{k} used in the LLE
 #' projection is fixed at one quarter the sample size. This is an arbitrary
-#' value that tends to perform well in most settings. The parameter can be
-#' optimized using Kayo's method (2006) by setting \code{k = "test"}, in which
-#' case LLE is run on all integers \emph{k} between the minimum and maximum
-#' values specified in \code{k_bounds}. This may be time consuming for large
-#' matrices. See \code{lle::\link[lle]{calc_k}}.
+#' value that may be unsuitable for some datasets. The parameter may be
+#' optimized using Kayo's method (2006). See See \code{lle::\link[lle]{calc_k}}.
 #'
 #' @references
 #' Roweis, S.T. & Saul, L.K. (2000).
@@ -86,7 +81,7 @@
 #'
 #' @export
 #' @importFrom matrixStats rowVars
-#' @importFrom lle calc_k lle
+#' @importFrom lle lle
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -95,7 +90,6 @@ plot_lle <- function(dat,
                      group = NULL,
                      covar = NULL,
                          k = ncol(dat) / 4,
-                  k_bounds = c(1, 20),
                        top = NULL,
                       dims = c(1, 2),
                      label = FALSE,
@@ -165,7 +159,7 @@ plot_lle <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (!(top %>% is.null)) {                                # Filter by variance?
+  if (!(top %>% is.null)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
         warning('top exceeds nrow(dat), at least after removing probes with ',
@@ -180,19 +174,8 @@ plot_lle <- function(dat,
     keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
     dat <- dat[keep, , drop = FALSE]
   }
-  if (k == 'test') {
-    k <- suppressMessages(
-      calc_k(t(dat), m = max(dims), kmin = k_bounds[1L], kmax = k_bounds[2L],
-             plot = FALSE) %>%
-      filter(rho == min(rho)) %>%
-      select(k) %>%
-      as.numeric(.)
-    )
-  }
-  sink('aux')
-  y <- lle(t(dat), m = max(dims), k = k, p = 1L)$Y         # LLE
-  sink(NULL)
-  df <- data_frame(Sample = colnames(dat))                 # Melt
+  capture.output(y <- lle(t(dat), m = max(dims), k = k, p = 1L)$Y)        # LLE
+  df <- data_frame(Sample = colnames(dat))                                # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = y[, min(dims)],
                         PC2 = y[, max(dims)])
