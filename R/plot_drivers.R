@@ -30,9 +30,9 @@
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -85,8 +85,7 @@ plot_drivers <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples;',
-               'need at least 3 for PCA.'))
+    stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
   }
   dat <- matrixize(dat)
   clin <- tbl_df(clin)
@@ -101,17 +100,17 @@ plot_drivers <- function(dat,
   }
   overlap <- length(intersect(clin[[index]], colnames(dat)))
   if (!all(clin[[index]] %in% colnames(dat))) {
-    warning(paste('The columns in dat correpond to a subset of the samples in',
-                  'index. Analysis will proceed with the', overlap, 'samples',
-                  'for which both omic and clinical data were detected.'))
+    warning('The columns in dat correpond to a subset of the samples in ',
+            'index. Analysis will proceed with the ', overlap, ' samples  for ',
+            'which both omic and clinical data were detected.')
   }
   if (!all(colnames(dat) %in% clin[[index]])) {
-    warning(paste('The samples in index correspond to a subset of the columns',
-                  'in dat. Analysis will proceed with the', overlap, 'samples',
-                  'for which both omic and clinical data were detected.'))
+    warning('The samples in index correspond to a subset of the columns in ',
+            'dat. Analysis will proceed with the ', overlap, ' samples for ',
+            'which both omic and clinical data were detected.')
   }
   dat <- dat[, match(clin[[index]], colnames(dat))]
-  clin <- clin[, -which(colnames(clin) == index)]
+  clin <- clin[, -which(colnames(clin) == index), drop = FALSE]
   if (!is.null(block)) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -120,10 +119,10 @@ plot_drivers <- function(dat,
       for (j in seq_along(clin)[-i]) {
         mm <- model.matrix(~ clin[[i]] + clin[[j]])
         if (!is.fullrank(mm)) {
-          stop(paste(colnames(clin)[i], 'and', colnames(clin)[j], 'are',
-                     'perfectly confounded. Nested covariates generate rank',
-                     'deficient models, which cannot be meaningfully evaluated.',
-                     'One or both features must be removed or revised.'))
+          stop(colnames(clin)[i],  'and ', colnames(clin)[j], ' are perfectly ',
+               'confounded. Nested covariates generate rank deficient models, ',
+               'which cannot be meaningfully evaluated. One or both features ',
+               'must be removed or revised.')
         }
       }
     }
@@ -131,10 +130,10 @@ plot_drivers <- function(dat,
   if (!(top %>% is.null)) {
     if (top > 1L) {
       if (top > nrow(dat)) {
-        warning(paste('top exceeds nrow(dat), at least after removing probes',
-                      'with missing values and/or applying a minimal expression',
-                      'filter. Proceeding with the complete', nrow(dat), 'x',
-                      ncol(dat), 'matrix.'))
+        warning('top exceeds nrow(dat), at least after removing probes with ',
+                'missing values and/or applying a minimal expression filter. ',
+                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
+                'matrix.')
       }
       } else {
         top <- round(top * nrow(dat))
@@ -147,22 +146,21 @@ plot_drivers <- function(dat,
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
   if (!(alpha %>% is.null)) {
-    if (alpha <= 0 | alpha >= 1) {
+    if (alpha <= 0 || alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
   if (!(p.adj %>% is.null)) {
-    if (!p.adj %in% c('holm', 'hochberg', 'hommel',
-                      'bonferroni', 'BH', 'BY', 'fdr')) {
-      stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
-           '"BH", "BY", or "fdr". See ?p.adjust.')
+    p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p.adj %in% p_adj) {
+      stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
     }
   }
   if (title %>% is.null) {
     title <- 'Variation By Feature'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
@@ -177,7 +175,7 @@ plot_drivers <- function(dat,
     paste0('\n(', p, '%)')
   })
   sig <- function(var, pc) {                     # p-val fn
-    if (is.null(block)) {
+    if (block %>% is.null) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
       ifelse(clin[[var]] %>% is.numeric,
              summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
