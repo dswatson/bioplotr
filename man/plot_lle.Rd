@@ -4,10 +4,9 @@
 \alias{plot_lle}
 \title{LLE Plot}
 \usage{
-plot_lle(dat, group = NULL, covar = NULL, k = ncol(dat)/4,
-  k_bounds = c(1, 20), top = NULL, dims = c(1, 2), label = FALSE,
-  pal_group = "npg", pal_covar = "blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE)
+plot_lle(dat, group = NULL, covar = NULL, k = ncol(dat)/4, top = NULL,
+  dims = c(1, 2), label = FALSE, pal_group = "npg", pal_covar = "blues",
+  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -26,10 +25,7 @@ render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{k}{How many nearest neighbors should the algorithm consider when
-building projections? See Details.}
-
-\item{k_bounds}{Numeric vector of length two specifying the minimum and
-maximum values of \code{k} to test if \code{k = "test"}. See Details.}
+building projections?}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for LLE.}
@@ -79,11 +75,8 @@ be impossible to detect using PCA or classical MDS.
 
 By default, the number of nearest neighbors \emph{k} used in the LLE
 projection is fixed at one quarter the sample size. This is an arbitrary
-value that tends to perform well in most settings. The parameter can be
-optimized using Kayo's method (2006) by setting \code{k = "test"}, in which
-case LLE is run on all integers \emph{k} between the minimum and maximum
-values specified in \code{k_bounds}. This may be time consuming for large
-matrices. See \code{lle::\link[lle]{calc_k}}.
+value that may be unsuitable for some datasets. The parameter may be
+optimized using Kayo's method (2006). See See \code{lle::\link[lle]{calc_k}}.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
