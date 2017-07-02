@@ -7,10 +7,10 @@
 colorize(pal, var_type, n)
 }
 \arguments{
-\item{pal}{Color palette.}
+\item{pal}{Palette name or constituents.}
 
-\item{var_type}{Character string specifying whether features are categorical
-or continuous.}
+\item{var_type}{Character string specifying whether features are \code{
+"Categorical"} or \code{"Continuous"}.}
 
 \item{n}{Number of unique groups for which colors must be assigned. Only
 relevant if \code{var_type = "Categorical"}.}
