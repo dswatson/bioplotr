@@ -5,8 +5,8 @@
 \title{Concordance Plot}
 \usage{
 plot_concordance(dat, label = FALSE, diag = FALSE, method = "fisher",
-  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, export = FALSE,
-  title = NULL, legend = "right", hover = FALSE)
+  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, title = NULL,
+  legend = "right", hover = FALSE, export = FALSE)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
@@ -37,10 +37,6 @@ relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
 \item{B}{Number of replicates or permutations to generate when computing
 \emph{p}-values. See Details.}
 
-\item{export}{Export concordance matrix? If \code{TRUE} and \code{alpha} is
-non-\code{NULL}, then the function will also return the \emph{p}-value
-matrix.}
-
 \item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"right"}, \code{
@@ -51,6 +47,10 @@ matrix.}
 corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 and will either open in your browser's graphic display or appear in the
 RStudio viewer.}
+
+\item{export}{Export concordance matrix? If \code{TRUE} and \code{alpha} is
+non-\code{NULL}, then the function will also return the \emph{p}-value
+matrix.}
 }
 \description{
 This function plots the pairwise concordance between categorical features.

@@ -22,9 +22,6 @@
 #'   relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.
 #' @param B Number of replicates or permutations to generate when computing
 #'   \emph{p}-values. See Details.
-#' @param export Export concordance matrix? If \code{TRUE} and \code{alpha} is
-#'   non-\code{NULL}, then the function will also return the \emph{p}-value
-#'   matrix.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"right"}, \code{
 #'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
@@ -33,6 +30,9 @@
 #'   corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 #'   and will either open in your browser's graphic display or appear in the
 #'   RStudio viewer.
+#' @param export Export concordance matrix? If \code{TRUE} and \code{alpha} is
+#'   non-\code{NULL}, then the function will also return the \emph{p}-value
+#'   matrix.
 #'
 #' @details
 #' Concordance plots visualize associations between categorical features. They
@@ -87,10 +87,10 @@ plot_concordance <- function(dat,
                              p.adj = NULL,
                              sim.p = FALSE,
                                  B = 2000,
-                            export = FALSE,
                              title = NULL,
                             legend = 'right',
-                             hover = FALSE) {
+                             hover = FALSE,
+                            export = FALSE) {
 
   # Preliminaries
   p <- ncol(dat)
