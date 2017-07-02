@@ -154,7 +154,7 @@ plot_pca <- function(dat,
         warning('top exceeds nrow(dat), at least after removing probes with ',
                 'missing values and/or applying a minimal expression filter. ',
                 'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                'matrix.')
+                ' matrix.')
       }
     } else {
       top <- round(top * nrow(dat))
