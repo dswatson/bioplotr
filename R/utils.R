@@ -167,9 +167,9 @@ is.color <- function(chr) {
 #' This utility function applies a user selected color palette to a ggplot
 #' image.
 #'
-#' @param pal Color palette.
-#' @param var_type Character string specifying whether features are categorical
-#'   or continuous.
+#' @param pal Palette name or constituents.
+#' @param var_type Character string specifying whether features are \code{
+#'   "Categorical"} or \code{"Continuous"}.
 #' @param n Number of unique groups for which colors must be assigned. Only
 #'   relevant if \code{var_type = "Categorical"}.
 #'
@@ -184,42 +184,53 @@ colorize <- function(pal,
                      n) {
 
   # Preliminaries
-  group_pals <- c('ggplot', 'npg', 'aaas', 'nejm', 'lancet', 'jco', 'ucscgb',
-                  'd3', 'locuszoom', 'igv', 'uchicago', 'startrek', 'futurama',
-                  'rickandmorty', 'simpsons', 'gsea')
-  covar_pals <- c('blues', 'greens', 'purples', 'greys', 'oranges', 'reds')
+  qual_pals <- c('ggplot', 'Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2',
+                 'Set1', 'Set2', 'Set3', 'npg', 'aaas', 'nejm', 'lancet', 'jco',
+                 'ucscgb', 'd3', 'locuszoom', 'igv', 'uchicago', 'startrek',
+                 'futurama', 'rickandmorty', 'simpsons', 'gsea')
+  seq_pals <- c('Blues', 'BuGn', 'BuPu', 'GnBu', 'Greens', 'Greys', 'Oranges',
+                'OrRd', 'PuBu', 'PuBuGn', 'PuRd', 'Purples', 'RdPu', 'Reds',
+                'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd')
+  div_pals <- c('BrBg', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu',
+                'RdYlGn', 'Spectral')
   if (!every(pal, is.color)) {
     if (length(pal) > 1L) {
-      stop('When passing multiple strings to define a color palette, ',
-           'each must denote a valid color in R.')
+      stop('When passing individual colors to define a palette, each must ',
+           'denote a valid color in R.')
     } else {
-      if (var_type == 'Categorical' && !pal %in% group_pals) {
+      if (var_type == 'Categorical' && !pal %in% qual_pals) {
         stop('Invalid palette for categorical features. Must be either a ',
              'vector of valid R colors or one of the following palettes: ',
              stringify(group_pals, 'or'), '.')
       }
-      if (var_type == 'Continuous' && !pal %in% covar_pals) {
+      if (var_type == 'Continuous' && !pal %in% c(seq_pals, div_pals)) {
         stop('Invalid palette for continuous features. Must be either a ',
              'vector of valid R colors or one of the following palettes: ',
-             stringify(covar_pals, 'or'), '.')
+             stringify(c(seq_pals, div_pals), 'or'), '.')
       }
     }
   } else {
-    if (var_type == 'Categorical' && length(pal) < n) {
-      stop('Insufficient colors in palette. ',
-           'Need at least ', n, ' for this plot.')
+    if (var_type == 'Categorical') {
+      if (length(pal) < n) {
+        stop('Insufficient colors in palette. ',
+             'Need at least ', n, ' for this plot.')
+      } else if (length(pal) < n) {
+        warning('Too many colors in palette. ',
+                'Only the first ', n, ' will be used.')
+      }
+      out <- pal
+    } else {
+      out <- colorRampPalette(pal)(256)
     }
-    if (var_type == 'Categorical' && length(pal) > n) {
-      warning('Too many colors in palette. ',
-              'Only the first ', n, ' will be used.')
-    }
-    out <- pal
   }
 
   # Presets
-  if (var_type == 'Categorical') {
+  if (pal %in% qual_pals) {
     if (pal == 'ggplot') {
       out <- hue_pal()(n)
+    } else if (pal %in% c('Accent', 'Dark2', 'Paired', 'Pastel1',
+                          'Pastel2', 'Set1', 'Set2', 'Set3')) {
+      out <- brewer.pal(n, pal)
     } else if (pal == 'npg') {
       out <- pal_npg()(n)
     } else if (pal == 'aaas') {
@@ -249,20 +260,10 @@ colorize <- function(pal,
     } else if (pal == 'simpsons') {
       out <- pal_simpsons()(n)
     }
-  } else if (var_type == 'Continuous') {
-    if (pal == 'blues') {
-      out <- colorRampPalette(brewer.pal(9, 'Blues'))(n = 256)
-    } else if (pal == 'greens') {
-      out <- colorRampPalette(brewer.pal(9, 'Greens'))(n = 256)
-    } else if (pal == 'purples') {
-      out <- colorRampPalette(brewer.pal(9, 'Purples'))(n = 256)
-    } else if (pal == 'greys') {
-      out <- colorRampPalette(brewer.pal(9, 'Greys'))(n = 256)
-    } else if (pal == 'oranges') {
-      out <- colorRampPalette(brewer.pal(9, 'Oranges'))(n = 256)
-    } else if (pal == 'reds') {
-      out <- colorRampPalette(brewer.pal(9, 'Reds'))(n = 256)
-    }
+  } else if (pal %in% seq_pals) {
+    out <- colorRampPalette(brewer.pal(9, pal))(256)
+  } else if (pal %in% div_pals) {
+    out <- rev(colorRampPalette(brewer.pal(11, pal))(256))
   }
 
   # Output
@@ -366,7 +367,7 @@ matrixize <- function(dat) {
 #'     \link[bioDist]{KLdist.matrix}} functions.
 #' }
 #'
-#' @importFrom matrixStats rowVars
+#' @importFrom matrixStats rowVars rowMedians
 #' @importFrom wordspace dist.matrix
 #' @importFrom vegan vegdist
 #' @import dplyr
@@ -400,8 +401,8 @@ dist_mat <- function(dat,
     dat <- dat[keep, , drop = FALSE]
   }
 
-  # Median center
-  dat <- sweep(dat, 1, apply(dat, 1, median))
+  # Median center probes
+  dat <- dat - rowMedians(dat)
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
