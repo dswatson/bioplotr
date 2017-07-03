@@ -25,23 +25,23 @@
 #'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
-#'   number of vectors passed to \code{group}. Options include \code{'ggplot'},
-#'   as well as the complete collection of \code{
+#'   number of vectors passed to \code{group}. Options include \code{"ggplot"},
+#'   all qualitative color schemes available in \code{RColorBrewer}, and the
+#'   complete collection of \code{
 #'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-#'   ggsci}} palettes, which can be identified by name (e.g., \code{'npg'},
-#'   \code{'aaas'}, etc.). Alternatively, any character vector of colors with
+#'   ggsci}} palettes. Alternatively, any character vector of colors with
 #'   length equal to the cumulative number of levels in \code{group}.
 #' @param pal_covar String specifying the color palette to use if \code{covar}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
-#'   number of vectors passed to \code{covar}. Options include \code{'blues'},
-#'   \code{'greens'}, \code{'purples'}, \code{'greys'}, \code{'oranges'}, and
-#'   \code{'reds'}. Alternatively, any character vector of colors representing
-#'   a smooth gradient, or a list of such vectors with length equal to the
-#'   number of continuous variables to visualize.
+#'   number of vectors passed to \code{covar}. Options include all sequential
+#'   color schemes available in \code{RColorBrewer}. Alternatively, any
+#'   character vector of colors representing a smooth gradient, or a list of
+#'   such vectors with length equal to the number of continuous variables to
+#'   visualize.
 #' @param pal_tiles String specifying the color palette to use for heatmap
-#'   tiles. Options include \code{'RdBu'} for red to blue gradient, \code{
-#'   'GrRd'} for green to red gradient, and \code{'BuYl'} for blue to yellow
-#'   gradient. Alternatively, any user-supplied color palette is acceptable.
+#'   tiles. Options include all diverging color schemes available in \code{
+#'   RColorBrewer}. Alternatively, any user-supplied color palette is
+#'   acceptable.
 #' @param title Optional plot title.
 #'
 #' @details
@@ -126,13 +126,7 @@ plot_similarity <- function(dat,
     stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
          'See ?hclust.')
   }
-  if (pal_tiles == 'RdBu') {
-    pal_tiles <- colorRampPalette(brewer.pal(10L, 'RdBu'))(n = 256L)
-  } else if (pal_tiles == 'GrRd') {
-    pal_tiles <- colorRampPalette(c('green', 'black', 'red'))(n = 256L)
-  } else if (pal_tiles == 'BuYl') {
-    pal_tiles <- colorRampPalette(c('blue', 'grey', 'yellow'))(n = 256L)
-  }
+  pal_tiles <- colorize(pal_tiles, var_type = 'Continuous')
   if (title %>% is.null) {
     title <- 'Sample Similarity Matrix'
   }
