@@ -21,9 +21,9 @@
 #'   the SOM grid. If \code{NULL}, values are chosen so as to create a square
 #'   grid with approximately 10 probes in each node, presuming a uniform
 #'   distribution across the map.
-#' @param topo Train SOM using \code{"rectangular"} or \code{"hexagonal"}
+#' @param topo Train SOM using \code{"hexagonal"} or \code{"rectangular"}
 #'   topology?
-#' @param neighb Train SOM using a \code{"bubble"} or \code{"gaussian"}
+#' @param neighb Train SOM using a \code{"gaussian"} or \code{"bubble"}
 #'   neighborhood function?
 #' @param rlen Run length for SOM training.
 #' @param parallel Allow for parallel computation of SOM?
@@ -115,7 +115,7 @@ plot_som <- function(dat,
                       top = 0.5,
                  grid_dim = NULL,
                      topo = 'hexagonal',
-                   neighb = 'bubble',
+                   neighb = 'gaussian',
                      rlen = 1000,
                  parallel = TRUE,
                 pal_tiles = NULL,
