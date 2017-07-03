@@ -132,6 +132,7 @@ plot_som <- function(dat,
     } else {
       grid_dim <- y$grid$xdim
     }
+    export <- FALSE
   } else {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
