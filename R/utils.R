@@ -263,7 +263,7 @@ colorize <- function(pal,
   } else if (pal %in% seq_pals) {
     out <- colorRampPalette(brewer.pal(9, pal))(256)
   } else if (pal %in% div_pals) {
-    out <- rev(colorRampPalette(brewer.pal(11, pal))(256))
+    out <- colorRampPalette(brewer.pal(11, pal))(256) %>% rev(.)
   }
 
   # Output
