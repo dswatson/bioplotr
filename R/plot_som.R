@@ -196,7 +196,7 @@ plot_som <- function(dat,
       if (pal_tiles %>% is.null) {
         cols <- colorize('Spectral', var_type = 'Continuous')
       }
-      leg.txt <- expression(log[2]~'Fold\nChange')
+      leg.txt <- expression(log[2]~'FC')
       if (title %>% is.null) {
         if (coef %>% is.character) {
           title <- paste('SOM:', coef)
@@ -206,6 +206,9 @@ plot_som <- function(dat,
       }
     } else if (type == 'sample') {
       value <- y$codes[[1L]][, sample]
+      if (pal_tiles %>% is.null) {
+        cols <- colorize('Spectral', var_type = 'Continuous')
+      }
       leg.txt <- 'Expression'
       if (title %>% is.null) {
         title <- paste('SOM: Sample', sample)
@@ -217,6 +220,9 @@ plot_som <- function(dat,
         as.matrix(.)
       code_dists[abs(node_dists - 1) > .001] <- NA_real_
       value <- colMeans(code_dists, na.rm = TRUE)
+      if (pal_tiles %>% is.null) {
+        cols <- colorize('Greys', var_type = 'Continuous')
+      }
       leg.txt <- 'Distance to\nNearest Neighbors'
       if (title %>% is.null) {
         title <- 'SOM U-Matrix'
@@ -225,6 +231,9 @@ plot_som <- function(dat,
       value <- y$unit.classif %>%
         table(.) %>%
         as.numeric(.)
+      if (pal_tiles %>% is.null) {
+        cols <- colorize('Blues', var_type = 'Continuous')
+      }
       leg.txt <- 'Probes'
       if (title %>% is.null) {
         title <- 'SOM Node Size'
