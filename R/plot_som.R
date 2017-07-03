@@ -114,6 +114,7 @@ plot_som <- function(dat,
                    sample = NULL,
                       top = 0.5,
                  grid_dim = NULL,
+                     topo = 'hexagonal',
                    neighb = 'bubble',
                      rlen = 1000,
                  parallel = TRUE,
@@ -124,10 +125,24 @@ plot_som <- function(dat,
                    export = TRUE, ...) {
 
   # Preliminaries
-  if (!dat %>% is('kohonen')) {
+  if (dat %>% is('kohonen')) {
+    y <- dat
+    if (y$grid$xdim != y$grid$ydim) {
+      stop('X- and y-axes of SOM grid are unequal. Map must be square.')
+    } else {
+      grid_dim <- y$grid$xdim
+    }
+  } else {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
            'need at least 3 to train SOM.')
+    }
+    if (!grid_dim %>% is.null) {
+      if (grid_dim < 10L) {
+        warning('Grid axes of length < 10 are not advised.')
+      } else if (grid_dim > 100L) {
+        warning('Grid axes of length > 100 are not advised.')
+      }
     }
   }
   if (type == 'model') {
@@ -139,19 +154,12 @@ plot_som <- function(dat,
       stop('sample must be specified when type = "sample".')
     }
   }
-  if (grid_dim < 10L) {
-    warning('Grid axes of length < 10 are not advised.')
-  } else if (grid_dim > 100L) {
-    warning('Grid axes of length > 100 are not advised.')
-  }
   if (!pal_tiles %>% is.null) {
     cols <- colorize(pal_tiles, var_type = 'Continuous')
   }
 
   # Tidy data
-  if (dat %>% is('kohonen')) {
-    y <- dat
-  } else {                                       # Fit SOM
+  if (!dat %>% is('kohonen')) {                  # Fit SOM
     dat <- matrixize(dat)
     if (!(top %>% is.null)) {                    # Filter by variance?
       if (top > 1L) {
@@ -182,6 +190,7 @@ plot_som <- function(dat,
     y <- kohonen::som(dat, grid = som_grid, rlen = rlen, mode = mode)
   }
 
+  # Plot type?
   if (type == 'train') {
     df <- data_frame(Iteration = seq_len(rlen),
                       Distance = as.numeric(y$changes))
@@ -283,4 +292,7 @@ plot_som <- function(dat,
 
 }
 
+
+
+# Add hover text for gene list?
 
