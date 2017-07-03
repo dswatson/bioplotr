@@ -5,9 +5,9 @@
 \title{SOM}
 \usage{
 plot_som(dat, type = "model", design = NULL, coef = NULL, sample = NULL,
-  top = 0.5, grid_dim = NULL, neighb = "bubble", rlen = 1000,
-  parallel = TRUE, pal_tiles = NULL, title = NULL, legend = "right",
-  hover = FALSE, export = TRUE, ...)
+  top = 0.5, grid_dim = NULL, topo = "hexagonal", neighb = "bubble",
+  rlen = 1000, parallel = TRUE, pal_tiles = NULL, title = NULL,
+  legend = "right", hover = FALSE, export = TRUE, ...)
 }
 \arguments{
 \item{dat}{Either a probe by sample omic data matrix or an object of class
@@ -35,6 +35,9 @@ probes to be used for SOM.}
 count is given by \code{grid_dim ^ 2}. If \code{NULL}, dimensionality will
 be calculated so as to put approximately 10 probes in each node, presuming
 they are uniformly distributed across the map.}
+
+\item{topo}{Train SOM using \code{"rectangular"} or \code{"hexagonal"}
+topology?}
 
 \item{neighb}{Train SOM using a \code{"bubble"} or \code{"gaussian"}
 neighborhood function?}
@@ -64,9 +67,6 @@ browser's graphic display or appear in the RStudio viewer.}
 
 \item{...}{Extra arguments to be passed to \code{\link[limma]{lmFit}} if
 \code{type = "model"}.}
-
-\item{topo}{Train SOM using \code{"rectangular"} or \code{"hexagonal"}
-topology?}
 }
 \description{
 This function plots the output of a self-organizing map.
