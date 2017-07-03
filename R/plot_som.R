@@ -5,19 +5,21 @@
 #' @param dat Either a probe by sample omic data matrix or an object of class
 #'   \code{kohonen}. See Details.
 #' @param type What should the plot visualize? Options include \code{"model"},
-#'   in which case \code{design} and \code{coef} must be supplied; \code{
-#'   "sample"}, in which case the \code{sample} must be specified; \code{
+#'   in which case \code{design}, \code{coef}, and \code{stat} must be supplied;
+#'   \code{"sample"}, in which case the \code{sample} must be specified; \code{
 #'   "distance"}; \code{"counts"}; or \code{"train"}. See Details.
 #' @param design Design matrix for linear model with rows corresponding to
 #'   samples and columns to model coefficients. Only relevant if \code{type =
 #'   "model"}.
 #' @param coef Column number or name specifying which coefficient or contrast
 #'   of the linear model is of interest. Only relevant if \code{type = "model"}.
+#' @param stat Which nodewise summary statistic should be plotted in the SOM?
+#'   Options are \code{"lfc"} or \code{"t"}. See Details.
 #' @param sample Column number or name specifying which sample should be
 #'   plotted. Only relevant if \code{type = "sample"}.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for SOM.
-#' @param grid_dim Vector of length 2 specifying x- and y-axis dimensions for
+#' @param grid_dim Vector of length two specifying x- and y-axis dimensions for
 #'   the SOM grid. If \code{NULL}, values are chosen so as to create a square
 #'   grid with approximately 10 probes in each node, presuming a uniform
 #'   distribution across the map.
@@ -53,7 +55,9 @@
 #' algorithms and their applications for omic research.
 #'
 #' If \code{type = "model"}, then a linear model is fit to the codebook vectors.
-#' Units are colored by each node's log fold change associated with \code{coef}.
+#' Units are colored either by each node's log fold change (if \code{stat =
+#' "lfc"}) or moderated \emph{t}-statistic as calculated by \code{limma} (if
+#' \code{stat = "t"}) for a given model coefficient.
 #'
 #' If \code{type = "sample"}, then the plot depicts that sample's expression
 #' profile across the SOM.
@@ -65,8 +69,8 @@
 #'
 #' If \code{type = "counts"}, then units are colored by each node's probe
 #' count. This distribution should ideally be nearly uniform. A large number of
-#' empty units suggests that \code{grid_dim} should be reduced; an uneven spread
-#' across the units suggests that \code{grid_dim} should be increased.
+#' empty units suggests that \code{grid_dim}s should be reduced; an uneven
+#' spread across the units suggests that \code{grid_dim}s should be increased.
 #'
 #' If \code{type = "train"}, then the plot displays the SOM's learning curve
 #' over its \code{rlen} training iterations.
@@ -77,7 +81,7 @@
 #' which may in turn be reused in subsequent calls to the function to explore
 #' alternative aspects of the map. SOMs are trained using the batch algorithm
 #' of \code{kohonen::\link[kohonen]{som}}. This may be executed in parallel for
-#' faster mapping. See that package's documentation for more details.
+#' faster mapping. See the package documentation for more details.
 #'
 #' @references
 #' Kohonen, T. (1995). \emph{Self-Organizing Maps}. Berlin: Springer-Verlag.
@@ -111,7 +115,8 @@ plot_som <- function(dat,
                      type = 'model',
                    design = NULL,
                      coef = NULL,
-                   sample = NULL,
+                     stat = 'lfc',
+                   sample = 1,
                       top = 0.5,
                  grid_dim = NULL,
                      topo = 'hexagonal',
@@ -138,6 +143,9 @@ plot_som <- function(dat,
   if (type == 'model') {
     if (design %>% is.null || coef %>% is.null) {
       stop('design and coef must be supplied when type = "model".')
+    }
+    if (!stat %in% c('lfc', 't')) {
+      stop('stat must be "lfc" or "t".')
     }
   } else if (type == 'sample') {
     if (sample %>% is.null) {
@@ -186,12 +194,20 @@ plot_som <- function(dat,
                       Distance = as.numeric(y$changes))
   } else {
     if (type == 'model') {
-      value <- lmFit(y$codes[[1L]], design, ...) %>%
+      top <- lmFit(y$codes[[1L]], design, ...) %>%
         eBayes(.) %>%
-        topTable(coef = coef, number = Inf, sort.by = 'none') %>%
-        select(logFC) %>%
-        as.matrix(.) %>%
-        as.numeric(.)
+        topTable(coef = coef, number = Inf, sort.by = 'none')
+      if (stat == 'lfc') {
+        value <- top %>%
+          select(logFC) %>%
+          as.matrix(.) %>%
+          as.numeric(.)
+      } else if (stat == 't') {
+        value <- top %>%
+          select(t) %>%
+          as.matrix(.) %>%
+          as.numeric(.)
+      }
       if (pal_tiles %>% is.null) {
         cols <- colorize('Spectral', var_type = 'Continuous')
       }

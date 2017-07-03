@@ -4,18 +4,18 @@
 \alias{plot_som}
 \title{SOM}
 \usage{
-plot_som(dat, type = "model", design = NULL, coef = NULL, sample = NULL,
-  top = 0.5, grid_dim = NULL, topo = "hexagonal", neighb = "bubble",
-  rlen = 1000, parallel = TRUE, pal_tiles = NULL, title = NULL,
-  legend = "right", hover = FALSE, export = TRUE, ...)
+plot_som(dat, type = "model", design = NULL, coef = NULL, stat = "lfc",
+  sample = 1, top = 0.5, grid_dim = NULL, topo = "hexagonal",
+  neighb = "gaussian", rlen = 1000, parallel = TRUE, pal_tiles = NULL,
+  title = NULL, legend = "right", hover = FALSE, export = TRUE, ...)
 }
 \arguments{
 \item{dat}{Either a probe by sample omic data matrix or an object of class
 \code{kohonen}. See Details.}
 
 \item{type}{What should the plot visualize? Options include \code{"model"},
-in which case \code{design} and \code{coef} must be supplied; \code{
-"sample"}, in which case the \code{sample} must be specified; \code{
+in which case \code{design}, \code{coef}, and \code{stat} must be supplied;
+\code{"sample"}, in which case the \code{sample} must be specified; \code{
 "distance"}; \code{"counts"}; or \code{"train"}. See Details.}
 
 \item{design}{Design matrix for linear model with rows corresponding to
@@ -25,21 +25,24 @@ samples and columns to model coefficients. Only relevant if \code{type =
 \item{coef}{Column number or name specifying which coefficient or contrast
 of the linear model is of interest. Only relevant if \code{type = "model"}.}
 
+\item{stat}{Which nodewise summary statistic should be plotted in the SOM?
+Options are \code{"lfc"} or \code{"t"}. See Details.}
+
 \item{sample}{Column number or name specifying which sample should be
 plotted. Only relevant if \code{type = "sample"}.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for SOM.}
 
-\item{grid_dim}{Integer length for x- and y-axis of the SOM grid. Total node
-count is given by \code{grid_dim ^ 2}. If \code{NULL}, dimensionality will
-be calculated so as to put approximately 10 probes in each node, presuming
-they are uniformly distributed across the map.}
+\item{grid_dim}{Vector of length two specifying x- and y-axis dimensions for
+the SOM grid. If \code{NULL}, values are chosen so as to create a square
+grid with approximately 10 probes in each node, presuming a uniform
+distribution across the map.}
 
-\item{topo}{Train SOM using \code{"rectangular"} or \code{"hexagonal"}
+\item{topo}{Train SOM using \code{"hexagonal"} or \code{"rectangular"}
 topology?}
 
-\item{neighb}{Train SOM using a \code{"bubble"} or \code{"gaussian"}
+\item{neighb}{Train SOM using a \code{"gaussian"} or \code{"bubble"}
 neighborhood function?}
 
 \item{rlen}{Run length for SOM training.}
@@ -80,7 +83,9 @@ and explore hypotheses. See the references below for more details on SOM
 algorithms and their applications for omic research.
 
 If \code{type = "model"}, then a linear model is fit to the codebook vectors.
-Units are colored by each node's log fold change associated with \code{coef}.
+Units are colored either by each node's log fold change (if \code{stat =
+"lfc"}) or moderated \emph{t}-statistic as calculated by \code{limma} (if
+\code{stat = "t"}) for a given model coefficient.
 
 If \code{type = "sample"}, then the plot depicts that sample's expression
 profile across the SOM.
@@ -92,8 +97,8 @@ in the SOM space.
 
 If \code{type = "counts"}, then units are colored by each node's probe
 count. This distribution should ideally be nearly uniform. A large number of
-empty units suggests that \code{grid_dim} should be reduced; an uneven spread
-across the units suggests that \code{grid_dim} should be increased.
+empty units suggests that \code{grid_dim}s should be reduced; an uneven
+spread across the units suggests that \code{grid_dim}s should be increased.
 
 If \code{type = "train"}, then the plot displays the SOM's learning curve
 over its \code{rlen} training iterations.
@@ -104,7 +109,7 @@ omic matrix. That is why \code{plot_som} returns the SOM object by default,
 which may in turn be reused in subsequent calls to the function to explore
 alternative aspects of the map. SOMs are trained using the batch algorithm
 of \code{kohonen::\link[kohonen]{som}}. This may be executed in parallel for
-faster mapping. See that package's documentation for more details.
+faster mapping. See the package documentation for more details.
 }
 \examples{
 mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
