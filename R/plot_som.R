@@ -17,10 +17,10 @@
 #'   plotted. Only relevant if \code{type = "sample"}.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for SOM.
-#' @param grid_dim Integer length for x- and y-axis of the SOM grid. Total node
-#'   count is given by \code{grid_dim ^ 2}. If \code{NULL}, dimensionality will
-#'   be calculated so as to put approximately 10 probes in each node, presuming
-#'   they are uniformly distributed across the map.
+#' @param grid_dim Vector of length 2 specifying x- and y-axis dimensions for
+#'   the SOM grid. If \code{NULL}, values are chosen so as to create a square
+#'   grid with approximately 10 probes in each node, presuming a uniform
+#'   distribution across the map.
 #' @param topo Train SOM using \code{"rectangular"} or \code{"hexagonal"}
 #'   topology?
 #' @param neighb Train SOM using a \code{"bubble"} or \code{"gaussian"}
@@ -127,23 +127,12 @@ plot_som <- function(dat,
   # Preliminaries
   if (dat %>% is('kohonen')) {
     y <- dat
-    if (y$grid$xdim != y$grid$ydim) {
-      stop('X- and y-axes of SOM grid are unequal. Map must be square.')
-    } else {
-      grid_dim <- y$grid$xdim
-    }
+    grid_dim <- c(y$grid$xdim, y$grid$ydim)
     export <- FALSE
   } else {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
            'need at least 3 to train SOM.')
-    }
-    if (!grid_dim %>% is.null) {
-      if (grid_dim < 10L) {
-        warning('Grid axes of length < 10 are not advised.')
-      } else if (grid_dim > 100L) {
-        warning('Grid axes of length > 100 are not advised.')
-      }
     }
   }
   if (type == 'model') {
@@ -249,13 +238,8 @@ plot_som <- function(dat,
         title <- 'SOM Node Size'
       }
     }
-    if (topo == 'hexagonal') {
-      df <- tbl_df(y$grid$pts)
-    } else {
-      df <- expand.grid(x = seq_len(grid_dim),
-                        y = seq_len(grid_dim))
-    }
-    df <- df %>% mutate(Value = value)
+    df <- tbl_df(y$grid$pts) %>%
+      mutate(Value = value)
   }
 
   # Build Plot
