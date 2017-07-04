@@ -5,16 +5,16 @@
 #' @param dat Either a probe by sample omic data matrix or an object of class
 #'   \code{kohonen}. See Details.
 #' @param type What should the plot visualize? Options include \code{"model"},
-#'   in which case \code{design}, \code{coef}, and \code{stat} must be supplied;
-#'   \code{"sample"}, in which case the \code{sample} must be specified; \code{
-#'   "distance"}; \code{"counts"}; or \code{"train"}. See Details.
+#'   \code{"sample"}, \code{"distance"}, \code{"counts"}, \code{"quality"}, and
+#'   \code{"train"}. See Details.
 #' @param design Design matrix for linear model with rows corresponding to
 #'   samples and columns to model coefficients. Only relevant if \code{type =
 #'   "model"}.
 #' @param coef Column number or name specifying which coefficient or contrast
 #'   of the linear model is of interest. Only relevant if \code{type = "model"}.
 #' @param stat Which nodewise summary statistic should be plotted in the SOM?
-#'   Options are \code{"lfc"} or \code{"t"}. See Details.
+#'   Options are \code{"lfc"} or \code{"t"}. Only relevant if \code{type =
+#'   "model"}. See Details.
 #' @param sample Column number or name specifying which sample should be
 #'   plotted. Only relevant if \code{type = "sample"}.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
@@ -30,11 +30,9 @@
 #' @param rlen Run length for SOM training.
 #' @param parallel Allow for parallel computation of SOM?
 #' @param pal_tiles String specifying the color palette to use for heatmap
-#'   nodes. Defaults to \code{"Spectral"} if \code{type = "model"} or \code{
-#'   "sample"}; \code{"Greys"} if \code{type = "distance"}; and \code{"Blues"}
-#'   if \code{type = "counts"}. Any divergent or sequential palette in \code{
-#'   RColorBrewer} is acceptable. Alternatively, any vector of recognized colors
-#'   may be supplied.
+#'   nodes. Defaults vary by \code{type} (see Details). Any divergent or
+#'   sequential palette in \code{RColorBrewer} is acceptable. Alternatively,
+#'   any vector of recognized colors may be supplied.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -57,20 +55,27 @@
 #' If \code{type = "model"}, then a linear model is fit to the codebook vectors.
 #' Units are colored either by each node's log fold change (if \code{stat =
 #' "lfc"}) or moderated \emph{t}-statistic as calculated by \code{limma} (if
-#' \code{stat = "t"}) for a given model coefficient.
+#' \code{stat = "t"}) for a given model coefficient. Default color palette is
+#' \code{"Spectral"}.
 #'
 #' If \code{type = "sample"}, then the plot depicts that sample's expression
-#' profile across the SOM.
+#' profile across the SOM. Default color palette is \code{"Spectral"}.
 #'
 #' If \code{type = "distance"}, then the figure renders the SOM's U-matrix,
 #' which represents the Euclidean distance between codebook vectors for
 #' neighboring units. This can be used to inspect for clusters and borders
-#' in the SOM space.
+#' in the SOM space. Default color palette is \code{"Greys"}.
 #'
 #' If \code{type = "counts"}, then units are colored by each node's probe
 #' count. This distribution should ideally be nearly uniform. A large number of
 #' empty units suggests that \code{grid_dim}s should be reduced; an uneven
 #' spread across the units suggests that \code{grid_dim}s should be increased.
+#' Default color palette is \code{"Blues"}.
+#'
+#' If \code{type = "quality"}, then nodes are colored by the mean distance of
+#' intra-unit probes from one another. Very large values or uneven distributions
+#' suggest the SOM may need more training iterations to reach a stable solution.
+#' Default color palette is \code{"Reds"}.
 #'
 #' If \code{type = "train"}, then the plot displays the SOM's learning curve
 #' over its \code{rlen} training iterations.
@@ -107,6 +112,7 @@
 #' @importFrom kohonen somgrid som unit.distances object.distances
 #' @importFrom matrixStats rowVars
 #' @importFrom limma lmFit eBayes topTable
+#' @importFrom purrr map_dbl map_chr
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -144,12 +150,29 @@ plot_som <- function(dat,
     if (design %>% is.null || coef %>% is.null) {
       stop('design and coef must be supplied when type = "model".')
     }
+    if (coef %>% is.character && !coef %in% coefs) {
+      stop(paste0("'", coef, "' not found in fit's design matrix."))
+    }
+    if (coef %>% is.numeric && !coef %in% seq_len(p)) {
+      stop(paste("No coef number", coef, "found in fit's design matrix."))
+    }
     if (!stat %in% c('lfc', 't')) {
       stop('stat must be "lfc" or "t".')
     }
   } else if (type == 'sample') {
     if (sample %>% is.null) {
       stop('sample must be specified when type = "sample".')
+    }
+    if (sample %>% is.numeric) {
+      if ((dat %>% is('kohonen') && sample > ncol(dat$codes[[1L]])) ||
+          (!dat %>% is('kohonen') && sample > ncol(dat))) {
+        stop('sample number exceeds sample size.')
+      }
+    } else {
+      if ((dat %>% is('kohonen') && !sample %in% colnames(dat$codes[[1L]])) ||
+          (!dat %>% is('kohonen') && !sample %in% colnames(dat))) {
+        stop('sample not found.')
+      }
     }
   }
   if (!pal_tiles %>% is.null) {
@@ -193,30 +216,26 @@ plot_som <- function(dat,
     df <- data_frame(Iteration = seq_len(rlen),
                       Distance = as.numeric(y$changes))
   } else {
+    n_nodes <- nrow(y$grid$pts)
     if (type == 'model') {
       top <- lmFit(y$codes[[1L]], design, ...) %>%
         eBayes(.) %>%
         topTable(coef = coef, number = Inf, sort.by = 'none')
       if (stat == 'lfc') {
-        value <- top %>%
-          select(logFC) %>%
-          as.matrix(.) %>%
-          as.numeric(.)
+        value <- top$logFC
+        leg.txt <- expression(log[2]~'FC')
       } else if (stat == 't') {
-        value <- top %>%
-          select(t) %>%
-          as.matrix(.) %>%
-          as.numeric(.)
+        value <- top$t
+        leg.txt <- expression('Moderated'~italic(t))
       }
       if (pal_tiles %>% is.null) {
         cols <- colorize('Spectral', var_type = 'Continuous')
       }
-      leg.txt <- expression(log[2]~'FC')
       if (title %>% is.null) {
         if (coef %>% is.character) {
-          title <- paste('SOM:', coef)
+          title <- paste('SOM Model:', coef)
         } else {
-          title <- paste('SOM: Coefficient', coef)
+          title <- paste('SOM Model: Coefficient', coef)
         }
       }
     } else if (type == 'sample') {
@@ -228,6 +247,17 @@ plot_som <- function(dat,
       if (title %>% is.null) {
         title <- paste('SOM: Sample', sample)
       }
+    } else if (type == 'quality') {
+      value <- seq_len(n_nodes) %>% map_dbl(function(u) {
+        mean(y$distances[y$unit.classif == u])
+      })
+      if (pal_tiles %>% is.null) {
+        cols <- colorize('Reds', var_type = 'Continuous')
+      }
+      leg.txt <- 'Mean\nIntra-Unit\nDistance'
+      if (title %>% is.null) {
+        title <- 'SOM Quality'
+      }
     } else if (type == 'distance') {
       node_dists <- unit.distances(y$grid)
       code_dists <- y %>%
@@ -238,14 +268,14 @@ plot_som <- function(dat,
       if (pal_tiles %>% is.null) {
         cols <- colorize('Greys', var_type = 'Continuous')
       }
-      leg.txt <- 'Distance to\nNearest Neighbors'
+      leg.txt <- 'Distance to\nNearest\nNeighbors'
       if (title %>% is.null) {
         title <- 'SOM U-Matrix'
       }
     } else if (type == 'counts') {
-      value <- y$unit.classif %>%
-        table(.) %>%
-        as.numeric(.)
+      value <- seq_len(n_nodes) %>% map_dbl(function(u) {
+        sum(y$unit.classif == u)
+      })
       if (pal_tiles %>% is.null) {
         cols <- colorize('Blues', var_type = 'Continuous')
       }
@@ -254,8 +284,14 @@ plot_som <- function(dat,
         title <- 'SOM Node Size'
       }
     }
+    probes <- seq_len(n_nodes) %>% map_chr(function(u) {
+        probe_names <- rownames(y$data[[1L]])[y$unit.classif == u]
+        paste(probe_names, collapse = '\n')
+      })
+    probes[probes == ''] <- NA_character_
     df <- tbl_df(y$grid$pts) %>%
-      mutate(Value = value)
+      mutate(Value = value,
+            Probes = probes)
   }
 
   # Build Plot
@@ -267,7 +303,7 @@ plot_som <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   } else {
-    p <- ggplot(df, aes(x, y, fill = Value)) +
+    p <- ggplot(df, aes(x, y, fill = Value, text = Probes)) +
       scale_fill_gradientn(name = leg.txt, colors = cols) +
       theme_bw() +
       ggtitle(title) +
@@ -293,7 +329,4 @@ plot_som <- function(dat,
 
 }
 
-
-
-# Add hover text for gene list?
 
