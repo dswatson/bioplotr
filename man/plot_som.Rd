@@ -14,9 +14,8 @@ plot_som(dat, type = "model", design = NULL, coef = NULL, stat = "lfc",
 \code{kohonen}. See Details.}
 
 \item{type}{What should the plot visualize? Options include \code{"model"},
-in which case \code{design}, \code{coef}, and \code{stat} must be supplied;
-\code{"sample"}, in which case the \code{sample} must be specified; \code{
-"distance"}; \code{"counts"}; or \code{"train"}. See Details.}
+\code{"sample"}, \code{"distance"}, \code{"counts"}, \code{"quality"}, and
+\code{"train"}. See Details.}
 
 \item{design}{Design matrix for linear model with rows corresponding to
 samples and columns to model coefficients. Only relevant if \code{type =
@@ -26,7 +25,8 @@ samples and columns to model coefficients. Only relevant if \code{type =
 of the linear model is of interest. Only relevant if \code{type = "model"}.}
 
 \item{stat}{Which nodewise summary statistic should be plotted in the SOM?
-Options are \code{"lfc"} or \code{"t"}. See Details.}
+Options are \code{"lfc"} or \code{"t"}. Only relevant if \code{type =
+"model"}. See Details.}
 
 \item{sample}{Column number or name specifying which sample should be
 plotted. Only relevant if \code{type = "sample"}.}
@@ -50,11 +50,9 @@ neighborhood function?}
 \item{parallel}{Allow for parallel computation of SOM?}
 
 \item{pal_tiles}{String specifying the color palette to use for heatmap
-nodes. Defaults to \code{"Spectral"} if \code{type = "model"} or \code{
-"sample"}; \code{"Greys"} if \code{type = "distance"}; and \code{"Blues"}
-if \code{type = "counts"}. Any divergent or sequential palette in \code{
-RColorBrewer} is acceptable. Alternatively, any vector of recognized colors
-may be supplied.}
+nodes. Defaults vary by \code{type} (see Details). Any divergent or
+sequential palette in \code{RColorBrewer} is acceptable. Alternatively,
+any vector of recognized colors may be supplied.}
 
 \item{title}{Optional plot title.}
 
@@ -85,20 +83,27 @@ algorithms and their applications for omic research.
 If \code{type = "model"}, then a linear model is fit to the codebook vectors.
 Units are colored either by each node's log fold change (if \code{stat =
 "lfc"}) or moderated \emph{t}-statistic as calculated by \code{limma} (if
-\code{stat = "t"}) for a given model coefficient.
+\code{stat = "t"}) for a given model coefficient. Default color palette is
+\code{"Spectral"}.
 
 If \code{type = "sample"}, then the plot depicts that sample's expression
-profile across the SOM.
+profile across the SOM. Default color palette is \code{"Spectral"}.
 
 If \code{type = "distance"}, then the figure renders the SOM's U-matrix,
 which represents the Euclidean distance between codebook vectors for
 neighboring units. This can be used to inspect for clusters and borders
-in the SOM space.
+in the SOM space. Default color palette is \code{"Greys"}.
 
 If \code{type = "counts"}, then units are colored by each node's probe
 count. This distribution should ideally be nearly uniform. A large number of
 empty units suggests that \code{grid_dim}s should be reduced; an uneven
 spread across the units suggests that \code{grid_dim}s should be increased.
+Default color palette is \code{"Blues"}.
+
+If \code{type = "quality"}, then nodes are colored by the mean distance of
+intra-unit probes from one another. Very large values or uneven distributions
+suggest the SOM may need more training iterations to reach a stable solution.
+Default color palette is \code{"Reds"}.
 
 If \code{type = "train"}, then the plot displays the SOM's learning curve
 over its \code{rlen} training iterations.
