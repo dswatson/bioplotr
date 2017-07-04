@@ -278,7 +278,7 @@ plot_som <- function(dat,
           axis.title.y = element_blank(),
            axis.text.y = element_blank(),
           axis.ticks.y = element_blank())
-    if (topo == 'hexagonal') {
+    if (y$grid$topo == 'hexagonal') {
       p <- p + geom_hex(stat = 'identity')
     } else {
       p <- p + geom_raster()
