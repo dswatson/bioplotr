@@ -124,7 +124,8 @@ plot_som(mat, type = "sample", sample = 1)
 \references{
 Kohonen, T. (1995). \emph{Self-Organizing Maps}. Berlin: Springer-Verlag.
 
-Nikkilä, J., Törönen, P., Kaski, S., Venna, J., Castrén, E., & Wong, G. (2002).
+Nikkilä, J., Törönen, P., Kaski, S., Venna, J., Castrén, E., & Wong, G.
+(2002).
 \href{http://www.sciencedirect.com/science/article/pii/S0893608002000709}{
 Analysis and visualization of gene expression data using Self-Organizing
 Maps}. \emph{Neural Networks}, \emph{15}(8-9): 953-966.

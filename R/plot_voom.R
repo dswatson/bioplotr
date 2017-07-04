@@ -19,9 +19,9 @@
 #'   single-channel.
 #' @param span Width of the LOWESS smoothing window as a proportion.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -46,9 +46,9 @@
 #'
 #' @references
 #' Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
-#' \href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{
-#' voom: precision weights unlock linear model analysis tools for RNA-seq read
-#' counts}. \emph{Genome Biology}, \strong{15}: R29.
+#' \href{http://bit.ly/2sJxAg0}{voom: precision weights unlock linear model
+#' analysis tools for RNA-seq read counts}. \emph{Genome Biology}, \strong{15}:
+#' R29.
 #'
 #' @examples
 #' library(limma)
@@ -84,8 +84,8 @@ plot_voom <- function(dat,
   if (title %>% is.null) {
     title <- 'Voom Plot'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }

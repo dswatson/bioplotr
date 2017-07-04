@@ -19,13 +19,13 @@ expressed.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 }
 \description{
-This function plots log2 fold changes against -log10 \emph{p}-values against
-probewise means for a given test of differential expression/methylation.
+This function plots effect size against significance against probewise means
+for a given test of differential expression.
 }
 \details{
 A taco plot combines the elements of a volcano plot and an MD plot into a

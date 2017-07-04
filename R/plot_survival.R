@@ -12,19 +12,18 @@
 #' @param CI Plot confidence intervals?
 #' @param censor Include tick-marks to indicate censored subjects?
 #' @param pal_curves String specifying the color palette to use when plotting
-#'   multiple curves. Options include \code{"ggplot"}, as well as the complete
-#'   collection of \code{
-#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-#'   \code{"aaas"}, etc.). Alternatively, a character vector of colors with
-#'   length equal to the number of strata in \code{fit}.
+#'   multiple vectors. Options include \code{"ggplot"}, all qualitative color
+#'   schemes available in \code{RColorBrewer}, and the complete collection of
+#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
+#'   character vector of colors with length equal to the number of strata in
+#'   \code{fit}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
-#' @param ... Additional arguments to be passed to \code{
-#'   \link[survminer]{ggsurvplot}}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
+#' @param ... Additional arguments to be passed to \code{\link[survminer]{
+#'   ggsurvplot}}.
 #'
 #' @details
 #' Survival curves visualize the fit of a time-to-event model, e.g. a
@@ -106,15 +105,15 @@ plot_survival <- function(fit,
   } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
     leg.lbl <- names(fit$strata)
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
-  if (legend == 'bottomleft') {
-    legend <- c(0.01, 0.01)
-  } else if (legend == 'bottomright') {
+  if (legend == 'bottomright') {
     legend <- c(0.99, 0.01)
+  } else if (legend == 'bottomleft') {
+    legend <- c(0.01, 0.01)
   } else if (legend == 'topleft') {
     legend <- c(0.01, 0.99)
   } else if (legend == 'topright') {

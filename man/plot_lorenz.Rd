@@ -14,20 +14,19 @@ case each must be of equal length. Data may include negative values, but if
 so a warning will be issued to proceed with caution.}
 
 \item{pal_curves}{String specifying the color palette to use when plotting
-multiple vectors. Options include \code{"ggplot"}, as well as the complete
-collection of \code{
-\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-\code{"aaas"}, etc.). Alternatively, a character vector of colors with
-length equal to the number of vectors in \code{dat}.}
+multiple vectors. Options include \code{"ggplot"}, all qualitative color
+schemes available in \code{RColorBrewer}, and the complete collection of
+\code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
+character vector of colors with length equal to the number of vectors
+in \code{dat}.}
 
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{hover}{Show vector name by hovering mouse over Lorenz curve? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

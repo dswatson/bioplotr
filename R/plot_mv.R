@@ -21,9 +21,9 @@
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -125,8 +125,8 @@ plot_mv <- function(dat,
   if (!trans %in% c('rank', 'log', 'sqrt')) {
     stop('trans must be one of "rank", "log", or "sqrt".')
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }

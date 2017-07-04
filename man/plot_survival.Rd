@@ -22,23 +22,22 @@ a percentage.}
 \item{censor}{Include tick-marks to indicate censored subjects?}
 
 \item{pal_curves}{String specifying the color palette to use when plotting
-multiple curves. Options include \code{"ggplot"}, as well as the complete
-collection of \code{
-\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-\code{"aaas"}, etc.). Alternatively, a character vector of colors with
-length equal to the number of strata in \code{fit}.}
+multiple vectors. Options include \code{"ggplot"}, all qualitative color
+schemes available in \code{RColorBrewer}, and the complete collection of
+\code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
+character vector of colors with length equal to the number of strata in
+\code{fit}.}
 
 \item{title}{Optional plot title.}
 
 \item{leg.txt}{Optional legend title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
-\item{...}{Additional arguments to be passed to \code{
-\link[survminer]{ggsurvplot}}.}
+\item{...}{Additional arguments to be passed to \code{\link[survminer]{
+ggsurvplot}}.}
 }
 \description{
 This function plots one or several survival curves for a given time-to-event

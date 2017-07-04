@@ -39,9 +39,9 @@ relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{hover}{Show correlation coefficient by hovering mouse over the
 corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML

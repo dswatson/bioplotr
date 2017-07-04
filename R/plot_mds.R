@@ -31,21 +31,23 @@
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
 #' @param pal_group String specifying the color palette to use if \code{group}
-#'   is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
-#'   complete collection of \code{
-#'   \href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-#'   ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-#'   \code{"aaas"}, etc.). Alternatively, any character vector of colors with
-#'   length equal to the number of levels in \code{group}.
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{group}. Options include \code{"ggplot"},
+#'   all qualitative color schemes available in \code{RColorBrewer}, and the
+#'   complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
+#'   Alternatively, a character vector of colors with length equal to the
+#'   cumulative number of levels in \code{group}.
 #' @param pal_covar String specifying the color palette to use if \code{covar}
-#'   is non-\code{NULL}. Options include \code{"blues"}, \code{"greens"}, \code{
-#'   "purples"}, \code{"greys"}, \code{"oranges"}, and \code{"reds"}.
-#'   Alternatively, any character vector of colors representing a smooth
-#'   gradient.
+#'   is non-\code{NULL}, or a vector of such strings with length equal to the
+#'   number of vectors passed to \code{covar}. Options include all sequential
+#'   color schemes available in \code{RColorBrewer}. Alternatively, a
+#'   character vector of colors representing a smooth gradient, or a list of
+#'   such vectors with length equal to the number of continuous variables to
+#'   visualize.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show sample name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer.
@@ -86,9 +88,8 @@
 #' edition. Chapman and Hall.
 #'
 #' Kruskal, J.B. (1964).
-#' \href{https://pdfs.semanticscholar.org/e041/08dc293c9cd7cabf32ee1524eaab0d4641b3.pdf}{
-#' Multidimensional scaling by optimizing goodness of fit to a nonmetric
-#' hypothesis}. \emph{Psychometrika}, \emph{29}(1): 1-27.
+#' \href{http://bit.ly/2umJmz6}{Multidimensional scaling by optimizing goodness
+#' of fit to a nonmetric hypothesis}. \emph{Psychometrika}, \emph{29}(1): 1-27.
 #'
 #' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 #' (2015).
@@ -128,7 +129,7 @@ plot_mds <- function(dat,
                        pcs = c(1, 2),
                      label = FALSE,
                  pal_group = 'npg',
-                 pal_covar = 'blues',
+                 pal_covar = 'Blues',
                      title = NULL,
                     legend = 'right',
                      hover = FALSE,
@@ -186,8 +187,8 @@ plot_mds <- function(dat,
   if (title %>% is.null) {
     title <- 'MDS'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }

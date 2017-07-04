@@ -5,7 +5,7 @@
 \title{LLE Plot}
 \usage{
 plot_lle(dat, group = NULL, covar = NULL, k = ncol(dat)/4, top = NULL,
-  dims = c(1, 2), label = FALSE, pal_group = "npg", pal_covar = "blues",
+  dims = c(1, 2), label = FALSE, pal_group = "npg", pal_covar = "Blues",
   title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
@@ -38,24 +38,26 @@ unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 then plot can render at most one phenotypic feature.}
 
 \item{pal_group}{String specifying the color palette to use if \code{group}
-is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
-complete collection of \code{
-\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-\code{"aaas"}, etc.). Alternatively, any character vector of colors with
-length equal to the number of levels in \code{group}.}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{group}. Options include \code{"ggplot"},
+all qualitative color schemes available in \code{RColorBrewer}, and the
+complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
+Alternatively, a character vector of colors with length equal to the
+cumulative number of levels in \code{group}.}
 
 \item{pal_covar}{String specifying the color palette to use if \code{covar}
-is non-\code{NULL}. Options include \code{"blues"}, \code{"greens"}, \code{
-"purples"}, \code{"greys"}, \code{"oranges"}, and \code{"reds"}.
-Alternatively, any character vector of colors representing a smooth
-gradient.}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{covar}. Options include all sequential
+color schemes available in \code{RColorBrewer}. Alternatively, a
+character vector of colors representing a smooth gradient, or a list of
+such vectors with length equal to the number of continuous variables to
+visualize.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{hover}{Show sample name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's
@@ -90,9 +92,9 @@ plot_lle(dds, group = colData(dds)$condition)
 }
 \references{
 Roweis, S.T. & Saul, L.K. (2000).
-\href{http://s3.amazonaws.com/academia.edu.documents/31226205/nonlinearDimensionalityReductionByLocallyLinearEmbedding.pdf?AWSAccessKeyId=AKIAIWOWYYGZ2Y53UL3A&Expires=1498331730&Signature=DNS9d7%2FfBXp5uWPMPtr6gF2vq8A%3D&response-content-disposition=inline%3B%20filename%3DNonlinear_dimensionality_reduction_by_lo.pdf}{
-Nonlinear Dimensionality Reduction by Locally Linear Embedding}. \emph{
-Science, 290}(5500): 2323-2326.
+\href{http://science.sciencemag.org/content/290/5500/2323}{Nonlinear
+Dimensionality Reduction by Locally Linear Embedding}. \emph{Science,
+290}(5500): 2323-2326.
 
 Kayo, O. (2006).
 \href{http://jultika.oulu.fi/files/isbn9514280415.pdf}{Locally Linear

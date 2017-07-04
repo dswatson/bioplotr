@@ -21,9 +21,9 @@
 #'   plots.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show probe name by hovering mouse over data point? If \code{
 #'   TRUE}, the plot is rendered in HTML and will either open in your browser's
 #'   graphic display or appear in the RStudio viewer. Probe names are extracted
@@ -61,15 +61,15 @@
 #' variance and bias}. \emph{Bioinformatics}, \emph{19}(2): 185–193.
 #'
 #' Dudoit, S., Yang, Y.H., Callow, M.J. & Speed, T.P. (2002).
-#' \href{https://pdfs.semanticscholar.org/2af3/26eabfc0e81d6f3e687e1283c32cfba25688.pdf}{
+#' \href{https://www.jstor.org/stable/24307038?seq=1#page_scan_tab_contents}{
 #' Statistical methods for identifying differentially expressed genes in
 #' replicated cDNA microarray experiments}. \emph{Stat. Sin.}, \strong{12},
 #' 111–140.
 #'
 #' Martin, B.J. & Altman, D.G. (1986).
-#' \href{http://www.thelancet.com/journals/lancet/article/PIIS0140-6736(86)90837-8/abstract}{
+#' \href{http://www.sciencedirect.com/science/article/pii/S0140673686908378}{
 #' Statistical methods for assessing agreement between two methods of clinical
-#' measurement}. \emph{Lancet}, 327: 307–310.
+#' measurement}. \emph{The Lancet}, \emph{327}(8476): 307–310.
 #'
 #' Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 #' (2015).
@@ -108,8 +108,8 @@ plot_md <- function(dat,
   if (title %>% is.null) {
     title <- 'Mean-Difference Plot'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
@@ -248,7 +248,7 @@ plot_md.DESeqDataSet <- function(dat,
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
-    ctrls <- ctrls %>% as.character(.)
+    ctrls <- as.character(ctrls)
     ctrls[ctrls == names(which.max(table(ctrls)))] <- '0'
   }
   if (xlab %>% is.null) {
@@ -285,7 +285,7 @@ plot_md.DESeqDataSet <- function(dat,
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (is.null(ctrls)) {
+  if (ctrls %>% is.null) {
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
     suppressWarnings(

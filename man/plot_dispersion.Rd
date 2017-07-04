@@ -25,17 +25,17 @@ been estimated for \code{dat}, they will be internally computed using the
 appropriate \code{edgeR} or \code{DESeq2} functions. Alternatively, \code{
 dat} may be a raw count matrix, in which case the \code{pipeline} argument
 must specify which package to use for estimating normalization factors and
-genewise dispersions.= A design matrix may be required to calculate
-adjusted profile log-likelihoods. See Details.}
+genewise dispersions. A design matrix may be required to calculate adjusted
+profile log-likelihoods. See Details.}
 
 \item{trans}{Data transformation to be applied to genewise dispersion
 estimates. Must be one of \code{"log"} or \code{"sqrt"}.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{design}{Optional design matrix with rows corresponding to samples and
 columns to coefficients to be estimated. This will be extracted from \code{
@@ -62,7 +62,7 @@ distribution, which may be uniquely identified by its mean and dispersion
 parameters. For RNA-seq pipelines that rely on negative binomial generalized
 linear models (GLMs), such as \code{edgeR} and \code{DESeq2}, estimating
 genewise dispersions is therefore an essential step in the model fitting
-process. Becaeuse there are rarely sufficient replicates to reliably infer
+process. Because there are rarely sufficient replicates to reliably infer
 these values independently for each gene, both packages use empirical Bayes
 methods to pool information across genes.
 
@@ -92,13 +92,13 @@ for more details. For more comprehensive statistical background, see the
 original DESeq paper (Anders & Huber, 2010) and the DESeq2 paper (Love et
 al., 2014).
 
-\code{plot_dispersion} effectively combines \code{edgeR::\link[edgeR]{plotBCV}}
-and \code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single function that
-can take either a \code{DGEList} or a \code{DESeqDataSet} as its argument and
-return the matching figure. By default, dispersions are plotted under log10
-transform. They may also be displayed under square root transform, in which
-case the y-axis may be interpreted as the biological coefficient of variation
-(McCarthy et al., 2012).
+\code{plot_dispersion} effectively combines \code{edgeR::\link[edgeR]{
+plotBCV}} and \code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single
+function that can take either a \code{DGEList} or a \code{DESeqDataSet} as
+its argument and return the matching figure. By default, dispersions are
+plotted under log10 transform. They may also be displayed under square root
+transform, in which case the y-axis can be interpreted as the biological
+coefficient of variation (McCarthy et al., 2012).
 }
 \examples{
 library(DESeq2)
@@ -112,9 +112,8 @@ plot_dispersion(counts(dds), design = model.matrix(~ condition, colData(dds)),
 }
 \references{
 Anders, S. & Huber, W. (2010).
-\href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106}{
-Differential expression analysis for sequence count data}. \emph{Genome
-Biology}, 11:R106.
+\href{http://bit.ly/2sJrnAU}{Differential expression analysis for sequence
+count data}. \emph{Genome Biology}, 11:R106.
 
 McCarthy, D.J., Chen, Y., & Smyth, G.K. (2012).
 \href{http://dx.doi.org/10.1093/nar/gks042}{Differential expression analysis
@@ -122,9 +121,8 @@ of multifactor RNA-Seq experiments with respect to biological variation}.
 \emph{Nucleic Acids Res., 40}(10): 4288-4297.
 
 Love, M., Huber, W. & Anders, S. (2014).
-\href{http://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8}{
-Moderated estimation of fold change and dispersion for RNA-seq data with
-DESeq2}. \emph{Genome Biology, 15}(12): 550.
+\href{http://bit.ly/2pytbeL}{Moderated estimation of fold change and
+dispersion for RNA-seq data with DESeq2}. \emph{Genome Biology, 15}(12): 550.
 
 Robinson, M.D. and Smyth, G.K. (2008).
 \href{http://biostatistics.oxfordjournals.org/content/9/2/321}{Small-sample

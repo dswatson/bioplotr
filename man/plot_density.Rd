@@ -20,20 +20,20 @@ used to color density curves. If supplied, legend title defaults to
 "Group". Override this feature by passing a named list instead.}
 
 \item{pal_group}{String specifying the color palette to use if \code{group}
-is non-\code{NULL}. Options include \code{"ggplot"}, as well as the
-complete collection of \code{
-\href{https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{
-ggsci}} palettes, which can be identified by name (e.g., \code{"npg"},
-\code{"aaas"}, etc.). Alternatively, a character vector of colors with
-length equal to the number of levels in \code{group}.}
+is non-\code{NULL}, or a vector of such strings with length equal to the
+number of vectors passed to \code{group}. Options include \code{"ggplot"},
+all qualitative color schemes available in \code{RColorBrewer}, and the
+complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
+Alternatively, a character vector of colors with length equal to the
+cumulative number of levels in \code{group}.}
 
 \item{xlab}{Optional label for x-axis.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{hover}{Show sample name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

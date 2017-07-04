@@ -30,9 +30,9 @@ single-channel.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's
@@ -71,9 +71,9 @@ plot_voom(mat, design = des)
 }
 \references{
 Law, C.W., Chen, Y., Shi, W., & Smyth, G.K. (2014).
-\href{https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29}{
-voom: precision weights unlock linear model analysis tools for RNA-seq read
-counts}. \emph{Genome Biology}, \strong{15}: R29.
+\href{http://bit.ly/2sJxAg0}{voom: precision weights unlock linear model
+analysis tools for RNA-seq read counts}. \emph{Genome Biology}, \strong{15}:
+R29.
 }
 \seealso{
 \code{\link[limma]{voom}}

@@ -44,9 +44,9 @@ Suitable objects from familiar packages are also acceptable. See Details.}
 
 \item{title}{Optional plot title.}
 
-\item{legend}{Legend position. Must be one of \code{"right"}, \code{
-"left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-"topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.}
+\item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
+\code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+\code{"topleft"}, or \code{"topright"}.}
 
 \item{design}{Optional design matrix with rows corresponding to samples and
 columns to coefficients to be estimated. Only relevant for \code{
@@ -122,15 +122,15 @@ normalization methods for high density oligonucleotide array data based on
 variance and bias}. \emph{Bioinformatics}, \emph{19}(2): 185–193.
 
 Dudoit, S., Yang, Y.H., Callow, M.J. & Speed, T.P. (2002).
-\href{https://pdfs.semanticscholar.org/2af3/26eabfc0e81d6f3e687e1283c32cfba25688.pdf}{
+\href{https://www.jstor.org/stable/24307038?seq=1#page_scan_tab_contents}{
 Statistical methods for identifying differentially expressed genes in
 replicated cDNA microarray experiments}. \emph{Stat. Sin.}, \strong{12},
 111–140.
 
 Martin, B.J. & Altman, D.G. (1986).
-\href{http://www.thelancet.com/journals/lancet/article/PIIS0140-6736(86)90837-8/abstract}{
+\href{http://www.sciencedirect.com/science/article/pii/S0140673686908378}{
 Statistical methods for assessing agreement between two methods of clinical
-measurement}. \emph{Lancet}, 327: 307–310.
+measurement}. \emph{The Lancet}, \emph{327}(8476): 307–310.
 
 Ritchie, M.E., Phipson, B., Wu, D., Hu, Y., Law, C.W., Shi, W., & Smyth, G.K.
 (2015).

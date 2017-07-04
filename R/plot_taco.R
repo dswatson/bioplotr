@@ -1,7 +1,7 @@
 #' Taco Plot
 #'
-#' This function plots log2 fold changes against -log10 \emph{p}-values against
-#' probewise means for a given test of differential expression/methylation.
+#' This function plots effect size against significance against probewise means
+#' for a given test of differential expression.
 #'
 #' @param dat Data frame representing the results of a test for differential
 #'   expression, such as the output of a call to \code{
@@ -12,9 +12,9 @@
 #' @param fdr Significance threshold for declaring a probe differentially
 #'   expressed.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #'
 #' @details
 #' A taco plot combines the elements of a volcano plot and an MD plot into a
@@ -87,8 +87,8 @@ plot_taco <- function(dat,
   if (title %>% is.null) {
     title <- 'Taco Plot'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }

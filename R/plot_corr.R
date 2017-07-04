@@ -19,9 +19,9 @@
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
 #' @param title Optional plot title.
-#' @param legend Legend position. Must be one of \code{"right"}, \code{
-#'   "left"}, \code{"top"}, \code{"bottom"}, \code{"topright"}, \code{
-#'   "topleft"}, \code{"bottomright"}, or \code{"bottomleft"}.
+#' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
+#'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
+#'   \code{"topleft"}, or \code{"topright"}.
 #' @param hover Show correlation coefficient by hovering mouse over the
 #'   corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 #'   and will either open in your browser's graphic display or appear in the
@@ -93,8 +93,8 @@ plot_corr <- function(dat,
   if (title %>% is.null) {
     title <- 'Correlation Plot'
   }
-  loc <- c('right', 'left', 'top', 'bottom',
-           'topright', 'topleft', 'bottomright', 'bottomleft')
+  loc <- c('bottom', 'left', 'top', 'right',
+           'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
