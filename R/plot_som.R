@@ -307,7 +307,7 @@ plot_som <- function(dat,
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   } else {
-    p <- ggplot(df, aes(x, y, fill = Value, text = Probes)) +
+    p <- ggplot(df, aes(x, y, fill = Value)) +
       scale_fill_gradientn(name = leg.txt, colors = cols) +
       theme_bw() +
       ggtitle(title) +
