@@ -57,7 +57,7 @@
 #' statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
 #' estimated via permutation testing with \code{B} permutations.
 #'
-#' @value
+#' @return
 #' If \code{export = TRUE}, a list with up to two elements:
 #' \itemize{
 #'   \item The concordance matrix, computed via the chosen \code{method}.

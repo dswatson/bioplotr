@@ -52,6 +52,14 @@ RStudio viewer.}
 non-\code{NULL}, then the function will also return the \emph{p}-value
 matrix.}
 }
+\value{
+If \code{export = TRUE}, a list with up to two elements:
+\itemize{
+  \item The concordance matrix, computed via the chosen \code{method}.
+  \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
+  is non-\code{NULL}.
+}
+}
 \description{
 This function plots the pairwise concordance between categorical features.
 }
