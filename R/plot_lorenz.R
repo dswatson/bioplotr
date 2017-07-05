@@ -124,8 +124,7 @@ plot_lorenz <- function(dat,
     return(g)
   }
   p_gin <- function(i) {                    # Print Gini coefficient
-    paste0(names(dat)[i], ', Gini = ',
-           gini(dat[[i]]) %>% round(2L))
+    paste0(names(dat)[i], ', Gini = ', round(gini(dat[[i]]), 2L))
   }
   p <- ggplot() +
     geom_abline(intercept = 0L, slope = 1L, color = 'grey') +
