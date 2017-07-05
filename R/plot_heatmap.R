@@ -45,7 +45,6 @@
 #' plot_heatmap(mat, group = grp)
 #'
 #' @export
-#' @importFrom purrr map_lgl
 #' @importFrom RColorBrewer brewer.pal
 #'
 
