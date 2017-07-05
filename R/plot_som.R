@@ -154,8 +154,8 @@ plot_som <- function(dat,
     if (coef %>% is.character && !coef %in% coefs) {
       stop(paste0("'", coef, "' not found in fit's design matrix."))
     }
-    if (coef %>% is.numeric && !coef %in% seq_len(p)) {
-      stop(paste("No coef number", coef, "found in fit's design matrix."))
+    if (coef %>% is.numeric && !coef %in% seq_len(ncol(design))) {
+      stop(paste("No coef number", coef, "found in design matrix."))
     }
     if (!stat %in% c('lfc', 't')) {
       stop('stat must be "lfc" or "t".')
