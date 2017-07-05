@@ -249,9 +249,8 @@ plot_som <- function(dat,
         title <- paste('SOM: Sample', sample)
       }
     } else if (type == 'quality') {
-      value <- seq_len(n_nodes) %>% map_dbl(function(u) {
-        mean(y$distances[y$unit.classif == u])
-      })
+      value <- seq_len(n_nodes) %>%
+        map_dbl(~ mean(y$distances[y$unit.classif == .x]))
       if (pal_tiles %>% is.null) {
         cols <- colorize('Reds', var_type = 'Continuous')
       }
@@ -274,9 +273,8 @@ plot_som <- function(dat,
         title <- 'SOM U-Matrix'
       }
     } else if (type == 'counts') {
-      value <- seq_len(n_nodes) %>% map_dbl(function(u) {
-        sum(y$unit.classif == u)
-      })
+      value <- seq_len(n_nodes) %>%
+        map_dbl(~ sum(y$unit.classif == .x))
       if (pal_tiles %>% is.null) {
         cols <- colorize('Blues', var_type = 'Continuous')
       }
@@ -285,10 +283,9 @@ plot_som <- function(dat,
         title <- 'SOM Node Size'
       }
     }
-    probes <- seq_len(n_nodes) %>% map_chr(function(u) {
-        probe_names <- rownames(y$data[[1L]])[y$unit.classif == u]
-        paste(probe_names, collapse = '\n')
-      })
+    probes <- seq_len(n_nodes) %>%
+      map_chr(~ rownames(y$data[[1L]])[y$unit.classif == .x] %>%
+                paste(collapse = '\n'))
     probes[probes == ''] <- NA_character_
     df <- tbl_df(y$grid$pts) %>%
       mutate(Value = value,
@@ -300,7 +297,7 @@ plot_som <- function(dat,
     p <- ggplot(df, aes(Iteration, Distance)) +
       geom_path() +
       labs(title = 'SOM Learning Curve',
-           y = 'Mean Distance to Nearest Unit') +
+               y = 'Mean Distance to Nearest Unit') +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5))
   } else {
