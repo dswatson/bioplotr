@@ -319,9 +319,21 @@ plot_som <- function(dat,
            axis.text.y = element_blank(),
           axis.ticks.y = element_blank())
     if (y$grid$topo == 'hexagonal') {
-      p <- p + geom_hex(stat = 'identity')
-    } else {
-      p <- p + geom_raster()
+      if (hover) {
+        suppressWarnings(
+          p <- p + geom_hex(aes(text = Probes), stat = 'identity')
+        )
+      } else {
+        p <- p + geom_hex(stat = 'identity')
+      }
+    } else if (y$grid$topo == 'rectangular') {
+      if (hover) {
+        suppressWarnings(
+          p <- p + geom_raster(aes(text = Probes))
+        )
+      } else {
+        p <- p + geom_raster()
+      }
     }
   }
 
