@@ -76,10 +76,10 @@ plot_calibration <- function(obs,
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
   bin <- pred %>% map(function(m) {
-    seq_along(m) %>% map_dbl(function(i) which.max(m[i] <= brks))
+    seq_along(m) %>% map_dbl(~ which.max(m[.x] <= brks))
   })
-  exp_grps <- seq_along(pred) %>% map(function(m) split(pred[[m]], bin[[m]]))
-  obs_grps <- seq_along(bin) %>% map(function(x) split(obs, bin[[x]]))
+  exp_grps <- seq_along(pred) %>% map(~ split(pred[[.x]], bin[[.x]]))
+  obs_grps <- seq_along(bin) %>% map(~ split(obs, bin[[.x]]))
   df <- seq_along(pred) %>% map_df(function(m) {
     data_frame(Y = obs_grps[[m]] %>% map_dbl(mean),
                X = exp_grps[[m]] %>% map_dbl(mean),
