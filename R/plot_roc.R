@@ -79,23 +79,22 @@ plot_roc <- function(obs,
 
   # Tidy data
   rocs <- evalmod(scores = pred, labels = obs)$rocs
-  df <- seq_along(pred) %>% map_df(function(m) {
-    data_frame(FPR = rocs[[m]]$x,
-               TPR = rocs[[m]]$y,
-        Classifier = names(pred)[m]) %>%
-      return(.)
-  })
+  df <- seq_along(pred) %>%
+    map_df(~ data_frame(FPR = rocs[[.x]]$x,
+                        TPR = rocs[[.x]]$y,
+                 Classifier = names(pred)[.x]))
 
   # Build plot
   p_auc <- function(m) {                         # Print AUC
-    paste0(names(pred)[m], ', AUC = ',
-           rocs[[m]] %>%
-             attr('auc') %>%
-             round(2L))
+    auc <- rocs[[m]] %>%
+      attr('auc') %>%
+      round(2L)
+    paste0(names(pred)[m], ', AUC = ', auc)
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
-    geom_abline(intercept = 0L, slope = 1L, linetype = 'dashed', color = 'grey') +
+    geom_abline(intercept = 0L, slope = 1L,
+                linetype = 'dashed', color = 'grey') +
     labs(title = title, x = 'False Positive Rate', y = 'True Positive Rate') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))

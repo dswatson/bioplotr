@@ -95,19 +95,17 @@ plot_pr <- function(obs,
 
   # Tidy data
   prcs <- evalmod(scores = pred, labels = obs)$prcs
-  df <- seq_along(pred) %>% map_df(function(m) {
-    data_frame(Recall = prcs[[m]]$x,
-            Precision = prcs[[m]]$y,
-           Classifier = names(pred)[m]) %>%
-      return(.)
-  })
+  df <- seq_along(pred) %>%
+    map_df(~ data_frame(Recall = prcs[[.x]]$x,
+                     Precision = prcs[[.x]]$y,
+                    Classifier = names(pred)[.x]))
 
   # Build plot
   p_auc <- function(m) {                         # Print AUC
-    paste0(names(pred)[m], ', AUC = ',
-           prcs[[m]] %>%
-             attr('auc') %>%
-             round(2L))
+    auc <- prcs[[m]] %>%
+      attr('auc') %>%
+      round(2L)
+    paste0(names(pred)[m], ', AUC = ', auc)
   }
   p <- ggplot(df, aes(Recall, Precision)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
