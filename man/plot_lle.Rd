@@ -25,7 +25,7 @@ render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{k}{How many nearest neighbors should the algorithm consider when
-building projections?}
+building projections? See Details.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for LLE.}
