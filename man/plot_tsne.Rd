@@ -36,7 +36,7 @@ those implemented in the \code{bioDist} package. See Details.}
 be used for t-SNE.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
-or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.}
+or \code{"common"} filter if \code{top} is non-\code{NULL}.}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
@@ -44,10 +44,11 @@ two unless \code{D3 = TRUE}.}
 \item{perplexity}{How many nearest neighbors should the algorithm consider
 when building projections?}
 
-\item{theta}{Speed/accuracy tradeoff of the Barnes-Hut algorithm. See Details.}
+\item{theta}{Speed/accuracy tradeoff of the Barnes-Hut algorithm. See
+Details.}
 
 \item{max_iter}{Maximum number of iterations over which to minimize the loss
-function. See Details.}
+function.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE}
 unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},

@@ -22,14 +22,15 @@
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for t-SNE.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
-#'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
+#'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
 #' @param perplexity How many nearest neighbors should the algorithm consider
 #'   when building projections?
-#' @param theta Speed/accuracy tradeoff of the Barnes-Hut algorithm. See Details.
+#' @param theta Speed/accuracy tradeoff of the Barnes-Hut algorithm. See
+#'   Details.
 #' @param max_iter Maximum number of iterations over which to minimize the loss
-#'   function. See Details.
+#'   function.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
@@ -138,8 +139,8 @@ plot_tsne <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop(paste('dat includes only', ncol(dat), 'samples;',
-               'need at least 3 for t-SNE.'))
+    stop('dat includes only ', ncol(dat), ' samples; ',
+         'need at least 3 for t-SNE.')
   }
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
