@@ -16,7 +16,7 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param k How many nearest neighbors should the algorithm consider when
-#'   building projections?
+#'   building projections? See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for LLE.
 #' @param dims Vector specifying which principal components to plot. Must be of
@@ -137,9 +137,6 @@ plot_lle <- function(dat,
   }
   if (k >= ncol(dat)) {
     stop('k must be less than the sample size of the dataset.')
-  }
-  if (length(k_bounds) != 2L) {
-    stop('k_bounds must be a vector of length 2.')
   }
   if (length(dims) > 2L && !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
