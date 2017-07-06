@@ -1,6 +1,7 @@
 #' Plot Dispersion Estimates
 #'
-#' This function plots the mean-dispersion relationship for a given count matrix.
+#' This function plots the mean-dispersion relationship for a given count
+#' matrix.
 #'
 #' @param dat A \code{\link[edgeR]{DGEList}} object or \code{\link[DESeq2]{
 #'   DESeqDataSet}}. If normalization factors or dispersions have not already

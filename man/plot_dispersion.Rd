@@ -54,7 +54,8 @@ parameters, create the appropriate \code{DGEList} or \code{DESeqDataSet}
 object with your preferred settings and pass it directly as \code{dat}.}
 }
 \description{
-This function plots the mean-dispersion relationship for a given count matrix.
+This function plots the mean-dispersion relationship for a given count
+matrix.
 }
 \details{
 Count data in omic studies are often presumed to follow a negative binomial
