@@ -151,19 +151,7 @@ plot_pca <- function(dat,
   # Tidy data
   dat <- matrixize(dat)
   if (!(top %>% is.null)) {                      # Filter by variance?
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with ',
-                'missing values and/or applying a minimal expression filter. ',
-                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                ' matrix.')
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
-    vars <- rowVars(dat)
-    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-    dat <- dat[keep, , drop = FALSE]
+    dat <- var_filt(dat, top, robust = FALSE)
   }
   pca <- prcomp(t(dat))                          # PCA, % variance explained
   pve <- seq_len(max(pcs)) %>% map_chr(function(pc) {

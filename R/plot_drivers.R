@@ -127,20 +127,8 @@ plot_drivers <- function(dat,
       }
     }
   }
-  if (!(top %>% is.null)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with ',
-                'missing values and/or applying a minimal expression filter. ',
-                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                'matrix.')
-      }
-      } else {
-        top <- round(top * nrow(dat))
-      }
-    vars <- rowVars(dat)
-    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-    dat <- dat[keep, , drop = FALSE]
+  if (!(top %>% is.null)) {                      # Filter by variance?
+    dat <- var_filt(dat, top, robust = FALSE)
   }
   if (n.pc > max(nrow(dat), ncol(dat))) {
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
@@ -225,3 +213,5 @@ plot_drivers <- function(dat,
 }
 
 
+# Fit multivariate model?
+# Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
