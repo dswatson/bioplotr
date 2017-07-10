@@ -124,7 +124,10 @@ plot_similarity <- function(dat,
     stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
          'See ?hclust.')
   }
-  pal_tiles <- colorize(pal_tiles, var_type = 'Continuous')
+  pal_cols <- colorize(pal_tiles, var_type = 'Continuous')
+  if (pal_tiles == 'RdBu') {
+    pal_cols <- rev(pal_cols)
+  }
   if (title %>% is.null) {
     title <- 'Sample Similarity Matrix'
   }
@@ -136,11 +139,11 @@ plot_similarity <- function(dat,
   # Build plot
   require(NMF)
   if (is.null(anno)) {
-    aheatmap(dm, col = pal_tiles, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              border_color = 'grey60')
   } else {
-    aheatmap(dm, col = pal_tiles, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              annCol = anno, annColors = ann_cols, border_color = 'grey60')
   }
