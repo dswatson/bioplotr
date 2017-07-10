@@ -38,11 +38,11 @@ plot_quantiles <- function(x,
                              ylab = NULL) {
 
   # Preliminaries
-  x <- keep(x, is.finite)
+  x <- x %>% keep(is.finite)
   if (length(x) < 1L) {
     stop('x must have at least one finite, non-missing value.')
   }
-  y <- keep(y, is.finite)
+  y <- y %>% keep(is.finite)
   if (length(y) < 1L) {
     stop('y must have at least one finite, non-missing value.')
   }
