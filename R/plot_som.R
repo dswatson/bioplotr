@@ -3,7 +3,7 @@
 #' This function plots the output of a self-organizing map.
 #'
 #' @param dat Either a probe by sample omic data matrix or an object of class
-#'   \code{kohonen}. See Details.
+#'   \code{kohonen}.
 #' @param type What should the plot visualize? Options include \code{"model"},
 #'   \code{"sample"}, \code{"distance"}, \code{"counts"}, \code{"quality"}, and
 #'   \code{"train"}. See Details.
@@ -14,12 +14,12 @@
 #'   of the linear model is of interest. Only relevant if \code{type = "model"}.
 #' @param stat Which nodewise summary statistic should be plotted in the SOM?
 #'   Options are \code{"lfc"} or \code{"t"}. Only relevant if \code{type =
-#'   "model"}. See Details.
+#'   "model"}.
 #' @param sample Column number or name specifying which sample should be
 #'   plotted. Only relevant if \code{type = "sample"}.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for SOM.
-#' @param grid_dim Vector of length two specifying x- and y-axis dimensions for
+#' @param grid_dims Vector of length two specifying x- and y-axis dimensions for
 #'   the SOM grid. If \code{NULL}, values are chosen so as to create a square
 #'   grid with approximately 10 probes in each node, presuming a uniform
 #'   distribution across the map.
@@ -115,9 +115,11 @@
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
 #' plot_som(mat, type = "sample", sample = 1)
 #'
+#' @seealso
+#' \code{\link[kohonen]{som}}
+#'
 #' @export
 #' @importFrom kohonen somgrid som unit.distances object.distances
-#' @importFrom matrixStats rowVars
 #' @importFrom limma lmFit eBayes topTable
 #' @importFrom purrr map_dbl map_chr
 #' @import dplyr
@@ -131,7 +133,7 @@ plot_som <- function(dat,
                      stat = 'lfc',
                    sample = 1,
                       top = 0.5,
-                 grid_dim = NULL,
+                grid_dims = NULL,
                      topo = 'hexagonal',
                    neighb = 'gaussian',
                      rlen = 1000,
@@ -145,7 +147,7 @@ plot_som <- function(dat,
   # Preliminaries
   if (dat %>% is('kohonen')) {
     y <- dat
-    grid_dim <- c(y$grid$xdim, y$grid$ydim)
+    grid_dims <- c(y$grid$xdim, y$grid$ydim)
     export <- FALSE
   } else {
     if (ncol(dat) < 3L) {
@@ -190,25 +192,13 @@ plot_som <- function(dat,
   if (!dat %>% is('kohonen')) {                  # Fit SOM
     dat <- matrixize(dat)
     if (!(top %>% is.null)) {                    # Filter by variance?
-      if (top > 1L) {
-        if (top > nrow(dat)) {
-          warning('top exceeds nrow(dat), at least after removing probes with ',
-                  'missing values and/or applying a minimal expression filter. ',
-                  'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                  ' matrix.')
-        }
-      } else {
-        top <- round(top * nrow(dat))
-      }
-      vars <- rowVars(dat)
-      keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-      dat <- dat[keep, , drop = FALSE]
+      dat <- var_filt(dat, top, robust = FALSE)
     }
-    dat <- dat - rowMeans(dat)
-    if (grid_dim %>% is.null) {                  # ~10 probes/node
-      grid_dim <- sqrt(nrow(dat) / 10) %>% round(.)
+    dat <- scale(dat)
+    if (grid_dims %>% is.null) {                  # ~10 probes/node
+      grid_dims <- sqrt(nrow(dat) / 10L) %>% round(.)
     }
-    som_grid <- kohonen::somgrid(grid_dim, grid_dim,
+    som_grid <- kohonen::somgrid(grid_dims, grid_dims,
                                  neighbourhood.fct = neighb, topo = topo)
     if (parallel) {
       mode <- 'pbatch'

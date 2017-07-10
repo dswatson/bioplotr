@@ -5,13 +5,13 @@
 \title{SOM}
 \usage{
 plot_som(dat, type = "model", design = NULL, coef = NULL, stat = "lfc",
-  sample = 1, top = 0.5, grid_dim = NULL, topo = "hexagonal",
+  sample = 1, top = 0.5, grid_dims = NULL, topo = "hexagonal",
   neighb = "gaussian", rlen = 1000, parallel = TRUE, pal_tiles = NULL,
   title = NULL, legend = "right", hover = FALSE, export = TRUE, ...)
 }
 \arguments{
 \item{dat}{Either a probe by sample omic data matrix or an object of class
-\code{kohonen}. See Details.}
+\code{kohonen}.}
 
 \item{type}{What should the plot visualize? Options include \code{"model"},
 \code{"sample"}, \code{"distance"}, \code{"counts"}, \code{"quality"}, and
@@ -26,7 +26,7 @@ of the linear model is of interest. Only relevant if \code{type = "model"}.}
 
 \item{stat}{Which nodewise summary statistic should be plotted in the SOM?
 Options are \code{"lfc"} or \code{"t"}. Only relevant if \code{type =
-"model"}. See Details.}
+"model"}.}
 
 \item{sample}{Column number or name specifying which sample should be
 plotted. Only relevant if \code{type = "sample"}.}
@@ -34,7 +34,7 @@ plotted. Only relevant if \code{type = "sample"}.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for SOM.}
 
-\item{grid_dim}{Vector of length two specifying x- and y-axis dimensions for
+\item{grid_dims}{Vector of length two specifying x- and y-axis dimensions for
 the SOM grid. If \code{NULL}, values are chosen so as to create a square
 grid with approximately 10 probes in each node, presuming a uniform
 distribution across the map.}
@@ -143,4 +143,7 @@ Super-organizing Maps in R: The kohonen Package} \emph{J. Stat. Softw.},
 Wirth, H. (2012). \href{http://bit.ly/2tGq6iY}{Analysis of large-scale
 molecular biological data using self-organizing maps}. Dissertation thesis,
 University of Leipzig.
+}
+\seealso{
+\code{\link[kohonen]{som}}
 }
