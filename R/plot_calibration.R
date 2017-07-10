@@ -54,7 +54,7 @@ plot_calibration <- function(obs,
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
   pred <- format_binom(pred, vec_type = 'pred', n = length(obs))
-  if (pred %>% some(function(m) max(m > 1L) || min(m < 0L))) {
+  if (some(pred, ~ max(.x > 1L) || min(.x < 0L))) {
     stop('pred values must be on [0, 1].')
   }
   if (length(pred) > 1L) {
