@@ -327,6 +327,49 @@ matrixize <- function(dat) {
 
 }
 
+#' Filter by Variance
+#'
+#' This utility function filters a matrix by probewise variance or median
+#' absolute deviation.
+#'
+#' @param dat Omic data matrix.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
+#'   be used for distance calculations.
+#' @param robust Use robust variance statistic?
+#'
+#' @importFrom matrixStats rowMads rowVars
+#'
+
+var_filt <- function(dat,
+                     top,
+                     robust) {
+
+  # Preliminaries
+  if (top > 1L) {
+    if (top > nrow(dat)) {
+      warning('top exceeds nrow(dat), at least after removing probes with ',
+              'missing values and/or applying a minimal expression filter. ',
+              'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
+              ' matrix.')
+    }
+  } else {
+    top <- round(top * nrow(dat))
+  }
+
+  # Filter
+  if (robust) {
+    stats <- rowMads(dat)
+  } else {
+    stats <- rowVars(dat)
+  }
+  keep <- order(stats, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
+  dat <- dat[keep, , drop = FALSE]
+
+  # Output
+  return(dat)
+
+}
+
 #' Create Distance Matrix
 #'
 #' This utility function calculates distance based on a user defined measure
@@ -337,12 +380,13 @@ matrixize <- function(dat) {
 #' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
+#' @param robust Use robust probe centering?
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
 #'
 #' @details
-#' Data are median centred by probe and samplewise distance calculated using
-#' one of the following methods:
+#' Data are centered by probe and samplewise distance calculated using one of
+#' the following methods:
 #'
 #' \itemize{
 #'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
@@ -367,7 +411,7 @@ matrixize <- function(dat) {
 #'     \link[bioDist]{KLdist.matrix}} functions.
 #' }
 #'
-#' @importFrom matrixStats rowVars rowMedians
+#' @importFrom matrixStats rowMedians rowMeans2
 #' @importFrom wordspace dist.matrix
 #' @importFrom vegan vegdist
 #' @import dplyr
@@ -377,32 +421,20 @@ dist_mat <- function(dat,
                      dist,
                      p,
                      top,
+                     robust = FALSE,
                      filter_method) {
 
   # Preliminaries
   if (!(top %>% is.null)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with ',
-                'missing values and/or applying a minimal expression filter. ',
-                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                ' matrix.')
-        top <- NULL
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
+    dat <- var_filt(dat, top, robust = FALSE)
   }
 
-  # Variance filter?
-  if (!(top %>% is.null) && filter_method == 'common') {
-    vars <- rowVars(dat)
-    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-    dat <- dat[keep, , drop = FALSE]
+  # Center probes
+  if (robust) {
+    dat <- dat - roMedians(dat)
+  } else {
+    dat <- dat - rowMeans2(dat)
   }
-
-  # Median center probes
-  dat <- dat - rowMedians(dat)
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
