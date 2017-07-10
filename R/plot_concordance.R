@@ -5,9 +5,6 @@
 #' @param dat A sample by feature data frame or matrix, e.g. of clinical
 #'   variables or patient cluster assignments. All columns are converted to
 #'   factors with a warning, if possible.
-#' @param label Print association statistic over tiles?
-#' @param diag Include principal diagonal of the concordance matrix? Only
-#'   advisable if \code{method = "MI"}.
 #' @param method String specifying which measure of association to
 #'   compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
 #'   "MI"}. See Details.
@@ -22,6 +19,9 @@
 #'   relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.
 #' @param B Number of replicates or permutations to generate when computing
 #'   \emph{p}-values. See Details.
+#' @param label Print association statistic over tiles?
+#' @param diag Include principal diagonal of the concordance matrix? Only
+#'   advisable if \code{method = "MI"}.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -80,17 +80,17 @@
 #'
 
 plot_concordance <- function(dat,
-                             label = FALSE,
-                              diag = FALSE,
-                            method = 'fisher',
-                             alpha = NULL,
-                             p.adj = NULL,
-                             sim.p = FALSE,
-                                 B = 2000,
-                             title = NULL,
-                            legend = 'right',
-                             hover = FALSE,
-                            export = FALSE) {
+                             method = 'fisher',
+                              alpha = NULL,
+                              p.adj = NULL,
+                              sim.p = FALSE,
+                                  B = 2000,
+                              label = FALSE,
+                               diag = FALSE,
+                              title = NULL,
+                             legend = 'right',
+                              hover = FALSE,
+                             export = FALSE) {
 
   # Preliminaries
   p <- ncol(dat)
@@ -145,12 +145,14 @@ plot_concordance <- function(dat,
                 dimnames = list(colnames(dat), colnames(dat)))
   for (i in 2L:ncol(dat)) {
     for (j in 1L:(i - 1L)) {
-      tmp <- dat[, c(i, j)] %>% na.omit(.)
+      tmp <- dat[, c(i, j)] %>%
+        tbl_df(.) %>%
+        na.omit(.)
       if (method == 'MI') {
         mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits(.)
       } else if (method == 'fisher') {
         if (sim.p) {
-          p <- fisher.test(tmp[[1]], tmp[[2]],
+          p <- fisher.test(tmp[[1L]], tmp[[2L]],
                            simulate.p.value = TRUE, B = B)$p.value
         } else {
           p <- try(fisher.test(tmp[[1L]], tmp[[2L]], workspace = 2e8L)$p.value,
@@ -183,7 +185,7 @@ plot_concordance <- function(dat,
       p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
       for (i in 2L:ncol(p_mat)) {
         for (j in 1L:(i - 1L)) {
-          tmp <- dat[, c(i, j)] %>% na.omit()
+          tmp <- dat[, c(i, j)] %>% na.omit(.)
           if (method == 'MI') {
             null <- B %>%
               rerun(x = sample(tmp[[1L]], nrow(tmp)),
@@ -231,7 +233,7 @@ plot_concordance <- function(dat,
                            name = leg.txt) +
     scale_color_manual(values = c('grey90', 'black')) +
     guides(color = FALSE) +
-    labs(x = NULL, y = NULL, title = title) +
+    labs(title = title, x = NULL, y = NULL) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
          axis.text.x = element_text(angle = 45L, hjust = 1L))

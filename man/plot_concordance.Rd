@@ -4,19 +4,14 @@
 \alias{plot_concordance}
 \title{Concordance Plot}
 \usage{
-plot_concordance(dat, label = FALSE, diag = FALSE, method = "fisher",
-  alpha = NULL, p.adj = NULL, sim.p = FALSE, B = 2000, title = NULL,
+plot_concordance(dat, method = "fisher", alpha = NULL, p.adj = NULL,
+  sim.p = FALSE, B = 2000, label = FALSE, diag = FALSE, title = NULL,
   legend = "right", hover = FALSE, export = FALSE)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
 variables or patient cluster assignments. All columns are converted to
 factors with a warning, if possible.}
-
-\item{label}{Print association statistic over tiles?}
-
-\item{diag}{Include principal diagonal of the concordance matrix? Only
-advisable if \code{method = "MI"}.}
 
 \item{method}{String specifying which measure of association to
 compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
@@ -36,6 +31,11 @@ relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
 
 \item{B}{Number of replicates or permutations to generate when computing
 \emph{p}-values. See Details.}
+
+\item{label}{Print association statistic over tiles?}
+
+\item{diag}{Include principal diagonal of the concordance matrix? Only
+advisable if \code{method = "MI"}.}
 
 \item{title}{Optional plot title.}
 
