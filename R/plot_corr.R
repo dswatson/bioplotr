@@ -4,13 +4,13 @@
 #'
 #' @param dat A sample by feature data frame or matrix, e.g. of clinical
 #'   variables. Non-numeric features are dropped with a warning.
-#' @param geom String specifying whether to visualize correlation coefficients
-#'   as \code{"tile"} or \code{"circle"}.
-#' @param label Print correlation coefficient over \code{geom}?
-#' @param diag Include principal diagonal of the correlation matrix?
 #' @param method String specifying which correlation coefficient to compute.
 #'   Must be one of \code{"pearson"}, \code{"kendall"}, or \code{"spearman"}.
 #'   See \code{\link[stats]{cor}}.
+#' @param use Optional character string giving a method for computing
+#'   covariances in the presence of missing values. Must be one of \code{
+#'   "everything"}, \code{"all.obs"}, \code{"complete.obs"}, \code{
+#'   "na.or.complete"}, or \code{"pairwise.complete.obs"}.
 #' @param alpha Optional significance threshold to impose on correlations.
 #'   Those with \emph{p}-values (optionally adjusted) less than or equal to
 #'   \code{alpha} are outlined in black.
@@ -18,6 +18,10 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
+#' @param geom String specifying whether to visualize correlation coefficients
+#'   as \code{"tile"} or \code{"circle"}.
+#' @param label Print correlation coefficient over \code{geom}?
+#' @param diag Include principal diagonal of the correlation matrix?
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -46,15 +50,16 @@
 #'
 
 plot_corr <- function(dat,
-                      geom = 'tile',
-                     label = FALSE,
-                      diag = FALSE,
-                    method = 'pearson',
-                     alpha = NULL,
-                     p.adj = NULL,
-                     title = NULL,
-                    legend = 'right',
-                     hover = FALSE) {
+                      method = 'pearson',
+                         use = 'everything',
+                       alpha = NULL,
+                       p.adj = NULL,
+                        geom = 'tile',
+                       label = FALSE,
+                        diag = FALSE,
+                       title = NULL,
+                      legend = 'right',
+                       hover = FALSE) {
 
   # Preliminaries
   if (ncol(dat) < 2L) {
@@ -72,11 +77,13 @@ plot_corr <- function(dat,
   if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
-  if (!geom %in% c('tile', 'circle')) {
-    stop('geom must be either "tile" or "circle".')
-  }
   if (!method %in% c('pearson', 'kendall', 'spearman')) {
     stop('method must be one of "pearson", "kendall", or "spearman". See ?cor.')
+  }
+  uses <- c('everything', 'all.obs', 'complete.obs', 'na.or.complete',
+            'pairwise.complete.obs')
+  if (!use %in% uses) {
+    stop('use must be one of ', stringify(uses, 'or'), '.')
   }
   if (!(alpha %>% is.null)) {
     if (alpha <= 0 | alpha >= 1) {
@@ -90,6 +97,9 @@ plot_corr <- function(dat,
            '"BH", "BY", or "fdr". See ?p.adjust.')
     }
   }
+  if (!geom %in% c('tile', 'circle')) {
+    stop('geom must be either "tile" or "circle".')
+  }
   if (title %>% is.null) {
     title <- 'Correlation Plot'
   }
@@ -100,7 +110,7 @@ plot_corr <- function(dat,
   }
 
   # Tidy data
-  mat <- cor(dat, method = method)
+  mat <- cor(dat, method = method, use = use)
   mat[!lower.tri(mat)] <- NA
   if (diag) {
     diag(mat) <- 1L
@@ -134,7 +144,7 @@ plot_corr <- function(dat,
   # Build plot
   p <- ggplot(df, aes(x, y)) +
     coord_equal() +
-    labs(x = NULL, y = NULL, title = title) +
+    labs(title = title, x = NULL, y = NULL) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
          axis.text.x = element_text(angle = 45L, hjust = 1L))

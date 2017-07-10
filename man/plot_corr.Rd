@@ -4,24 +4,22 @@
 \alias{plot_corr}
 \title{Correlation Plot}
 \usage{
-plot_corr(dat, geom = "tile", label = FALSE, diag = FALSE,
-  method = "pearson", alpha = NULL, p.adj = NULL, title = NULL,
-  legend = "right", hover = FALSE)
+plot_corr(dat, method = "pearson", use = "everything", alpha = NULL,
+  p.adj = NULL, geom = "tile", label = FALSE, diag = FALSE,
+  title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
 variables. Non-numeric features are dropped with a warning.}
 
-\item{geom}{String specifying whether to visualize correlation coefficients
-as \code{"tile"} or \code{"circle"}.}
-
-\item{label}{Print correlation coefficient over \code{geom}?}
-
-\item{diag}{Include principal diagonal of the correlation matrix?}
-
 \item{method}{String specifying which correlation coefficient to compute.
 Must be one of \code{"pearson"}, \code{"kendall"}, or \code{"spearman"}.
 See \code{\link[stats]{cor}}.}
+
+\item{use}{Optional character string giving a method for computing
+covariances in the presence of missing values. Must be one of \code{
+"everything"}, \code{"all.obs"}, \code{"complete.obs"}, \code{
+"na.or.complete"}, or \code{"pairwise.complete.obs"}.}
 
 \item{alpha}{Optional significance threshold to impose on correlations.
 Those with \emph{p}-values (optionally adjusted) less than or equal to
@@ -31,6 +29,13 @@ Those with \emph{p}-values (optionally adjusted) less than or equal to
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
+
+\item{geom}{String specifying whether to visualize correlation coefficients
+as \code{"tile"} or \code{"circle"}.}
+
+\item{label}{Print correlation coefficient over \code{geom}?}
+
+\item{diag}{Include principal diagonal of the correlation matrix?}
 
 \item{title}{Optional plot title.}
 
