@@ -137,7 +137,7 @@ plot_voom <- function(dat,
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
       geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
-      scale_color_manual(name = 'Curve', values = pal_d3()(1L)) +
+      scale_color_manual(name = 'Curve', values = pal_d3()(1)) +
       labs(title = title,
                x = expression('Mean'~log[2]*'-CPM'),
                y = expression(sqrt(sigma))) +
