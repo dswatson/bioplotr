@@ -431,7 +431,7 @@ dist_mat <- function(dat,
 
   # Center probes
   if (robust) {
-    dat <- dat - roMedians(dat)
+    dat <- dat - rowMedians(dat)
   } else {
     dat <- dat - rowMeans2(dat)
   }
