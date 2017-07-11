@@ -100,7 +100,7 @@ plot_survival <- function(fit,
     }
   }
   if (leg.txt %>% is.null && !(fit$strata %>% is.null)) {
-    leg.txt <- gsub('=.*', '', names(fit$strata))[1L]
+    leg.txt <- gsub('=.*', '', names(fit$strata))[1]
     leg.lbl <- gsub('.*=', '', names(fit$strata))
   } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
     leg.lbl <- names(fit$strata)
