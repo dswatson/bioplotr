@@ -169,7 +169,7 @@ plot_pca <- function(dat,
                         PC3 = pca$x[, max(pcs)])
   }
   if (!(features %>% is.null)) {
-    df <- df %>% cbind(tbl_df(features))
+    df <- df %>% bind_cols(as_tibble(features))
   }
 
   # Build plot
