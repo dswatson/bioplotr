@@ -66,7 +66,7 @@ browser's graphic display or appear in the RStudio viewer.}
 
 \item{export}{Return fitted SOM model?}
 
-\item{...}{Extra arguments to be passed to \code{\link[limma]{lmFit}} if
+\item{...}{Additional arguments to be passed to \code{\link[limma]{lmFit}} if
 \code{type = "model"}.}
 }
 \value{

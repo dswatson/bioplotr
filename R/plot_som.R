@@ -41,7 +41,7 @@
 #'   \code{TRUE}, the plot is rendered in HTML and will either open in your
 #'   browser's graphic display or appear in the RStudio viewer.
 #' @param export Return fitted SOM model?
-#' @param ... Extra arguments to be passed to \code{\link[limma]{lmFit}} if
+#' @param ... Additional arguments to be passed to \code{\link[limma]{lmFit}} if
 #'   \code{type = "model"}.
 #'
 #' @details
@@ -152,7 +152,7 @@ plot_som <- function(dat,
   } else {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
-           'need at least 3 to train SOM.')
+           'need at least 3 to train a SOM.')
     }
   }
   if (type == 'model') {
@@ -173,12 +173,12 @@ plot_som <- function(dat,
       stop('sample must be specified when type = "sample".')
     }
     if (sample %>% is.numeric) {
-      if ((dat %>% is('kohonen') && sample > ncol(dat$codes[[1L]])) ||
+      if ((dat %>% is('kohonen') && sample > ncol(dat$codes[[1]])) ||
           (!dat %>% is('kohonen') && sample > ncol(dat))) {
         stop('sample number exceeds sample size.')
       }
     } else {
-      if ((dat %>% is('kohonen') && !sample %in% colnames(dat$codes[[1L]])) ||
+      if ((dat %>% is('kohonen') && !sample %in% colnames(dat$codes[[1]])) ||
           (!dat %>% is('kohonen') && !sample %in% colnames(dat))) {
         stop('sample not found.')
       }
@@ -194,7 +194,7 @@ plot_som <- function(dat,
     if (!(top %>% is.null)) {                    # Filter by variance?
       dat <- var_filt(dat, top, robust = FALSE)
     }
-    dat <- scale(dat)
+    dat <- scale(dat, scale = FALSE)
     if (grid_dims %>% is.null) {                  # ~10 probes/node
       grid_dims <- sqrt(nrow(dat) / 10L) %>% round(.)
     }
@@ -215,7 +215,7 @@ plot_som <- function(dat,
   } else {
     n_nodes <- nrow(y$grid$pts)
     if (type == 'model') {
-      top <- lmFit(y$codes[[1L]], design, ...) %>%
+      top <- lmFit(y$codes[[1]], design, ...) %>%
         eBayes(.) %>%
         topTable(coef = coef, number = Inf, sort.by = 'none')
       if (stat == 'lfc') {
@@ -236,7 +236,7 @@ plot_som <- function(dat,
         }
       }
     } else if (type == 'sample') {
-      value <- y$codes[[1L]][, sample]
+      value <- y$codes[[1]][, sample]
       if (pal_tiles %>% is.null) {
         cols <- colorize('Spectral', var_type = 'Continuous')
       }
@@ -259,7 +259,7 @@ plot_som <- function(dat,
       code_dists <- y %>%
         object.distances(type = 'codes') %>%
         as.matrix(.)
-      code_dists[abs(node_dists - 1) > .001] <- NA_real_
+      code_dists[abs(node_dists - 1L) > .001] <- NA_real_
       value <- colMeans(code_dists, na.rm = TRUE)
       if (pal_tiles %>% is.null) {
         cols <- colorize('Greys', var_type = 'Continuous')
@@ -280,7 +280,7 @@ plot_som <- function(dat,
       }
     }
     probes <- seq_len(n_nodes) %>%
-      map_chr(~ rownames(y$data[[1L]])[y$unit.classif == .x] %>%
+      map_chr(~ rownames(y$data[[1]])[y$unit.classif == .x] %>%
                 paste(collapse = '\n'))
     probes[probes == ''] <- NA_character_
     df <- as_tibble(y$grid$pts) %>%
