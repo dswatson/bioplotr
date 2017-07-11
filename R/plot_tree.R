@@ -4,7 +4,7 @@
 #'
 #' @param dat An object representing a dendrogram (e.g. of class \code{
 #'   \link[stats]{hclust}}), regression tree (e.g. of class \code{\link[rpart]{
-#'   rpart}), or other tree-like structure.
+#'   rpart}}), or other tree-like structure.
 #' @param labels Plot labels? This refers to items for dendrograms, and break
 #'   points for regression or classification trees.
 #' @param leaf_labels Plot leaf labels? Only relevant for regression and

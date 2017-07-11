@@ -8,6 +8,10 @@ plot_tree(dat, labels = TRUE, leaf_labels = TRUE, rotate = FALSE,
   title = NULL)
 }
 \arguments{
+\item{dat}{An object representing a dendrogram (e.g. of class \code{
+\link[stats]{hclust}}), regression tree (e.g. of class \code{\link[rpart]{
+rpart}}), or other tree-like structure.}
+
 \item{labels}{Plot labels? This refers to items for dendrograms, and break
 points for regression or classification trees.}
 
