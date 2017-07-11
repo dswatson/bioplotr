@@ -88,7 +88,7 @@ plot_drivers <- function(dat,
     stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
   }
   dat <- matrixize(dat)
-  clin <- tbl_df(clin)
+  clin <- as_tibble(clin)
   if (!index %in% colnames(clin)) {
     stop(paste0('Column "', index, '" not found in clin.'))
   }

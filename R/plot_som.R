@@ -283,7 +283,7 @@ plot_som <- function(dat,
       map_chr(~ rownames(y$data[[1L]])[y$unit.classif == .x] %>%
                 paste(collapse = '\n'))
     probes[probes == ''] <- NA_character_
-    df <- tbl_df(y$grid$pts) %>%
+    df <- as_tibble(y$grid$pts) %>%
       mutate(Value = value,
             Probes = probes)
   }

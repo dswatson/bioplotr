@@ -91,7 +91,7 @@ plot_density <- function(dat,
     }
   }
   dat <- matrixize(dat)
-  df <- tbl_df(dat) %>% gather('Sample', 'Value')
+  df <- as_tibble(dat) %>% gather('Sample', 'Value')
   if (!(group %>% is.null)) {
     df <- df %>% mutate(Group = rep(group[[1L]], each = nrow(dat)))
   }

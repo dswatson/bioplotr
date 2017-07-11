@@ -116,7 +116,7 @@ plot_corr <- function(dat,
     diag(mat) <- 1L
   }
   df <- mat %>%                                  # Melt correlation matrix
-    tbl_df(.) %>%
+    as_tibble(.) %>%
     gather('x', 'Correlation') %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),

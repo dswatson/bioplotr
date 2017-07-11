@@ -146,7 +146,7 @@ plot_concordance <- function(dat,
   for (i in 2L:ncol(dat)) {
     for (j in 1L:(i - 1L)) {
       tmp <- dat[, c(i, j)] %>%
-        tbl_df(.) %>%
+        as_tibble(.) %>%
         na.omit(.)
       if (method == 'MI') {
         mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits(.)
@@ -172,7 +172,7 @@ plot_concordance <- function(dat,
     }
   }
   df <- mat %>%                                  # Melt concordance matrix
-    tbl_df(.) %>%
+    as_tibble(.) %>%
     gather('x', 'Association') %>%
     mutate(y = rep(rownames(mat), nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
