@@ -111,7 +111,7 @@ plot_corr <- function(dat,
 
   # Tidy data
   mat <- cor(dat, method = method, use = use)
-  mat[!lower.tri(mat)] <- NA
+  mat[!lower.tri(mat)] <- NA_real_
   if (diag) {
     diag(mat) <- 1L
   }
@@ -126,12 +126,13 @@ plot_corr <- function(dat,
     na.omit(.)
   if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
-    for (i in 2L:ncol(p_mat)) {
-      for (j in 1L:(i - 1L)) {
-        p_mat[i, j] <- cor.test(dat[, i], dat[, j], method = method)$p.value
+    for (i in 2:ncol(p_mat)) {
+      for (j in 1:(i - 1L)) {
+        p_mat[i, j] <- cor.test(dat[, i], dat[, j],
+                                method = method, use = use)$p.value
       }
     }
-    p <- p_mat[lower.tri(p_mat)]
+    p <- p_mat %>% keep(lower.tri(.))
     if (!(p.adj %>% is.null)) {
       p <- p.adjust(p, method = p.adj)
     }
@@ -174,4 +175,4 @@ plot_corr <- function(dat,
 
 }
 
-# NAs?
+

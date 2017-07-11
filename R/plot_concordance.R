@@ -72,7 +72,7 @@
 #' plot_concordance(df)
 #'
 #' @export
-#' @importFrom purrr some rerun map_dbl
+#' @importFrom purrr some rerun map_dbl keep
 #' @importFrom tidyr gather
 #' @importFrom infotheo mutinformation natstobits
 #' @import dplyr
@@ -143,22 +143,22 @@ plot_concordance <- function(dat,
   # Tidy Data
   mat <- matrix(nrow = ncol(dat), ncol = ncol(dat),
                 dimnames = list(colnames(dat), colnames(dat)))
-  for (i in 2L:ncol(dat)) {
-    for (j in 1L:(i - 1L)) {
+  for (i in 2:ncol(dat)) {
+    for (j in 1:(i - 1L)) {
       tmp <- dat[, c(i, j)] %>%
         as_tibble(.) %>%
         na.omit(.)
       if (method == 'MI') {
-        mat[i, j] <- mutinformation(tmp[[1L]], tmp[[2L]]) %>% natstobits(.)
+        mat[i, j] <- mutinformation(tmp[[1]], tmp[[2]]) %>% natstobits(.)
       } else if (method == 'fisher') {
         if (sim.p) {
-          p <- fisher.test(tmp[[1L]], tmp[[2L]],
+          p <- fisher.test(tmp[[1]], tmp[[2]],
                            simulate.p.value = TRUE, B = B)$p.value
         } else {
-          p <- try(fisher.test(tmp[[1L]], tmp[[2L]], workspace = 2e8L)$p.value,
+          p <- try(fisher.test(tmp[[1]], tmp[[2]], workspace = 2e8L)$p.value,
                    silent = TRUE)
           if (p %>% is('try-error')) {
-            mat[i, j] <- fisher.test(tmp[[1L]], tmp[[2L]],
+            mat[i, j] <- fisher.test(tmp[[1]], tmp[[2]],
                                      simulate.p.value = TRUE, B = B)$p.value
           } else {
             mat[i, j] <- p
@@ -167,7 +167,7 @@ plot_concordance <- function(dat,
         p_mat <- mat
         mat[lower.tri(mat)] <- -log(mat[lower.tri(mat)])
       } else if (method == 'chisq') {
-        mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$statistic
+        mat[i, j] <- chisq.test(tmp[[1]], tmp[[2]])$statistic
       }
     }
   }
@@ -181,30 +181,30 @@ plot_concordance <- function(dat,
     select(x, y, Association, Significant) %>%
     na.omit(.)
   if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
-    if (!method == 'fisher') {
+    if (method != 'fisher') {
       p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
-      for (i in 2L:ncol(p_mat)) {
-        for (j in 1L:(i - 1L)) {
+      for (i in 2:ncol(p_mat)) {
+        for (j in 1:(i - 1L)) {
           tmp <- dat[, c(i, j)] %>% na.omit(.)
           if (method == 'MI') {
             null <- B %>%
-              rerun(x = sample(tmp[[1L]], nrow(tmp)),
-                    y = tmp[[2L]]) %>%
+              rerun(x = sample(tmp[[1]], nrow(tmp)),
+                    y = tmp[[2]]) %>%
               map_dbl(~ mutinformation(.x$x, .x$y)) %>%
               natstobits(.)
             p_mat[i, j] <- (sum(null >= mat[i, j]) + 1L) / (B + 1L)
           } else if (method == 'chisq') {
             if (sim.p) {
-              p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]],
+              p_mat[i, j] <- chisq.test(tmp[[1]], tmp[[2]],
                                         simulate.p.value = TRUE, B = B)$p.value
             } else {
-              p_mat[i, j] <- chisq.test(tmp[[1L]], tmp[[2L]])$p.value
+              p_mat[i, j] <- chisq.test(tmp[[1]], tmp[[2]])$p.value
             }
           }
         }
       }
     }
-    p <- p_mat[lower.tri(p_mat)]
+    p <- p_mat %>% keep(lower.tri(.))
     if (!(p.adjust %>% is.null)) {
       p <- p.adjust(p, method = p.adj)
     }
