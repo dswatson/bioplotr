@@ -371,7 +371,7 @@ plot_md.DESeqResults <- function(dat,
   if (!(lfc %>% is.null)) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr && Diff >= lfc, 'Up',
-                                ifelse(q.value <= fdr && -Diff >= lfc, 'Down', 'NA')))
+                                ifelse(q.value <= fdr && -Diff >= lfc, 'Down', 'None')))
   }
 
   # Build plot
@@ -392,20 +392,20 @@ plot_md.DESeqResults <- function(dat,
       p <- p + geom_point(aes(color = q.value <= fdr), size = size, alpha = alpha) +
         scale_color_manual(name = expression(italic(q)*'-value'),
                          labels = c(paste('>', fdr), paste('\u2264', fdr)),
-                         values = c('#444444', pal_d3()(4L)[4L]),
+                         values = c('#444444', pal_d3()(4)[4]),
                           guide = guide_legend(reverse = TRUE, override.aes = list(
                            size = rep(1L, 2L), alpha = rep(1L, 2L))))
     } else {
       suppressWarnings(
         p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
           geom_hline(yintercept = -lfc, linetype = 'dashed') +
-          geom_point(data = df %>% filter(Direction != 'NA'),
+          geom_point(data = filter(df, Direction != 'None'),
                      aes(Mean, Diff, color = Direction, text = Probe),
                      size = size, alpha = alpha) +
-          geom_point(data = df %>% filter(Direction == 'NA'),
+          geom_point(data = filter(df, Direction == 'None'),
                      aes(Mean, Diff, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
       )
     }
   }
@@ -521,7 +521,7 @@ plot_md.data.frame <- function(dat,
   if (!(lfc) %>% is.null) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & Diff >= lfc, 'Up',
-                                ifelse(q.value <= fdr & -Diff >= lfc, 'Down', 'NA')))
+                                ifelse(q.value <= fdr & -Diff >= lfc, 'Down', 'None')))
   }
 
   # Build plot
@@ -548,13 +548,13 @@ plot_md.data.frame <- function(dat,
       suppressWarnings(
         p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
           geom_hline(yintercept = -lfc, linetype = 'dashed') +
-          geom_point(data = df %>% filter(Direction != 'NA'),
+          geom_point(data = filter(df, Direction != 'None'),
                      aes(Mean, Diff, color = Direction, text = Probe),
                      size = size, alpha = alpha) +
-          geom_point(data = df %>% filter(Direction == 'NA'),
+          geom_point(data = filter(df, Direction == 'None'),
                      aes(Mean, Diff, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3L:4L])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4)[3:4])
       )
     }
   }
