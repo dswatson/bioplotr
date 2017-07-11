@@ -163,10 +163,10 @@ plot_volcano <- function(dat,
   } else {                                       # Separate up- and down-regulated probes?
     if (!(lfc %>% is.null) && any(df$Direction != 'None')) {
       suppressWarnings(
-        p <- p + geom_point(data = df %>% filter(Direction != 'None'),
+        p <- p + geom_point(data = filter(df, Direction != 'None'),
                             aes(logFC, Y, color = Direction, text = Probe),
                             size = size, alpha = alpha) +
-          geom_point(data = df %>% filter(Direction == 'None'),
+          geom_point(data = filter(df, Direction == 'None'),
                      aes(logFC, Y, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
           geom_segment(x = -Inf, xend = -lfc, y = y_pt, yend = y_pt, linetype = 2L) +
