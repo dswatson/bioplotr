@@ -50,7 +50,7 @@ Suitable objects from familiar packages are also acceptable. See Details.}
 
 \item{design}{Optional design matrix with rows corresponding to samples and
 columns to coefficients to be estimated. Only relevant for \code{
-\link[edgeR]{DGEList}} objects. See Details.}
+\link[edgeR]{DGEList}} objects.}
 
 \item{sample}{Column number or name specifying which sample in \code{dat} to
 compare with the others. Only relevant for between-sample MD plots.}
@@ -71,6 +71,9 @@ from \code{dat}.}
 
 \item{fdr}{Optional significance threshold for declaring a probe
 differentially expressed. Only relevant for study-wide MD plots.}
+
+\item{probes}{Optional column number or name specifying where probe names are
+stored, presuming they are not stored in \code{rownames(dat)}.}
 }
 \description{
 This function plots probewise means vs. log2 fold changes for a test of

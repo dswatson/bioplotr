@@ -9,7 +9,7 @@
 #'   Suitable objects from familiar packages are also acceptable. See Details.
 #' @param design Optional design matrix with rows corresponding to samples and
 #'   columns to coefficients to be estimated. Only relevant for \code{
-#'   \link[edgeR]{DGEList}} objects. See Details.
+#'   \link[edgeR]{DGEList}} objects.
 #' @param fdr Optional significance threshold for declaring a probe
 #'   differentially expressed. Only relevant for study-wide MD plots.
 #' @param lfc Optional effect size threshold for declaring a probe
@@ -19,6 +19,8 @@
 #' @param ctrls Optional vector of length equal to \code{nrow(dat)} indicating
 #'   the control status of each probe. Only relevant for between-sample MD
 #'   plots.
+#' @param probes Optional column number or name specifying where probe names are
+#'   stored, presuming they are not stored in \code{rownames(dat)}.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
@@ -149,7 +151,7 @@ plot_md.DGEList <- function(dat,
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
-    ctrls <- ctrl %>% as.character(.)
+    ctrls <- as.character(ctrls)
     ctrls[ctrls == names(which.max(table(ctrls)))] <- '0'
   }
   if (xlab %>% is.null) {
@@ -254,7 +256,7 @@ plot_md.DESeqDataSet <- function(dat,
   if (xlab %>% is.null) {
     xlab <- expression('Mean'~log[2]*'-CPM')
   }
-  require(DESeq2)
+  suppressPackageStartupMessages(require(DESeq2))
   if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
     dat <- estimateSizeFactors(dat)
   }
@@ -327,7 +329,7 @@ plot_md.DESeqTransform <- function(dat,
   }
 
   # Tidy data
-  require(SummarizedExperiment)
+  suppressPackageStartupMessages(require(SummarizedExperiment))
   dat <- assay(dat)
 
   # Export
@@ -359,9 +361,9 @@ plot_md.DESeqResults <- function(dat,
   }
 
   # Tidy data
+  dat$Probe <- rownames(dat)
   df <- dat %>%
-    as.data.frame(.) %>%
-    mutate(Probe = rownames(dat)) %>%
+    as_tibble(.) %>%
     rename(Mean = baseMean,
            Diff = log2FoldChange,
         q.value = padj) %>%
@@ -403,7 +405,7 @@ plot_md.DESeqResults <- function(dat,
           geom_point(data = df %>% filter(Direction == 'NA'),
                      aes(Mean, Diff, text = Probe),
                      color = '#444444', size = size, alpha = alpha) +
-          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3L:4L])
+          scale_color_manual(guide = FALSE, values = pal_d3()(4L)[3:4])
       )
     }
   }
@@ -453,14 +455,14 @@ plot_md.data.frame <- function(dat,
   # Preliminaries
   if (probes %>% is.null) {
     if (rownames(dat) %>% is.null ||
-        rownames(dat) %>% identical(seq_len(nrow(dat)) %>% as.character(.))) {
+        rownames(dat) %>% identical(as.character(seq_len(nrow(dat))))) {
       stop('If dat does not have rownames, then the column of unique probe ',
            'identifiers must be specified using the probes argument.')
     } else {
       dat$Probe <- rownames(dat)
     }
   } else {
-    if (probes %>% is.null) {
+    if (probes %>% is.numeric) {
       if (probes > ncol(dat)) {
         stop('Column number for probes exceeds ncol(dat).')
       } else {
