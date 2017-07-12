@@ -159,11 +159,11 @@ plot_som <- function(dat,
     if (design %>% is.null || coef %>% is.null) {
       stop('design and coef must be supplied when type = "model".')
     }
-    if (coef %>% is.character && !coef %in% coefs) {
-      stop(paste0("'", coef, "' not found in fit's design matrix."))
+    if (coef %>% is.character && !coef %in% colnames(design)) {
+      stop('No coefficient named "', coef, '" found in design matrix.')
     }
-    if (coef %>% is.numeric && !coef %in% seq_len(ncol(design))) {
-      stop(paste("No coef number", coef, "found in design matrix."))
+    if (coef %>% is.numeric && coef > ncol(design)) {
+      stop('No coef number ', coef, ' found in design matrix.')
     }
     if (!stat %in% c('lfc', 't')) {
       stop('stat must be "lfc" or "t".')
@@ -194,8 +194,8 @@ plot_som <- function(dat,
     if (!(top %>% is.null)) {                    # Filter by variance?
       dat <- var_filt(dat, top, robust = FALSE)
     }
-    dat <- scale(dat, scale = FALSE)
-    if (grid_dims %>% is.null) {                  # ~10 probes/node
+    dat <- scale(dat, scale = FALSE)             # Mean center by sample
+    if (grid_dims %>% is.null) {                 # ~10 probes/node
       grid_dims <- sqrt(nrow(dat) / 10L) %>% round(.)
     }
     som_grid <- kohonen::somgrid(grid_dims, grid_dims,
