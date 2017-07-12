@@ -591,7 +591,7 @@ gg_out <- function(p,
   if (!hover) {
     print(p)
   } else {
-    require(plotly)
+    suppressPackageStartupMessages(require(plotly))
     if (loc %in% c('right', 'left')) {
       p <- ggplotly(p, tooltip = 'text', height = 600, width = 650)
     } else if (loc %in% c('top', 'bottom')) {
