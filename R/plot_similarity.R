@@ -137,7 +137,7 @@ plot_similarity <- function(dat,
   dm <- dist_mat(dat, dist, p, top, filter_method)
 
   # Build plot
-  require(NMF)
+  suppressPackageStartupMessages(require(NMF))
   if (is.null(anno)) {
     aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
