@@ -380,9 +380,9 @@ var_filt <- function(dat,
 #' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for distance calculations.
-#' @param robust Use robust probe centering?
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
+#' @param robust Use robust probe centering?
 #'
 #' @details
 #' Data are centered by probe and samplewise distance calculated using one of
@@ -421,8 +421,8 @@ dist_mat <- function(dat,
                      dist,
                      p,
                      top,
-                     robust = FALSE,
-                     filter_method) {
+                     filter_method,
+                     robust = FALSE) {
 
   # Preliminaries
   if (!(top %>% is.null)) {
