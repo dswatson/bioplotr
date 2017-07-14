@@ -36,7 +36,7 @@
 #' stability. A user-specified proportion of samples are held out on each run
 #' of the algorithm to test how often the remaining samples do or do not cluster
 #' together. The result is a square consensus matrix for each value of cluster
-#' numbers \emph{k}. Each cell of the matrix \code[mat[i, j]] represents the
+#' numbers \emph{k}. Each cell of the matrix \code{mat[i, j]} represents the
 #' proportion of all runs for which samples \code{i} and \code{j} were clustered
 #' together.
 #'
