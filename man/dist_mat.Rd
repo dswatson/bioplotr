@@ -4,7 +4,7 @@
 \alias{dist_mat}
 \title{Create Distance Matrix}
 \usage{
-dist_mat(dat, dist, p, top, robust = FALSE, filter_method)
+dist_mat(dat, dist, p, top, filter_method, robust = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix.}
@@ -16,10 +16,10 @@ dist_mat(dat, dist, p, top, robust = FALSE, filter_method)
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
 be used for distance calculations.}
 
-\item{robust}{Use robust probe centering?}
-
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}.}
+
+\item{robust}{Use robust probe centering?}
 }
 \description{
 This utility function calculates distance based on a user defined measure
