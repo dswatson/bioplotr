@@ -81,6 +81,7 @@ plot_consensus <- function(cc,
   if (k %>% is.null || !(k %>% is.numeric) || length(k) > 1L) {
     stop('k must be an integer on [2, length(cc)].')
   }
+  dat <- 1L - cc[[k]]$consensusMatrix
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
@@ -113,17 +114,14 @@ plot_consensus <- function(cc,
     title <- 'Consensus Matrix'
   }
 
-  # Tidy data
-  mat <- 1L - cc[[k]]$consensusMatrix
-
   # Build plot
   suppressPackageStartupMessages(require(NMF))
   if (is.null(anno)) {
-    aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dat, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              border_color = 'grey60')
   } else {
-    aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
+    aheatmap(dat, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              annCol = anno, annColors = ann_cols, border_color = 'grey60')
   }
