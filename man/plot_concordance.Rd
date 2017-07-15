@@ -76,11 +76,10 @@ p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 
 When \code{method = "chisq"}, concordance is measured by the Pearson
 chi-squared statistic. This test is based on several assumptions that may not
-be met in practice (see
-\href{https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test#Assumptions}{
-Wikipedia} for a quick overview). When one or several of these assumptions
-are violated, more accurate \emph{p}-values can be estimated via Monte Carlo
-simulation with \code{B} replicates.
+be met in practice (see \href{http://bit.ly/2te2u5h}{Wikipedia} for a quick
+overview). When one or several of these assumptions are violated, more
+accurate \emph{p}-values can be estimated via Monte Carlo simulation with
+\code{B} replicates.
 
 When \code{method = "MI"}, concordance is measured by the mutual information
 statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
