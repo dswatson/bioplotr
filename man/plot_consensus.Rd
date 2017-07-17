@@ -5,8 +5,8 @@
 \title{Consensus Matrix Heatmap}
 \usage{
 plot_consensus(cc, k, group = NULL, covar = NULL, hclustfun = "average",
-  pal_group = "npg", pal_covar = "Blues", pal_tiles = "RdBu",
-  title = NULL)
+  pal_clust = "d3", pal_group = "npg", pal_covar = "Blues",
+  pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
 \item{cc}{A list created by a call to \code{
@@ -24,13 +24,16 @@ Alternatively, a data frame or list of such vectors, optionally named.}
 \item{hclustfun}{The agglomeration method to be used for hierarchical
 clustering. Supports any method available in \code{\link[stats]{hclust}}.}
 
+\item{pal_clust}{String specifying the color palette to use for cluster
+assignments. Options include \code{"ggplot"}, all qualitative color schemes
+available in \code{RColorBrewer}, and the complete collection of \code{
+\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.}
+
 \item{pal_group}{String specifying the color palette to use if \code{group}
 is non-\code{NULL}, or a vector of such strings with length equal to the
-number of vectors passed to \code{group}. Options include \code{"ggplot"},
-all qualitative color schemes available in \code{RColorBrewer}, and the
-complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
-Alternatively, a character vector of colors with length equal to the
-cumulative number of levels in \code{group}.}
+number of vectors passed to \code{group}. Options are the same as those for
+\code{pal_clust}. Alternatively, a character vector of colors with length
+equal to the cumulative number of levels in \code{group}.}
 
 \item{pal_covar}{String specifying the color palette to use if \code{covar}
 is non-\code{NULL}, or a vector of such strings with length equal to the
@@ -50,13 +53,13 @@ RColorBrewer}. Alternatively, a character vector of at least two colors.}
 This function displays pairwise consensus cluster distances as a heatmap.
 }
 \details{
-The consensus cluster algorithm is a resampling procedure to evaluate cluster
-stability. A user-specified proportion of samples are held out on each run
-of the algorithm to test how often the remaining samples do or do not cluster
+Consensus clustering is a resampling procedure to evaluate cluster stability.
+A user-specified proportion of samples are held out on each run of the
+algorithm to test how often the remaining samples do or do not cluster
 together. The result is a square consensus matrix for each value of cluster
 numbers \emph{k}. Each cell of the matrix \code{mat[i, j]} represents the
-proportion of all runs for which samples \code{i} and \code{j} were clustered
-together.
+proportion of all runs including samples \code{i} and \code{j} in which the
+two were clustered together.
 
 \code{plot_consensus} converts a consensus matrix into a distance matrix by
 taking the complement of all values and visualising the result as a heatmap.
@@ -64,9 +67,20 @@ These figures are similar to those presented in the original consensus
 cluster paper by Monti et al.
 }
 \examples{
+# Load libraries
 library(ConsensusClusterPlus)
-data(airways)
 
+# Import, filter, transform data
+data(airway)
+mat <- assay(airway)
+mads <- apply(mat, 1, mad)
+keep <- order(mads, decreasing = TRUE)[seq_len(1000)]
+mat <- mat[keep, ]
+mat <- log2((mat + 1L) / 1e6L)
+
+# Run consensus clustering, plot results
+cc <- ConsensusClusterPlus(mat)
+plot_consensus(cc, k = 2)
 
 }
 \references{
