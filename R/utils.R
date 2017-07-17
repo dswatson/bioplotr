@@ -19,7 +19,7 @@ format_features <- function(dat,
 
   # Listify, add names
   if (features %>% is.data.frame) {
-    features <- features %>% as.list(.)
+    features <- as.list(features)
   } else if (!(features %>% is.list)) {
     if (var_type == 'Categorical') {
       features <- list('Group' = features)
