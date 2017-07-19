@@ -201,7 +201,7 @@ plot_dispersion.DGEList <- function(dat,
                  size = size, alpha = alpha) +
       geom_hline(aes(color = 'Common', yintercept = cmn), size = 0.5) +
       geom_point(aes(Mean, Fit, color = 'Trend'), size = 0.5) +
-      scale_color_manual(name = 'Dispersion\n Estimate',
+      scale_color_manual(name = 'Dispersion \nEstimate',
                        breaks = c(TRUE, 'Common', 'Trend'),
                        labels = c('Genewise', 'Common', 'Trend'),
                        values = c(pal_d3()(2L), 'black'),
@@ -260,7 +260,7 @@ plot_dispersion.DESeqDataSet <- function(dat,
       geom_point(data = df %>% filter(!Outlier),
                  aes(Mean, Final, color = 'Final'), size = size, alpha = alpha) +
       geom_point(aes(Mean, Fit, color = 'Trend'), size = size) +
-      scale_color_manual(name = 'Dispersion\n Estimate',
+      scale_color_manual(name = 'Dispersion \nEstimate',
                        breaks = c(FALSE, 'Trend', 'Final', TRUE),
                        labels = c('Genewise', 'Trend', 'Final', 'Outlier'),
                        values = c('black', pal_d3()(4L)[c(1L:2L, 4L)]),
