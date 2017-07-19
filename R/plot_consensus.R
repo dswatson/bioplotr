@@ -88,9 +88,14 @@ plot_consensus <- function(cc,
                            title = NULL) {
 
   # Preliminaries
-  if (!(cc %>% is.list) ||
-      any(2:length(cc) %>% map_lgl(~ !'consensusMatrix' %in% names(cc[[.x]])))) {
-    stop('cc must be a list object created by a call to ConsensClusterPlus.')
+  if (cc %>% is.list) {
+    if ('consensusMatrix' %in% names(cc[[k]])) {
+      dat <- 1L - cc[[k]]$consensusMatrix
+    } else {
+      dat <- 1L - cc[[k]]
+    }
+  } else {
+    stop('cc must be a list object containing consensus matrices.')
   }
   if (k %>% is.null || !(k %>% is.numeric) || length(k) > 1L) {
     stop('k must be an integer on [2, length(cc)].')
