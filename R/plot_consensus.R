@@ -71,7 +71,7 @@
 #' plot_consensus(cc, k = 2)
 #'
 #' @export
-#' @importFrom purrr map_lgl
+#' @importFrom fastcluster hclust
 #' @importFrom RColorBrewer brewer.pal
 #' @import dplyr
 #'
@@ -106,7 +106,6 @@ plot_consensus <- function(cc,
     stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
          'See ?hclust.')
   }
-  dat <- 1L - cc[[k]]$consensusMatrix
   clusters <- as.dist(dat) %>%
     hclust(method = hclustfun) %>%
     cutree(k = k)
