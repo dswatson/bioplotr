@@ -10,7 +10,7 @@ Description: This package provides functions to build many common (and some not
   functionality. Methods are available for objects from limma, edgeR, and DESeq2 
   pipelines for easy integration with Bioconductor software.
 Depends: 
-  R (>= 3.4.0)
+  R (>= 3.4.1)
 Imports: 
   dplyr,
   ggplot2,
