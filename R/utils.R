@@ -456,7 +456,7 @@ dist_mat <- function(dat,
       }
     }
   } else if (!(top %>% is.null)) {
-    dm <- matrix(0L, nrow = ncol(dat), ncol = ncol(dat))
+    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
         top_idx <- nrow(dat) - top + 1L
@@ -492,7 +492,7 @@ dist_mat <- function(dat,
         }
       }
     }
-    dm <- pmax(dm, t(dm))
+    dm <- pmax(dm, t(dm), na.rm = TRUE)
   }
 
   # Output
