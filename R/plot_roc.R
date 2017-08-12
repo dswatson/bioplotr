@@ -89,7 +89,7 @@ plot_roc <- function(obs,
     auc <- rocs[[m]] %>%
       attr('auc') %>%
       round(2L)
-    paste0(names(pred)[m], ', AUC = ', auc)
+    paste0(names(pred)[m], ', AUROC = ', auc)
   }
   p <- ggplot(df, aes(FPR, TPR)) +
     lims(x = c(0L, 1L), y = c(0L, 1L)) +
