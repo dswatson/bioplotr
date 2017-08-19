@@ -173,7 +173,7 @@ is.color <- function(chr) {
 #' @param n Number of unique groups for which colors must be assigned. Only
 #'   relevant if \code{var_type = "Categorical"}.
 #'
-#' @importFrom purrr every
+#' @importFrom purrr map_lgl
 #' @importFrom scales hue_pal
 #' @importFrom RColorBrewer brewer.pal
 #' @import ggsci
@@ -193,7 +193,7 @@ colorize <- function(pal,
                 'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd')
   div_pals <- c('BrBg', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu',
                 'RdYlGn', 'Spectral')
-  if (!every(pal, is.color)) {
+  if (!(all(map_lgl(pal, is.color)))) {
     if (length(pal) > 1L) {
       stop('When passing individual colors to define a palette, each must ',
            'denote a valid color in R.')
@@ -733,7 +733,7 @@ track_cols <- function(features,
   # Create color list
   if (var_type == 'Categorical') {
     n.cols <- seq_along(features) %>%
-      map_dbl(function(x) length(levels(features[[x]])))
+      map_dbl(~ length(levels(features[[.x]])))
     pal <- colorize(pal, 'Categorical', sum(n.cols))
     cols <- split(pal, rep(seq_along(features), n.cols))
   } else if (var_type == 'Continuous') {
@@ -742,10 +742,10 @@ track_cols <- function(features,
            'continuous features passed to covar.')
     } else if (pal %>% is.list) {
       cols <- seq_along(features) %>%
-        map(function(x) colorize(pal[[x]], 'Continuous'))
+        map(~ colorize(pal[[.x]], 'Continuous'))
     } else {
       cols <- seq_along(features) %>%
-        map(function(x) colorize(pal[x], 'Continuous'))
+        map(~ colorize(pal[.x], 'Continuous'))
     }
   }
   names(cols) <- NULL
