@@ -187,7 +187,7 @@ plot_concordance <- function(dat,
           tmp <- dat[, c(i, j)] %>% na.omit(.)
           if (method == 'MI') {
             null <- B %>%
-              rerun(x = sample(tmp[[1]], nrow(tmp)),
+              rerun(x = tmp[[1]][sample.int(nrow(tmp))],
                     y = tmp[[2]]) %>%
               map_dbl(~ mutinformation(.x$x, .x$y)) %>%
               natstobits(.)
@@ -218,7 +218,7 @@ plot_concordance <- function(dat,
 
   # Build Plot
   if (method == 'MI') {
-    leg.txt <- 'Mutual Information (Bits)'
+    leg.txt <- 'Mutual Information\n (Bits)'
   } else if (method == 'fisher') {
     leg.txt <- expression(~-log(italic(p)))
   } else if (method == 'chisq') {
@@ -251,4 +251,5 @@ plot_concordance <- function(dat,
 
 # NAs?
 # diag?
+# Rand index, other stats from Dudoit & Fridlyand 2002
 
