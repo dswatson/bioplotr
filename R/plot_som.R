@@ -196,7 +196,7 @@ plot_som <- function(dat,
     }
     dat <- scale(dat, scale = FALSE)             # Mean center by sample
     if (grid_dims %>% is.null) {                 # ~10 probes/node
-      grid_dims <- sqrt(nrow(dat) / 10L) %>% round(.)
+      grid_dims <- round(sqrt(nrow(dat) / 10L))
     }
     som_grid <- kohonen::somgrid(grid_dims, grid_dims,
                                  neighbourhood.fct = neighb, topo = topo)
