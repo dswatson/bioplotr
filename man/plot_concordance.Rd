@@ -26,11 +26,10 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
-\item{sim.p}{Calculate \emph{p}-values via Monte Carlo simulation? Only
-relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.}
+\item{sim.p}{Calculate \emph{p}-values via Monte Carlo simulation?}
 
 \item{B}{Number of replicates or permutations to generate when computing
-\emph{p}-values. See Details.}
+\emph{p}-values.}
 
 \item{label}{Print association statistic over tiles?}
 
@@ -43,14 +42,13 @@ advisable if \code{method = "MI"}.}
 \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 \code{"topleft"}, or \code{"topright"}.}
 
-\item{hover}{Show correlation coefficient by hovering mouse over the
+\item{hover}{Show association statistic by hovering mouse over the
 corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 and will either open in your browser's graphic display or appear in the
 RStudio viewer.}
 
 \item{export}{Export concordance matrix? If \code{TRUE} and \code{alpha} is
-non-\code{NULL}, then the function will also return the \emph{p}-value
-matrix.}
+non-\code{NULL}, then the \emph{p}-value matrix will also be returned.}
 }
 \value{
 If \code{export = TRUE}, a list with up to two elements:
@@ -86,9 +84,9 @@ statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
 estimated via permutation testing with \code{B} permutations.
 }
 \examples{
-df <- data.frame(A = sample(1:2, 20, replace = TRUE),
-                 B = sample(1:3, 20, replace = TRUE),
-                 C = sample(1:4, 20, replace = TRUE))
+df <- data.frame(A = sample.int(2, 20, replace = TRUE),
+                 B = sample.int(3, 20, replace = TRUE),
+                 C = sample.int(4, 20, replace = TRUE))
 plot_concordance(df)
 
 }

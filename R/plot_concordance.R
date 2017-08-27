@@ -15,10 +15,9 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
-#' @param sim.p Calculate \emph{p}-values via Monte Carlo simulation? Only
-#'   relevant for \code{method = "fisher"} or \code{"chisq"}. See Details.
+#' @param sim.p Calculate \emph{p}-values via Monte Carlo simulation?
 #' @param B Number of replicates or permutations to generate when computing
-#'   \emph{p}-values. See Details.
+#'   \emph{p}-values.
 #' @param label Print association statistic over tiles?
 #' @param diag Include principal diagonal of the concordance matrix? Only
 #'   advisable if \code{method = "MI"}.
@@ -26,13 +25,12 @@
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 #'   \code{"topleft"}, or \code{"topright"}.
-#' @param hover Show correlation coefficient by hovering mouse over the
+#' @param hover Show association statistic by hovering mouse over the
 #'   corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 #'   and will either open in your browser's graphic display or appear in the
 #'   RStudio viewer.
 #' @param export Export concordance matrix? If \code{TRUE} and \code{alpha} is
-#'   non-\code{NULL}, then the function will also return the \emph{p}-value
-#'   matrix.
+#'   non-\code{NULL}, then the \emph{p}-value matrix will also be returned.
 #'
 #' @details
 #' Concordance plots visualize associations between categorical features. They
@@ -65,9 +63,9 @@
 #' }
 #'
 #' @examples
-#' df <- data.frame(A = sample(1:2, 20, replace = TRUE),
-#'                  B = sample(1:3, 20, replace = TRUE),
-#'                  C = sample(1:4, 20, replace = TRUE))
+#' df <- data.frame(A = sample.int(2, 20, replace = TRUE),
+#'                  B = sample.int(3, 20, replace = TRUE),
+#'                  C = sample.int(4, 20, replace = TRUE))
 #' plot_concordance(df)
 #'
 #' @export
@@ -212,7 +210,7 @@ plot_concordance <- function(dat,
   if (export) {
     out <- list(Concordance = mat)
     if (!(alpha %>% is.null)) {
-      out$p_mat <- p_mat
+      out$p.values <- p_mat
     }
   }
 
@@ -251,5 +249,6 @@ plot_concordance <- function(dat,
 
 # NAs?
 # diag?
-# Rand index, other stats from Dudoit & Fridlyand 2002
+# Rand index, other stats from Dudoit & Fridlyand, 2002?
+
 
