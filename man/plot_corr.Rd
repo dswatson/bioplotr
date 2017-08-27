@@ -47,6 +47,17 @@ as \code{"tile"} or \code{"circle"}.}
 corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 and will either open in your browser's graphic display or appear in the
 RStudio viewer.}
+
+\item{export}{Export correlation matrix? If \code{TRUE} and \code{alpha} is
+non-\code{NULL}, then the \emph{p}-value matrix will also be returned.}
+}
+\value{
+If \code{export = TRUE}, a list with up to two elements:
+\itemize{
+  \item The concordance matrix, computed via the chosen \code{method}.
+  \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
+  is non-\code{NULL}.
+}
 }
 \description{
 This function plots pairwise correlations between variables.

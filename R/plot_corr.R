@@ -30,12 +30,22 @@
 #'   corresponding tile or circle? If \code{TRUE}, the plot is rendered in HTML
 #'   and will either open in your browser's graphic display or appear in the
 #'   RStudio viewer.
+#' @param export Export correlation matrix? If \code{TRUE} and \code{alpha} is
+#'   non-\code{NULL}, then the \emph{p}-value matrix will also be returned.
 #'
 #' @details
 #' Correlation plots visualize the associations between numeric features. They
 #' are a valuable tool in exploratory data analysis for biological experiments,
 #' where they may help identify dependencies among clinical covariates, leading
 #' to better omic models.
+#'
+#' @return
+#' If \code{export = TRUE}, a list with up to two elements:
+#' \itemize{
+#'   \item The concordance matrix, computed via the chosen \code{method}.
+#'   \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
+#'   is non-\code{NULL}.
+#' }
 #'
 #' @examples
 #' mat <- matrix(rnorm(100), 10, 10)
@@ -141,6 +151,12 @@ plot_corr <- function(dat,
     }
     df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
   }
+  if (export) {
+    out <- list(Correlation = mat)
+    if (!(alpha %>% is.null)) {
+      out$p.values <- p_mat
+    }
+  }
 
   # Build plot
   p <- ggplot(df, aes(x, y)) +
@@ -172,6 +188,9 @@ plot_corr <- function(dat,
 
   # Output
   gg_out(p, hover, legend)
+  if (export) {
+    return(out)
+  }
 
 }
 
