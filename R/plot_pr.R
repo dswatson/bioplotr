@@ -103,7 +103,7 @@ plot_pr <- function(obs,
   p_auc <- function(m) {                         # Print AUC
     auc <- prcs[[m]] %>%
       attr('auc') %>%
-      round(2L)
+      round(3L)
     paste0(names(pred)[m], ', AUPR = ', auc)
   }
   p <- ggplot(df, aes(Recall, Precision)) +
