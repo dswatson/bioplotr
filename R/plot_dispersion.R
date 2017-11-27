@@ -41,7 +41,7 @@
 #' these values independently for each gene, both packages use empirical Bayes
 #' methods to pool information across genes.
 #'
-#' Details vary between the two pipelines, which is why output will differ for
+#' Details vary between the two pipelines, which is why outputs will differ for
 #' \code{DGEList} objects and \code{DESeqDataSet}s. \code{edgeR} begins by
 #' computing a common dispersion parameter for the entire dataset, rendered by
 #' \code{plot_dispersion} as a blue horizontal line; then fits a trend line to
