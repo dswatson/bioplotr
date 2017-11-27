@@ -81,7 +81,7 @@ plot_concordance <- function(dat,
                               alpha = NULL,
                               p.adj = NULL,
                               sim.p = FALSE,
-                                  B = 2000,
+                                  B = 2000L,
                               label = FALSE,
                                diag = FALSE,
                               title = NULL,
@@ -162,7 +162,7 @@ plot_concordance <- function(dat,
           }
         }
         p_mat <- mat
-        mat[lower.tri(mat)] <- -log(mat[lower.tri(mat)])
+        mat[lower.tri(mat)] <- -log10(mat[lower.tri(mat)])
       } else if (method == 'chisq') {
         mat[i, j] <- chisq.test(tmp[[1]], tmp[[2]])$statistic
       }
@@ -218,7 +218,7 @@ plot_concordance <- function(dat,
   if (method == 'MI') {
     leg.txt <- 'Mutual Information\n (Bits)'
   } else if (method == 'fisher') {
-    leg.txt <- expression(~-log(italic(p)))
+    leg.txt <- expression(~-log[10](italic(p)))
   } else if (method == 'chisq') {
     leg.txt <- expression(chi^2)
   }
