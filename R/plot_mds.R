@@ -8,7 +8,8 @@
 #'   filtered and normalized prior to plotting. Raw counts stored in \code{
 #'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 #'   automatically extracted and transformed to the log2-CPM scale, with a
-#'   warning.
+#'   warning. Alternatively, an object of class \code{dist} which can be
+#'   directly input to the MDS algorithm.
 #' @param group Optional character or factor vector of length equal to sample
 #'   size, or up to two such vectors organized into a list or data frame. Supply
 #'   legend title(s) by passing a named list or data frame.
@@ -71,7 +72,8 @@
 #' "mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"},
 #' \code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some distance measures
 #' are unsuitable for certain types of data. See \code{\link{dist_mat}} for more
-#' details on these methods and links to documentation on each.
+#' details on these methods and links to documentation for each. Users may also
+#' directly input a distance matrix calculated using some custom method.
 #'
 #' If \code{top} is non-\code{NULL}, then data can either be filtered by
 #' probewise variance (\code{filter_method = "common"}) or using the leading
@@ -165,15 +167,17 @@ plot_mds <- function(dat,
   } else {
     features <- NULL
   }
-  d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
-         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
-         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
-  if (!dist %in% d) {
-    stop('dist must be one of ', stringify(d, 'or'), '.')
-  }
-  if (!filter_method %in% c('pairwise', 'common')) {
-    stop('filter_method must be either "pairwise" or "common".')
+  if (!(dat %>% is('dist'))) {
+    d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
+           'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+           'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+    if (!dist %in% d) {
+      stop('dist must be one of ', stringify(d, 'or'), '.')
+    }
+    if (!filter_method %in% c('pairwise', 'common')) {
+      stop('filter_method must be either "pairwise" or "common".')
+    }
   }
   if (length(pcs) > 2L & !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
@@ -194,15 +198,19 @@ plot_mds <- function(dat,
   }
 
   # Tidy data
-  dat <- matrixize(dat)
-  dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
+  if (!(dat %>% is('dist'))) {
+    dat <- matrixize(dat)
+    dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
+  } else {
+    dm <- dat
+  }
   if (metric) {                                  # MDS
     mds <- suppressWarnings(cmdscale(dm, k = max(pcs)))
   } else {
     converged <- FALSE
     mds <- NULL
     max_iter <- 20L
-    while(!converged) {
+    while (!converged) {
       if (mds %>% is.null) {
         mds <- suppressWarnings(
           metaMDS(dm, k = max(pcs), trace = 0L, trymax = max_iter,
