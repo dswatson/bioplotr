@@ -7,7 +7,7 @@
 #'   filtered and normalized prior to plotting. Raw counts stored in \code{
 #'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 #'   automatically extracted and transformed to the log2-CPM scale, with a
-#'   warning.
+#'   warning. Alternatively, an object of class \code{dist}.
 #' @param group Optional character or factor vector of length equal to sample
 #'   size. Alternatively, a data frame or list of such vectors, optionally
 #'   named.
@@ -83,7 +83,7 @@ plot_similarity <- function(dat,
                             group = NULL,
                             covar = NULL,
                              dist = 'euclidean',
-                                p = 2,
+                                p = 2L,
                               top = NULL,
                     filter_method = 'pairwise',
                         hclustfun = 'average',
@@ -93,6 +93,18 @@ plot_similarity <- function(dat,
                             title = NULL) {
 
   # Preliminaries
+  if (!(dat %>% is('dist'))) {
+    d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
+           'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
+           'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+    if (!dist %in% d) {
+      stop('dist must be one of ', stringify(d, 'or'), '.')
+    }
+    if (!filter_method %in% c('pairwise', 'common')) {
+      stop('filter_method must be either "pairwise" or "common".')
+    }
+  }
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
@@ -111,13 +123,6 @@ plot_similarity <- function(dat,
   } else {
     anno <- NULL
   }
-  d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-         'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
-         'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
-         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
-  if (!dist %in% d) {
-    stop('dist must be one of ', stringify(d, 'or'), '.')
-  }
   hclusts <- c('ward.D', 'ward.D2', 'single', 'complete', 'average',
                'mcquitty', 'median', 'centroid')
   if (!hclustfun %in% hclusts) {
@@ -133,8 +138,12 @@ plot_similarity <- function(dat,
   }
 
   # Tidy data
-  dat <- matrixize(dat)
-  dm <- dist_mat(dat, dist, p, top, filter_method)
+  if (!(dat %>% is('dist'))) {
+    dat <- matrixize(dat)
+    dm <- dist_mat(dat, dist, p, top, filter_method)
+  } else {
+    dm <- dat
+  }
 
   # Build plot
   suppressPackageStartupMessages(require(NMF))
