@@ -4,9 +4,9 @@
 \alias{plot_sammon}
 \title{Sammon Map}
 \usage{
-plot_sammon(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2,
-  top = 500, filter_method = "pairwise", dims = c(1, 2), label = FALSE,
-  pal_group = "npg", pal_covar = "Blues", title = NULL,
+plot_sammon(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2L,
+  top = 500L, filter_method = "pairwise", dims = c(1L, 2L),
+  label = FALSE, pal_group = "npg", pal_covar = "Blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
@@ -15,7 +15,8 @@ probes and columns to samples. It is strongly recommended that data be
 filtered and normalized prior to plotting. Raw counts stored in \code{
 \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 automatically extracted and transformed to the log2-CPM scale, with a
-warning.}
+warning. Alternatively, an object of class \code{dist} which can be
+directly input to the Sammon mapping algorithm.}
 
 \item{group}{Optional character or factor vector of length equal to sample
 size, or up to two such vectors organized into a list or data frame. Supply

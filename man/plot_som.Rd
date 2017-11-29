@@ -5,7 +5,7 @@
 \title{SOM}
 \usage{
 plot_som(dat, type = "model", design = NULL, coef = NULL, stat = "lfc",
-  sample = 1, top = 0.5, grid_dims = NULL, topo = "hexagonal",
+  sample = 1L, top = 0.5, grid_dims = NULL, topo = "hexagonal",
   neighb = "gaussian", rlen = 1000, parallel = TRUE, pal_tiles = NULL,
   title = NULL, legend = "right", hover = FALSE, export = TRUE, ...)
 }

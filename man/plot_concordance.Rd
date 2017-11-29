@@ -5,7 +5,7 @@
 \title{Concordance Plot}
 \usage{
 plot_concordance(dat, method = "fisher", alpha = NULL, p.adj = NULL,
-  sim.p = FALSE, B = 2000, label = FALSE, diag = FALSE, title = NULL,
+  sim.p = FALSE, B = 2000L, label = FALSE, diag = FALSE, title = NULL,
   legend = "right", hover = FALSE, export = FALSE)
 }
 \arguments{

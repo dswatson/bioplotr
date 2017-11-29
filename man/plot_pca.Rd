@@ -4,7 +4,7 @@
 \alias{plot_pca}
 \title{PCA Plot}
 \usage{
-plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1, 2),
+plot_pca(dat, group = NULL, covar = NULL, top = NULL, pcs = c(1L, 2L),
   label = FALSE, pal_group = "npg", pal_covar = "Blues", title = NULL,
   legend = "right", hover = FALSE, D3 = FALSE)
 }

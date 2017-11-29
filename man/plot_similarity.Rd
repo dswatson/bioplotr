@@ -5,7 +5,7 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
-  p = 2, top = NULL, filter_method = "pairwise", hclustfun = "average",
+  p = 2L, top = NULL, filter_method = "pairwise", hclustfun = "average",
   pal_group = "npg", pal_covar = "Blues", pal_tiles = "RdBu",
   title = NULL)
 }
@@ -15,7 +15,7 @@ probes and columns to samples. It is strongly recommended that data be
 filtered and normalized prior to plotting. Raw counts stored in \code{
 \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 automatically extracted and transformed to the log2-CPM scale, with a
-warning.}
+warning. Alternatively, an object of class \code{dist}.}
 
 \item{group}{Optional character or factor vector of length equal to sample
 size. Alternatively, a data frame or list of such vectors, optionally

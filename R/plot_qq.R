@@ -17,7 +17,8 @@
 #' Q-Q plots are a common way to visually assess the applicability of a
 #' statistical test to a given data set. If the black points deviate too sharply
 #' from the red line, especially at low expected values of -log10(\emph{p}),
-#' then it suggests a violation of the assumptions upon which the test was based.
+#' then it suggests a violation of the assumptions upon which the test was
+#' based.
 #'
 #' In addition, \code{plot_qq} optionally calculates the genomic inflation
 #' factor \eqn{lambda}, defined as the ratio of the median of the observed

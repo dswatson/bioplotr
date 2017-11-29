@@ -5,7 +5,7 @@
 \title{Plot Drivers of Omic Variation}
 \usage{
 plot_drivers(dat, clin, index = "Sample", block = NULL, top = NULL,
-  n.pc = 10, label = FALSE, alpha = NULL, p.adj = NULL, title = NULL,
+  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL, title = NULL,
   legend = "right", hover = FALSE)
 }
 \arguments{

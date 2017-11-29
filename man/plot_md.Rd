@@ -13,14 +13,14 @@
 \usage{
 plot_md(dat, title = NULL, legend = "right", ...)
 
-\method{plot_md}{DGEList}(dat, design = NULL, sample = 1, ctrls = NULL,
+\method{plot_md}{DGEList}(dat, design = NULL, sample = 1L, ctrls = NULL,
   lfc = NULL, title = NULL, xlab = NULL, legend = "right",
   hover = FALSE)
 
-\method{plot_md}{DESeqDataSet}(dat, sample = 1, ctrls = NULL, lfc = NULL,
+\method{plot_md}{DESeqDataSet}(dat, sample = 1L, ctrls = NULL, lfc = NULL,
   title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 
-\method{plot_md}{DESeqTransform}(dat, sample = 1, ctrls = NULL,
+\method{plot_md}{DESeqTransform}(dat, sample = 1L, ctrls = NULL,
   lfc = NULL, title = NULL, xlab = NULL, legend = "right",
   hover = FALSE)
 
@@ -33,7 +33,7 @@ plot_md(dat, title = NULL, legend = "right", ...)
 \method{plot_md}{data.frame}(dat, probes = NULL, fdr = 0.05, lfc = NULL,
   title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 
-\method{plot_md}{default}(dat, sample = 1, ctrls = NULL, lfc = NULL,
+\method{plot_md}{default}(dat, sample = 1L, ctrls = NULL, lfc = NULL,
   title = NULL, xlab = NULL, legend = "right", hover = FALSE)
 }
 \arguments{

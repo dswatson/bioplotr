@@ -5,9 +5,10 @@
 \title{MDS Plot}
 \usage{
 plot_mds(dat, group = NULL, covar = NULL, metric = TRUE,
-  dist = "euclidean", p = 2, top = 500, filter_method = "pairwise",
-  pcs = c(1, 2), label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
+  dist = "euclidean", p = 2L, top = 500L, filter_method = "pairwise",
+  pcs = c(1L, 2L), label = FALSE, pal_group = "npg",
+  pal_covar = "Blues", title = NULL, legend = "right", hover = FALSE,
+  D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -15,7 +16,8 @@ probes and columns to samples. It is strongly recommended that data be
 filtered and normalized prior to plotting. Raw counts stored in \code{
 \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
 automatically extracted and transformed to the log2-CPM scale, with a
-warning.}
+warning. Alternatively, an object of class \code{dist} which can be
+directly input to the MDS algorithm.}
 
 \item{group}{Optional character or factor vector of length equal to sample
 size, or up to two such vectors organized into a list or data frame. Supply
@@ -97,7 +99,8 @@ MDS requires a distance matrix as input. Available distance measures include:
 "mountford"}, \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"},
 \code{"mahalanobis"}, \code{"MI"}, or \code{"KLD"}. Some distance measures
 are unsuitable for certain types of data. See \code{\link{dist_mat}} for more
-details on these methods and links to documentation on each.
+details on these methods and links to documentation for each. Users may also
+directly input a distance matrix calculated using some custom method.
 
 If \code{top} is non-\code{NULL}, then data can either be filtered by
 probewise variance (\code{filter_method = "common"}) or using the leading
