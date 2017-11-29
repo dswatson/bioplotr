@@ -447,7 +447,7 @@ dist_mat <- function(dat,
       dm <- as.matrix(vegdist(t(dat), method = dist))
     } else if (dist %in% c('pearson', 'kendall', 'spearman')) {
       dm <- 1L - cor(dat, method = dist)
-    } else {
+    } else if (dist %in% c('MI', 'KLD')) {
       require(bioDist)
       if (dist == 'MI') {
         dm <- as.matrix(MIdist(t(dat)))
