@@ -128,7 +128,7 @@ plot_md <- function(dat,
 
 plot_md.DGEList <- function(dat,
                             design = NULL,
-                            sample = 1,
+                            sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
                              title = NULL,
@@ -227,7 +227,7 @@ plot_md.DGEList <- function(dat,
 #' @importFrom edgeR aveLogCPM cpm
 
 plot_md.DESeqDataSet <- function(dat,
-                                 sample = 1,
+                                 sample = 1L,
                                   ctrls = NULL,
                                     lfc = NULL,
                                   title = NULL,
@@ -315,7 +315,7 @@ plot_md.DESeqDataSet <- function(dat,
 #' @export
 
 plot_md.DESeqTransform <- function(dat,
-                                   sample = 1,
+                                   sample = 1L,
                                     ctrls = NULL,
                                       lfc = NULL,
                                     title = NULL,
@@ -570,7 +570,7 @@ plot_md.data.frame <- function(dat,
 #' @importFrom limma getEAWP
 
 plot_md.default <- function(dat,
-                            sample = 1,
+                            sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
                              title = NULL,

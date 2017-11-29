@@ -32,7 +32,7 @@
 plot_quantiles <- function(x,
                            y,
                            method = 'QQ',
-                              pts = 1000,
+                              pts = 1000L,
                              main = NULL,
                              xlab = NULL,
                              ylab = NULL) {
