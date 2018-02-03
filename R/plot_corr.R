@@ -69,7 +69,8 @@ plot_corr <- function(dat,
                         diag = FALSE,
                        title = NULL,
                       legend = 'right',
-                       hover = FALSE) {
+                       hover = FALSE,
+                      export = FALSE) {
 
   # Preliminaries
   if (ncol(dat) < 2L) {
