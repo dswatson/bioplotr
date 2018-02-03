@@ -75,7 +75,7 @@ plot_corr <- function(dat,
   if (ncol(dat) < 2L) {
     stop('dat must have at least two columns to generate a correlation matrix.')
   }
-  if (dat %>% some(!is.numeric)) {
+  if (!(dat %>% every(is.numeric))) {
     dat <- dat %>% keep(is.numeric)
     if (ncol(dat) < 2L) {
       stop('dat must have at least two numeric columns to generate a ',
