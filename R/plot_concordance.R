@@ -216,7 +216,7 @@ plot_concordance <- function(dat,
 
   # Build Plot
   if (method == 'MI') {
-    leg.txt <- 'Mutual Information\n (Bits)'
+    leg.txt <- 'Mutual Information\n(Bits)'
   } else if (method == 'fisher') {
     leg.txt <- expression(~-log[10](italic(p)))
   } else if (method == 'chisq') {
