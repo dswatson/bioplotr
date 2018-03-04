@@ -67,13 +67,13 @@
 #'
 #' @examples
 #' mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-#' plot_similarity(mat, title = 'Nothin' Doin'')
+#' plot_similarity(mat, title = "Nothin' Doin'")
 #'
 #' library(DESeq2)
 #' dds <- makeExampleDESeqDataSet()
 #' dds <- rlog(dds)
 #' plot_similarity(dds, group = colData(dds)$condition,
-#'                 title = 'Somethin' Cookin'')
+#'                 title = "Somethin' Cookin'")
 #'
 #' @export
 #' @importFrom RColorBrewer brewer.pal
