@@ -23,6 +23,7 @@ Imports:
   vegan,
   RColorBrewer,
   ggsci,
+  ggendro,
   Rtsne,
   lle,
   MASS,
@@ -33,7 +34,8 @@ Suggests:
   SummarizedExperiment,
   DESeq2,
   NMF,
-  survminer
+  survminer,
+  kohonen
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
