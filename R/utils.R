@@ -565,27 +565,30 @@ gg_out <- function(p,
                    loc = NULL) {
 
   # Locate legend
-  if (loc == 'right') {
-    p <- p + theme(legend.position = 'right')
-  } else if (loc == 'left') {
-    p <- p + theme(legend.position = 'left')
-  } else if (loc == 'top') {
-    p <- p + theme(legend.position = 'top', legend.box = 'horizontal')
-  } else if (loc == 'bottom') {
-    p <- p + theme(legend.position = 'bottom', legend.box = 'horizontal')
-  } else if (loc == 'bottomright') {
-    p <- p + theme(legend.justification = c(0.99, 0.01),
-                   legend.position = c(0.99, 0.01))
-  } else if (loc == 'bottomleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.01),
-                   legend.position = c(0.01, 0.01))
-  } else if (loc == 'topright') {
-    p <- p + theme(legend.justification = c(0.99, 0.99),
-                   legend.position = c(0.99, 0.99))
-  } else if (loc == 'topleft') {
-    p <- p + theme(legend.justification = c(0.01, 0.99),
-                   legend.position = c(0.01, 0.99))
+  if (!(loc %>% is.null)) {
+    if (loc == 'right') {
+      p <- p + theme(legend.position = 'right')
+    } else if (loc == 'left') {
+      p <- p + theme(legend.position = 'left')
+    } else if (loc == 'top') {
+      p <- p + theme(legend.position = 'top', legend.box = 'horizontal')
+    } else if (loc == 'bottom') {
+      p <- p + theme(legend.position = 'bottom', legend.box = 'horizontal')
+    } else if (loc == 'bottomright') {
+      p <- p + theme(legend.justification = c(0.99, 0.01),
+                     legend.position = c(0.99, 0.01))
+    } else if (loc == 'bottomleft') {
+      p <- p + theme(legend.justification = c(0.01, 0.01),
+                     legend.position = c(0.01, 0.01))
+    } else if (loc == 'topright') {
+      p <- p + theme(legend.justification = c(0.99, 0.99),
+                     legend.position = c(0.99, 0.99))
+    } else if (loc == 'topleft') {
+      p <- p + theme(legend.justification = c(0.01, 0.99),
+                     legend.position = c(0.01, 0.99))
+    }
   }
+
 
   # Output
   if (!hover) {
