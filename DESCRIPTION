@@ -23,7 +23,7 @@ Imports:
   vegan,
   RColorBrewer,
   ggsci,
-  ggendro,
+  ggdendro,
   Rtsne,
   lle,
   MASS,
