@@ -133,7 +133,7 @@ plot_corr <- function(dat,
     mutate(x = factor(x, levels = unique(x)),
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
-    select(x, y, Correlation) %>%
+    select(x, y, Correlation, Significant) %>%
     na.omit(.)
   if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
