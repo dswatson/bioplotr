@@ -539,11 +539,11 @@ pt_alpha <- function(df) {
   if (nrow(df) <= 20L) {
     out <- 1L
   } else if (nrow(df) <= 100L) {
-    out <- 0.85
+    out <- 0.9
   } else if (nrow(df) <= 1e5L) {
-    out <- 0.5
+    out <- 0.75
   } else {
-    out <- 0.25
+    out <- 0.5
   }
   return(out)
 }
