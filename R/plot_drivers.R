@@ -119,10 +119,10 @@ plot_drivers <- function(dat,
       for (j in seq_along(clin)[-i]) {
         mm <- model.matrix(~ clin[[i]] + clin[[j]])
         if (!is.fullrank(mm)) {
-          stop(colnames(clin)[i],  'and ', colnames(clin)[j], ' are perfectly ',
-               'confounded. Nested covariates generate rank deficient models, ',
-               'which cannot be meaningfully evaluated. One or both features ',
-               'must be removed or revised.')
+          stop(colnames(clin)[i],  ' and ', colnames(clin)[j], ' are ',
+               'perfectly confounded. Nested covariates generate rank ',
+               'deficient models, which cannot be meaningfully evaluated. ',
+               'One or both features must be removed or revised.')
         }
       }
     }
