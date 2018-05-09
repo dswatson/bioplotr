@@ -27,7 +27,8 @@ Imports:
   Rtsne,
   lle,
   MASS,
-  precrec
+  precrec,
+  infotheo
 Suggests:
   plotly,
   bioDist,
