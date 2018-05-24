@@ -139,7 +139,7 @@ plot_corr <- function(dat,
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2:ncol(p_mat)) {
       for (j in 1:(i - 1L)) {
-        p_mat[i, j] <- cor.test(dat[, i], dat[, j],
+        p_mat[i, j] <- cor.test(dat[[i]], dat[[j]],
                                 method = method, use = use)$p.value
       }
     }
