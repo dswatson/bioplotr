@@ -256,7 +256,7 @@ plot_mv.DGEList <- function(dat,
   # Tidy data
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
   dat <- dat[keep, ]
-  nf <- dat$samples$norm.factors               # Calculate size factors
+  nf <- dat$samples$norm.factors                 # Calculate size factors
   if (nf %>% is.null || all(nf == 1L)) {
     dat <- calcNormFactors(dat)
   }
