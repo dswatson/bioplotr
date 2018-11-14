@@ -114,6 +114,8 @@ plot_pca <- function(dat,
     }
     group_cols <- colorize(pal = pal_group, var_type = 'Categorical',
                            n = length(levels(group[[1L]])))
+  } else {
+    group_cols <- NULL
   }
   if (!(covar %>% is.null)) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
@@ -179,4 +181,4 @@ plot_pca <- function(dat,
 
 }
 
-
+# group_cols problem; change size

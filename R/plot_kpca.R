@@ -15,9 +15,9 @@
 #' @param covar Optional continuous covariate. If non-\code{NULL}, then plot can
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
-#' @param kernel The kernel generating function. Options include "rbfdot",
-#'   "polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot", "anovadot",
-#'   and "splinedot". See Details.
+#' @param kernel The kernel generating function. Options include \code{
+#'   "rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot",
+#'   "anovadot",} and \code{"splinedot"}. See Details.
 #' @param kpar A named list of arguments setting parameters for the kernel
 #'   function. If \code{NULL}, \code{kernlab} defaults are used. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
@@ -80,7 +80,7 @@
 #' plot_kpca(dds, group = colData(dds)$condition)
 #'
 #' @seealso
-#' \code{\link{plot_pca}}, \code{\link[kernlab]{dots}}
+#' \code{\link{plot_pca}}, \code{kernlab::\link[kernlab]{dots}}
 #'
 #' @export
 #' @importFrom purrr map_chr
@@ -119,6 +119,8 @@ plot_kpca <- function(dat,
     }
     group_cols <- colorize(pal = pal_group, var_type = 'Categorical',
                            n = length(levels(group[[1L]])))
+  } else {
+    group_cols <- NULL
   }
   if (!(covar %>% is.null)) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
