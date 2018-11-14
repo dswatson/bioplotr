@@ -82,7 +82,6 @@
 #'
 #' @export
 #' @importFrom purrr map_chr
-#' @importFrom matrixStats rowVars
 #' @import dplyr
 #' @import ggplot2
 #'
