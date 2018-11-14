@@ -82,7 +82,6 @@
 #' \code{\link{plot_pca}}, \code{\link{plot_tsne}}
 #'
 #' @export
-#' @importFrom matrixStats rowVars
 #' @importFrom lle lle
 #' @import dplyr
 #' @import ggplot2
@@ -158,20 +157,8 @@ plot_lle <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (!(top %>% is.null)) {
-    if (top > 1L) {
-      if (top > nrow(dat)) {
-        warning('top exceeds nrow(dat), at least after removing probes with ',
-                'missing values and/or applying a minimal expression filter. ',
-                'Proceeding with the complete ', nrow(dat), ' x ', ncol(dat),
-                'matrix.')
-      }
-    } else {
-      top <- round(top * nrow(dat))
-    }
-    vars <- rowVars(dat)
-    keep <- order(vars, decreasing = TRUE)[seq_len(min(top, nrow(dat)))]
-    dat <- dat[keep, , drop = FALSE]
+  if (!(top %>% is.null)) {                      # Filter by variance?
+    dat <- var_filt(dat, top, robust = FALSE)
   }
   capture.output(y <- lle(t(dat), m = max(dims), k = k, p = 1L)$Y)        # LLE
   df <- data_frame(Sample = colnames(dat))                                # Melt
