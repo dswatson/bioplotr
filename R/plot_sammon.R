@@ -141,6 +141,8 @@ plot_sammon <- function(dat,
     }
     group_cols <- colorize(pal = pal_group, var_type = 'Categorical',
                            n = length(levels(group[[1L]])))
+  } else {
+    group_cols <- NULL
   }
   if (!(covar %>% is.null)) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
@@ -148,13 +150,15 @@ plot_sammon <- function(dat,
       stop('Plot can render at most one continuous feature.')
     }
     covar_cols <- colorize(pal = pal_covar, var_type = 'Continuous')
+  } else {
+    covar_cols <- NULL
   }
   if (!(c(group, covar) %>% is.null)) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   } else {
-    features <- NULL
+    features <- feature_names <- NULL
   }
   if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')

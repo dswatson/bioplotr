@@ -128,13 +128,15 @@ plot_kpca <- function(dat,
       stop('Plot can render at most one continuous feature.')
     }
     covar_cols <- colorize(pal = pal_covar, var_type = 'Continuous')
+  } else {
+    covar_cols <- NULL
   }
   if (!(c(group, covar) %>% is.null)) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   } else {
-    features <- NULL
+    features <- feature_names <- NULL
   }
   # SOME WARNING ABOUT KERNEL AND KPAR?
   if (length(pcs) > 2L && !D3) {

@@ -123,13 +123,15 @@ plot_pca <- function(dat,
       stop('Plot can render at most one continuous feature.')
     }
     covar_cols <- colorize(pal = pal_covar, var_type = 'Continuous')
+  } else {
+    covar_cols <- NULL
   }
   if (!(c(group, covar) %>% is.null)) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   } else {
-    features <- NULL
+    features <- feature_names <- NULL
   }
   if (length(pcs) > 2L && !D3) {
     stop('pcs must be of length 2 when D3 = FALSE.')
@@ -181,4 +183,7 @@ plot_pca <- function(dat,
 
 }
 
-# group_cols problem; change size
+# Consider utility wrapper for embedding prelimz?
+# User ggpoint(aes(size, alpha))
+
+
