@@ -5,9 +5,9 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
-  p = 2L, top = NULL, filter_method = "pairwise", hclustfun = "average",
-  pal_group = "npg", pal_covar = "Blues", pal_tiles = "RdBu",
-  title = NULL)
+  p = 2L, top = NULL, filter_method = "pairwise",
+  hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
+  pal_tiles = "RdBu", title = NULL)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -89,12 +89,12 @@ method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
 }
 \examples{
 mat <- matrix(rnorm(5000), nrow = 1000, ncol = 5)
-plot_similarity(mat, title = 'Nothin' Doin'')
+plot_similarity(mat, title = "Nothin' Doin'")
 
 library(DESeq2)
 dds <- makeExampleDESeqDataSet()
 dds <- rlog(dds)
 plot_similarity(dds, group = colData(dds)$condition,
-                title = 'Somethin' Cookin'')
+                title = "Somethin' Cookin'")
 
 }

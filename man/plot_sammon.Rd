@@ -4,10 +4,10 @@
 \alias{plot_sammon}
 \title{Sammon Map}
 \usage{
-plot_sammon(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2L,
-  top = 500L, filter_method = "pairwise", dims = c(1L, 2L),
-  label = FALSE, pal_group = "npg", pal_covar = "Blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE)
+plot_sammon(dat, group = NULL, covar = NULL, dist = "euclidean",
+  p = 2L, top = 500L, filter_method = "pairwise", dims = c(1L, 2L),
+  label = FALSE, pal_group = "npg", pal_covar = "Blues",
+  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

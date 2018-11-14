@@ -5,8 +5,8 @@
 \title{Plot Drivers of Omic Variation}
 \usage{
 plot_drivers(dat, clin, index = "Sample", block = NULL, top = NULL,
-  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL, title = NULL,
-  legend = "right", hover = FALSE)
+  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL,
+  title = NULL, legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

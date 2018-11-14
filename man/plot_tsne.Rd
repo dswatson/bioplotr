@@ -4,11 +4,11 @@
 \alias{plot_tsne}
 \title{t-SNE Plot}
 \usage{
-plot_tsne(dat, group = NULL, covar = NULL, dist = "euclidean", p = 2L,
-  top = NULL, filter_method = "pairwise", dims = c(1L, 2L),
+plot_tsne(dat, group = NULL, covar = NULL, dist = "euclidean",
+  p = 2L, top = NULL, filter_method = "pairwise", dims = c(1L, 2L),
   perplexity = ncol(dat)/4L, theta = 0.1, max_iter = 1000L,
-  label = FALSE, pal_group = "npg", pal_covar = "Blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE, ...)
+  label = FALSE, pal_group = "npg", pal_covar = "Blues",
+  title = NULL, legend = "right", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

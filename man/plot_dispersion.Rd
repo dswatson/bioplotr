@@ -7,13 +7,14 @@
 \alias{plot_dispersion.default}
 \title{Plot Dispersion Estimates}
 \usage{
-plot_dispersion(dat, trans = "log", title = NULL, legend = "right", ...)
+plot_dispersion(dat, trans = "log", title = NULL, legend = "right",
+  ...)
 
 \method{plot_dispersion}{DGEList}(dat, design = NULL, trans = "log",
   title = NULL, legend = "right", hover = FALSE)
 
-\method{plot_dispersion}{DESeqDataSet}(dat, trans = "log", title = NULL,
-  legend = "right", hover = FALSE)
+\method{plot_dispersion}{DESeqDataSet}(dat, trans = "log",
+  title = NULL, legend = "right", hover = FALSE)
 
 \method{plot_dispersion}{default}(dat, design = NULL, trans = "log",
   pipeline = NULL, title = NULL, legend = "right", hover = FALSE)
@@ -22,7 +23,7 @@ plot_dispersion(dat, trans = "log", title = NULL, legend = "right", ...)
 \item{dat}{A \code{\link[edgeR]{DGEList}} object or \code{\link[DESeq2]{
 DESeqDataSet}}. If normalization factors or dispersions have not already
 been estimated for \code{dat}, they will be internally computed using the
-appropriate \code{edgeR} or \code{DESeq2} functions. Alternatively, \code{
+appropriate \pkg{edgeR} or \pkg{DESeq2} functions. Alternatively, \code{
 dat} may be a raw count matrix, in which case the \code{pipeline} argument
 must specify which package to use for estimating normalization factors and
 genewise dispersions. A design matrix may be required to calculate adjusted
