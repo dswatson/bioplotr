@@ -158,41 +158,42 @@ plot_kpca <- function(dat,
   if (!(top %>% is.null)) {                      # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  if (kernel == 'rbfdot') {                      # Kernel generating function
+  if (kernel == 'rbfdot') {                      # Initialize kernel function
     if (is.null(kpar)) {
       kpar <- list(sigma = 1)
     }
-    kernel_mat <- rbfdot(t(dat), unlist(kpar))
+    kf <- rbfdot(unlist(kpar))
   } else if (kernel == 'polydot') {
     if (is.null(kpar)) {
       kpar <- list(degree = 1, scale = 1, offset = 1)
     }
-    kernel_mat <- polydot(t(dat), unlist(kpar))
+    kf <- polydot(unlist(kpar))
   } else if (kernel == 'tanhdot') {
     if (is.null(kpar)) {
       kpar <- list(scale = 1, offset = 1)
     }
-    kernel_mat <- polydot(t(dat), unlist(kpar))
+    kf <- polydot(unlist(kpar))
   } else if (kernel == 'vanilladot') {
-    kernel_mat <- vanilladot(t(dat))
+    kf <- vanilladot()
   } else if (kernel == 'laplacedot') {
     if (is.null(kpar)) {
       kpar <- list(sigma = 1)
     }
-    kernel_mat <- laplacedot(t(dat), unlist(kpar))
+    kf <- laplacedot(unlist(kpar))
   } else if (kernel == 'besseldot') {
     if (is.null(kpar)) {
       kpar <- list(sigma = 1, order = 1, degree = 1)
     }
-    kernel_mat <- besseldot(t(dat), unlist(kpar))
+    kf <- besseldot(unlist(kpar))
   } else if (kernel == 'anovadot') {
     if (is.null(kpar)) {
       kpar <- list(sigma = 1, degree = 1)
     }
-    kernel_mat <- anovadot(t(dat), unlist(kpar))
+    kf <- anovadot(unlist(kpar))
   } else if (kernel == 'splinedot') {
-    kernel_mat <- splinedot(t(dat))
+    kf <- splinedot(t(dat))
   }
+  kernel_mat <- kernelMatrix(kernel = kf, x = t(dat))
   pca <- kpca(kernel_mat, features = max(pcs))   # PCA
   pve <- seq_len(max(pcs)) %>% map_chr(function(pc) {
     p <- eig(pca)[pc] / sum(eig(pca)) * 100L
