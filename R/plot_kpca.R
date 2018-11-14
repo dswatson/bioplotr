@@ -22,8 +22,6 @@
 #'   function. If \code{NULL}, \code{kernlab} defaults are used. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for KPCA.
-#' @param pcs Vector specifying which principal components to plot. Must be of
-#'   length two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
@@ -138,18 +136,18 @@ plot_kpca <- function(dat,
   } else {
     features <- feature_names <- NULL
   }
-  # SOME WARNING ABOUT KERNEL AND KPAR?
-  if (length(pcs) > 2L && !D3) {
-    stop('pcs must be of length 2 when D3 = FALSE.')
-  } else if (length(pcs) > 3L) {
-    stop('pcs must be a vector of length <= 3.')
+  if (D3) {
+    pcs <- 3L
+  } else {
+    pcs <- 2L
   }
-  if (label && length(features) == 2L) {
+  # SOME WARNING ABOUT KERNEL AND KPAR?
+  if (label & length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
   if (title %>% is.null) {
-    title <- 'PCA'
+    title <- 'Kernel PCA'
   }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
@@ -195,31 +193,23 @@ plot_kpca <- function(dat,
     }
     kf <- anovadot(unlist(kpar))
   } else if (kernel == 'splinedot') {
-    kf <- splinedot(t(dat))
+    kf <- splinedot()
   }
   kernel_mat <- kernelMatrix(kernel = kf, x = t(dat))
-  pca <- kpca(kernel_mat, features = max(pcs))   # PCA
-  pve <- seq_len(max(pcs)) %>% map_chr(function(pc) {
-    p <- eig(pca)[pc] / sum(eig(pca)) * 100L
-    paste0('PC', pc, ' (', round(p, 2L), '%)')
-  })
-  df <- data_frame(Sample = colnames(dat))       # Melt
-  if (length(pcs) == 2L) {
-    df <- df %>% mutate(PC1 = pcv(pca)[, min(pcs)],
-                        PC2 = pcv(pca)[, max(pcs)])
-  } else {
-    other <- setdiff(pcs, c(min(pcs), max(pcs)))
-    df <- df %>% mutate(PC1 = pcv(pca)[, min(pcs)],
-                        PC2 = pcv(pca)[, other],
-                        PC3 = pcv(pca)[, max(pcs)])
+  pca <- kpca(kernel_mat, features = pcs)        # PCA
+  df <- data_frame(Sample = colnames(dat)) %>%   # Melt
+    mutate(PC1 = pcv(pca)[, 1L],
+           PC2 = pcv(pca)[, 2L])
+  if (pcs == 3L) {
+    df <- df %>% mutate(PC3 = pcv(pca)[, 3L])
   }
   if (!(features %>% is.null)) {
     df <- df %>% bind_cols(as_tibble(features))
   }
 
   # Build plot
-  xlab <- pve[min(pcs)]
-  ylab <- pve[max(pcs)]
+  xlab <- 'kPC 1'
+  ylab <- 'kPC 2'
   embed(df, group, covar, group_cols, covar_cols, feature_names,
         label, title, xlab, ylab, legend, hover, D3)
 
