@@ -249,6 +249,6 @@ plot_concordance <- function(dat,
 
 # NAs?
 # diag?
-# Rand index, other stats from Dudoit & Fridlyand, 2002?
+# Rand index, adjusted Rand index, other stats from Dudoit & Fridlyand, 2002?
 
 
