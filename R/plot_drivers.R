@@ -179,7 +179,7 @@ plot_drivers <- function(dat,
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
-    rowwise() %>%
+    rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
   if (!(alpha %>% is.null)) {
@@ -215,3 +215,5 @@ plot_drivers <- function(dat,
 
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
+# Add limits argument to scale_fill_gradientn to fix numer to color mapping
+
