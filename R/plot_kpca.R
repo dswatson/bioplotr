@@ -184,7 +184,7 @@ plot_kpca <- function(dat,
     if (is.null(kpar)) {
       kpar <- list(sigma = 1, order = 1, degree = 1)
     }
-    kernel_mat <- besseldat(t(dat), unlist(kpar))
+    kernel_mat <- besseldot(t(dat), unlist(kpar))
   } else if (kernel == 'anovadot') {
     if (is.null(kpar)) {
       kpar <- list(sigma = 1, degree = 1)
