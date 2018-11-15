@@ -91,7 +91,7 @@ plot_kpca <- function(dat,
                       group = NULL,
                       covar = NULL,
                      kernel = 'rbfdot',
-                       kpar = NULL,
+                       kpar = list('sigma' = 1e-4),
                         top = NULL,
                         pcs = c(1L, 2L),
                       label = FALSE,
@@ -161,45 +161,47 @@ plot_kpca <- function(dat,
     dat <- var_filt(dat, top, robust = FALSE)
   }
   if (kernel == 'rbfdot') {                      # Initialize kernel function
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(sigma = 1)
     }
     kf <- rbfdot(unlist(kpar))
   } else if (kernel == 'polydot') {
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(degree = 1, scale = 1, offset = 1)
     }
     kf <- polydot(unlist(kpar))
   } else if (kernel == 'tanhdot') {
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(scale = 1, offset = 1)
     }
     kf <- polydot(unlist(kpar))
   } else if (kernel == 'vanilladot') {
     kf <- vanilladot()
   } else if (kernel == 'laplacedot') {
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(sigma = 1)
     }
     kf <- laplacedot(unlist(kpar))
   } else if (kernel == 'besseldot') {
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(sigma = 1, order = 1, degree = 1)
     }
     kf <- besseldot(unlist(kpar))
   } else if (kernel == 'anovadot') {
-    if (is.null(kpar)) {
+    if (kpar %>% is.null) {
       kpar <- list(sigma = 1, degree = 1)
     }
     kf <- anovadot(unlist(kpar))
   } else if (kernel == 'splinedot') {
     kf <- splinedot()
   }
-  kernel_mat <- kernelMatrix(kernel = kf, x = t(dat))
-  pca <- kpca(kernel_mat, features = pcs)        # PCA
-  df <- data_frame(Sample = colnames(dat)) %>%   # Melt
-    mutate(PC1 = pcv(pca)[, 1L],
-           PC2 = pcv(pca)[, 2L])
+  k_mat <- kernelMatrix(kernel = kf, x = t(dat), features = pcs)
+  pca <- kpca(k_mat, features = pcs)             # PCA
+  df <- data_frame(                              # Melt
+    Sample = colnames(dat),
+       PC1 = pcv(pca)[, 1L],
+       PC2 = pcv(pca)[, 2L]
+  )
   if (pcs == 3L) {
     df <- df %>% mutate(PC3 = pcv(pca)[, 3L])
   }
