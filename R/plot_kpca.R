@@ -22,6 +22,8 @@
 #'   function. If \code{NULL}, \code{kernlab} defaults are used. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for KPCA.
+#' @param dims Vector specifying which dimensions to plot. Must be of length
+#'   two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
@@ -93,7 +95,7 @@ plot_kpca <- function(dat,
                      kernel = 'rbfdot',
                        kpar = list('sigma' = 1e-4),
                         top = NULL,
-                        pcs = c(1L, 2L),
+                       dims = c(1L, 2L),
                       label = FALSE,
                   pal_group = 'npg',
                   pal_covar = 'Blues',
@@ -136,10 +138,10 @@ plot_kpca <- function(dat,
   } else {
     features <- feature_names <- NULL
   }
-  if (D3) {
-    pcs <- 3L
-  } else {
-    pcs <- 2L
+  if (length(dims) > 2L && !D3) {
+    stop('dims must be of length 2 when D3 = FALSE.')
+  } else if (length(dims) > 3L) {
+    stop('dims must be a vector of length <= 3.')
   }
   # SOME WARNING ABOUT KERNEL AND KPAR?
   if (label & length(features) == 2L) {
@@ -195,15 +197,17 @@ plot_kpca <- function(dat,
   } else if (kernel == 'splinedot') {
     kf <- splinedot()
   }
-  k_mat <- kernelMatrix(kernel = kf, x = t(dat), features = pcs)
-  pca <- kpca(k_mat, features = pcs)             # PCA
-  df <- data_frame(                              # Melt
-    Sample = colnames(dat),
-       PC1 = pcv(pca)[, 1L],
-       PC2 = pcv(pca)[, 2L]
-  )
-  if (pcs == 3L) {
-    df <- df %>% mutate(PC3 = pcv(pca)[, 3L])
+  k_mat <- kernelMatrix(kernel = kf, x = t(dat))
+  pca <- kpca(k_mat, features = max(dims))       # PCA
+  df <- data_frame(Sample = colnames(dat))       # Melt
+  if (length(dims) == 2L) {
+    df <- df %>% mutate(PC1 = pcv(pca)[, min(dims)],
+                        PC2 = pcv(pca)[, max(dims)])
+  } else {
+    other <- setdiff(dims, c(min(dims), max(dims)))
+    df <- df %>% mutate(PC1 = pcv(pca)[, min(dims)],
+                        PC2 = pcv(pca)[, other],
+                        PC3 = pcv(pca)[, max(dims)])
   }
   if (!(features %>% is.null)) {
     df <- df %>% bind_cols(as_tibble(features))
@@ -216,3 +220,6 @@ plot_kpca <- function(dat,
         label, title, xlab, ylab, legend, hover, D3)
 
 }
+
+# Extend filter_method argument?
+
