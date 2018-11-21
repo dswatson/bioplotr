@@ -66,9 +66,10 @@
 #' probes by using the \code{top} argument.
 #'
 #' @references
-#' Schölkopf, B., Tsuda, K. & Vert, J.P. (Eds.) (2004).
-#' \href{https://mitpress.mit.edu/books/kernel-methods-computational-biology}{
-#' Kernel Methods in Computational Biology}. Cambridge, MA: MIT Press.
+#' Schölkopf, B., Smola, A. & Müller, K. (1998).
+#' \href{https://www.mitpressjournals.org/doi/abs/10.1162/089976698300017467}{
+#' Nonlinear Component Analysis as a Kernel Eigenvalue Problem}. \emph{Neural
+#' Computation}, \emph{10}(5), 1299-1319.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
@@ -106,7 +107,7 @@ plot_kpca <- function(dat,
 
   # Preliminaries
   if (ncol(dat) < 3L) {
-    stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
+    stop('dat includes only ', ncol(dat), ' samples; need at least 3 for KPCA.')
   }
   if (!(group %>% is.null)) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
@@ -138,7 +139,7 @@ plot_kpca <- function(dat,
   } else {
     features <- feature_names <- NULL
   }
-  if (length(dims) > 2L && !D3) {
+  if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
     stop('dims must be a vector of length <= 3.')
@@ -198,24 +199,28 @@ plot_kpca <- function(dat,
     kf <- splinedot()
   }
   k_mat <- kernelMatrix(kernel = kf, x = t(dat))
-  pca <- kpca(k_mat, features = max(dims))       # PCA
+  pca <- kpca(k_mat)                             # PCA, % variance explained
+  pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
+    p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
+    paste0('KPC', pc, ' (', round(p, 2L), '%)')
+  })
   df <- data_frame(Sample = colnames(dat))       # Melt
   if (length(dims) == 2L) {
-    df <- df %>% mutate(PC1 = pcv(pca)[, min(dims)],
-                        PC2 = pcv(pca)[, max(dims)])
+    df <- df %>% mutate(PC1 = rotated(pca)[, min(dims)],
+                        PC2 = rotated(pca)[, max(dims)])
   } else {
     other <- setdiff(dims, c(min(dims), max(dims)))
-    df <- df %>% mutate(PC1 = pcv(pca)[, min(dims)],
-                        PC2 = pcv(pca)[, other],
-                        PC3 = pcv(pca)[, max(dims)])
+    df <- df %>% mutate(PC1 = rotated(pca)[, min(dims)],
+                        PC2 = rotated(pca)[, other],
+                        PC3 = rotated(pca)[, max(dims)])
   }
   if (!(features %>% is.null)) {
     df <- df %>% bind_cols(as_tibble(features))
   }
 
   # Build plot
-  xlab <- 'kPC 1'
-  ylab <- 'kPC 2'
+  xlab <- pve[min(dims)]
+  ylab <- pve[max(dims)]
   embed(df, group, covar, group_cols, covar_cols, feature_names,
         label, title, xlab, ylab, legend, hover, D3)
 
