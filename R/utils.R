@@ -426,6 +426,9 @@ dist_mat <- function(dat,
                      robust = FALSE) {
 
   # Preliminaries
+  pow <- p
+  n <- ncol(dat)
+  p <- nrow(dat)
   if (!(top %>% is.null)) {
     dat <- var_filt(dat, top, robust = FALSE)
   }
@@ -442,7 +445,7 @@ dist_mat <- function(dat,
     if (dist %in% c('euclidean', 'manhattan', 'canberra1', 'canberra2',
                     'minimum', 'maximum', 'minkowski', 'bhattacharyya',
                     'hellinger', 'total_variation', 'kullback_leibler')) {
-      dm <- Dist(t(dat), method = dist, p = p)
+      dm <- Dist(t(dat), method = dist, p = pow)
     } else if (dist == 'cosine') {
       dm <- dist.matrix(dat, method = dist, byrow = FALSE)
     } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
@@ -456,22 +459,22 @@ dist_mat <- function(dat,
       dm <- as.matrix(MIdist(t(dat)))
     }
   } else if (!(top %>% is.null)) {
-    dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
+    dm <- matrix(nrow = n, ncol = n)
     for (i in 2L:ncol(dat)) {
       for (j in 1L:(i - 1L)) {
         top_idx <- nrow(dat) - top + 1L
         if (dist == 'euclidean') {
           dm[i, j] <- sqrt(sum(sort.int((dat[, i] - dat[, j])^2L,
-                                        partial = top_idx)[top_idx:nrow(dat)]))
+                                        partial = top_idx)[top_idx:p]))
         } else if (dist == 'maximum') {
           dm[i, j] <- max(sort.int(abs(dat[, i] - dat[, j]),
-                                   partial = top_idx)[top_idx:nrow(dat)])
+                                   partial = top_idx)[top_idx:p])
         } else if (dist == 'manhattan') {
           dm[i, j] <- sum(sort.int(abs(dat[, i] - dat[, j]),
-                                   partial = top_idx)[top_idx:nrow(dat)])
+                                   partial = top_idx)[top_idx:p])
         } else if (dist == 'minkowski') {
           dm[i, j] <- (sum(sort.int(abs(dat[, i] - dat[, j]),
-                                    partial = top_idx)[top_idx:nrow(dat)]^p))^(1L / p)
+                                    partial = top_idx)[top_idx:p]^pow))^(1L / pow)
         } else {
           tops <- order(abs(dat[, i] - dat[, j]), decreasing = TRUE)[seq_len(top)]
           m <- dat[tops, c(i, j)]
