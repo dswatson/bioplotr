@@ -412,6 +412,7 @@ var_filt <- function(dat,
 #' }
 #'
 #' @importFrom matrixStats rowMedians rowMeans2
+#' @importFrom Rfast Dist
 #' @importFrom wordspace dist.matrix
 #' @importFrom vegan vegdist
 #' @import dplyr
@@ -438,22 +439,21 @@ dist_mat <- function(dat,
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
-    if (dist %in% c('euclidean', 'maximum', 'manhattan',
-                    'canberra', 'minkowski', 'cosine')) {
-      dm <- dist.matrix(dat, method = dist, p = p, byrow = FALSE)
+    if (dist %in% c('euclidean', 'manhattan', 'canberra1', 'canberra2',
+                    'minimum', 'maximum', 'minkowski', 'bhattacharyya',
+                    'hellinger', 'total_variation', 'kullback_leibler')) {
+      dm <- Dist(t(dat), method = dist, p = p)
+    } else if (dist == 'cosine') {
+      dm <- dist.matrix(dat, method = dist, byrow = FALSE)
     } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
                            'morisita', 'horn', 'mountford', 'raup' , 'binomial',
                            'chao', 'cao', 'mahalanobis')) {
       dm <- as.matrix(vegdist(t(dat), method = dist))
     } else if (dist %in% c('pearson', 'kendall', 'spearman')) {
       dm <- 1L - cor(dat, method = dist)
-    } else if (dist %in% c('MI', 'KLD')) {
+    } else if (dist == 'MI') {
       require(bioDist)
-      if (dist == 'MI') {
-        dm <- as.matrix(MIdist(t(dat)))
-      } else if (dist == 'KLD') {
-        dm <- as.matrix(KLdist.matrix(t(dat)))
-      }
+      dm <- as.matrix(MIdist(t(dat)))
     }
   } else if (!(top %>% is.null)) {
     dm <- matrix(nrow = ncol(dat), ncol = ncol(dat))
@@ -477,7 +477,10 @@ dist_mat <- function(dat,
           m <- dat[tops, c(i, j)]
           if (dist %in% c('pearson', 'kendall', 'spearman')) {
             dm[i, j] <- max(1L - cor(m, method = dist))
-          } else if (dist %in% c('canberra', 'cosine')) {
+          } else if (dist %in% c('canberra', 'bhattacharyya', 'hellinger', 
+                                 'total_variation', 'kullback_leibler')) {
+            dm[i, j] <- max(Dist(t(m), method = dist))
+          } else if (dist == 'cosine') {
             dm[i, j] <- max(dist.matrix(m, method = dist, byrow = FALSE))
           } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower',
                                  'altGower', 'morisita', 'horn', 'mountford',
@@ -485,14 +488,14 @@ dist_mat <- function(dat,
                                  'mahalanobis')) {
             dm[i, j] <- max(vegdist(t(m), method = dist))
           } else if (dist == 'MI') {
+            require(bioDist)
             dm[i, j] <- max(MIdist(t(m)))
-          } else if (dist == 'KLD') {
-            dm[i, j] <- max(KLdist.matrix(t(m)))
-          }
+          } 
         }
       }
     }
     dm <- pmax(dm, t(dm), na.rm = TRUE)
+    diag(dm) <- 0L
   }
 
   # Output
