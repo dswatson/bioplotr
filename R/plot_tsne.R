@@ -17,8 +17,9 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param dist Distance measure to be used. Supports all methods available in
-#'   \code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
-#'   those implemented in the \code{bioDist} package. See Details.
+#'   \code{\link[stats]{dist}}, \code{Rfast::\link[Rfast]{Dist}}, and \code{
+#'   \link[vegan]{vegdist}}, as well as those implemented in the \code{bioDist} 
+#'   package. See Details.
 #' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
 #'   be used for t-SNE.

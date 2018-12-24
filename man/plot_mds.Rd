@@ -7,8 +7,9 @@
 plot_mds(dat, group = NULL, covar = NULL, metric = TRUE,
   dist = "euclidean", p = 2L, top = 500L,
   filter_method = "pairwise", pcs = c(1L, 2L), label = FALSE,
-  pal_group = "npg", pal_covar = "Blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE)
+  pal_group = "npg", pal_covar = "Blues", size = NULL,
+  alpha = NULL, title = "MDS", legend = "right", hover = FALSE,
+  D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -31,8 +32,9 @@ a named list or data frame.}
 See Details.}
 
 \item{dist}{Distance measure to be used. Supports all methods available in
-\code{\link[stats]{dist}} and \code{\link[vegan]{vegdist}}, as well as
-those implemented in the \code{bioDist} package. See Details.}
+\code{\link[stats]{dist}}, \code{Rfast::\link[Rfast]{Dist}}, and \code{
+\link[vegan]{vegdist}}, as well as those implemented in the \code{bioDist} 
+package. See Details.}
 
 \item{p}{Power of the Minkowski distance.}
 
@@ -64,6 +66,10 @@ color schemes available in \code{RColorBrewer}. Alternatively, a
 character vector of colors representing a smooth gradient, or a list of
 such vectors with length equal to the number of continuous variables to
 visualize.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{title}{Optional plot title.}
 

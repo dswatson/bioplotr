@@ -7,7 +7,8 @@
 plot_kpca(dat, group = NULL, covar = NULL, kernel = "rbfdot",
   kpar = list(sigma = 1e-04), top = NULL, dims = c(1L, 2L),
   label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
+  size = NULL, alpha = NULL, title = "Kernel PCA",
+  legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -57,6 +58,10 @@ color schemes available in \code{RColorBrewer}. Alternatively, a
 character vector of colors representing a smooth gradient, or a list of
 such vectors with length equal to the number of continuous variables to
 visualize.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{title}{Optional plot title.}
 
