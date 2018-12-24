@@ -43,6 +43,8 @@
 #'   character vector of colors representing a smooth gradient, or a list of
 #'   such vectors with length equal to the number of continuous variables to
 #'   visualize.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -108,7 +110,9 @@ plot_sammon <- function(dat,
                         label = FALSE,
                     pal_group = 'npg',
                     pal_covar = 'Blues',
-                        title = NULL,
+                         size = NULL, 
+                        alpha = NULL,
+                        title = 'Sammon Map',
                        legend = 'right',
                         hover = FALSE,
                            D3 = FALSE) {
@@ -120,9 +124,10 @@ plot_sammon <- function(dat,
            'Sammon mapping.')
     }
     d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-           'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
-           'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
-           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+           'bhattacharyya', 'hellinger', 'kullback_leibler', 'cosine', 
+           'bray', 'kulczynski', 'jaccard', 'gower', 'altGower', 'morisita', 
+           'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI')
     if (!dist %in% d) {
       stop('dist must be one of ', stringify(d, 'or'), '.')
     }
@@ -169,9 +174,6 @@ plot_sammon <- function(dat,
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  if (title %>% is.null) {
-    title <- 'Sammon Map'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
@@ -204,7 +206,7 @@ plot_sammon <- function(dat,
   xlab <- paste('Sammon Mapping Dim', min(dims))
   ylab <- paste('Sammon Mapping Dim', max(dims))
   embed(df, group, covar, group_cols, covar_cols, feature_names,
-        label, title, xlab, ylab, legend, hover, D3)
+        label, size, alpha, title, xlab, ylab, legend, hover, D3)
 
 }
 

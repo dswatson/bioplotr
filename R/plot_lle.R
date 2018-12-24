@@ -38,6 +38,8 @@
 #'   character vector of colors representing a smooth gradient, or a list of
 #'   such vectors with length equal to the number of continuous variables to
 #'   visualize.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -96,7 +98,9 @@ plot_lle <- function(dat,
                      label = FALSE,
                  pal_group = 'npg',
                  pal_covar = 'Blues',
-                     title = NULL,
+                      size = NULL,
+                     alpha = NULL,
+                     title = 'LLE',
                     legend = 'right',
                      hover = FALSE,
                         D3 = FALSE) {
@@ -150,9 +154,6 @@ plot_lle <- function(dat,
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  if (title %>% is.null) {
-    title <- 'LLE'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
@@ -183,7 +184,7 @@ plot_lle <- function(dat,
   xlab <- paste('LLE Dim', min(dims))
   ylab <- paste('LLE Dim', max(dims))
   embed(df, group, covar, group_cols, covar_cols, feature_names,
-        label, title, xlab, ylab, legend, hover, D3)
+        label, size, alpha, title, xlab, ylab, legend, hover, D3)
 
 }
 

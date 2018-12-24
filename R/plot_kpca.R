@@ -41,6 +41,8 @@
 #'   character vector of colors representing a smooth gradient, or a list of
 #'   such vectors with length equal to the number of continuous variables to
 #'   visualize.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -94,13 +96,15 @@ plot_kpca <- function(dat,
                       group = NULL,
                       covar = NULL,
                      kernel = 'rbfdot',
-                       kpar = list('sigma' = 1e-4),
+                       kpar = list('sigma' = 1e-4L),
                         top = NULL,
                        dims = c(1L, 2L),
                       label = FALSE,
                   pal_group = 'npg',
                   pal_covar = 'Blues',
-                      title = NULL,
+                       size = NULL,
+                      alpha = NULL,
+                      title = 'Kernel PCA',
                      legend = 'right',
                       hover = FALSE,
                          D3 = FALSE) {
@@ -149,9 +153,6 @@ plot_kpca <- function(dat,
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  if (title %>% is.null) {
-    title <- 'Kernel PCA'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
@@ -165,34 +166,34 @@ plot_kpca <- function(dat,
   }
   if (kernel == 'rbfdot') {                      # Initialize kernel function
     if (kpar %>% is.null) {
-      kpar <- list(sigma = 1)
+      kpar <- list(sigma = 1L)
     }
     kf <- rbfdot(unlist(kpar))
   } else if (kernel == 'polydot') {
     if (kpar %>% is.null) {
-      kpar <- list(degree = 1, scale = 1, offset = 1)
+      kpar <- list(degree = 1L, scale = 1L, offset = 1L)
     }
     kf <- polydot(unlist(kpar))
   } else if (kernel == 'tanhdot') {
     if (kpar %>% is.null) {
-      kpar <- list(scale = 1, offset = 1)
+      kpar <- list(scale = 1L, offset = 1L)
     }
     kf <- polydot(unlist(kpar))
   } else if (kernel == 'vanilladot') {
     kf <- vanilladot()
   } else if (kernel == 'laplacedot') {
     if (kpar %>% is.null) {
-      kpar <- list(sigma = 1)
+      kpar <- list(sigma = 1L)
     }
     kf <- laplacedot(unlist(kpar))
   } else if (kernel == 'besseldot') {
     if (kpar %>% is.null) {
-      kpar <- list(sigma = 1, order = 1, degree = 1)
+      kpar <- list(sigma = 1L, order = 1L, degree = 1L)
     }
     kf <- besseldot(unlist(kpar))
   } else if (kernel == 'anovadot') {
     if (kpar %>% is.null) {
-      kpar <- list(sigma = 1, degree = 1)
+      kpar <- list(sigma = 1L, degree = 1L)
     }
     kf <- anovadot(unlist(kpar))
   } else if (kernel == 'splinedot') {
@@ -222,7 +223,7 @@ plot_kpca <- function(dat,
   xlab <- pve[min(dims)]
   ylab <- pve[max(dims)]
   embed(df, group, covar, group_cols, covar_cols, feature_names,
-        label, title, xlab, ylab, legend, hover, D3)
+        label, size, alpha, title, xlab, ylab, legend, hover, D3)
 
 }
 
