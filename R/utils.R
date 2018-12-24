@@ -389,12 +389,12 @@ var_filt <- function(dat,
 #' the following methods:
 #'
 #' \itemize{
-#'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, \code{
-#'     "canberra"}, and \code{"minkowski"} are all documented in the \code{
-#'     \link[stats]{dist}} function. \code{bioplotr} relies on a lower level
-#'     implementation via \code{wordspace::\link[wordspace]{dist.matrix}} to
-#'     speed up computations. This latter function also documents the \code{
-#'     "cosine"} distance.
+#'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, and \code{
+#'     "minkowski"} are all documented in the \code{\link[stats]{dist}} 
+#'     function. \code{bioplotr} relies on a lower level implementation via 
+#'     \code{Rfast::\link[Rfast]{Dist}} to speed up computations. 
+#'   \item \code{"cosine"} and \code{"canberra"} are implemented and documented
+#'     in \code{wordspace::\link[wordspace]{dist.matrix}}. 
 #'   \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
 #'     to various forms of correlation distance, generally defined as 1 - the
 #'     correlation coefficient. See \code{\link[stats]{cor}} for more details.
@@ -404,11 +404,10 @@ var_filt <- function(dat,
 #'     \code{"mahalanobis"} are all available and documented in the \code{
 #'     vegan::\link[vegan]{vegdist}} function. These are designed for use with
 #'     ecological data, e.g. a matrix of microbial OTU counts.
-#'   \item \code{"MI"} and \code{"KLD"} are information theoretic distance
-#'     metrics based on the mutual information and Kullback-Leibler divergence
-#'     between vectors, respectively. They are implemented in the \code{bioDist}
-#'     package using the \code{\link[bioDist]{MIdist}} and \code{
-#'     \link[bioDist]{KLdist.matrix}} functions.
+#'   \item \code{"bhattacharyya"}, \code{"hellinger"}, \code{"kullback_leibler"},
+#'     and \code{"MI"} are information theoretic distance metrics. The former
+#'     three are implemented in \code{Rfast::\link[Rfast]{Dist}}. See 
+#'     \code{bioDist::\link[bioDist]{MIdist}} for details on the latter. 
 #' }
 #'
 #' @importFrom Rfast rowMedians rowmeans Dist
@@ -441,11 +440,10 @@ dist_mat <- function(dat,
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
-    if (dist %in% c('euclidean', 'manhattan', 'canberra1', 'canberra2',
-                    'minimum', 'maximum', 'minkowski', 'bhattacharyya',
-                    'hellinger', 'total_variation', 'kullback_leibler')) {
+    if (dist %in% c('euclidean', 'manhattan', 'minimum', 'maximum', 'minkowski', 
+                    'bhattacharyya', 'hellinger', 'kullback_leibler')) {
       dm <- Dist(t(dat), method = dist, p = pow)
-    } else if (dist == 'cosine') {
+    } else if (dist %in% c('canberra', 'cosine')) {
       dm <- dist.matrix(dat, method = dist, byrow = FALSE)
     } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
                            'morisita', 'horn', 'mountford', 'raup' , 'binomial',
@@ -479,11 +477,10 @@ dist_mat <- function(dat,
           m <- dat[tops, c(i, j)]
           if (dist %in% c('pearson', 'kendall', 'spearman')) {
             dm[i, j] <- max(1L - cor(m, method = dist))
-          } else if (dist %in% c('canberra1', 'canberra2', 'bhattacharyya', 
-                                 'hellinger', 'total_variation', 
-                                 'kullback_leibler')) {
+          } else if (dist %in% c('bhattacharyya', 'hellinger', 
+                                 'total_variation', 'kullback_leibler')) {
             dm[i, j] <- max(Dist(t(m), method = dist))
-          } else if (dist == 'cosine') {
+          } else if (dist %in% c('canberra', 'cosine')) {
             dm[i, j] <- max(dist.matrix(m, method = dist, byrow = FALSE))
           } else if (dist %in% c('bray', 'kulczynski', 'jaccard', 'gower',
                                  'altGower', 'morisita', 'horn', 'mountford',
@@ -642,6 +639,8 @@ embed <- function(df,
                   covar_cols,
                   feature_names,
                   label,
+                  size,
+                  alpha,
                   title,
                   xlab,
                   ylab,
@@ -649,8 +648,12 @@ embed <- function(df,
                   hover,
                   D3) {
 
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
