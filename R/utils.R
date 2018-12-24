@@ -337,7 +337,7 @@ matrixize <- function(dat) {
 #'   be used for distance calculations.
 #' @param robust Use robust variance statistic?
 #'
-#' @importFrom matrixStats rowMads rowVars
+#' @importFrom Rfast rowMads rowVars
 #'
 
 var_filt <- function(dat,
@@ -411,8 +411,7 @@ var_filt <- function(dat,
 #'     \link[bioDist]{KLdist.matrix}} functions.
 #' }
 #'
-#' @importFrom matrixStats rowMedians rowMeans2
-#' @importFrom Rfast Dist
+#' @importFrom Rfast rowMedians rowmeans Dist
 #' @importFrom wordspace dist.matrix
 #' @importFrom vegan vegdist
 #' @import dplyr
@@ -437,7 +436,7 @@ dist_mat <- function(dat,
   if (robust) {
     dat <- dat - rowMedians(dat)
   } else {
-    dat <- dat - rowMeans2(dat)
+    dat <- dat - rowmeans(dat)
   }
 
   # Create distance matrix
@@ -480,8 +479,9 @@ dist_mat <- function(dat,
           m <- dat[tops, c(i, j)]
           if (dist %in% c('pearson', 'kendall', 'spearman')) {
             dm[i, j] <- max(1L - cor(m, method = dist))
-          } else if (dist %in% c('canberra', 'bhattacharyya', 'hellinger', 
-                                 'total_variation', 'kullback_leibler')) {
+          } else if (dist %in% c('canberra1', 'canberra2', 'bhattacharyya', 
+                                 'hellinger', 'total_variation', 
+                                 'kullback_leibler')) {
             dm[i, j] <- max(Dist(t(m), method = dist))
           } else if (dist == 'cosine') {
             dm[i, j] <- max(dist.matrix(m, method = dist, byrow = FALSE))
