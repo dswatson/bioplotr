@@ -5,9 +5,9 @@
 \title{Kernel PCA Plot}
 \usage{
 plot_kpca(dat, group = NULL, covar = NULL, kernel = "rbfdot",
-  kpar = NULL, top = NULL, pcs = c(1L, 2L), label = FALSE,
-  pal_group = "npg", pal_covar = "Blues", title = NULL,
-  legend = "right", hover = FALSE, D3 = FALSE)
+  kpar = list(sigma = 1e-04), top = NULL, dims = c(1L, 2L),
+  label = FALSE, pal_group = "npg", pal_covar = "Blues",
+  title = NULL, legend = "right", hover = FALSE, D3 = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -25,9 +25,9 @@ legend title(s) by passing a named list or data frame.}
 render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
-\item{kernel}{The kernel generating function. Options include "rbfdot",
-"polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot", "anovadot",
-and "splinedot". See Details.}
+\item{kernel}{The kernel generating function. Options include \code{
+"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot",
+"anovadot",} and \code{"splinedot"}. See Details.}
 
 \item{kpar}{A named list of arguments setting parameters for the kernel
 function. If \code{NULL}, \code{kernlab} defaults are used. See Details.}
@@ -35,8 +35,8 @@ function. If \code{NULL}, \code{kernlab} defaults are used. See Details.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for KPCA.}
 
-\item{pcs}{Vector specifying which principal components to plot. Must be of
-length two unless \code{D3 = TRUE}.}
+\item{dims}{Vector specifying which dimensions to plot. Must be of length
+two unless \code{D3 = TRUE}.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE}
 unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
@@ -100,10 +100,11 @@ plot_kpca(dds, group = colData(dds)$condition)
 
 }
 \references{
-Schölkopf, B., Tsuda, K. & Vert, J.P. (Eds.) (2004).
-\href{https://mitpress.mit.edu/books/kernel-methods-computational-biology}{
-Kernel Methods in Computational Biology}. Cambridge, MA: MIT Press.
+Schölkopf, B., Smola, A. & Müller, K. (1998).
+\href{https://www.mitpressjournals.org/doi/abs/10.1162/089976698300017467}{
+Nonlinear Component Analysis as a Kernel Eigenvalue Problem}. \emph{Neural
+Computation}, \emph{10}(5), 1299-1319.
 }
 \seealso{
-\code{\link{plot_pca}}, \code{\link[kernlab]{dots}}
+\code{\link{plot_pca}}, \code{kernlab::\link[kernlab]{dots}}
 }
