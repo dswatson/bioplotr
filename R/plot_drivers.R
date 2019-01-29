@@ -168,10 +168,10 @@ plot_drivers <- function(dat,
       ifelse(clin[[var]] %>% is.numeric,
              summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
     } else {
-      mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
-      if (clin[[var]] %>% identical(clin[[block]])) {
-        anova(mod)[1L, 5L]
+      if (var == block) {
+        anova(lm(pca$x[, pc] ~ clin[[var]]))[1L, 5L]
       } else {
+        mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
         ifelse(clin[[var]] %>% is.numeric,
                summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
       }
@@ -216,4 +216,11 @@ plot_drivers <- function(dat,
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix numer to color mapping
+
+# Add kernal option???
+
+
+
+
+
 
