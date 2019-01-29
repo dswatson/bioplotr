@@ -582,7 +582,7 @@ plot_md.default <- function(dat,
   if (sample %>% is.numeric && sample > ncol(dat)) {
     stop('Sample number exceeds ncol(dat).')
   }
-  if (sample %>% is.charater) {
+  if (sample %>% is.character) {
     if (!sample %in% colnames(dat)) {
       stop('Could not detect a sample named "', sample, '" in dat.')
     } else {
