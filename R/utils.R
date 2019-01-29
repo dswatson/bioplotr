@@ -299,7 +299,7 @@ matrixize <- function(dat) {
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (dat %>% is('DESeqDataSet')) {
     require(DESeq2)
-    if (sizeFactors(dat) %>% is.null && normalizationFactors(dat) %>% is.null) {
+    if (sizeFactors(dat) %>% is.null & normalizationFactors(dat) %>% is.null) {
       dat <- estimateSizeFactors(dat)            # Normalize counts
     }
     dat <- counts(dat, normalized = TRUE)
@@ -450,7 +450,7 @@ dist_mat <- function(dat,
                            'chao', 'cao', 'mahalanobis')) {
       dm <- as.matrix(vegdist(t(dat), method = dist))
     } else if (dist %in% c('pearson', 'kendall', 'spearman')) {
-      dm <- 1L - cor(dat, method = dist)
+      dm <- 1L - abs(cor(dat, method = dist))
     } else if (dist == 'MI') {
       require(bioDist)
       dm <- as.matrix(MIdist(t(dat)))
@@ -476,7 +476,7 @@ dist_mat <- function(dat,
           tops <- order(abs(dat[, i] - dat[, j]), decreasing = TRUE)[seq_len(top)]
           m <- dat[tops, c(i, j)]
           if (dist %in% c('pearson', 'kendall', 'spearman')) {
-            dm[i, j] <- max(1L - cor(m, method = dist))
+            dm[i, j] <- max(1L - abs(cor(m, method = dist)))
           } else if (dist %in% c('bhattacharyya', 'hellinger', 
                                  'total_variation', 'kullback_leibler')) {
             dm[i, j] <- max(Dist(t(m), method = dist))
