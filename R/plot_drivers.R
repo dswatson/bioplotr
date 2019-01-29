@@ -178,7 +178,8 @@ plot_drivers <- function(dat,
     }
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n.pc))) %>%
+                         PC = paste0('PC', seq_len(n.pc)),
+                    stringsAsFactors = FALSE) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
