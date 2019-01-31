@@ -4,9 +4,10 @@
 \alias{plot_drivers}
 \title{Plot Drivers of Omic Variation}
 \usage{
-plot_drivers(dat, clin, index = "Sample", block = NULL, top = NULL,
-  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL,
-  title = NULL, legend = "right", hover = FALSE)
+plot_drivers(dat, clin, index = "Sample", block = NULL,
+  kernel = NULL, kpar = NULL, top = NULL, n.pc = 10L,
+  label = FALSE, alpha = NULL, p.adj = NULL,
+  title = "Variation By Feature", legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -26,6 +27,14 @@ names in \code{dat} will be considered.}
 
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
+
+\item{kernel}{The kernel generating function, if using KPCA. Options include 
+\code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", 
+"besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
+set to \code{NULL}. See Details.}
+
+\item{kpar}{A named list of arguments setting parameters for the kernel
+function. Only relevant if \code{kernel} is not \code{NULL}. See Details.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for PCA.}
@@ -74,6 +83,10 @@ supplying a blocking variable, be sure to check that it is not confounded
 with other features. For instance, features like sex and age are usually
 nested within subject, while subject may be nested within other variables
 like batch or treatment group.
+
+If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See 
+\code{\link{plot_kpca}} for more info. Details on kernel functions and their 
+input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 }
 \examples{
 library(edgeR)
