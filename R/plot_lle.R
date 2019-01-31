@@ -166,7 +166,7 @@ plot_lle <- function(dat,
     dat <- var_filt(dat, top, robust = FALSE)
   }
   capture.output(y <- lle(t(dat), m = max(dims), k = k, p = 1L)$Y)        # LLE
-  df <- data_frame(Sample = colnames(dat))                                # Melt
+  df <- tibble(Sample = colnames(dat))                                    # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = y[, min(dims)],
                         PC2 = y[, max(dims)])

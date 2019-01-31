@@ -95,9 +95,9 @@ plot_pr <- function(obs,
   # Tidy data
   prcs <- evalmod(scores = pred, labels = obs)$prcs
   df <- seq_along(pred) %>%
-    map_df(~ data_frame(Recall = prcs[[.x]]$x,
-                     Precision = prcs[[.x]]$y,
-                    Classifier = names(pred)[.x]))
+    map_df(~ tibble(Recall = prcs[[.x]]$x,
+                 Precision = prcs[[.x]]$y,
+                Classifier = names(pred)[.x]))
 
   # Build plot
   p_auc <- function(m) {                         # Print AUC

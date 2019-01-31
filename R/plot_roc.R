@@ -80,9 +80,9 @@ plot_roc <- function(obs,
   # Tidy data
   rocs <- evalmod(scores = pred, labels = obs)$rocs
   df <- seq_along(pred) %>%
-    map_df(~ data_frame(FPR = rocs[[.x]]$x,
-                        TPR = rocs[[.x]]$y,
-                 Classifier = names(pred)[.x]))
+    map_df(~ tibble(FPR = rocs[[.x]]$x,
+                    TPR = rocs[[.x]]$y,
+             Classifier = names(pred)[.x]))
 
   # Build plot
   p_auc <- function(m) {                         # Print AUC
@@ -106,7 +106,6 @@ plot_roc <- function(obs,
                          breaks = names(pred),
                          labels = seq_along(pred) %>% map_chr(p_auc),
                          values = cols)
-
     )
   } else {
     p <- p + geom_line(aes(color = Classifier)) +

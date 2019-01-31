@@ -219,7 +219,7 @@ plot_tsne <- function(dat,
   tsne <- Rtsne(dm, perplexity = perplexity, dims = max(dims),
                 theta = theta, max_iter = max_iter, check_duplicates = FALSE,
                 is_distance = TRUE, ...)$Y                 # t-SNE
-  df <- data_frame(Sample = colnames(dat))                 # Melt
+  df <- tibble(Sample = colnames(dat))                     # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = tsne[, min(dims)],
                         PC2 = tsne[, max(dims)])

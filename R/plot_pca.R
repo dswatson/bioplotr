@@ -162,7 +162,7 @@ plot_pca <- function(dat,
     p <- pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L
     paste0('PC', pc, ' (', round(p, 2L), '%)')
   })
-  df <- data_frame(Sample = colnames(dat))       # Melt
+  df <- tibble(Sample = colnames(dat))           # Melt
   if (length(pcs) == 2L) {
     df <- df %>% mutate(PC1 = pca$x[, min(pcs)],
                         PC2 = pca$x[, max(pcs)])

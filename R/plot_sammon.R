@@ -189,7 +189,7 @@ plot_sammon <- function(dat,
     dm <- dat
   }
   sm <- sammon(dm, k = max(dims), trace = FALSE)$points    # Project
-  df <- data_frame(Sample = colnames(dat))                 # Melt
+  df <- tibble(Sample = colnames(dat))                     # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = sm[, min(dims)],
                         PC2 = sm[, max(dims)])

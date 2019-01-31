@@ -40,7 +40,7 @@
 #'
 #' @export
 #' @importFrom purrr some map_lgl map map_dbl map_df
-#' @importFrom dplyr data_frame
+#' @import dplyr
 #' @import ggplot2
 #'
 
@@ -81,10 +81,10 @@ plot_calibration <- function(obs,
   exp_grps <- seq_along(pred) %>% map(~ split(pred[[.x]], bin[[.x]]))
   obs_grps <- seq_along(bin) %>% map(~ split(obs, bin[[.x]]))
   df <- seq_along(pred) %>% map_df(function(m) {
-    data_frame(Y = obs_grps[[m]] %>% map_dbl(mean),
-               X = exp_grps[[m]] %>% map_dbl(mean),
-       Frequency = exp_grps[[m]] %>% map_dbl(length),
-      Classifier = names(pred)[m])
+    tibble(Y = obs_grps[[m]] %>% map_dbl(mean),
+           X = exp_grps[[m]] %>% map_dbl(mean),
+   Frequency = exp_grps[[m]] %>% map_dbl(length),
+  Classifier = names(pred)[m])
   })
 
   # Build plot

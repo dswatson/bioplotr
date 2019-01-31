@@ -107,9 +107,9 @@ plot_lorenz <- function(dat,
     n <- rep(1L, length(x))
     p <- c(0L, cumsum(n) / sum(n))
     L <- c(0L, cumsum(x) / sum(x))
-    data_frame(Title = names(dat)[j],
-          Proportion = p,
-              Lorenz = L) %>%
+    tibble(Title = names(dat)[j],
+      Proportion = p,
+          Lorenz = L) %>%
       return(.)
   })
 

@@ -210,8 +210,8 @@ plot_som <- function(dat,
 
   # Plot type?
   if (type == 'train') {
-    df <- data_frame(Iteration = seq_len(rlen),
-                      Distance = as.numeric(y$changes))
+    df <- tibble(Iteration = seq_len(rlen),
+                  Distance = as.numeric(y$changes))
   } else {
     n_nodes <- nrow(y$grid$pts)
     if (type == 'model') {
