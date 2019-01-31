@@ -95,6 +95,7 @@
 #' @importFrom kernlab kernelMatrix
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
+#' @importFrom kernlab rotated
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -243,18 +244,14 @@ plot_drivers <- function(dat,
     })
   }
   sig <- function(var, pc) {                       # p-val fn
-    if (block %>% is.null | var %in% unblock) {
+    if (block %>% is.null | var %in% unblock | var == block) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
       ifelse(clin[[var]] %>% is.numeric,
              summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
     } else {
-      if (var == block) {
-        anova(lm(pca$x[, pc] ~ clin[[var]]))[1L, 5L]
-      } else {
-        mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
-        ifelse(clin[[var]] %>% is.numeric,
-               summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
-      }
+      mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
+      ifelse(clin[[var]] %>% is.numeric,
+             summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
     }
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
