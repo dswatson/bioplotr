@@ -98,6 +98,7 @@
 #' @importFrom kernlab kernelMatrix
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
+#' @importFrom kernlab rotated
 #' @import dplyr
 #' @import ggplot2
 #'
