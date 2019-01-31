@@ -87,7 +87,17 @@
 #'
 #' @export
 #' @importFrom purrr map_chr
-#' @import kernlab
+#' @importFrom kernlab rbfdot
+#' @importFrom kernlab polydot
+#' @importFrom kernlab tanhdot
+#' @importFrom kernlab vanilladot
+#' @importFrom kernlab laplacedot
+#' @importFrom kernlab besseldot
+#' @importFrom kernlab anovadot
+#' @importFrom kernlab splinedot
+#' @importFrom kernlab kernelMatrix
+#' @importFrom kernlab kpca
+#' @importFrom kernlab eig
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -178,7 +188,7 @@ plot_kpca <- function(dat,
     if (kpar %>% is.null) {
       kpar <- list(scale = 1L, offset = 1L)
     }
-    kf <- polydot(unlist(kpar))
+    kf <- tanhdot(unlist(kpar))
   } else if (kernel == 'vanilladot') {
     kf <- vanilladot()
   } else if (kernel == 'laplacedot') {
@@ -205,7 +215,7 @@ plot_kpca <- function(dat,
     p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
     paste0('KPC', pc, ' (', round(p, 2L), '%)')
   })
-  df <- data_frame(Sample = colnames(dat))       # Melt
+  df <- tibble(Sample = colnames(dat))           # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = rotated(pca)[, min(dims)],
                         PC2 = rotated(pca)[, max(dims)])
