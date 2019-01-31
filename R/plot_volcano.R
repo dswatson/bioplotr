@@ -15,8 +15,8 @@
 #'   expressed.
 #' @param lfc Optional effect size threshold for declaring a probe
 #'   differentially expressed.
-#' @param probe Name of column in which to find probe IDs, presuming they are
-#'   not stored in \code{rownames(dat)}.
+#' @param probes Optional column number or name specifying where probe names are
+#'   stored, presuming they are not stored in \code{rownames(dat)}.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -60,8 +60,8 @@ plot_volcano <- function(dat,
                          y = 'q',
                        fdr = 0.05,
                        lfc = NULL,
-                     probe = NULL,
-                     title = NULL,
+                    probes = NULL,
+                     title = 'Volcano Plot',
                     legend = 'right',
                      hover = FALSE) {
 
@@ -94,14 +94,28 @@ plot_volcano <- function(dat,
   if (!y %in% c('p', 'q')) {
     stop('y must be one of "p" or "q".')
   }
-  if (!(probe %>% is.null)) {
-    if (!probe %in% colnames(dat)) {
-      stop('Column "', probe, '" not detected.')
+  if (probes %>% is.null) {
+    if (rownames(dat) %>% is.null ||
+        rownames(dat) %>% identical(as.character(seq_len(nrow(dat))))) {
+      stop('If dat does not have rownames, then the column of unique probe ',
+           'identifiers must be specified using the probes argument.')
     } else {
-      colnames(dat)[which(colnames(dat)) == probe] <- 'Probe'
+      dat <- dat %>% mutate(Probe = rownames(.))
     }
   } else {
-    dat <- dat %>% mutate(Probe = rownames(.))
+    if (probes %>% is.numeric) {
+      if (probes > ncol(dat)) {
+        stop('Column number for probes exceeds ncol(dat).')
+      } else {
+        colnames(dat)[probes] <- 'Probe'
+      }
+    } else {
+      if (!probes %in% colnames(dat)) {
+        stop('Could not detect a column named "', probes, '" in dat.')
+      } else {
+        colnames(dat)[colnames(dat) == probes] <- 'Probe'
+      }
+    }
   }
   dat <- dat %>%
     select(Probe, logFC, p.value, q.value) %>%
@@ -115,9 +129,6 @@ plot_volcano <- function(dat,
   }
   if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
     stop('Q-values values must be on [0, 1].')
-  }
-  if (title %>% is.null) {
-    title <- 'Volcano Plot'
   }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
@@ -197,4 +208,4 @@ plot_volcano <- function(dat,
 
 }
 
-
+# More elegant solution to probe column so we can get straight to tibble
