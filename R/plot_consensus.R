@@ -85,7 +85,7 @@ plot_consensus <- function(cc,
                        pal_group = 'npg',
                        pal_covar = 'Blues',
                        pal_tiles = 'RdBu',
-                           title = NULL) {
+                           title = 'Consensus Matrix') {
 
   # Preliminaries
   if (cc %>% is.list) {
@@ -133,9 +133,6 @@ plot_consensus <- function(cc,
   pal_cols <- colorize(pal_tiles, var_type = 'Continuous')
   if (pal_tiles == 'RdBu') {
     pal_cols <- rev(pal_cols)
-  }
-  if (title %>% is.null) {
-    title <- 'Consensus Matrix'
   }
 
   # Build plot

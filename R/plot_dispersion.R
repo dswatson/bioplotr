@@ -120,7 +120,7 @@
 
 plot_dispersion <- function(dat,
                             trans = 'log',
-                            title = NULL,
+                            title = 'Mean-Dispersion Plot',
                            legend = 'right', ...) {
 
   # Preliminaries
@@ -132,9 +132,6 @@ plot_dispersion <- function(dat,
     ylab <- 'Biological Coefficient of Variation'
   } else {
     stop('trans must be either "log" or "sqrt".')
-  }
-  if (title %>% is.null) {
-    title <- 'Mean-Dispersion Plot'
   }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
@@ -155,7 +152,7 @@ plot_dispersion <- function(dat,
 plot_dispersion.DGEList <- function(dat,
                                     design = NULL,
                                      trans = 'log',
-                                     title = NULL,
+                                     title = 'Mean-Dispersion Plot',
                                     legend = 'right',
                                      hover = FALSE) {
 
@@ -185,12 +182,12 @@ plot_dispersion.DGEList <- function(dat,
 
   # Tidy data
   cmn <- fn(dat$common.dispersion)
-  df <- data_frame(Gene = rownames(dat),
-                   Mean = aveLogCPM(dat, prior.count = 1L,
-                                    dispersion = dat$tagwise.dispersion),
-               Genewise = fn(dat$tagwise.dispersion),
-                    Fit = fn(dat$trended.dispersion),
-                Tagwise = rep(TRUE, nrow(dat)))
+  df <- tibble(Gene = rownames(dat),
+               Mean = aveLogCPM(dat, prior.count = 1L,
+                                dispersion = dat$tagwise.dispersion),
+           Genewise = fn(dat$tagwise.dispersion),
+                Fit = fn(dat$trended.dispersion),
+            Tagwise = rep(TRUE, nrow(dat)))
 
   # Build plot
   size <- pt_size(df)
@@ -225,7 +222,7 @@ plot_dispersion.DGEList <- function(dat,
 
 plot_dispersion.DESeqDataSet <- function(dat,
                                          trans = 'log',
-                                         title = NULL,
+                                         title = 'Mean-Dispersion Plot',
                                         legend = 'right',
                                          hover = FALSE) {
 
@@ -241,14 +238,14 @@ plot_dispersion.DESeqDataSet <- function(dat,
   # Tidy data
   keep <- mcols(dat)$baseMean > 0L
   dat <- dat[keep, , drop = FALSE]
-  df <- data_frame(Gene = rownames(dat),
-                   Mean = aveLogCPM(counts(dat, normalized = TRUE),
-                                    prior.count = 1L,
-                                    dispersion = dispersions(dat)),
-               Genewise = fn(mcols(dat)$dispGeneEst),
-                    Fit = fn(mcols(dat)$dispFit),
-                  Final = fn(dispersions(dat)),
-                Outlier = mcols(dat)$dispOutlier)
+  df <- tibble(Gene = rownames(dat),
+               Mean = aveLogCPM(counts(dat, normalized = TRUE),
+                                prior.count = 1L,
+                                dispersion = dispersions(dat)),
+           Genewise = fn(mcols(dat)$dispGeneEst),
+                Fit = fn(mcols(dat)$dispFit),
+              Final = fn(dispersions(dat)), 
+            Outlier = mcols(dat)$dispOutlier)
 
   # Build plot
   size <- pt_size(df)
@@ -284,7 +281,7 @@ plot_dispersion.default <- function(dat,
                                     design = NULL,
                                      trans = 'log',
                                   pipeline = NULL,
-                                     title = NULL,
+                                     title = 'Mean-Dispersion Plot',
                                     legend = 'right',
                                      hover = FALSE) {
 
@@ -295,7 +292,7 @@ plot_dispersion.default <- function(dat,
   } else if (pipeline == 'DESeq2') {
     require(DESeq2)
     if (is.null(design)) {
-      cd <- data_frame(A = rep(0L, times = ncol(dat)))
+      cd <- tibble(A = rep(0L, times = ncol(dat)))
       dat <- DESeqDataSetFromMatrix(dat, colData = cd, design = ~ 1L)
       dat <- estimateSizeFactors(dat)
       dat <- estimateDispersions(dat, quiet = TRUE)
@@ -313,4 +310,4 @@ plot_dispersion.default <- function(dat,
 
 }
 
-
+# Size, alpha, title

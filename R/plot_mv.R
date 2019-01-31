@@ -115,7 +115,7 @@
 
 plot_mv <- function(dat,
                     trans = 'rank',
-                    title = NULL,
+                    title = 'Mean-Variance Plot',
                    legend = 'right', ...) {
 
   # Preliminaries
@@ -143,7 +143,7 @@ plot_mv <- function(dat,
 plot_mv.MArrayLM <- function(dat,
                              trans = 'log',
                               span = 0.5,
-                             title = NULL,
+                             title = 'Mean-Variance Plot',
                               xlab = NULL,
                               ylab = NULL,
                             legend = 'right',
@@ -154,9 +154,6 @@ plot_mv.MArrayLM <- function(dat,
     warning('Standard errors for dat have not been moderated. Consider ',
             're-running plot_mv after shrinking residual variance with ',
             'eBayes. See ?eBayes and ?squeezeVar for more info.')
-  }
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
   }
 
   # Tidy data
@@ -184,11 +181,11 @@ plot_mv.MArrayLM <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma,
-                   Prior = prior,
-                 Outlier = outliers) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma,
+               Prior = prior,
+             Outlier = outliers) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -242,16 +239,11 @@ plot_mv.DGEList <- function(dat,
                             design = NULL,
                              trans = 'sqrt',
                               span = 0.5,
-                             title = NULL,
+                             title = 'Mean-Variance Plot',
                               xlab = NULL,
                               ylab = NULL,
                             legend = 'right',
                              hover = FALSE) {
-
-  # Preliminaries
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
-  }
 
   # Tidy data
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
@@ -290,9 +282,9 @@ plot_mv.DGEList <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -321,16 +313,11 @@ plot_mv.DGEList <- function(dat,
 plot_mv.DGELM <- function(dat,
                           trans = 'sqrt',
                            span = 0.5,
-                          title = NULL,
+                          title = 'Mean-Variance Plot',
                            xlab = NULL,
                            ylab = NULL,
                          legend = 'right',
                           hover = FALSE) {
-
-  # Preliminaries
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
-  }
 
   # Tidy data
   keep <- rowSums(dat$counts) > 1L & !dat$failed      # Minimal count filter
@@ -354,9 +341,9 @@ plot_mv.DGELM <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)                   # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                      Mu = mu,
-                   Sigma = sigma) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -387,7 +374,7 @@ plot_mv.DESeqDataSet <- function(dat,
                                  resid = FALSE,
                                  trans = 'rank',
                                   span = 0.5,
-                                 title = NULL,
+                                 title = 'Mean-Variance Plot',
                                   xlab = NULL,
                                   ylab = NULL,
                                 legend = 'right',
@@ -398,9 +385,6 @@ plot_mv.DESeqDataSet <- function(dat,
   if (resid && assays(dat)[['mu']] %>% is.null) {
     stop('dat must be fit with a negative binomial GLM in order to extract ',
          'residual variance.')
-  }
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
   }
 
   # Tidy data
@@ -447,9 +431,9 @@ plot_mv.DESeqDataSet <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                   Mu = mu,
-                   Sigma = sigma) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -478,16 +462,11 @@ plot_mv.DESeqDataSet <- function(dat,
 plot_mv.DESeqTransform <- function(dat,
                                    trans = 'rank',
                                     span = 0.5,
-                                   title = NULL,
+                                   title = 'Mean-Variance Plot',
                                     xlab = NULL,
                                     ylab = NULL,
                                   legend = 'right',
                                    hover = FALSE) {
-
-  # Preliminaries
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
-  }
 
   # Tidy data
   require(SummarizedExperiment)
@@ -508,9 +487,9 @@ plot_mv.DESeqTransform <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                   Mu = mu,
-                   Sigma = sigma) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -539,16 +518,11 @@ plot_mv.DESeqTransform <- function(dat,
 plot_mv.default <- function(dat,
                             trans = 'rank',
                              span = 0.5,
-                            title = NULL,
+                            title = 'Mean-Variance Plot',
                              xlab = NULL,
                              ylab = NULL,
                            legend = 'right',
                             hover = FALSE) {
-
-  # Preliminaries
-  if (title %>% is.null) {
-    title <- 'Mean-Variance Plot'
-  }
 
   # Tidy data
   dat <- matrixize(dat)
@@ -568,9 +542,9 @@ plot_mv.default <- function(dat,
     if (ylab %>% is.null) ylab <- expression(sqrt(sigma))
   }
   lo <- lowess(mu, sigma, f = span)              # Fit LOWESS curve
-  df <- data_frame(Probe = rownames(dat),
-                   Mu = mu,
-                   Sigma = sigma) %>%
+  df <- tibble(Probe = rownames(dat),
+                  Mu = mu,
+               Sigma = sigma) %>%
     arrange(Mu) %>%
     mutate(lfit = lo[['y']])
 
@@ -591,5 +565,8 @@ plot_mv.default <- function(dat,
   gg_out(p, hover, legend)
 
 }
+
+
+# Add size, alpha, title arguments
 
 

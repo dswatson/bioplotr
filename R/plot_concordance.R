@@ -84,7 +84,7 @@ plot_concordance <- function(dat,
                                   B = 2000L,
                               label = FALSE,
                                diag = FALSE,
-                              title = NULL,
+                              title = 'Concordance Plot',
                              legend = 'right',
                               hover = FALSE,
                              export = FALSE) {
@@ -126,9 +126,6 @@ plot_concordance <- function(dat,
     if (!p.adj %in% p_adj) {
       stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
     }
-  }
-  if (title %>% is.null) {
-    title <- 'Concordance Plot'
   }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')

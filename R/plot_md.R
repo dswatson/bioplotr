@@ -103,13 +103,10 @@
 #'
 
 plot_md <- function(dat,
-                    title = NULL,
+                    title = 'Mean-Difference Plot',
                    legend = 'right', ...) {
 
   # Preliminaries
-  if (title %>% is.null) {
-    title <- 'Mean-Difference Plot'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
@@ -131,7 +128,7 @@ plot_md.DGEList <- function(dat,
                             sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
-                             title = NULL,
+                             title = 'Mean-Difference Plot',
                               xlab = NULL,
                             legend = 'right',
                              hover = FALSE) {
@@ -182,9 +179,9 @@ plot_md.DGEList <- function(dat,
   other <- aveLogCPM(other, prior.count = 1L,
                      dispersion = other$tagwise.dispersion)
   dat <- cpm(dat, log = TRUE, prior.count = 1L)
-  df <- data_frame(Probe = rownames(dat),
-                    Mean = (other + dat[, sample]) / 2L,
-                    Diff = dat[, sample] - other)
+  df <- tibble(Probe = rownames(dat),
+                Mean = (other + dat[, sample]) / 2L,
+                Diff = dat[, sample] - other)
   if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
@@ -230,7 +227,7 @@ plot_md.DESeqDataSet <- function(dat,
                                  sample = 1L,
                                   ctrls = NULL,
                                     lfc = NULL,
-                                  title = NULL,
+                                  title = 'Mean-Difference Plot',
                                    xlab = NULL,
                                  legend = 'right',
                                   hover = FALSE) {
@@ -271,9 +268,9 @@ plot_md.DESeqDataSet <- function(dat,
   other <- aveLogCPM(cnts[, -sample], prior.count = 1L,
                      dispersion = dispersions(dat))
   dat <- cpm(cnts, log = TRUE, prior.count = 1L)
-  df <- data_frame(Probe = rownames(dat),
-                    Mean = (other + dat[, sample]) / 2L,
-                    Diff = dat[, sample] - other)
+  df <- tibble(Probe = rownames(dat),
+                Mean = (other + dat[, sample]) / 2L,
+                Diff = dat[, sample] - other)
   if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
@@ -318,7 +315,7 @@ plot_md.DESeqTransform <- function(dat,
                                    sample = 1L,
                                     ctrls = NULL,
                                       lfc = NULL,
-                                    title = NULL,
+                                    title = 'Mean-Difference Plot',
                                      xlab = NULL,
                                    legend = 'right',
                                     hover = FALSE) {
@@ -345,7 +342,7 @@ plot_md.DESeqTransform <- function(dat,
 plot_md.DESeqResults <- function(dat,
                                  fdr = 0.05,
                                  lfc = NULL,
-                               title = NULL,
+                               title = 'Mean-Difference Plot',
                                 xlab = NULL,
                               legend = 'right',
                                hover = FALSE) {
@@ -422,7 +419,7 @@ plot_md.DESeqResults <- function(dat,
 plot_md.TopTags <- function(dat,
                             fdr = 0.05,
                             lfc = NULL,
-                          title = NULL,
+                          title = 'Mean-Difference Plot',
                            xlab = NULL,
                          legend = 'right',
                           hover = FALSE) {
@@ -447,7 +444,7 @@ plot_md.data.frame <- function(dat,
                                probes = NULL,
                                   fdr = 0.05,
                                   lfc = NULL,
-                                title = NULL,
+                                title = 'Mean-Difference Plot',
                                  xlab = NULL,
                                legend = 'right',
                                 hover = FALSE) {
@@ -459,7 +456,7 @@ plot_md.data.frame <- function(dat,
       stop('If dat does not have rownames, then the column of unique probe ',
            'identifiers must be specified using the probes argument.')
     } else {
-      dat$Probe <- rownames(dat)
+      dat <- dat %>% mutate(Probe = rownames(.))
     }
   } else {
     if (probes %>% is.numeric) {
@@ -573,7 +570,7 @@ plot_md.default <- function(dat,
                             sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
-                             title = NULL,
+                             title = 'Mean-Difference Plot',
                               xlab = NULL,
                             legend = 'right',
                              hover = FALSE) {
@@ -605,9 +602,9 @@ plot_md.default <- function(dat,
   keep <- rowSums(is.finite(dat)) == ncol(dat)
   dat <- dat[keep, , drop = FALSE]
   other <- rowMeans(dat[, -sample])
-  df <- data_frame(Probe = rownames(dat),
-                    Mean = (other + dat[, sample]) / 2L,
-                    Diff = dat[, sample] - other)
+  df <- tibble(Probe = rownames(dat),
+                Mean = (other + dat[, sample]) / 2L,
+                Diff = dat[, sample] - other)
   if (!(ctrls %>% is.null)) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
@@ -645,3 +642,4 @@ plot_md.default <- function(dat,
 }
 
 
+# Size, alpha, title

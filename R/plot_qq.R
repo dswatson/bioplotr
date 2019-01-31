@@ -44,14 +44,14 @@
 
 plot_qq <- function(dat,
                     lambda = FALSE,
-                     title = NULL,
+                     title = 'QQ Plot',
                      hover = FALSE) {
 
   # Preliminaries
-  if (dat  %>% is.numeric) {
-    dat <- data.frame(p.value = dat)
+  if (dat %>% is.numeric) {
+    dat <- tibble(p.value = dat)
   } else {
-    dat <- dat %>% as.data.frame(.)
+    dat <- dat %>% as_tibble(.)
   }
   p <- c('P.Value', 'PValue', 'pvalue', 'p.value')
   if (sum(p %in% colnames(dat)) == 1) {
@@ -67,9 +67,6 @@ plot_qq <- function(dat,
   }
   if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
     stop('P-values must be on [0, 1].')
-  }
-  if (title %>% is.null) {
-    title <- 'Q-Q Plot'
   }
 
   # Tidy

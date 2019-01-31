@@ -56,7 +56,7 @@ plot_heatmap <- function(dat,
                      pal_group = 'npg',
                      pal_covar = 'Blues',
                      pal_tiles = 'RdBu',
-                         title = NULL) {
+                         title = 'Omic Heatmap') {
 
   # Preliminaries
   if (!(group %>% is.null)) {
@@ -87,9 +87,6 @@ plot_heatmap <- function(dat,
          'See ?hclust.')
   }
   pal_tiles <- colorize(pal_tiles, var_type = 'Continuous')
-  if (title %>% is.null) {
-    title <- 'Omic Heatmap'
-  }
 
   # Tidy data
   dat <- matrixize(dat)

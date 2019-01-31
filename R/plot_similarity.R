@@ -90,7 +90,7 @@ plot_similarity <- function(dat,
                         pal_group = 'npg',
                         pal_covar = 'Blues',
                         pal_tiles = 'RdBu',
-                            title = NULL) {
+                            title = 'Sample Similarity Matrix') {
 
   # Preliminaries
   if (!(dat %>% is('dist'))) {
@@ -132,9 +132,6 @@ plot_similarity <- function(dat,
   pal_cols <- colorize(pal_tiles, var_type = 'Continuous')
   if (pal_tiles == 'RdBu') {
     pal_cols <- rev(pal_cols)
-  }
-  if (title %>% is.null) {
-    title <- 'Sample Similarity Matrix'
   }
 
   # Tidy data

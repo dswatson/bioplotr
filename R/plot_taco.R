@@ -42,7 +42,7 @@
 
 plot_taco <- function(dat,
                       fdr = 0.05,
-                    title = NULL,
+                    title = 'Taco Plot',
                    legend = 'right') {
 
   # Preliminaries
@@ -84,9 +84,6 @@ plot_taco <- function(dat,
          'colnames for this vector include ', stringify(q), '. Make sure that ',
          'dat includes exactly one such colname.')
   }
-  if (title %>% is.null) {
-    title <- 'Taco Plot'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
@@ -102,7 +99,7 @@ plot_taco <- function(dat,
   test <- function(q) ifelse(q < fdr, paste('q <', fdr), paste('q >', fdr))
   df <- dat %>%
     mutate(is.DE = map_chr(q.value, test),
-           logP = -log10(p.value)) %>%
+            logP = -log10(p.value)) %>%
     select(Probe, AvgExpr, logFC, logP, is.DE)
   if (sum(grepl('<', df$is.DE) == 0L)) {
     warning('No probe meets your fdr threshold. To color data points by ',
@@ -112,7 +109,8 @@ plot_taco <- function(dat,
   # Build Plot
   require(plotly)
   p <- plot_ly(df, x = ~AvgExpr, y = ~logFC, z = ~logP,
-               text = ~Probe, color = ~is.DE, colors = c(pal_d3()(4L)[4L], 'black'),
+               text = ~Probe, color = ~is.DE, 
+               colors = c(pal_d3()(4L)[4L], 'black'),
                type = 'scatter3d', mode = 'markers',
                alpha = 0.85, hoverinfo = 'text', marker = list(size = 1)) %>%
     layout(hovermode = 'closest', title = title, scene = list(
@@ -129,3 +127,5 @@ plot_taco <- function(dat,
 # Altho it used to? https://plot.ly/r/LaTeX/
 
 # Add lfc threshold?
+
+# More elegant solution to probe column so we can get straight to tibble

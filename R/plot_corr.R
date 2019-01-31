@@ -67,7 +67,7 @@ plot_corr <- function(dat,
                         geom = 'tile',
                        label = FALSE,
                         diag = FALSE,
-                       title = NULL,
+                       title = 'Correlation Plot',
                       legend = 'right',
                        hover = FALSE,
                       export = FALSE) {
@@ -110,9 +110,6 @@ plot_corr <- function(dat,
   }
   if (!geom %in% c('tile', 'circle')) {
     stop('geom must be either "tile" or "circle".')
-  }
-  if (title %>% is.null) {
-    title <- 'Correlation Plot'
   }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')

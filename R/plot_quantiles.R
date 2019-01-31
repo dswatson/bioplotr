@@ -33,7 +33,7 @@ plot_quantiles <- function(x,
                            y,
                            method = 'QQ',
                               pts = 1000L,
-                             main = NULL,
+                            title = NULL,
                              xlab = NULL,
                              ylab = NULL) {
 
@@ -49,11 +49,11 @@ plot_quantiles <- function(x,
   if (!method %in% c('QQ', 'MD')) {
     stop('method must be either "QQ" or "MD".')
   }
-  if (main %>% is.null) {
+  if (title %>% is.null) {
     if (method == 'QQ') {
-      main <- 'QQ Plot'
+      title <- 'QQ Plot'
     } else {
-      main <- 'MD Plot'
+      title <- 'MD Plot'
     }
   }
   if (xlab %>% is.null) {
@@ -67,19 +67,18 @@ plot_quantiles <- function(x,
   x <- quantile(x, probs = seq(0L, 1L, length.out = pts))
   y <- quantile(y, probs = seq(0L, 1L, length.out = pts))
   if (method == 'QQ') {
-    df <- data_frame(X = x, Y = y)
+    df <- tibble(X = x, Y = y)
   } else {
-    df <- data_frame(X = (x + y) / 2L, Y = x - y)
+    df <- tibble(X = (x + y) / 2L, Y = x - y)
   }
 
   # Build plot
   size <- pt_size(df)
   p <- ggplot(df, aes(X, Y)) +
     geom_point(size = size) +
-    labs(title = main, x = xlab, y = ylab) +
+    labs(title = title, x = xlab, y = ylab) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-
   if (method == 'QQ') {
     p <- p + geom_abline(intercept = 0L, slope = 1L, color = 'red', size = 0.2)
   } else {
