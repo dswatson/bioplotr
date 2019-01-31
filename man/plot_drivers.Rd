@@ -5,8 +5,8 @@
 \title{Plot Drivers of Omic Variation}
 \usage{
 plot_drivers(dat, clin, index = "Sample", block = NULL,
-  kernel = NULL, kpar = NULL, top = NULL, n.pc = 10L,
-  label = FALSE, alpha = NULL, p.adj = NULL,
+  unblock = NULL, kernel = NULL, kpar = NULL, top = NULL,
+  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL,
   title = "Variation By Feature", legend = "right", hover = FALSE)
 }
 \arguments{
@@ -28,8 +28,11 @@ names in \code{dat} will be considered.}
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
 
-\item{kernel}{The kernel generating function, if using KPCA. Options include 
-\code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", 
+\item{unblock}{Column name(s) of one or more features for which the \code{
+block} covariate should not be applied, if one was supplied. See Details.}
+
+\item{kernel}{The kernel generating function, if using KPCA. Options include
+\code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot",
 "besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
 set to \code{NULL}. See Details.}
 
@@ -76,16 +79,19 @@ one-way ANOVA \emph{F}-tests (for categorical features).
 An optional blocking variable may be provided if samples violate the
 assumption of independence, e.g. for studies in which subjects are observed
 at multiple time points. If a blocking variable is identified, it will be
-factored into all subsequent measures of association. Significance is then
-evaluated using Pearson partial correlation tests (for continuous features)
-or repeated measures ANOVA \emph{F}-tests (for categorical features). When
-supplying a blocking variable, be sure to check that it is not confounded
-with other features. For instance, features like sex and age are usually
-nested within subject, while subject may be nested within other variables
-like batch or treatment group.
+factored into all subsequent measures of association, except those explicitly
+exempted by the \code{unblock} argument. Significance is evaluated using
+Pearson partial correlation tests (for continuous features) or repeated
+measures ANOVA \emph{F}-tests (for categorical features).
 
-If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See 
-\code{\link{plot_kpca}} for more info. Details on kernel functions and their 
+When supplying a blocking variable, be careful to consider potential
+confounding effects. For instance, features like sex and age are usually
+nested within subject, while subject may be nested within other variables
+like batch or treatment group. The \code{block} and \code{unblock} arguments
+are designed to help parse out these relationships.
+
+If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
+\code{\link{plot_kpca}} for more info. Details on kernel functions and their
 input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 }
 \examples{
@@ -97,4 +103,7 @@ mat <- cpm(cnts[keep, ], log = TRUE)
 clin <- colData(airway)[, 1:3]        # Only need the first three cols
 plot_drivers(mat, clin)
 
+}
+\seealso{
+\code{\link{plot_pca}}, \code{\link{plot_kpca}}
 }

@@ -390,11 +390,11 @@ var_filt <- function(dat,
 #'
 #' \itemize{
 #'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, and \code{
-#'     "minkowski"} are all documented in the \code{\link[stats]{dist}} 
-#'     function. \code{bioplotr} relies on a lower level implementation via 
-#'     \code{Rfast::\link[Rfast]{Dist}} to speed up computations. 
+#'     "minkowski"} are all documented in the \code{\link[stats]{dist}}
+#'     function. \code{bioplotr} relies on a lower level implementation via
+#'     \code{Rfast::\link[Rfast]{Dist}} to speed up computations.
 #'   \item \code{"cosine"} and \code{"canberra"} are implemented and documented
-#'     in \code{wordspace::\link[wordspace]{dist.matrix}}. 
+#'     in \code{wordspace::\link[wordspace]{dist.matrix}}.
 #'   \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
 #'     to various forms of correlation distance, generally defined as 1 - the
 #'     correlation coefficient. See \code{\link[stats]{cor}} for more details.
@@ -406,8 +406,8 @@ var_filt <- function(dat,
 #'     ecological data, e.g. a matrix of microbial OTU counts.
 #'   \item \code{"bhattacharyya"}, \code{"hellinger"}, \code{"kullback_leibler"},
 #'     and \code{"MI"} are information theoretic distance metrics. The former
-#'     three are implemented in \code{Rfast::\link[Rfast]{Dist}}. See 
-#'     \code{bioDist::\link[bioDist]{MIdist}} for details on the latter. 
+#'     three are implemented in \code{Rfast::\link[Rfast]{Dist}}. See
+#'     \code{bioDist::\link[bioDist]{MIdist}} for details on the latter.
 #' }
 #'
 #' @importFrom Rfast rowMedians rowmeans Dist
@@ -440,7 +440,7 @@ dist_mat <- function(dat,
 
   # Create distance matrix
   if (top %>% is.null || filter_method == 'common') {
-    if (dist %in% c('euclidean', 'manhattan', 'minimum', 'maximum', 'minkowski', 
+    if (dist %in% c('euclidean', 'manhattan', 'minimum', 'maximum', 'minkowski',
                     'bhattacharyya', 'hellinger', 'kullback_leibler')) {
       dm <- Dist(t(dat), method = dist, p = pow)
     } else if (dist %in% c('canberra', 'cosine')) {
@@ -477,7 +477,7 @@ dist_mat <- function(dat,
           m <- dat[tops, c(i, j)]
           if (dist %in% c('pearson', 'kendall', 'spearman')) {
             dm[i, j] <- max(1L - abs(cor(m, method = dist)))
-          } else if (dist %in% c('bhattacharyya', 'hellinger', 
+          } else if (dist %in% c('bhattacharyya', 'hellinger',
                                  'total_variation', 'kullback_leibler')) {
             dm[i, j] <- max(Dist(t(m), method = dist))
           } else if (dist %in% c('canberra', 'cosine')) {
@@ -490,7 +490,7 @@ dist_mat <- function(dat,
           } else if (dist == 'MI') {
             require(bioDist)
             dm[i, j] <- max(MIdist(t(m)))
-          } 
+          }
         }
       }
     }
@@ -779,18 +779,20 @@ track_cols <- function(features,
 stringify <- function(x,
                       conjunct) {
   n <- length(x)
-  x <- paste0('"', x)
-  x <- paste0(x, '"')
-  x <- c(x[seq_len(n - 1L)], conjunct, x[n])
-  if (n > 2L) {
-    x <- paste(x, sep = '', collapse = ', ')
-    if (conjunct == 'and') {
-      x <- gsub('and,', 'and', x)
+  if (n > 1) {
+    x <- paste0('"', x)
+    x <- paste0(x, '"')
+    x <- c(x[seq_len(n - 1L)], conjunct, x[n])
+    if (n > 2L) {
+      x <- paste(x, sep = '', collapse = ', ')
+      if (conjunct == 'and') {
+        x <- gsub('and,', 'and', x)
+      } else {
+        x <- gsub('or,', 'or', x)
+      }
     } else {
-      x <- gsub('or,', 'or', x)
+      x <- paste(x, sep = '', collapse = ' ')
     }
-  } else {
-    x <- paste(x, sep = '', collapse = ' ')
   }
   return(x)
 }

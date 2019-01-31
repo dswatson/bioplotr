@@ -18,8 +18,10 @@
 #'   names in \code{dat} will be considered.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
-#' @param kernel The kernel generating function, if using KPCA. Options include 
-#'   \code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", 
+#' @param unblock Column name(s) of one or more features for which the \code{
+#'   block} covariate should not be applied, if one was supplied. See Details.
+#' @param kernel The kernel generating function, if using KPCA. Options include
+#'   \code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot",
 #'   "besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
 #'   set to \code{NULL}. See Details.
 #' @param kpar A named list of arguments setting parameters for the kernel
@@ -52,16 +54,19 @@
 #' An optional blocking variable may be provided if samples violate the
 #' assumption of independence, e.g. for studies in which subjects are observed
 #' at multiple time points. If a blocking variable is identified, it will be
-#' factored into all subsequent measures of association. Significance is then
-#' evaluated using Pearson partial correlation tests (for continuous features)
-#' or repeated measures ANOVA \emph{F}-tests (for categorical features). When
-#' supplying a blocking variable, be sure to check that it is not confounded
-#' with other features. For instance, features like sex and age are usually
+#' factored into all subsequent measures of association, except those explicitly
+#' exempted by the \code{unblock} argument. Significance is evaluated using
+#' Pearson partial correlation tests (for continuous features) or repeated
+#' measures ANOVA \emph{F}-tests (for categorical features).
+#'
+#' When supplying a blocking variable, be careful to consider potential
+#' confounding effects. For instance, features like sex and age are usually
 #' nested within subject, while subject may be nested within other variables
-#' like batch or treatment group.
-#' 
-#' If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See 
-#' \code{\link{plot_kpca}} for more info. Details on kernel functions and their 
+#' like batch or treatment group. The \code{block} and \code{unblock} arguments
+#' are designed to help parse out these relationships.
+#'
+#' If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
+#' \code{\link{plot_kpca}} for more info. Details on kernel functions and their
 #' input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 #'
 #' @examples
@@ -72,10 +77,10 @@
 #' mat <- cpm(cnts[keep, ], log = TRUE)
 #' clin <- colData(airway)[, 1:3]        # Only need the first three cols
 #' plot_drivers(mat, clin)
-#' 
+#'
 #' @seealso
-#' \code{\link{plot_pca}}, \code{\link{plot_kpca}}}
-#' 
+#' \code{\link{plot_pca}}, \code{\link{plot_kpca}}
+#'
 #' @export
 #' @importFrom limma is.fullrank
 #' @importFrom purrr map_chr
@@ -98,6 +103,7 @@ plot_drivers <- function(dat,
                          clin,
                          index = 'Sample',
                          block = NULL,
+                       unblock = NULL,
                         kernel = NULL,
                           kpar = NULL,
                            top = NULL,
@@ -137,18 +143,25 @@ plot_drivers <- function(dat,
   }
   dat <- dat[, match(clin[[index]], colnames(dat))]
   clin <- clin[, -which(colnames(clin) == index), drop = FALSE]
-  if (!is.null(block)) {
+  if (!(block %>% is.null)) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
     } else {
-      i <- which(colnames(clin) == block)
-      for (j in seq_along(clin)[-i]) {
-        mm <- model.matrix(~ clin[[i]] + clin[[j]])
-        if (!is.fullrank(mm)) {
-          stop(colnames(clin)[i],  ' and ', colnames(clin)[j], ' are ',
-               'perfectly confounded. Nested covariates generate rank ',
-               'deficient models, which cannot be meaningfully evaluated. ',
-               'One or both features must be removed or revised.')
+      if (unblock %>% is.null) {
+        j_idx <- which(colnames(clin) != block)
+        for (j in j_idx) {
+          mm <- model.matrix(~ clin[[block]] + clin[[j]])
+          if (!is.fullrank(mm)) {
+            stop(block,  ' and ', colnames(clin)[j], ' are perfectly ',
+                 'confounded. Nested covariates generate rank deficient ',
+                 'models, which cannot be meaningfully evaluated. ',
+                 'Consider using the unblock argument.')
+          }
+        }
+      } else {
+        if (!all(unblock %in% colnames(clin))) {
+          stop('The following column(s) not found in clin: ',
+               stringify(unblock[!unblock %in% colnames(clin)], 'and'))
         }
       }
     }
@@ -175,7 +188,7 @@ plot_drivers <- function(dat,
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
-  tibble(Feature = colnames(clin),           # Be apprised
+  tibble(Feature = colnames(clin),                 # Be apprised
            Class = clin %>% map_chr(class)) %>%
     print(n = nrow(.))
 
@@ -229,8 +242,8 @@ plot_drivers <- function(dat,
       paste0('KPC', pc, ' (', round(p, 2L), '%)')
     })
   }
-  sig <- function(var, pc) {                     # p-val fn
-    if (block %>% is.null) {
+  sig <- function(var, pc) {                       # p-val fn
+    if (block %>% is.null | var %in% unblock) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
       ifelse(clin[[var]] %>% is.numeric,
              summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
