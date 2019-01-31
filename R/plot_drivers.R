@@ -18,6 +18,12 @@
 #'   names in \code{dat} will be considered.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
+#' @param kernel The kernel generating function, if using KPCA. Options include 
+#'   \code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", 
+#'   "besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
+#'   set to \code{NULL}. See Details.
+#' @param kpar A named list of arguments setting parameters for the kernel
+#'   function. Only relevant if \code{kernel} is not \code{NULL}. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for PCA.
 #' @param n.pc Number of principal components to include in the figure.
@@ -53,6 +59,10 @@
 #' with other features. For instance, features like sex and age are usually
 #' nested within subject, while subject may be nested within other variables
 #' like batch or treatment group.
+#' 
+#' If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See 
+#' \code{\link{plot_kpca}} for more info. Details on kernel functions and their 
+#' input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 #'
 #' @examples
 #' library(edgeR)
@@ -62,10 +72,24 @@
 #' mat <- cpm(cnts[keep, ], log = TRUE)
 #' clin <- colData(airway)[, 1:3]        # Only need the first three cols
 #' plot_drivers(mat, clin)
-#'
+#' 
+#' @seealso
+#' \code{\link{plot_pca}}, \code{\link{plot_kpca}}}
+#' 
 #' @export
 #' @importFrom limma is.fullrank
 #' @importFrom purrr map_chr
+#' @importFrom kernlab rbfdot
+#' @importFrom kernlab polydot
+#' @importFrom kernlab tanhdot
+#' @importFrom kernlab vanilladot
+#' @importFrom kernlab laplacedot
+#' @importFrom kernlab besseldot
+#' @importFrom kernlab anovadot
+#' @importFrom kernlab splinedot
+#' @importFrom kernlab kernelMatrix
+#' @importFrom kernlab kpca
+#' @importFrom kernlab eig
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -74,12 +98,14 @@ plot_drivers <- function(dat,
                          clin,
                          index = 'Sample',
                          block = NULL,
+                        kernel = NULL,
+                          kpar = NULL,
                            top = NULL,
                           n.pc = 10L,
                          label = FALSE,
                          alpha = NULL,
                          p.adj = NULL,
-                         title = NULL,
+                         title = 'Variation By Feature',
                         legend = 'right',
                          hover = FALSE) {
 
@@ -144,24 +170,65 @@ plot_drivers <- function(dat,
       stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
     }
   }
-  if (title %>% is.null) {
-    title <- 'Variation By Feature'
-  }
   loc <- c('bottom', 'left', 'top', 'right',
            'bottomright', 'bottomleft', 'topleft', 'topright')
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
-  data_frame(Feature = colnames(clin),           # Be apprised
-               Class = clin %>% map_chr(class)) %>%
+  tibble(Feature = colnames(clin),           # Be apprised
+           Class = clin %>% map_chr(class)) %>%
     print(n = nrow(.))
 
   # Tidy data
-  pca <- prcomp(t(dat))                          # PCA, % variance explained
-  pve <- seq_len(n.pc) %>% map_chr(function(pc) {
-    p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
-    paste0('\n(', p, '%)')
-  })
+  if (kernel %>% is.null) {
+    pca <- prcomp(t(dat))                          # PCA, % variance explained
+    pve <- seq_len(n.pc) %>% map_chr(function(pc) {
+      p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
+      paste0('\n(', p, '%)')
+    })
+  } else {
+    if (kernel == 'rbfdot') {                      # Initialize kernel function
+      if (kpar %>% is.null) {
+        kpar <- list(sigma = 1L)
+      }
+      kf <- rbfdot(unlist(kpar))
+    } else if (kernel == 'polydot') {
+      if (kpar %>% is.null) {
+        kpar <- list(degree = 1L, scale = 1L, offset = 1L)
+      }
+      kf <- polydot(unlist(kpar))
+    } else if (kernel == 'tanhdot') {
+      if (kpar %>% is.null) {
+        kpar <- list(scale = 1L, offset = 1L)
+      }
+      kf <- tanhdot(unlist(kpar))
+    } else if (kernel == 'vanilladot') {
+      kf <- vanilladot()
+    } else if (kernel == 'laplacedot') {
+      if (kpar %>% is.null) {
+        kpar <- list(sigma = 1L)
+      }
+      kf <- laplacedot(unlist(kpar))
+    } else if (kernel == 'besseldot') {
+      if (kpar %>% is.null) {
+        kpar <- list(sigma = 1L, order = 1L, degree = 1L)
+      }
+      kf <- besseldot(unlist(kpar))
+    } else if (kernel == 'anovadot') {
+      if (kpar %>% is.null) {
+        kpar <- list(sigma = 1L, degree = 1L)
+      }
+      kf <- anovadot(unlist(kpar))
+    } else if (kernel == 'splinedot') {
+      kf <- splinedot()
+    }
+    k_mat <- kernelMatrix(kernel = kf, x = t(dat))
+    pca <- kpca(k_mat)                             # PCA, % variance explained
+    pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
+      p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
+      paste0('KPC', pc, ' (', round(p, 2L), '%)')
+    })
+  }
   sig <- function(var, pc) {                     # p-val fn
     if (block %>% is.null) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
@@ -218,7 +285,7 @@ plot_drivers <- function(dat,
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix numer to color mapping
 
-# Add kernal option???
+# Also, can we use blocking for some but not all variables?
 
 
 
