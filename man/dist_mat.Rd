@@ -31,11 +31,11 @@ the following methods:
 
 \itemize{
   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, and \code{
-    "minkowski"} are all documented in the \code{\link[stats]{dist}} 
-    function. \code{bioplotr} relies on a lower level implementation via 
-    \code{Rfast::\link[Rfast]{Dist}} to speed up computations. 
+    "minkowski"} are all documented in the \code{\link[stats]{dist}}
+    function. \code{bioplotr} relies on a lower level implementation via
+    \code{Rfast::\link[Rfast]{Dist}} to speed up computations.
   \item \code{"cosine"} and \code{"canberra"} are implemented and documented
-    in \code{wordspace::\link[wordspace]{dist.matrix}}. 
+    in \code{wordspace::\link[wordspace]{dist.matrix}}.
   \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
     to various forms of correlation distance, generally defined as 1 - the
     correlation coefficient. See \code{\link[stats]{cor}} for more details.
@@ -47,7 +47,7 @@ the following methods:
     ecological data, e.g. a matrix of microbial OTU counts.
   \item \code{"bhattacharyya"}, \code{"hellinger"}, \code{"kullback_leibler"},
     and \code{"MI"} are information theoretic distance metrics. The former
-    three are implemented in \code{Rfast::\link[Rfast]{Dist}}. See 
-    \code{bioDist::\link[bioDist]{MIdist}} for details on the latter. 
+    three are implemented in \code{Rfast::\link[Rfast]{Dist}}. See
+    \code{bioDist::\link[bioDist]{MIdist}} for details on the latter.
 }
 }
