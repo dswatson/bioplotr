@@ -7,7 +7,7 @@
 plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
   p = 2L, top = NULL, filter_method = "pairwise",
   hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
-  pal_tiles = "RdBu", title = NULL)
+  pal_tiles = "RdBu", title = "Sample Similarity Matrix")
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

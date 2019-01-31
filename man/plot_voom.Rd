@@ -5,7 +5,7 @@
 \title{Voom Plot}
 \usage{
 plot_voom(dat, design = NULL, lib.size = NULL,
-  normalize.method = "none", span = 0.5, title = NULL,
+  normalize.method = "none", span = 0.5, title = "Voom Plot",
   legend = "right", hover = FALSE, ...)
 }
 \arguments{

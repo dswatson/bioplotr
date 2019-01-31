@@ -4,7 +4,7 @@
 \alias{plot_quantiles}
 \title{Plot Quantiles}
 \usage{
-plot_quantiles(x, y, method = "QQ", pts = 1000L, main = NULL,
+plot_quantiles(x, y, method = "QQ", pts = 1000L, title = NULL,
   xlab = NULL, ylab = NULL)
 }
 \arguments{
@@ -17,11 +17,11 @@ quantiles against difference in quantiles (\code{method = "MD"})?}
 
 \item{pts}{Number of points to plot.}
 
-\item{main}{Optional plot title.}
-
 \item{xlab}{Optional x-axis label.}
 
 \item{ylab}{Optional y-axis label.}
+
+\item{main}{Optional plot title.}
 }
 \description{
 This function plots the quantiles of two vectors against each other as either

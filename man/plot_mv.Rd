@@ -10,31 +10,32 @@
 \alias{plot_mv.default}
 \title{Mean-Variance Plot}
 \usage{
-plot_mv(dat, trans = "rank", title = NULL, legend = "right", ...)
+plot_mv(dat, trans = "rank", title = "Mean-Variance Plot",
+  legend = "right", ...)
 
 \method{plot_mv}{MArrayLM}(dat, trans = "log", span = 0.5,
-  title = NULL, xlab = NULL, ylab = NULL, legend = "right",
-  hover = FALSE)
+  title = "Mean-Variance Plot", xlab = NULL, ylab = NULL,
+  legend = "right", hover = FALSE)
 
 \method{plot_mv}{DGEList}(dat, design = NULL, trans = "sqrt",
-  span = 0.5, title = NULL, xlab = NULL, ylab = NULL,
-  legend = "right", hover = FALSE)
+  span = 0.5, title = "Mean-Variance Plot", xlab = NULL,
+  ylab = NULL, legend = "right", hover = FALSE)
 
 \method{plot_mv}{DGELM}(dat, trans = "sqrt", span = 0.5,
-  title = NULL, xlab = NULL, ylab = NULL, legend = "right",
-  hover = FALSE)
-
-\method{plot_mv}{DESeqDataSet}(dat, resid = FALSE, trans = "rank",
-  span = 0.5, title = NULL, xlab = NULL, ylab = NULL,
+  title = "Mean-Variance Plot", xlab = NULL, ylab = NULL,
   legend = "right", hover = FALSE)
 
+\method{plot_mv}{DESeqDataSet}(dat, resid = FALSE, trans = "rank",
+  span = 0.5, title = "Mean-Variance Plot", xlab = NULL,
+  ylab = NULL, legend = "right", hover = FALSE)
+
 \method{plot_mv}{DESeqTransform}(dat, trans = "rank", span = 0.5,
-  title = NULL, xlab = NULL, ylab = NULL, legend = "right",
-  hover = FALSE)
+  title = "Mean-Variance Plot", xlab = NULL, ylab = NULL,
+  legend = "right", hover = FALSE)
 
 \method{plot_mv}{default}(dat, trans = "rank", span = 0.5,
-  title = NULL, xlab = NULL, ylab = NULL, legend = "right",
-  hover = FALSE)
+  title = "Mean-Variance Plot", xlab = NULL, ylab = NULL,
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

@@ -4,7 +4,7 @@
 \alias{plot_qq}
 \title{Q-Q Plot}
 \usage{
-plot_qq(dat, lambda = FALSE, title = NULL, hover = FALSE)
+plot_qq(dat, lambda = FALSE, title = "QQ Plot", hover = FALSE)
 }
 \arguments{
 \item{dat}{Either a vector of \emph{p}-values, optionally named, or any

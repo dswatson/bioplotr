@@ -4,8 +4,8 @@
 \alias{plot_volcano}
 \title{Volcano Plot}
 \usage{
-plot_volcano(dat, y = "q", fdr = 0.05, lfc = NULL, probe = NULL,
-  title = NULL, legend = "right", hover = FALSE)
+plot_volcano(dat, y = "q", fdr = 0.05, lfc = NULL, probes = NULL,
+  title = "Volcano Plot", legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Data frame or similar object representing the results of a test
@@ -24,8 +24,8 @@ expressed.}
 \item{lfc}{Optional effect size threshold for declaring a probe
 differentially expressed.}
 
-\item{probe}{Name of column in which to find probe IDs, presuming they are
-not stored in \code{rownames(dat)}.}
+\item{probes}{Optional column number or name specifying where probe names are
+stored, presuming they are not stored in \code{rownames(dat)}.}
 
 \item{title}{Optional plot title.}
 
