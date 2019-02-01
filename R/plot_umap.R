@@ -184,16 +184,17 @@ plot_umap <- function(dat,
   }
 
   # Tidy data
+  dat <- matrixize(dat)
   configs <- list(...)
   if (names(configs) %>% is.null) {                        # UMAP
-    proj <- umap(dat)
+    proj <- umap(t(dat))
   } else {
     custom.config <- umap.defaults
     for (x in seq_along(configs)) {
       name_x <- names(config)[x]
       custom.config[[name_x]] <- config[[x]]
     }
-    proj <- umap(dat, custom.config)
+    proj <- umap(t(dat), custom.config)
   }
   df <- tibble(Sample = colnames(dat))                     # Melt
   if (length(dims) == 2L) {
