@@ -6,7 +6,7 @@
 \usage{
 plot_drivers(dat, clin, index = "Sample", block = NULL,
   unblock = NULL, kernel = NULL, kpar = NULL, top = NULL,
-  n.pc = 10L, label = FALSE, alpha = NULL, p.adj = NULL,
+  n.pc = 5L, label = FALSE, alpha = NULL, p.adj = NULL,
   title = "Variation By Feature", legend = "right", hover = FALSE)
 }
 \arguments{
