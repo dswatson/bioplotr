@@ -108,11 +108,11 @@ method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
 \link{plot_mds}} for more details.
 }
 \examples{
-mat <- matrix(rnorm(1000 * 5), nrow = 1000, ncol = 5)
+mat <- matrix(rnorm(1000 * 20), nrow = 1000, ncol = 20)
 plot_umap(mat)
 
 library(DESeq2)
-dds <- makeExampleDESeqDataSet()
+dds <- makeExampleDESeqDataSet(m = 20)
 dds <- rlog(dds)
 plot_umap(dds, group = colData(dds)$condition)
 
