@@ -173,9 +173,6 @@ plot_umap <- function(dat,
   } else if (length(dims) > 3L) {
     stop('dims must be a vector of length <= 3.')
   }
-  if (perplexity >= ncol(dat)) {
-    stop('perplexity must be less than the sample size of the dataset.')
-  }
   if (label && length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
