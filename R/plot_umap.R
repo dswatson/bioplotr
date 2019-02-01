@@ -185,17 +185,19 @@ plot_umap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
+  n <- ncol(dat)   
   configs <- list(...)
-  if (names(configs) %>% is.null) {                        # UMAP
-    proj <- umap(t(dat))
-  } else {
-    custom.config <- umap.defaults
-    for (x in seq_along(configs)) {
-      name_x <- names(config)[x]
-      custom.config[[name_x]] <- config[[x]]
-    }
-    proj <- umap(t(dat), custom.config)
+  custom.config <- umap.defaults
+  for (x in seq_along(configs)) {
+    name_x <- names(config)[x]
+    custom.config[[name_x]] <- config[[x]]
   }
+  if (n > custom.config$n_neighbors) {
+    custom.config$n_neighbors <- n - 1
+    warning('Number of neighbors must be smaller than sample size n. ',
+            'Resetting n_neighbors to n - 1.')
+  }
+  proj <- umap(t(dat), custom.config)                      # UMAP
   df <- tibble(Sample = colnames(dat))                     # Melt
   if (length(dims) == 2L) {
     df <- df %>% mutate(PC1 = proj$layout[, min(dims)],
