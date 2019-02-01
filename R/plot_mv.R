@@ -567,6 +567,6 @@ plot_mv.default <- function(dat,
 }
 
 
-# Add size, alpha, title arguments
+# Add size, alpha arguments
 
 
