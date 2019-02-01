@@ -131,19 +131,21 @@ plot_drivers <- function(dat,
   if (!any(clin[[index]] %in% colnames(dat))) {
     stop('None of the samples in index match colnames in dat.')
   }
-  overlap <- length(intersect(clin[[index]], colnames(dat)))
+  overlap <- intersect(clin[[index]], colnames(dat))
+  n <- length(overlap)
   if (!all(clin[[index]] %in% colnames(dat))) {
     warning('The columns in dat correpond to a subset of the samples in ',
-            'index. Analysis will proceed with the ', overlap, ' samples  for ',
+            'index. Analysis will proceed with the ', n, ' samples  for ',
             'which both omic and clinical data were detected.')
   }
   if (!all(colnames(dat) %in% clin[[index]])) {
     warning('The samples in index correspond to a subset of the columns in ',
-            'dat. Analysis will proceed with the ', overlap, ' samples for ',
+            'dat. Analysis will proceed with the ', n, ' samples for ',
             'which both omic and clinical data were detected.')
   }
-  dat <- dat[, match(clin[[index]], colnames(dat))]
-  clin <- clin[, -which(colnames(clin) == index), drop = FALSE]
+  dat <- dat[, overlap]
+  clin <- clin[clin[[index]] %in% overlap, ] %>%
+    select(-index)
   if (!(block %>% is.null)) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -167,7 +169,7 @@ plot_drivers <- function(dat,
       }
     }
   }
-  if (!(top %>% is.null)) {                      # Filter by variance?
+  if (!(top %>% is.null)) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
   if (n.pc > max(nrow(dat), ncol(dat))) {
