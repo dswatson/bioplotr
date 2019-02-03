@@ -123,7 +123,7 @@ plot_drivers <- function(dat,
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
   if (!index %in% colnames(clin)) {
-    stop(paste0('Column "', index, '" not found in clin.'))
+    stop('Column "', index, '" not found in clin.')
   }
   if (any(clin[[index]] %>% duplicated)) {
     stop('Duplicate sample names detected in index.')
@@ -155,10 +155,8 @@ plot_drivers <- function(dat,
         for (j in j_idx) {
           mm <- model.matrix(~ clin[[block]] + clin[[j]])
           if (!is.fullrank(mm)) {
-            stop(block,  ' and ', colnames(clin)[j], ' are perfectly ',
-                 'confounded. Nested covariates generate rank deficient ',
-                 'models, which cannot be meaningfully evaluated. ',
-                 'Consider using the unblock argument.')
+            stop('"', block,  '"', ' and "', colnames(clin)[j], '" are ', 
+                 'perfectly confounded. Consider using the unblock argument.')
           }
         }
       } else {
