@@ -30,7 +30,8 @@ Imports:
   MASS,
   precrec,
   infotheo,
-  kernlab
+  kernlab,
+  umap
 Suggests:
   plotly,
   bioDist,
