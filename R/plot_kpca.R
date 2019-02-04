@@ -154,12 +154,18 @@ plot_kpca <- function(dat,
   } else {
     features <- feature_names <- NULL
   }
+  kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
+               'besseldot', 'anovadot', 'splinedot')
+  if (!kernel %in% kernels) {
+    stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
+         'For more info, see ?plot_kpca or ?kernlab::dots.')
+  }
+  # SOME WARNING ABOUT KPAR?
   if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
     stop('dims must be a vector of length <= 3.')
   }
-  # SOME WARNING ABOUT KERNEL AND KPAR?
   if (label & length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
