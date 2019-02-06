@@ -259,9 +259,8 @@ plot_drivers <- function(dat,
     ifelse(clin[[var]] %>% is.numeric,
            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
-  df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n.pc)),
-                    stringsAsFactors = FALSE) %>%
+  df <- crossing(Feature = colnames(clin),       # Melt
+                      PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
