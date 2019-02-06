@@ -101,7 +101,7 @@ plot_density <- function(dat,
     labs(title = title, x = xlab, y = 'Density') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (!is.null(group)) {                         # Color by group?
+  if (!(group %>% is.null)) {                         # Color by group?
     p <- p + geom_path(stat = 'density', aes(color = Group)) +
       scale_color_manual(name = names(group), values = cols)
   } else {
