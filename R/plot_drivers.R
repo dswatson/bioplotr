@@ -167,11 +167,13 @@ plot_drivers <- function(dat,
       }
     }
   }
-  kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
-               'besseldot', 'anovadot', 'splinedot')
-  if (!kernel %>% is.null & !kernel %in% kernels) {
-    stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
-         'For more info, see ?plot_kpca or ?kernlab::dots.')
+  if (!kernel %>% is.null) {
+    kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
+                 'besseldot', 'anovadot', 'splinedot')
+    if (!kernel %in% kernels) {
+      stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
+           'For more info, see ?plot_kpca or ?kernlab::dots.')
+    }
   }
   # SOME WARNING ABOUT KPAR?
   if (!(top %>% is.null)) {                        # Filter by variance?
