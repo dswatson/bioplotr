@@ -70,13 +70,17 @@
 #' input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 #'
 #' @examples
+#' library(SummarizedExperiment)
 #' library(edgeR)
+#' library(dplyr)
 #' data(airway)
 #' cnts <- assay(airway)
 #' keep <- rowSums(cpm(cnts) > 1) >= 4
 #' mat <- cpm(cnts[keep, ], log = TRUE)
-#' clin <- colData(airway)[, 1:3]        # Only need the first three cols
-#' plot_drivers(mat, clin)
+#' clin <- colData(airway) %>%
+#'   as_tibble(.) %>%
+#'   select(Run, cell, dex)
+#' plot_drivers(mat, clin, index = "Run")
 #'
 #' @seealso
 #' \code{\link{plot_pca}}, \code{\link{plot_kpca}}
@@ -176,18 +180,18 @@ plot_drivers <- function(dat,
     }
   }
   # SOME WARNING ABOUT KPAR?
-  if (!(top %>% is.null)) {                        # Filter by variance?
+  if (!top %>% is.null) {                          # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
   if (n.pc > max(nrow(dat), ncol(dat))) {
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
-  if (!(alpha %>% is.null)) {
+  if (!alpha %>% is.null) {
     if (alpha <= 0 || alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!(p.adj %>% is.null)) {
+  if (!p.adj %>% is.null) {
     p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
     if (!p.adj %in% p_adj) {
       stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
@@ -253,7 +257,7 @@ plot_drivers <- function(dat,
     })
   }
   sig <- function(var, pc) {                       # p-val fn
-    if (block %>% is.null | var %in% unblock | var == block) {
+    if (block %>% is.null || var %in% unblock || var == block) {
       mod <- lm(pca$x[, pc] ~ clin[[var]])
     } else {
       mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
