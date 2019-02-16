@@ -111,19 +111,19 @@ plot_consensus <- function(cc,
     cutree(k = k)
   clusters <- list('Cluster' = clusters)
   clust_cols <- clusters %>% track_cols(pal_clust, var_type = 'Categorical')
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
   } else {
     grp_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     cov_cols <- covar %>% track_cols(pal_covar, var_type = 'Continuous')
   } else {
     cov_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     anno <- c(clusters, group, covar)
     ann_cols <- c(clust_cols, grp_cols, cov_cols)
   } else {

@@ -143,7 +143,7 @@ plot_mds <- function(dat,
                         D3 = FALSE) {
 
   # Preliminaries
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; need at least 3 for MDS.')
     }
@@ -159,12 +159,12 @@ plot_mds <- function(dat,
       stop('filter_method must be either "pairwise" or "common".')
     }
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
     }
-    if (length(group) == 2L && !(covar %>% is.null)) {
+    if (length(group) == 2L && !covar %>% is.null) {
       stop('Plot can render at most one categorical feature when a continuous ',
            'covariate is also supplied.')
     }
@@ -173,7 +173,7 @@ plot_mds <- function(dat,
   } else {
     group_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
@@ -182,7 +182,7 @@ plot_mds <- function(dat,
   } else {
     covar_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
@@ -205,7 +205,7 @@ plot_mds <- function(dat,
   }
 
   # Tidy data
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
     dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
   } else {
@@ -237,7 +237,7 @@ plot_mds <- function(dat,
     }
     mds <- mds$points
   }
-  df <- data_frame(Sample = colnames(dat))       # Melt
+  df <- tibble(Sample = colnames(dat))       # Melt
   if (length(pcs) == 2L) {
     df <- df %>% mutate(PC1 = mds[, min(pcs)],
                         PC2 = mds[, max(pcs)])
@@ -247,7 +247,7 @@ plot_mds <- function(dat,
                         PC2 = mds[, other],
                         PC3 = mds[, max(pcs)])
   }
-  if (!(features %>% is.null)) {
+  if (!features %>% is.null) {
     df <- df %>% bind_cols(as_tibble(features))
   }
 

@@ -59,13 +59,13 @@ plot_heatmap <- function(dat,
                          title = 'Omic Heatmap') {
 
   # Preliminaries
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <-  dat %>% format_features(group, var_type = 'Categorical')
     grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
   } else {
     grp_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- format_features(dat, covar, var_type = 'Continuous')
     cov_cols <- track_cols(covar, pal_covar, var_type = 'Continuous')
   } else {
@@ -106,4 +106,5 @@ plot_heatmap <- function(dat,
 
 
 ### REPLACE AHEATMAP WITH PHEATMAP ###
+### Slash check out d3heatmap?
 

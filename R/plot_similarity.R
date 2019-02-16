@@ -93,7 +93,7 @@ plot_similarity <- function(dat,
                             title = 'Sample Similarity Matrix') {
 
   # Preliminaries
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
            'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
            'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
@@ -105,19 +105,19 @@ plot_similarity <- function(dat,
       stop('filter_method must be either "pairwise" or "common".')
     }
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
   } else {
     grp_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     cov_cols <- covar %>% track_cols(pal_covar, var_type = 'Continuous')
   } else {
     cov_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     anno <- c(group, covar)
     ann_cols <- c(grp_cols, cov_cols)
   } else {
@@ -135,7 +135,7 @@ plot_similarity <- function(dat,
   }
 
   # Tidy data
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
     dm <- dist_mat(dat, dist, p, top, filter_method)
   } else {
@@ -144,7 +144,7 @@ plot_similarity <- function(dat,
 
   # Build plot
   suppressPackageStartupMessages(require(NMF))
-  if (is.null(anno)) {
+  if (anno %>% is.null) {
     aheatmap(dm, col = pal_cols, Rowv = FALSE, revC = TRUE, main = title,
              distfun = function(x) as.dist(x), hclustfun = hclustfun,
              border_color = 'grey60')

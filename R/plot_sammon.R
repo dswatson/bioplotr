@@ -119,7 +119,7 @@ plot_sammon <- function(dat,
                            D3 = FALSE) {
 
   # Preliminaries
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; need at least 3 for ',
            'Sammon mapping.')
@@ -136,7 +136,7 @@ plot_sammon <- function(dat,
       stop('filter_method must be either "pairwise" or "common".')
     }
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
@@ -150,7 +150,7 @@ plot_sammon <- function(dat,
   } else {
     group_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
@@ -159,7 +159,7 @@ plot_sammon <- function(dat,
   } else {
     covar_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
@@ -182,7 +182,7 @@ plot_sammon <- function(dat,
   }
 
   # Tidy data
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
     dm <- dist_mat(dat, dist, p, top, filter_method)
   } else {
@@ -199,7 +199,7 @@ plot_sammon <- function(dat,
                         PC2 = sm[, other],
                         PC3 = sm[, max(dims)])
   }
-  if (!(features %>% is.null)) {
+  if (!features %>% is.null) {
     df <- df %>% cbind(tbl_df(features))
   }
 

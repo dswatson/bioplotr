@@ -121,7 +121,7 @@ plot_pca <- function(dat,
   } else {
     group_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
@@ -130,7 +130,7 @@ plot_pca <- function(dat,
   } else {
     covar_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
@@ -154,7 +154,7 @@ plot_pca <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (!(top %>% is.null)) {                      # Filter by variance?
+  if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
   pca <- prcomp(t(dat))                          # PCA, % variance explained
@@ -172,7 +172,7 @@ plot_pca <- function(dat,
                         PC2 = pca$x[, other],
                         PC3 = pca$x[, max(pcs)])
   }
-  if (!(features %>% is.null)) {
+  if (!features %>% is.null) {
     df <- df %>% bind_cols(as_tibble(features))
   }
 

@@ -144,7 +144,7 @@ plot_md.DGEList <- function(dat,
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
@@ -161,10 +161,10 @@ plot_md.DGEList <- function(dat,
   other <- dat[, -sample]
   other <- calcNormFactors(other)
   if (other$tagwise.dispersion %>% is.null) {    # Estimate dispersions for aveLogCPM
-    if (design %>% is.null && !(dat$group %>% is.null)) {
+    if (design %>% is.null && !dat$group %>% is.null) {
       design <- model.matrix(~ dat$group)
     }
-    if (!(design %>% is.null)) {
+    if (!design %>% is.null) {
       design <- design[-sample, ]
     }
     if (design %>% is.null) {
@@ -182,7 +182,7 @@ plot_md.DGEList <- function(dat,
   df <- tibble(Probe = rownames(dat),
                 Mean = (other + dat[, sample]) / 2L,
                 Diff = dat[, sample] - other)
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -195,7 +195,7 @@ plot_md.DGEList <- function(dat,
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (is.null(ctrls)) {
+  if (ctrls %>% is.null) {
     p <- p + geom_point(size = size, alpha = alpha)
   } else {
     suppressWarnings(
@@ -208,7 +208,7 @@ plot_md.DGEList <- function(dat,
         scale_color_d3()
     )
   }
-  if (!is.null(lfc)) {
+  if (!lfc %>% is.null) {
     p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
       geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
@@ -243,7 +243,7 @@ plot_md.DESeqDataSet <- function(dat,
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
@@ -271,7 +271,7 @@ plot_md.DESeqDataSet <- function(dat,
   df <- tibble(Probe = rownames(dat),
                 Mean = (other + dat[, sample]) / 2L,
                 Diff = dat[, sample] - other)
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -297,7 +297,7 @@ plot_md.DESeqDataSet <- function(dat,
         scale_color_d3()
     )
   }
-  if (!(lfc %>% is.null)) {
+  if (!lfc %>% is.null) {
     p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
       geom_hline(yintercept = -lfc, linetype = 'dashed')
   }
@@ -365,7 +365,7 @@ plot_md.DESeqResults <- function(dat,
            Diff = log2FoldChange,
         q.value = padj) %>%
     select(Probe, Mean, Diff, q.value)
-  if (!(lfc %>% is.null)) {
+  if (!lfc %>% is.null) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr && Diff >= lfc, 'Up',
                                 ifelse(q.value <= fdr && -Diff >= lfc, 'Down', 'None')))
@@ -515,7 +515,7 @@ plot_md.data.frame <- function(dat,
   }
 
   # Tidy data
-  if (!(lfc) %>% is.null) {
+  if (!lfc %>% is.null) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & Diff >= lfc, 'Up',
                                 ifelse(q.value <= fdr & -Diff >= lfc, 'Down', 'None')))
@@ -586,7 +586,7 @@ plot_md.default <- function(dat,
       sample <- which(colnames(dat) == sample)
     }
   }
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     if (length(ctrls) != nrow(dat)) {
       stop('ctrls must be NULL or of length equal to nrow(dat).')
     }
@@ -605,7 +605,7 @@ plot_md.default <- function(dat,
   df <- tibble(Probe = rownames(dat),
                 Mean = (other + dat[, sample]) / 2L,
                 Diff = dat[, sample] - other)
-  if (!(ctrls %>% is.null)) {
+  if (!ctrls %>% is.null) {
     ctrls <- ctrls[keep]
     df <- df %>% mutate(Control = ctrls)
   }
@@ -631,7 +631,7 @@ plot_md.default <- function(dat,
         scale_color_d3()
     )
   }
-  if (!(lfc %>% is.null)) {
+  if (!lfc %>% is.null) {
     p <- p + geom_hline(yintercept = lfc, linetype = 'dashed') +
       geom_hline(yintercept = -lfc, linetype = 'dashed')
   }

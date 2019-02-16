@@ -124,7 +124,7 @@ plot_kpca <- function(dat,
   if (ncol(dat) < 3L) {
     stop('dat includes only ', ncol(dat), ' samples; need at least 3 for KPCA.')
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
@@ -138,7 +138,7 @@ plot_kpca <- function(dat,
   } else {
     group_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
@@ -178,7 +178,7 @@ plot_kpca <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (!(top %>% is.null)) {                      # Filter by variance?
+  if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
   if (kernel == 'rbfdot') {                      # Initialize kernel function

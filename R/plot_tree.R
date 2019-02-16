@@ -34,20 +34,20 @@ plot_tree <- function(dat,
                        title = NULL) {
 
   # Preliminaries
-  dat_class <- ifelse(dat %>% inherits('dendro'), dat$class, class(dat))
+  dat_class <- if_else(dat %>% inherits('dendro'), dat$class, class(dat))
   angle <- if (dat_class %in% c('dendrogram', 'hclust')) {
-    ifelse(rotate, 0, 90)
+    if_else(rotate, 0, 90)
   } else {
-    ifelse(rotate, 90, 0)
+    if_else(rotate, 90, 0)
   }
   hjust <- if (dat_class %in% c('dendrogram', 'hclust')) {
-    ifelse(rotate, 0, 1)
+    if_else(rotate, 0, 1)
   } else {
     0.5
   }
 
   # Tidy
-  if (!(dat %>% is.dendro)) {
+  if (!dat %>% is.dendro) {
     dat <- dendro_data(dat, type = 'rectangle')
   }
 

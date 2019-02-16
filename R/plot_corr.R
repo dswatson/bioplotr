@@ -76,8 +76,8 @@ plot_corr <- function(dat,
   if (ncol(dat) < 2L) {
     stop('dat must have at least two columns to generate a correlation matrix.')
   }
-  if (!(dat %>% every(is.numeric))) {
-    dat <- dat %>% keep(is.numeric)
+  if (!every(dat, is.numeric)) {
+    dat <- keep(dat, is.numeric)
     if (ncol(dat) < 2L) {
       stop('dat must have at least two numeric columns to generate a ',
            'correlation matrix.')
@@ -96,12 +96,12 @@ plot_corr <- function(dat,
   if (!use %in% uses) {
     stop('use must be one of ', stringify(uses, 'or'), '.')
   }
-  if (!(alpha %>% is.null)) {
+  if (!alpha %>% is.null) {
     if (alpha <= 0 | alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!(p.adj %>% is.null)) {
+  if (!p.adj %>% is.null) {
     if (!p.adj %in% c('holm', 'hochberg', 'hommel',
                       'bonferroni', 'BH', 'BY', 'fdr')) {
       stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
@@ -132,7 +132,7 @@ plot_corr <- function(dat,
            Significant = FALSE) %>%
     select(x, y, Correlation, Significant) %>%
     na.omit(.)
-  if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
+  if (!alpha %>% is.null) {                      # Calculate p-value matrix?
     p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
     for (i in 2:ncol(p_mat)) {
       for (j in 1:(i - 1L)) {
@@ -141,7 +141,7 @@ plot_corr <- function(dat,
       }
     }
     p <- p_mat %>% keep(lower.tri(.))
-    if (!(p.adj %>% is.null)) {
+    if (!p.adj %>% is.null) {
       p <- p.adjust(p, method = p.adj)
     }
     if (diag) {

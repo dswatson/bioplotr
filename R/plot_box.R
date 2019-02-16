@@ -60,7 +60,7 @@ plot_box <- function(dat,
                      hover = FALSE) {
 
   # Preliminaries
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, 'Categorical')
     cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1]])))
@@ -90,7 +90,7 @@ plot_box <- function(dat,
   }
   dat <- matrixize(dat)
   df <- as_tibble(dat) %>% gather('Sample', 'Value')
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     df <- df %>%
       mutate(Group = rep(group[[1]], each = nrow(dat))) %>%
       arrange(Group) %>%
@@ -103,7 +103,7 @@ plot_box <- function(dat,
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5),
          axis.text.x = element_text(angle = 45L, hjust = 1L))
-  if (!(group %>% is.null)) {                    # Fill by group?
+  if (!group %>% is.null) {                      # Fill by group?
     p <- p + geom_boxplot(aes(fill = Group)) +
       scale_fill_manual(name = names(group), values = cols)
   } else {

@@ -262,7 +262,7 @@ plot_drivers <- function(dat,
     } else {
       mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
     }
-    ifelse(clin[[var]] %>% is.numeric,
+    if_else(clin[[var]] %>% is.numeric,
            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
   df <- crossing(Feature = colnames(clin),       # Melt
@@ -270,8 +270,8 @@ plot_drivers <- function(dat,
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
-  if (!(alpha %>% is.null)) {
-    if (!(p.adj %>% is.null)) {
+  if (!alpha %>% is.null) {
+    if (!p.adj %>% is.null) {
       df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
     }
     df <- df %>% mutate(Significant = ifelse(Association <= alpha, TRUE, FALSE))

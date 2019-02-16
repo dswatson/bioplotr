@@ -191,7 +191,7 @@ plot_som <- function(dat,
   # Tidy data
   if (!dat %>% is('kohonen')) {                  # Fit SOM
     dat <- matrixize(dat)
-    if (!(top %>% is.null)) {                    # Filter by variance?
+    if (!top %>% is.null) {                      # Filter by variance?
       dat <- var_filt(dat, top, robust = FALSE)
     }
     dat <- scale(dat, scale = FALSE)             # Mean center by sample

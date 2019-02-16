@@ -116,12 +116,12 @@ plot_concordance <- function(dat,
   if (!method %in% c('fisher', 'chisq', 'MI')) {
     stop('method must be one of "fisher", "chisq", or "MI".')
   }
-  if (!(alpha %>% is.null)) {
+  if (!alpha %>% is.null) {
     if (alpha <= 0 || alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!(p.adj %>% is.null)) {
+  if (!p.adj %>% is.null) {
     p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
     if (!p.adj %in% p_adj) {
       stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
@@ -174,7 +174,7 @@ plot_concordance <- function(dat,
            Significant = FALSE) %>%
     select(x, y, Association, Significant) %>%
     na.omit(.)
-  if (!(alpha %>% is.null)) {                    # Calculate p-value matrix?
+  if (!alpha %>% is.null) {                      # Calculate p-value matrix?
     if (method != 'fisher') {
       p_mat <- matrix(nrow = nrow(mat), ncol = ncol(mat))
       for (i in 2:ncol(p_mat)) {
@@ -199,14 +199,14 @@ plot_concordance <- function(dat,
       }
     }
     p <- p_mat %>% keep(lower.tri(.))
-    if (!(p.adjust %>% is.null)) {
+    if (!p.adjust %>% is.null) {
       p <- p.adjust(p, method = p.adj)
     }
     df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
   }
   if (export) {
     out <- list(Concordance = mat)
-    if (!(alpha %>% is.null)) {
+    if (!alpha %>% is.null) {
       out$p.values <- p_mat
     }
   }

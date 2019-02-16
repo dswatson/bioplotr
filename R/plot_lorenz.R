@@ -60,7 +60,7 @@ plot_lorenz <- function(dat,
   # Preliminaries
   if (dat %>% is.data.frame) {
     dat <- dat %>% as.list(.)
-  } else if (!(dat %>% is.list)) {
+  } else if (!dat %>% is.list) {
     dat <- list(dat)
   }
   if (names(dat) %>% is.null) {

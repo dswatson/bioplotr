@@ -109,7 +109,7 @@ plot_lle <- function(dat,
   if (ncol(dat) < 3L) {
     stop('dat includes only ', ncol(dat), ' samples; need at least 3 for LLE.')
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
@@ -123,7 +123,7 @@ plot_lle <- function(dat,
   } else {
     group_cols <- NULL
   }
-  if (!(covar %>% is.null)) {
+  if (!covar %>% is.null) {
     covar <- dat %>% format_features(covar, var_type = 'Continuous')
     if (length(covar) != 1L) {
       stop('Plot can render at most one continuous feature.')
@@ -132,14 +132,14 @@ plot_lle <- function(dat,
   } else {
     covar_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
   } else {
     features <- feature_names <- NULL
   }
-  if (!(k %>% is.numeric) && !(k == 'test')) {
+  if (!k %>% is.numeric && k != 'test') {
     stop('k must be numeric or "test".')
   }
   if (k >= ncol(dat)) {
@@ -162,7 +162,7 @@ plot_lle <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  if (!(top %>% is.null)) {                      # Filter by variance?
+  if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
   capture.output(y <- lle(t(dat), m = max(dims), k = k, p = 1L)$Y)        # LLE

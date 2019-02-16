@@ -62,7 +62,7 @@ plot_density <- function(dat,
                          hover = FALSE) {
 
   # Preliminaries
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, 'Categorical')
     cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1]])))
@@ -92,7 +92,7 @@ plot_density <- function(dat,
   }
   dat <- matrixize(dat)
   df <- as_tibble(dat) %>% gather('Sample', 'Value')
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     df <- df %>% mutate(Group = rep(group[[1]], each = nrow(dat)))
   }
 

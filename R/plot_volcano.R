@@ -142,7 +142,7 @@ plot_volcano <- function(dat,
   } else {
     df <- dat %>% mutate(Y = -log10(q.value))
   }
-  if (!(lfc %>% is.null)) {
+  if (!lfc %>% is.null) {
     df <- df %>%
       mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
                                 ifelse(q.value <= fdr & -logFC >= lfc, 'Down',

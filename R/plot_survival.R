@@ -75,7 +75,7 @@ plot_survival <- function(fit,
                       leg.txt = NULL,
                        legend = 'right', ...) {
   # Preliminaries
-  if(!(fit %>% inherits('survfit'))) {
+  if(!fit %>% inherits('survfit')) {
     stop('fit must be an object of class survfit. Load the survival package ',
          'and see ?survfit for more details.')
   }
@@ -88,7 +88,7 @@ plot_survival <- function(fit,
   } else if (fun == 'pct') {
     ylab <- 'Survival Probability (%)'
   }
-  if (!(fit$strata %>% is.null)) {
+  if (!fit$strata %>% is.null) {
     cols <- colorize(pal_curves, var_type = 'Categorical',
                      n = length(fit$strata))
   }
@@ -99,7 +99,7 @@ plot_survival <- function(fit,
       title <- 'Survival Curves'
     }
   }
-  if (leg.txt %>% is.null && !(fit$strata %>% is.null)) {
+  if (leg.txt %>% is.null && !fit$strata %>% is.null) {
     leg.txt <- gsub('=.*', '', names(fit$strata))[1]
     leg.lbl <- gsub('.*=', '', names(fit$strata))
   } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
@@ -126,7 +126,7 @@ plot_survival <- function(fit,
                   censor = censor, title = title, legend = legend,
                   font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab,
                   ...)$plot
-  if (!(fit$strata %>% is.null)) {
+  if (!fit$strata %>% is.null) {
     p <- p + scale_color_manual(name = leg.txt,
                               labels = leg.lbl,
                               values = cols)
@@ -140,3 +140,4 @@ plot_survival <- function(fit,
 
 
 # ggplotly? Would need to go over curves with a text = Curve aesthetic...
+# Does this work with survival forests and other nonparametric models?

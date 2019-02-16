@@ -253,7 +253,7 @@ plot_mv.DGEList <- function(dat,
     dat <- calcNormFactors(dat)
   }
   if (dat$tagwise.dispersion %>% is.null) {
-    if (design %>% is.null && !(dat$group %>% is.null)) {
+    if (design %>% is.null && !dat$group %>% is.null) {
       design <- model.matrix(~ dat$group)
     }
     if (design %>% is.null) {
