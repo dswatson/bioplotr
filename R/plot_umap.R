@@ -98,6 +98,7 @@
 #'
 #' @export
 #' @importFrom umap umap
+#' @importFrom umap umap.defaults
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -121,7 +122,7 @@ plot_umap <- function(dat,
                          D3 = FALSE, ...) {
 
   # Preliminaries
-  if (!(dat %>% is('dist'))) {
+  if (!dat %>% is('dist')) {
     if (ncol(dat) < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
            'need at least 3 for UMAP.')
@@ -138,7 +139,7 @@ plot_umap <- function(dat,
       stop('filter_method must be either "pairwise" or "common".')
     }
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
@@ -161,7 +162,7 @@ plot_umap <- function(dat,
   } else {
     covar_cols <- NULL
   }
-  if (!(c(group, covar) %>% is.null)) {
+  if (!c(group, covar) %>% is.null) {
     features <- c(covar, group)
     feature_names <- names(features)
     names(features) <- paste0('Feature', seq_along(features))
@@ -186,9 +187,9 @@ plot_umap <- function(dat,
   # Tidy data
   dat <- matrixize(dat)
   n <- ncol(dat)   
-  configs <- list(...)
+  config <- list(...)
   custom.config <- umap.defaults
-  for (x in seq_along(configs)) {
+  for (x in seq_along(config)) {
     name_x <- names(config)[x]
     custom.config[[name_x]] <- config[[x]]
   }
@@ -208,7 +209,7 @@ plot_umap <- function(dat,
                         PC2 = proj$layout[, other],
                         PC3 = proj$layout[, max(dims)])
   }
-  if (!(features %>% is.null)) {
+  if (!features %>% is.null) {
     df <- df %>% bind_cols(as_tibble(features))
   }
 
