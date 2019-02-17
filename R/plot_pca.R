@@ -107,12 +107,12 @@ plot_pca <- function(dat,
   if (ncol(dat) < 3L) {
     stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
   }
-  if (!(group %>% is.null)) {
+  if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
     if (length(group) > 2L) {
       stop('Plot can render at most two categorical features.')
     }
-    if (length(group) == 2L && !(covar %>% is.null)) {
+    if (length(group) == 2L && !covar %>% is.null) {
       stop('Plot can render at most one categorical feature when a continuous ',
            'covariate is also supplied.')
     }
