@@ -31,7 +31,8 @@ Imports:
   precrec,
   infotheo,
   kernlab,
-  umap
+  umap,
+  JADE
 Suggests:
   plotly,
   bioDist,
