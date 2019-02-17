@@ -95,13 +95,17 @@ If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
 input parameters can be found in \code{kernlab::\link[kernlab]{dots}}.
 }
 \examples{
+library(SummarizedExperiment)
 library(edgeR)
+library(dplyr)
 data(airway)
 cnts <- assay(airway)
 keep <- rowSums(cpm(cnts) > 1) >= 4
 mat <- cpm(cnts[keep, ], log = TRUE)
-clin <- colData(airway)[, 1:3]        # Only need the first three cols
-plot_drivers(mat, clin)
+clin <- colData(airway) \%>\%
+  as_tibble(.) \%>\%
+  select(Run, cell, dex)
+plot_drivers(mat, clin, index = "Run")
 
 }
 \seealso{
