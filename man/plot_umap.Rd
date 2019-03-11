@@ -6,9 +6,9 @@
 \usage{
 plot_umap(dat, group = NULL, covar = NULL, dist = "euclidean",
   p = 2L, top = NULL, filter_method = "pairwise", dims = c(1L, 2L),
-  label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  size = NULL, alpha = NULL, title = "UMAP", legend = "right",
-  hover = FALSE, D3 = FALSE, ...)
+  n_neighbors = 15L, label = FALSE, pal_group = "npg",
+  pal_covar = "Blues", size = NULL, alpha = NULL, title = "UMAP",
+  legend = "right", hover = FALSE, D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -34,13 +34,16 @@ package. See Details.}
 \item{p}{Power of the Minkowski distance.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
-be used for t-SNE.}
+be used for UMAP.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}.}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
+
+\item{n_neighbors}{Number of nearest neighbors for the UMAP algorithm. See
+\code{\link[umap]{umap.defaults}} for details.}
 
 \item{label}{Label data points by sample name? Defaults to \code{FALSE}
 unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
@@ -88,7 +91,7 @@ the uniform manifold approximation and projection algorithm.
 UMAP is a novel machine learning method for visualizing high-dimensional
 datasets. It is designed to preserve local structure and aids in revealing
 unsupervised clusters. UMAP is constructed from a theoretical framework based 
-in Riemannian geometry and algebraic topology. See McInnes et al., 2018 for
+on Riemannian geometry and algebraic topology. See McInnes et al., 2018 for
 details.
 
 The \code{umap} function can operate directly on a distance matrix.
@@ -121,7 +124,7 @@ plot_umap(dds, group = colData(dds)$condition)
 McInnes, L., Healy, J. & Melville, J. (2018).
 \href{https://arxiv.org/abs/1802.03426}{UMAP: Uniform Manifold Approximation 
 and Projection for Dimension Reduction}.
-\emph{arXiv:1802.03426v2}.
+\emph{arXiv preprint: 1802.03426v2}.
 }
 \seealso{
 \code{\link[umap]{umap}}, \code{\link{plot_pca}}, \code{\link{plot_mds}}

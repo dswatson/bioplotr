@@ -21,11 +21,13 @@
 #'   package. See Details.
 #' @param p Power of the Minkowski distance.
 #' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
-#'   be used for t-SNE.
+#'   be used for UMAP.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
+#' @param n_neighbors Number of nearest neighbors for the UMAP algorithm. See
+#'   \code{\link[umap]{umap.defaults}} for details.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
 #'   unless \code{group} and \code{covar} are both \code{NULL}. If \code{TRUE},
 #'   then plot can render at most one phenotypic feature.
@@ -59,7 +61,7 @@
 #' UMAP is a novel machine learning method for visualizing high-dimensional
 #' datasets. It is designed to preserve local structure and aids in revealing
 #' unsupervised clusters. UMAP is constructed from a theoretical framework based 
-#' in Riemannian geometry and algebraic topology. See McInnes et al., 2018 for
+#' on Riemannian geometry and algebraic topology. See McInnes et al., 2018 for
 #' details.
 #'
 #' The \code{umap} function can operate directly on a distance matrix.
@@ -82,7 +84,7 @@
 #' McInnes, L., Healy, J. & Melville, J. (2018).
 #' \href{https://arxiv.org/abs/1802.03426}{UMAP: Uniform Manifold Approximation 
 #' and Projection for Dimension Reduction}.
-#' \emph{arXiv:1802.03426v2}.
+#' \emph{arXiv preprint: 1802.03426v2}.
 #'
 #' @examples
 #' mat <- matrix(rnorm(1000 * 20), nrow = 1000, ncol = 20)
@@ -111,6 +113,7 @@ plot_umap <- function(dat,
                         top = NULL,
               filter_method = 'pairwise',
                        dims = c(1L, 2L),
+                n_neighbors = 15L,
                       label = FALSE,
                   pal_group = 'npg',
                   pal_covar = 'Blues',
@@ -123,7 +126,8 @@ plot_umap <- function(dat,
 
   # Preliminaries
   if (!dat %>% is('dist')) {
-    if (ncol(dat) < 3L) {
+    n <- ncol(dat)
+    if (n < 3L) {
       stop('dat includes only ', ncol(dat), ' samples; ',
            'need at least 3 for UMAP.')
     }
@@ -174,6 +178,11 @@ plot_umap <- function(dat,
   } else if (length(dims) > 3L) {
     stop('dims must be a vector of length <= 3.')
   }
+  if (n_neighbors > n) {
+    n_neighbors <- n - 1L
+    warning('Number of neighbors must be smaller than sample size n. ',
+            'Resetting n_neighbors to n - 1.')
+  }
   if (label && length(features) == 2L) {
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
@@ -186,18 +195,13 @@ plot_umap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  n <- ncol(dat)   
   config <- list(...)
   custom.config <- umap.defaults
   for (x in seq_along(config)) {
     name_x <- names(config)[x]
     custom.config[[name_x]] <- config[[x]]
   }
-  if (n > custom.config$n_neighbors) {
-    custom.config$n_neighbors <- n - 1
-    warning('Number of neighbors must be smaller than sample size n. ',
-            'Resetting n_neighbors to n - 1.')
-  }
+  custom.config$n_neighbors <- n_neighbors
   proj <- umap(t(dat), custom.config)                      # UMAP
   df <- tibble(Sample = colnames(dat))                     # Melt
   if (length(dims) == 2L) {
