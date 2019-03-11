@@ -16,7 +16,7 @@
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
-#'   probes to be used for PCA.
+#'   probes to be used for ICA.
 #' @param dims Vector specifying which independent components to plot. Must be 
 #'   of length two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
@@ -79,6 +79,7 @@
 #'
 #' @export
 #' @importFrom JADE JADE
+#' @importFrom Rfast rowmeans
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -151,8 +152,8 @@ plot_ica <- function(dat,
   dat <- matrixize(dat)
   if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
-  }                                              # Mean center
-  dat <- rep(dat - rep(colMeans(dat), rep.int(nrow(x), ncol(x))))
+  }                                              # Mean center the probes
+  dat <- dat - rowmeans(dat)
   ica <- JADE(dat, n.comp = max(dims))           # ICA
   df <- tibble(Sample = colnames(dat))           # Melt
   if (length(dims) == 2L) {
