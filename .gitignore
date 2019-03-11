@@ -4,5 +4,6 @@
 .Ruserdata
 .Rbuildignore
 .Rapp.history
+.DS_Store
 bioplotr.Rproj
 desiderata.R
