@@ -251,7 +251,7 @@ plot_drivers <- function(dat,
     }
     k_mat <- kernelMatrix(kernel = kf, x = t(dat))
     pca <- kpca(k_mat)                             # PCA, % variance explained
-    pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
+    pve <- seq_len(max(n.pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, ' (', round(p, 2L), '%)')
     })
