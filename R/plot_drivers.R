@@ -213,6 +213,7 @@ plot_drivers <- function(dat,
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
       paste0('\n(', p, '%)')
     })
+    pca <- pca$x
   } else {
     if (kernel == 'rbfdot') {                      # Initialize kernel function
       if (kpar %>% is.null) {
@@ -255,12 +256,13 @@ plot_drivers <- function(dat,
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, ' (', round(p, 2L), '%)')
     })
+    pca <- rotated(pca)
   }
   sig <- function(var, pc) {                       # p-val fn
     if (block %>% is.null || var %in% unblock || var == block) {
-      mod <- lm(pca$x[, pc] ~ clin[[var]])
+      mod <- lm(pca[, pc] ~ clin[[var]])
     } else {
-      mod <- lm(pca$x[, pc] ~ clin[[var]] + clin[[block]])
+      mod <- lm(pca[, pc] ~ clin[[var]] + clin[[block]])
     }
     if_else(clin[[var]] %>% is.numeric,
            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
@@ -301,6 +303,7 @@ plot_drivers <- function(dat,
 }
 
 
+# Problem: when n.pc > 9, PC10 appears in btw PC1 and PC2
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
