@@ -26,7 +26,7 @@ render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
-probes to be used for PCA.}
+probes to be used for ICA.}
 
 \item{dims}{Vector specifying which independent components to plot. Must be 
 of length two unless \code{D3 = TRUE}.}

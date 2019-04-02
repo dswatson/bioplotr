@@ -95,13 +95,14 @@ for more details. For more comprehensive statistical background, see the
 original DESeq paper (Anders & Huber, 2010) and the DESeq2 paper (Love et
 al., 2014).
 
-\code{plot_dispersion} effectively combines \code{edgeR::\link[edgeR]{
-plotBCV}} and \code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single
-function that can take either a \code{DGEList} or a \code{DESeqDataSet} as
-its argument and return the matching figure. By default, dispersions are
-plotted under log10 transform. They may also be displayed under square root
-transform, in which case the y-axis can be interpreted as the biological
-coefficient of variation (McCarthy et al., 2012).
+\code{plot_dispersion} effectively combines 
+\code{edgeR::\link[edgeR]{plotBCV}} and 
+\code{DESeq2::\link[DESeq2]{plotDispEsts}} into a single function that can 
+take either a \code{DGEList} or a \code{DESeqDataSet} as its argument and 
+return the matching figure. By default, dispersions are plotted under log10 
+transform. They may also be displayed under square root transform, in which 
+case the y-axis can be interpreted as the biological coefficient of variation 
+(McCarthy et al., 2012).
 }
 \examples{
 library(DESeq2)
