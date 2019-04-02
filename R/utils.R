@@ -179,6 +179,8 @@ is.color <- function(chr) {
 #' @import ggsci
 #'
 
+# ADD VIRIDIS
+
 colorize <- function(pal,
                      var_type,
                      n) {
@@ -505,8 +507,8 @@ dist_mat <- function(dat,
 
 #' Size Data Points
 #'
-#' This utility function assigns a reasonable point size parameter based on data
-#' dimensionality.
+#' This utility function assigns a reasonable default point size parameter based 
+#' on data dimensionality.
 #'
 #' @param df Data frame to be passed to \code{ggplot}.
 #'
@@ -521,8 +523,6 @@ pt_size <- function(df) {
   } else if (nrow(df) <= 1e3L) {
     out <- 1L
   } else if (nrow(df) <= 1e4L) {
-    out <- 0.75
-  } else if (nrow(df) <= 1e5L) {
     out <- 0.5
   } else {
     out <- 0.25
@@ -532,8 +532,8 @@ pt_size <- function(df) {
 
 #' Set Data Point Transparency
 #'
-#' This utility function assigns a reasonable alpha parameter based on data
-#' dimensionality.
+#' This utility function assigns a reasonable default alpha parameter based on 
+#' data dimensionality.
 #'
 #' @param df Data frame to be passed to \code{ggplot}.
 #'
@@ -543,7 +543,7 @@ pt_alpha <- function(df) {
     out <- 1L
   } else if (nrow(df) <= 100L) {
     out <- 0.9
-  } else if (nrow(df) <= 1e5L) {
+  } else if (nrow(df) <= 1e4L) {
     out <- 0.75
   } else {
     out <- 0.5
