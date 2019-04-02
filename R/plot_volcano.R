@@ -9,8 +9,8 @@
 #'   \code{DESeq2::\link[DESeq2]{results}}. Alternatively, any object coercable
 #'   to a data frame with columns for \emph{p}-values, \emph{q}-values, and log
 #'   fold changes. Missing values are silently removed.
-#' @param y Plot \emph{p}-values (\code{y = "p"}) or \emph{q}-values (\code{
-#'   y = "q"}) on the y-axis?
+#' @param y Plot \emph{p}-values (\code{y = "p"}), \emph{q}-values 
+#'   (\code{y = "q"}), or log-odds (\code{y = "B"}) on the y-axis?
 #' @param fdr Significance threshold for declaring a probe differentially
 #'   expressed.
 #' @param lfc Optional effect size threshold for declaring a probe
@@ -91,8 +91,19 @@ plot_volcano <- function(dat,
          'colnames for this vector include ', stringify(q, 'and'), '. ',
          'Make sure that dat includes exactly one such colname.')
   }
-  if (!y %in% c('p', 'q')) {
-    stop('y must be one of "p" or "q".')
+  if (y == 'B') {
+    b <- c('B', 'lods', 'logodds')
+    if (sum(b %in% colnames(dat)) == 1L) {
+      colnames(dat)[colnames(dat) %in% b] <- 'B'
+    } else {
+      stop('When y = "B", dat must include a column for log-odds of ', 
+           'differential expression. Recognized colnames for this vector ', 
+           'include ', stringify(q, 'and'), '. Make sure that dat includes ', 
+           'exactly one such colname.')
+    }
+  }
+  if (!y %in% c('p', 'q', 'B')) {
+    stop('y must be one of "p", "q", or "B".')
   }
   if (probes %>% is.null) {
     if (rownames(dat) %>% is.null ||
@@ -117,9 +128,15 @@ plot_volcano <- function(dat,
       }
     }
   }
-  dat <- dat %>%
-    select(Probe, logFC, p.value, q.value) %>%
-    na.omit(.)
+  if (y == 'B') {
+    dat <- dat %>%
+      select(Probe, logFC, p.value, q.value, B) %>%
+      na.omit(.)
+  } else {
+    dat <- dat %>%
+      select(Probe, logFC, p.value, q.value) %>%
+      na.omit(.)
+  }
   if (nrow(dat) == 0L) {
     stop('dat must have at least one row with non-missing values for logFC, ',
          'p.value, and q.value.')
@@ -139,14 +156,16 @@ plot_volcano <- function(dat,
   # Tidy data
   if (y == 'p') {
     df <- dat %>% mutate(Y = -log10(p.value))
-  } else {
+  } else if (y == 'q') {
     df <- dat %>% mutate(Y = -log10(q.value))
+  } else {
+    df <- dat %>% rename(Y = B)
   }
   if (!lfc %>% is.null) {
     df <- df %>%
-      mutate(Direction = ifelse(q.value <= fdr & logFC >= lfc, 'Up',
-                                ifelse(q.value <= fdr & -logFC >= lfc, 'Down',
-                                       'None')))
+      mutate(Direction = if_else(q.value <= fdr & logFC >= lfc, 'Up',
+                                 if_else(q.value <= fdr & -logFC >= lfc, 'Down',
+                                         'None')))
   }
 
   # Build plot
@@ -156,16 +175,20 @@ plot_volcano <- function(dat,
     labs(title = title, x = expression(log[2]~'Fold Change')) +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (y == 'p') {
-    p <- p + ylab(expression(~-log[10](italic(p))))
+  if (y == 'q') {
+    p <- p + ylab(expression(~-log[10](italic(q))))
+    y_pt <- -log10(fdr)
+  } else {
     y_pt <- df %>%
       filter(q.value <= fdr) %>%
       filter(Y == min(Y)) %>%
       select(Y) %>%
       as.numeric(.)
-  } else {
-    p <- p + ylab(expression(~-log[10](italic(q))))
-    y_pt <- -log10(fdr)
+    if (y == 'p') {
+      p <- p + ylab(expression(~-log[10](italic(p))))
+    } else {
+      p <- p + ylab('Log-odds of Differential Expression')
+    }
   }
   if (!any(df$q.value <= fdr)) {                 # Color pts by differential expression?
     warning('No probe meets your fdr threshold. To color data points by ',
