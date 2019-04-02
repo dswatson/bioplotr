@@ -100,6 +100,7 @@
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
+#' @importFrom tidyr crossing
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -217,7 +218,7 @@ plot_drivers <- function(dat,
   } else {
     if (kernel == 'rbfdot') {                      # Initialize kernel function
       if (kpar %>% is.null) {
-        kpar <- list(sigma = 1L)
+        kpar <- list(sigma = 1e-4)
       }
       kf <- rbfdot(unlist(kpar))
     } else if (kernel == 'polydot') {
@@ -272,11 +273,15 @@ plot_drivers <- function(dat,
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
+  leg_lab <- expression(~-log(italic(p)))
   if (!alpha %>% is.null) {
     if (!p.adj %>% is.null) {
       df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
+      if (p.adj %in% c('fdr', 'BH', 'BY')) {
+        leg_lab <- expression(~-log(italic(q)))
+      }
     }
-    df <- df %>% mutate(Significant = ifelse(Association <= alpha, TRUE, FALSE))
+    df <- df %>% mutate(Significant = if_else(Association <= alpha, TRUE, FALSE))
   }
   df <- df %>% mutate(Association = -log(Association))
 
@@ -286,7 +291,7 @@ plot_drivers <- function(dat,
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
     coord_equal() +
     scale_fill_gradientn(colors = c('white', 'pink', 'orange', 'red', 'darkred'),
-                           name = expression(~-log(italic(p)))) +
+                           name = leg_lab) +
     scale_color_manual(values = c('grey90', 'black')) +
     scale_x_discrete(labels = paste0(unique(df$PC), pve)) +
     guides(color = FALSE) +
