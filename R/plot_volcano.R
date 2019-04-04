@@ -17,6 +17,8 @@
 #'   differentially expressed.
 #' @param probes Optional column number or name specifying where probe names are
 #'   stored, presuming they are not stored in \code{rownames(dat)}.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -27,13 +29,13 @@
 #'   from \code{dat}.
 #'
 #' @details
-#' Volcano plots visualize the relationship between each probe's log2 fold
-#' change and -log10 \emph{p}- or \emph{q}-value for a given test of
-#' differential expression. Points are colored to distinguish between those that
-#' do and do not meet a user-defined FDR threshold. Up- and down-regulated genes
-#' may also be differentially colored if a minimum absolute fold change is
-#' supplied. These figures help to evaluate the symmetry, magnitude, and
-#' significance of effects in an omic experiment.
+#' Volcano plots visualize the relationship between each probe's effect size 
+#' and significance for a given test of differential expression. Points are 
+#' colored to distinguish between those that do and do not meet a user-defined 
+#' FDR threshold. Up- and down-regulated genes may also be differentially 
+#' colored if a minimum absolute fold change is supplied. These figures help to 
+#' evaluate the symmetry, magnitude, and significance of effects in an omic 
+#' experiment.
 #'
 #' @examples
 #' # Simulated data
@@ -61,6 +63,8 @@ plot_volcano <- function(dat,
                        fdr = 0.05,
                        lfc = NULL,
                     probes = NULL,
+                      size = NULL, 
+                     alpha = NULL,
                      title = 'Volcano Plot',
                     legend = 'right',
                      hover = FALSE) {
@@ -169,8 +173,12 @@ plot_volcano <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(logFC, Y, text = Probe)) +
     labs(title = title, x = expression(log[2]~'Fold Change')) +
     theme_bw() +

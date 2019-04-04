@@ -21,6 +21,8 @@
 #'   plots.
 #' @param probes Optional column number or name specifying where probe names are
 #'   stored, presuming they are not stored in \code{rownames(dat)}.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
@@ -128,6 +130,8 @@ plot_md.DGEList <- function(dat,
                             sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
+                              size = NULL, 
+                             alpha = NULL,
                              title = 'Mean-Difference Plot',
                               xlab = NULL,
                             legend = 'right',
@@ -188,8 +192,12 @@ plot_md.DGEList <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -227,6 +235,8 @@ plot_md.DESeqDataSet <- function(dat,
                                  sample = 1L,
                                   ctrls = NULL,
                                     lfc = NULL,
+                                   size = NULL, 
+                                  alpha = NULL,
                                   title = 'Mean-Difference Plot',
                                    xlab = NULL,
                                  legend = 'right',
@@ -277,8 +287,12 @@ plot_md.DESeqDataSet <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -315,6 +329,8 @@ plot_md.DESeqTransform <- function(dat,
                                    sample = 1L,
                                     ctrls = NULL,
                                       lfc = NULL,
+                                     size = NULL, 
+                                    alpha = NULL,
                                     title = 'Mean-Difference Plot',
                                      xlab = NULL,
                                    legend = 'right',
@@ -342,6 +358,8 @@ plot_md.DESeqTransform <- function(dat,
 plot_md.DESeqResults <- function(dat,
                                  fdr = 0.05,
                                  lfc = NULL,
+                                size = NULL, 
+                               alpha = NULL,
                                title = 'Mean-Difference Plot',
                                 xlab = NULL,
                               legend = 'right',
@@ -372,8 +390,12 @@ plot_md.DESeqResults <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     scale_x_log10() +
     geom_hline(yintercept = 0L, color = 'grey') +
@@ -419,6 +441,8 @@ plot_md.DESeqResults <- function(dat,
 plot_md.TopTags <- function(dat,
                             fdr = 0.05,
                             lfc = NULL,
+                           size = NULL,
+                          alpha = NULL,
                           title = 'Mean-Difference Plot',
                            xlab = NULL,
                          legend = 'right',
@@ -444,6 +468,8 @@ plot_md.data.frame <- function(dat,
                                probes = NULL,
                                   fdr = 0.05,
                                   lfc = NULL,
+                                 size = NULL, 
+                                alpha = NULL,
                                 title = 'Mean-Difference Plot',
                                  xlab = NULL,
                                legend = 'right',
@@ -522,8 +548,12 @@ plot_md.data.frame <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -570,6 +600,8 @@ plot_md.default <- function(dat,
                             sample = 1L,
                              ctrls = NULL,
                                lfc = NULL,
+                              size = NULL, 
+                             alpha = NULL,
                              title = 'Mean-Difference Plot',
                               xlab = NULL,
                             legend = 'right',
@@ -611,8 +643,12 @@ plot_md.default <- function(dat,
   }
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -642,4 +678,3 @@ plot_md.default <- function(dat,
 }
 
 
-# Size, alpha, title

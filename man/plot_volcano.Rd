@@ -5,7 +5,8 @@
 \title{Volcano Plot}
 \usage{
 plot_volcano(dat, y = "q", fdr = 0.05, lfc = NULL, probes = NULL,
-  title = "Volcano Plot", legend = "right", hover = FALSE)
+  size = NULL, alpha = NULL, title = "Volcano Plot",
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Data frame or similar object representing the results of a test
@@ -15,8 +16,8 @@ limma::\link[limma]{topTable}}, \code{edgeR::\link[edgeR]{topTags}}, or
 to a data frame with columns for \emph{p}-values, \emph{q}-values, and log
 fold changes. Missing values are silently removed.}
 
-\item{y}{Plot \emph{p}-values (\code{y = "p"}) or \emph{q}-values (\code{
-y = "q"}) on the y-axis?}
+\item{y}{Plot \emph{p}-values (\code{y = "p"}), \emph{q}-values 
+(\code{y = "q"}), or log-odds (\code{y = "B"}) on the y-axis?}
 
 \item{fdr}{Significance threshold for declaring a probe differentially
 expressed.}
@@ -26,6 +27,10 @@ differentially expressed.}
 
 \item{probes}{Optional column number or name specifying where probe names are
 stored, presuming they are not stored in \code{rownames(dat)}.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{title}{Optional plot title.}
 
@@ -43,13 +48,13 @@ This function plots effect size against significance for a given test of
 differential expression.
 }
 \details{
-Volcano plots visualize the relationship between each probe's log2 fold
-change and -log10 \emph{p}- or \emph{q}-value for a given test of
-differential expression. Points are colored to distinguish between those that
-do and do not meet a user-defined FDR threshold. Up- and down-regulated genes
-may also be differentially colored if a minimum absolute fold change is
-supplied. These figures help to evaluate the symmetry, magnitude, and
-significance of effects in an omic experiment.
+Volcano plots visualize the relationship between each probe's effect size 
+and significance for a given test of differential expression. Points are 
+colored to distinguish between those that do and do not meet a user-defined 
+FDR threshold. Up- and down-regulated genes may also be differentially 
+colored if a minimum absolute fold change is supplied. These figures help to 
+evaluate the symmetry, magnitude, and significance of effects in an omic 
+experiment.
 }
 \examples{
 # Simulated data
