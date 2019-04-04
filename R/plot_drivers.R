@@ -159,7 +159,7 @@ plot_drivers <- function(dat,
         j_idx <- which(colnames(clin) != block)
         for (j in j_idx) {
           mm <- model.matrix(~ clin[[block]] + clin[[j]])
-          if (!is.fullrank(mm)) {
+          if (!mm %>% is.fullrank) {
             stop('"', block,  '"', ' and "', colnames(clin)[j], '" are ', 
                  'perfectly confounded. Consider using the unblock argument.')
           }
@@ -268,8 +268,8 @@ plot_drivers <- function(dat,
     if_else(clin[[var]] %>% is.numeric,
            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
-  df <- crossing(Feature = colnames(clin),       # Melt
-                      PC = paste0('PC', seq_len(n.pc))) %>%
+  df <- expand.grid(Feature = colnames(clin),    # Melt
+                         PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC),       # Populate
            Significant = FALSE)
@@ -282,7 +282,8 @@ plot_drivers <- function(dat,
     }
   }
   if (!alpha %>% is.null) {
-    df <- df %>% mutate(Significant = if_else(Association <= alpha, TRUE, FALSE))
+    df <- df %>% 
+      mutate(Significant = if_else(Association <= alpha, TRUE, FALSE))
   }
   df <- df %>% mutate(Association = -log(Association))
 
@@ -309,7 +310,6 @@ plot_drivers <- function(dat,
 }
 
 
-# Problem: when n.pc > 9, PC10 appears in btw PC1 and PC2
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
