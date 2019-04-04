@@ -62,7 +62,8 @@
 #' plot_survival(fit)
 #'
 #' @export
-#' @importFrom ggsci pal_d3
+#' @importFrom survminer ggsurvplot
+#' @import dplyr
 #' @import ggplot2
 #'
 
@@ -121,7 +122,6 @@ plot_survival <- function(fit,
   }
 
   # Build plot
-  require(survminer)
   p <- ggsurvplot(fit, fun = fun, size = 0.5, conf.int = CI,
                   censor = censor, title = title, legend = legend,
                   font.tickslab = 9L, ggtheme = theme_bw(), ylab = ylab,
@@ -141,3 +141,4 @@ plot_survival <- function(fit,
 
 # ggplotly? Would need to go over curves with a text = Curve aesthetic...
 # Does this work with survival forests and other nonparametric models?
+# Remove separate legend label for confidence intervals
