@@ -10,6 +10,6 @@ pt_size(df)
 \item{df}{Data frame to be passed to \code{ggplot}.}
 }
 \description{
-This utility function assigns a reasonable point size parameter based on data
-dimensionality.
+This utility function assigns a reasonable default point size parameter based 
+on data dimensionality.
 }
