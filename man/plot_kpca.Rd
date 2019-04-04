@@ -26,9 +26,10 @@ legend title(s) by passing a named list or data frame.}
 render at most one \code{group} variable. Supply legend title by passing
 a named list or data frame.}
 
-\item{kernel}{The kernel generating function. Options include \code{
-"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot",
-"anovadot",} and \code{"splinedot"}. See Details.}
+\item{kernel}{The kernel generating function, if using KPCA. Options include
+\code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
+\code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
+\code{"splinedot"}. To run normal PCA, set to \code{NULL}. See Details.}
 
 \item{kpar}{A named list of arguments setting parameters for the kernel
 function. If \code{NULL}, \code{kernlab} defaults are used. See Details.}

@@ -12,9 +12,9 @@ plot_drivers(dat, clin, index = "Sample", block = NULL,
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
 probes and columns to samples. It is strongly recommended that data be
-filtered and normalized prior to plotting. Raw counts stored in \code{
-\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
-automatically extracted and transformed to the log2-CPM scale, with a
+filtered and normalized prior to plotting. Raw counts stored in 
+\code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects 
+are automatically extracted and transformed to the log2-CPM scale, with a
 warning.}
 
 \item{clin}{Data frame or matrix with rows correponding to samples and
@@ -28,13 +28,14 @@ names in \code{dat} will be considered.}
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
 
-\item{unblock}{Column name(s) of one or more features for which the \code{
-block} covariate should not be applied, if one was supplied. See Details.}
+\item{unblock}{Column name(s) of one or more features for which the 
+\code{block} covariate should not be applied, if one was supplied. See 
+Details.}
 
 \item{kernel}{The kernel generating function, if using KPCA. Options include
-\code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot",
-"besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
-set to \code{NULL}. See Details.}
+\code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
+\code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
+\code{"splinedot"}. To run normal PCA, set to \code{NULL}. See Details.}
 
 \item{kpar}{A named list of arguments setting parameters for the kernel
 function. Only relevant if \code{kernel} is not \code{NULL}. See Details.}
@@ -46,9 +47,9 @@ probes to be used for PCA.}
 
 \item{label}{Print association statistics over tiles?}
 
-\item{alpha}{Optional significance threshold to impose on associations. Those
-with \emph{p}-values (optionally adjusted) less than or equal to \code{
-alpha} are outlined in black.}
+\item{alpha}{Optional significance threshold to impose on associations. 
+Those with \emph{p}-values (optionally adjusted) less than or equal to 
+\code{alpha} are outlined in black.}
 
 \item{p.adj}{Optional \emph{p}-value adjustment for multiple testing. Options
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
@@ -61,9 +62,9 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 \code{"topleft"}, or \code{"topright"}.}
 
-\item{hover}{Show \emph{p}-values by hovering mouse over tiles? If \code{
-TRUE}, the plot is rendered in HTML and will either open in your browser's
-graphic display or appear in the RStudio viewer.}
+\item{hover}{Show \emph{p}-values by hovering mouse over tiles? If 
+\code{TRUE}, the plot is rendered in HTML and will either open in your 
+browser's graphic display or appear in the RStudio viewer.}
 }
 \description{
 This function visualizes the strength of associations between the principal

@@ -6,9 +6,9 @@
 #'
 #' @param dat Omic data matrix or matrix-like object with rows corresponding to
 #'   probes and columns to samples. It is strongly recommended that data be
-#'   filtered and normalized prior to plotting. Raw counts stored in \code{
-#'   \link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects are
-#'   automatically extracted and transformed to the log2-CPM scale, with a
+#'   filtered and normalized prior to plotting. Raw counts stored in 
+#'   \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects 
+#'   are automatically extracted and transformed to the log2-CPM scale, with a
 #'   warning.
 #' @param clin Data frame or matrix with rows correponding to samples and
 #'   columns to technical and/or biological features to test for associations
@@ -18,21 +18,22 @@
 #'   names in \code{dat} will be considered.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
-#' @param unblock Column name(s) of one or more features for which the \code{
-#'   block} covariate should not be applied, if one was supplied. See Details.
+#' @param unblock Column name(s) of one or more features for which the 
+#'   \code{block} covariate should not be applied, if one was supplied. See 
+#'   Details.
 #' @param kernel The kernel generating function, if using KPCA. Options include
-#'   \code{"rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot",
-#'   "besseldot", "anovadot",} and \code{"splinedot"}. To run normal PCA,
-#'   set to \code{NULL}. See Details.
+#'   \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
+#'   \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
+#'   \code{"splinedot"}. To run normal PCA, set to \code{NULL}. See Details.
 #' @param kpar A named list of arguments setting parameters for the kernel
 #'   function. Only relevant if \code{kernel} is not \code{NULL}. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for PCA.
 #' @param n.pc Number of principal components to include in the figure.
 #' @param label Print association statistics over tiles?
-#' @param alpha Optional significance threshold to impose on associations. Those
-#'   with \emph{p}-values (optionally adjusted) less than or equal to \code{
-#'   alpha} are outlined in black.
+#' @param alpha Optional significance threshold to impose on associations. 
+#'   Those with \emph{p}-values (optionally adjusted) less than or equal to 
+#'   \code{alpha} are outlined in black.
 #' @param p.adj Optional \emph{p}-value adjustment for multiple testing. Options
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
@@ -41,9 +42,9 @@
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 #'   \code{"topleft"}, or \code{"topright"}.
-#' @param hover Show \emph{p}-values by hovering mouse over tiles? If \code{
-#'   TRUE}, the plot is rendered in HTML and will either open in your browser's
-#'   graphic display or appear in the RStudio viewer.
+#' @param hover Show \emph{p}-values by hovering mouse over tiles? If 
+#'   \code{TRUE}, the plot is rendered in HTML and will either open in your 
+#'   browser's graphic display or appear in the RStudio viewer.
 #'
 #' @details
 #' Strength of association is measured by -log \emph{p}-values, optionally
@@ -100,7 +101,6 @@
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
-#' @importFrom tidyr crossing
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -180,7 +180,6 @@ plot_drivers <- function(dat,
            'For more info, see ?plot_kpca or ?kernlab::dots.')
     }
   }
-  # SOME WARNING ABOUT KPAR?
   if (!top %>% is.null) {                          # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }

@@ -15,9 +15,10 @@
 #' @param covar Optional continuous covariate. If non-\code{NULL}, then plot can
 #'   render at most one \code{group} variable. Supply legend title by passing
 #'   a named list or data frame.
-#' @param kernel The kernel generating function. Options include \code{
-#'   "rbfdot", "polydot", "tanhdot", "vanilladot", "laplacedot", "besseldot",
-#'   "anovadot",} and \code{"splinedot"}. See Details.
+#' @param kernel The kernel generating function, if using KPCA. Options include
+#'   \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
+#'   \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
+#'   \code{"splinedot"}. To run normal PCA, set to \code{NULL}. See Details.
 #' @param kpar A named list of arguments setting parameters for the kernel
 #'   function. If \code{NULL}, \code{kernlab} defaults are used. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
@@ -160,7 +161,6 @@ plot_kpca <- function(dat,
     stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
          'For more info, see ?plot_kpca or ?kernlab::dots.')
   }
-  # SOME WARNING ABOUT KPAR?
   if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
