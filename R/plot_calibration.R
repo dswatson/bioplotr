@@ -13,9 +13,10 @@
 #' @param pal_curves String specifying the color palette to use when plotting
 #'   multiple vectors. Options include \code{"ggplot"}, all qualitative color
 #'   schemes available in \code{RColorBrewer}, and the complete collection of
-#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
-#'   character vector of colors with length equal to the number of vectors
-#'   in \code{dat}.
+#'   \code{\href{
+#'   https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html}{ggsci}} 
+#'   palettes. Alternatively, a character vector of colors with length equal to 
+#'   the number of vectors in \code{dat}.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -75,17 +76,18 @@ plot_calibration <- function(obs,
 
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
-  bin <- pred %>% map(function(m) {
-    seq_along(m) %>% map_dbl(~ which.max(m[.x] <= brks))
-  })
-  exp_grps <- seq_along(pred) %>% map(~ split(pred[[.x]], bin[[.x]]))
-  obs_grps <- seq_along(bin) %>% map(~ split(obs, bin[[.x]]))
+  bins <- pred %>% map(~ findInterval(.x, brks) + 1L)
+  exp_grps <- seq_along(pred) %>% map(~ split(pred[[.x]], bins[[.x]]))
+  obs_grps <- seq_along(bins) %>% map(~ split(obs, bins[[.x]]))
   df <- seq_along(pred) %>% map_df(function(m) {
     tibble(Y = obs_grps[[m]] %>% map_dbl(mean),
            X = exp_grps[[m]] %>% map_dbl(mean),
-   Frequency = exp_grps[[m]] %>% map_dbl(length),
+   Frequency = tabulate(bins[[m]]),
   Classifier = names(pred)[m])
   })
+  if (sum(df$Frequency == 0) > 0) {              # Any empty bins?
+    df <- df %>% filter(Frequency > 0)
+  }
 
   # Build plot
   p <- ggplot(df, aes(X, Y)) +
