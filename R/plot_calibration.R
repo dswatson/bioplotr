@@ -76,18 +76,16 @@ plot_calibration <- function(obs,
 
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
-  bins <- pred %>% map(~ findInterval(.x, brks) + 1L)
+  bins <- seq_along(pred) %>% map(~ findInterval(pred[[.x]], brks) + 1L)
   exp_grps <- seq_along(pred) %>% map(~ split(pred[[.x]], bins[[.x]]))
   obs_grps <- seq_along(bins) %>% map(~ split(obs, bins[[.x]]))
   df <- seq_along(pred) %>% map_df(function(m) {
+    freq <- tabulate(bins[[m]])
     tibble(Y = obs_grps[[m]] %>% map_dbl(mean),
            X = exp_grps[[m]] %>% map_dbl(mean),
-   Frequency = tabulate(bins[[m]]),
+   Frequency = freq[freq > 0],
   Classifier = names(pred)[m])
   })
-  if (sum(df$Frequency == 0) > 0) {              # Any empty bins?
-    df <- df %>% filter(Frequency > 0)
-  }
 
   # Build plot
   p <- ggplot(df, aes(X, Y)) +
