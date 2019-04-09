@@ -21,11 +21,12 @@ used to color density curves. If supplied, legend title defaults to
 
 \item{pal_group}{String specifying the color palette to use if \code{group}
 is non-\code{NULL}, or a vector of such strings with length equal to the
-number of vectors passed to \code{group}. Options include \code{"ggplot"},
-all qualitative color schemes available in \code{RColorBrewer}, and the
-complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
-Alternatively, a character vector of colors with length equal to the
-cumulative number of levels in \code{group}.}
+number of vectors passed to \code{group}. Options include \code{"ggplot"}, 
+all qualitative color schemes available in \code{\href{
+https://bit.ly/2ipuEjn}{RColorBrewer}}, and the complete collection of 
+\code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a 
+character vector of colors with length equal to the cumulative number of 
+levels in \code{group}.}
 
 \item{xlab}{Optional label for x-axis.}
 

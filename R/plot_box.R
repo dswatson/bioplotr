@@ -14,11 +14,12 @@
 #'   Override this feature by passing a named list instead.
 #' @param pal_group String specifying the color palette to use if \code{group}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
-#'   number of vectors passed to \code{group}. Options include \code{"ggplot"},
-#'   all qualitative color schemes available in \code{RColorBrewer}, and the
-#'   complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
-#'   Alternatively, a character vector of colors with length equal to the
-#'   cumulative number of levels in \code{group}.
+#'   number of vectors passed to \code{group}. Options include \code{"ggplot"}, 
+#'   all qualitative color schemes available in \code{\href{
+#'   https://bit.ly/2ipuEjn}{RColorBrewer}}, and the complete collection of 
+#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a 
+#'   character vector of colors with length equal to the cumulative number of 
+#'   levels in \code{group}.
 #' @param ylab Optional label for y-axis.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},

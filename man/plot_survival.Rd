@@ -22,11 +22,11 @@ a percentage.}
 \item{censor}{Include tick-marks to indicate censored subjects?}
 
 \item{pal_curves}{String specifying the color palette to use when plotting
-multiple vectors. Options include \code{"ggplot"}, all qualitative color
-schemes available in \code{RColorBrewer}, and the complete collection of
-\code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
-character vector of colors with length equal to the number of strata in
-\code{fit}.}
+multiple vectors. Options include \code{"ggplot"}, all qualitative color 
+schemes available in \code{\href{https://bit.ly/2ipuEjn}{RColorBrewer}}, 
+and the complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} 
+palettes. Alternatively, a character vector of colors with length equal to 
+the number of strata in \code{fit}.}
 
 \item{title}{Optional plot title.}
 

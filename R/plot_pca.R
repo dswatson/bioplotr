@@ -24,19 +24,20 @@
 #'   then plot can render at most one phenotypic feature.
 #' @param pal_group String specifying the color palette to use if \code{group}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
-#'   number of vectors passed to \code{group}. Options include \code{"ggplot"},
-#'   all qualitative color schemes available in \code{RColorBrewer}, and the
-#'   complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes.
-#'   Alternatively, a character vector of colors with length equal to the
-#'   cumulative number of levels in \code{group}.
+#'   number of vectors passed to \code{group}. Options include \code{"ggplot"}, 
+#'   all qualitative color schemes available in \code{\href{
+#'   https://bit.ly/2ipuEjn}{RColorBrewer}}, and the complete collection of 
+#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a 
+#'   character vector of colors with length equal to the cumulative number of 
+#'   levels in \code{group}.
 #' @param pal_covar String specifying the color palette to use if \code{covar}
 #'   is non-\code{NULL}, or a vector of such strings with length equal to the
 #'   number of vectors passed to \code{covar}. Options include the complete 
 #'   collection of \code{\href{https://bit.ly/2n7D6tF}{viridis}} palettes, as 
-#'   well as all sequential color schemes available in \code{RColorBrewer}. 
-#'   Alternatively, a character vector of colors representing a smooth gradient, 
-#'   or a list of such vectors with length equal to the number of continuous 
-#'   variables to visualize.
+#'   well as all sequential color schemes available in \code{\href{
+#'   https://bit.ly/2ipuEjn}{RColorBrewer}}. Alternatively, a character vector 
+#'   of colors representing a smooth gradient, or a list of such vectors with 
+#'   length equal to the number of continuous variables to visualize.
 #' @param size Point size. 
 #' @param alpha Point transparency.
 #' @param title Optional plot title.

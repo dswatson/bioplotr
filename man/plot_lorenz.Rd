@@ -14,11 +14,11 @@ case each must be of equal length. Data may include negative values, but if
 so a warning will be issued to proceed with caution.}
 
 \item{pal_curves}{String specifying the color palette to use when plotting
-multiple vectors. Options include \code{"ggplot"}, all qualitative color
-schemes available in \code{RColorBrewer}, and the complete collection of
-\code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
-character vector of colors with length equal to the number of vectors
-in \code{dat}.}
+multiple vectors. Options include \code{"ggplot"}, all qualitative color 
+schemes available in \code{\href{https://bit.ly/2ipuEjn}{RColorBrewer}}, 
+and the complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} 
+palettes. Alternatively, a character vector of colors with length equal to 
+the number of vectors in \code{dat}.}
 
 \item{title}{Optional plot title.}
 

@@ -12,11 +12,11 @@
 #' @param CI Plot confidence intervals?
 #' @param censor Include tick-marks to indicate censored subjects?
 #' @param pal_curves String specifying the color palette to use when plotting
-#'   multiple vectors. Options include \code{"ggplot"}, all qualitative color
-#'   schemes available in \code{RColorBrewer}, and the complete collection of
-#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
-#'   character vector of colors with length equal to the number of strata in
-#'   \code{fit}.
+#'   multiple vectors. Options include \code{"ggplot"}, all qualitative color 
+#'   schemes available in \code{\href{https://bit.ly/2ipuEjn}{RColorBrewer}}, 
+#'   and the complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} 
+#'   palettes. Alternatively, a character vector of colors with length equal to 
+#'   the number of strata in \code{fit}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},

@@ -11,11 +11,11 @@
 #'   examples include the probabilities output by a logistic model, or the
 #'   expression levels of a particular biomarker.
 #' @param pal_curves String specifying the color palette to use when plotting
-#'   multiple vectors. Options include \code{"ggplot"}, all qualitative color
-#'   schemes available in \code{RColorBrewer}, and the complete collection of
-#'   \code{\href{http://bit.ly/2bxnuGB}{ggsci}} palettes. Alternatively, a
-#'   character vector of colors with length equal to the number of vectors
-#'   in \code{pred}.
+#'   multiple vectors. Options include \code{"ggplot"}, all qualitative color 
+#'   schemes available in \code{\href{https://bit.ly/2ipuEjn}{RColorBrewer}}, 
+#'   and the complete collection of \code{\href{http://bit.ly/2bxnuGB}{ggsci}} 
+#'   palettes. Alternatively, a character vector of colors with length equal to 
+#'   the number of vectors in \code{dat}.
 #' @param title Optional plot title.
 #' @param leg.txt Optional legend title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
