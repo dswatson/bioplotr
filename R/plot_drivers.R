@@ -274,11 +274,6 @@ plot_drivers <- function(dat,
            Significant = FALSE)
   if (!p.adj %>% is.null) {
     df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
-    if (p.adj %in% c('fdr', 'BH', 'BY')) {
-      leg_lab <- expression(~-log(italic(q)))
-    } else {
-      leg_lab <- expression(~-log(italic(p)))
-    }
   }
   if (!alpha %>% is.null) {
     df <- df %>% 
@@ -287,6 +282,11 @@ plot_drivers <- function(dat,
   df <- df %>% mutate(Association = -log(Association))
 
   # Build plot
+  if (p.adj %in% c('fdr', 'BH', 'BY')) {
+    leg_lab <- expression(~-log(italic(q)))
+  } else {
+    leg_lab <- expression(~-log(italic(p)))
+  }
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
