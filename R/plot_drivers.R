@@ -187,9 +187,11 @@ plot_drivers <- function(dat,
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
   if (!alpha %>% is.null) {
-    if (alpha <= 0 || alpha >= 1) {
+    if (alpha <= 0L || alpha >= 1L) {
       stop('alpha must be numeric on (0, 1).')
     }
+  } else {
+    alpha <- 0L
   }
   if (!p.adj %>% is.null) {
     p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
@@ -270,16 +272,13 @@ plot_drivers <- function(dat,
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
-    mutate(Association = sig(Feature, PC),       # Populate
-           Significant = FALSE)
+    mutate(Association = sig(Feature, PC))       # Populate
   if (!p.adj %>% is.null) {
     df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
   }
-  if (!alpha %>% is.null) {
-    df <- df %>% 
-      mutate(Significant = if_else(Association <= alpha, TRUE, FALSE))
-  }
-  df <- df %>% mutate(Association = -log(Association))
+  df <- df %>% 
+    mutate(Significant = if_else(Association <= alpha, TRUE, FALSE),
+           Association = -log(Association))
 
   # Build plot
   if (p.adj %in% c('fdr', 'BH', 'BY')) {
