@@ -281,7 +281,7 @@ plot_drivers <- function(dat,
            Association = -log(Association))
 
   # Build plot
-  if (p.adj %in% c('fdr', 'BH', 'BY')) {
+  if (!p.adj %>% is.null && p.adj %in% c('fdr', 'BH', 'BY')) {
     leg_lab <- expression(~-log(italic(q)))
   } else {
     leg_lab <- expression(~-log(italic(p)))
