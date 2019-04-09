@@ -176,10 +176,10 @@ is.color <- function(chr) {
 #' @importFrom purrr map_lgl
 #' @importFrom scales hue_pal
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom viridis viridis.map
 #' @import ggsci
+#' @import dplyr
 #'
-
-# ADD VIRIDIS
 
 colorize <- function(pal,
                      var_type,
@@ -194,7 +194,8 @@ colorize <- function(pal,
                 'OrRd', 'PuBu', 'PuBuGn', 'PuRd', 'Purples', 'RdPu', 'Reds',
                 'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd')
   div_pals <- c('BrBg', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu',
-                'RdYlGn', 'Spectral')
+                'RdYlGn', 'Spectral', 'viridis', 'magma', 'plasma', 'inferno',
+                'cividis')
   if (!(all(map_lgl(pal, is.color)))) {
     if (length(pal) > 1L) {
       stop('When passing individual colors to define a palette, each must ',
@@ -265,7 +266,22 @@ colorize <- function(pal,
   } else if (pal %in% seq_pals) {
     out <- colorRampPalette(brewer.pal(9, pal))(256)
   } else if (pal %in% div_pals) {
-    out <- colorRampPalette(brewer.pal(11, pal))(256) %>% rev(.)
+    if (pal %in% c('viridis', 'magma', 'plasma', 'inferno', 'cividis')) {
+      if (pal == 'viridis') {
+        df <- viridis.map %>% filter(opt == 'A')
+      } else if (pal == 'magma') {
+        df <- viridis.map %>% filter(opt == 'B')
+      } else if (pal == 'plasma') {
+        df <- viridis.map %>% filter(opt == 'C')
+      } else if (pal == 'inferno') {
+        df <- viridis.map %>% filter(opt == 'D')
+      } else if (pal == 'cividis') {
+        df <- viridis.map %>% filter(opt == 'E')
+      }
+      out <- rgb(df$R, df$G, df$B)
+    } else {
+      out <- colorRampPalette(brewer.pal(11, pal))(256) %>% rev(.)
+    }
   }
 
   # Output
