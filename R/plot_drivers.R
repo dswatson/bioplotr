@@ -260,7 +260,7 @@ plot_drivers <- function(dat,
     })
     pca <- rotated(pca)
   }
-  sig <- function(var, pc) {                       # p-val fn
+  sig <- function(var, pc) {                     # p-val fn
     if (block %>% is.null || var %in% unblock || var == block) {
       mod <- lm(pca[, pc] ~ clin[[var]])
     } else {
@@ -272,7 +272,8 @@ plot_drivers <- function(dat,
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
-    mutate(Association = sig(Feature, PC))       # Populate
+    mutate(Association = sig(Feature, PC)) %>%   # Populate
+    ungroup(.)
   if (!p.adj %>% is.null) {
     df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
   }
