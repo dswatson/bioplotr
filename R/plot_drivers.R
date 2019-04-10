@@ -253,24 +253,24 @@ plot_drivers <- function(dat,
       kf <- splinedot()
     }
     k_mat <- kernelMatrix(kernel = kf, x = t(dat))
-    pca <- kpca(k_mat)                             # PCA, % variance explained
+    pca <- kpca(k_mat)                           # PCA, % variance explained
     pve <- seq_len(max(n.pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, ' (', round(p, 2L), '%)')
     })
     pca <- rotated(pca)
   }
-  sig <- function(var, pc) {                     # p-val fn
-    if (block %>% is.null || var %in% unblock || var == block) {
-      mod <- lm(pca[, pc] ~ clin[[var]])
+  sig <- function(j, pc) {                       # p-val fn
+    if (block %>% is.null || j %in% unblock || j == block) {
+      mod <- lm(pca[, pc] ~ clin[[j]])
     } else {
-      mod <- lm(pca[, pc] ~ clin[[var]] + clin[[block]])
+      mod <- lm(pca[, pc] ~ clin[[j]] + clin[[block]])
     }
-    if_else(clin[[var]] %>% is.numeric,
-           summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
+    if_else(clin[[j]] %>% is.numeric,
+            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n.pc))) %>%
+                    PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC)) %>%   # Populate
     ungroup(.)
