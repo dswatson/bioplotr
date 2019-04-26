@@ -1,7 +1,8 @@
 Package: bioplotr
 Version: 0.0.0.9000
-Title: Pretty plots for bioinformatics analysis pipelines
-Authors@R: person("David", "Watson", email = "d.watson@qmul.ac.uk", 
+Title: Pretty, simple, optionally interactive plots for bioinformatics analysis 
+  pipelines
+Authors@R: person("David", "Watson", email = "david.s.watson11@gmail.com", 
   role = c("aut", "cre"))
 URL: https://github.com/dswatson/bioplotr
 Description: This package provides functions to build many common (and some not 
