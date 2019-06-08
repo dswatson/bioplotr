@@ -88,6 +88,7 @@ plot_corr <- function(dat,
   if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
+  dat <- as_tibble(dat)
   if (!method %in% c('pearson', 'kendall', 'spearman')) {
     stop('method must be one of "pearson", "kendall", or "spearman". See ?cor.')
   }
@@ -102,10 +103,10 @@ plot_corr <- function(dat,
     }
   }
   if (!p.adj %>% is.null) {
-    if (!p.adj %in% c('holm', 'hochberg', 'hommel',
-                      'bonferroni', 'BH', 'BY', 'fdr')) {
-      stop('p.adj must be one of "holm", "hochberg", "hommel", "bonferroni", ',
-           '"BH", "BY", or "fdr". See ?p.adjust.')
+    p.adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p.adj %in% p.adjes) {
+      stop('p.adj must be one of ', stringify(p.adjes, 'or'), 
+           '. See ?p.adjust.')
     }
   }
   if (!geom %in% c('tile', 'circle')) {
@@ -147,12 +148,12 @@ plot_corr <- function(dat,
     if (diag) {
       diag(p_mat) <- 1L
     }
-    df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
+    df <- df %>% mutate(Significant = if_else(p <= alpha, TRUE, FALSE))
   }
   if (export) {
     out <- list(Correlation = mat)
     if (!(alpha %>% is.null)) {
-      out$p.values <- p_mat
+      out$p.value <- p_mat
     }
   }
 
