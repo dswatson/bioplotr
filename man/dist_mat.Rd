@@ -4,7 +4,7 @@
 \alias{dist_mat}
 \title{Create Distance Matrix}
 \usage{
-dist_mat(dat, dist, p, top, filter_method, robust = FALSE)
+dist_mat(dat, dist, p, top, filter_method, center, robust = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix.}
@@ -19,6 +19,8 @@ be used for distance calculations.}
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}.}
 
+\item{center}{Center each probe prior to computing distances?}
+
 \item{robust}{Use robust probe centering?}
 }
 \description{
@@ -26,8 +28,8 @@ This utility function calculates distance based on a user defined measure
 and optionally filters probes by leading log fold change.
 }
 \details{
-Data are centered by probe and samplewise distance calculated using one of
-the following methods:
+Data are optionally centered by probe and samplewise distance calculated 
+using one of the following methods:
 
 \itemize{
   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, and \code{

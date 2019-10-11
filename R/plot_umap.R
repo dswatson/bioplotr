@@ -24,6 +24,7 @@
 #'   be used for UMAP.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
+#' @param center Center each probe prior to computing distances?
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
 #' @param n_neighbors Number of nearest neighbors for the UMAP algorithm. See
@@ -114,6 +115,7 @@ plot_umap <- function(dat,
                           p = 2L,
                         top = NULL,
               filter_method = 'pairwise',
+                     center = FALSE,
                        dims = c(1L, 2L),
                 n_neighbors = 15L,
                       label = FALSE,

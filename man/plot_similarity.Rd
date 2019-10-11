@@ -5,7 +5,7 @@
 \title{Similarity Matrix Heatmap}
 \usage{
 plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
-  p = 2L, top = NULL, filter_method = "pairwise",
+  p = 2L, top = NULL, filter_method = "pairwise", center = FALSE,
   hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
   pal_tiles = "RdBu", title = "Sample Similarity Matrix")
 }
@@ -35,6 +35,8 @@ be used for distance calculations.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.}
+
+\item{center}{Center each probe prior to computing distances?}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
 clustering. Supports any method available in \code{\link[stats]{hclust}}.}

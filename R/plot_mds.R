@@ -27,6 +27,7 @@
 #'   be used for MDS.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
+#' @param center Center each probe prior to computing distances?
 #' @param pcs Vector specifying which principal coordinates to plot. Must be of
 #'   length two unless \code{D3 = TRUE}.
 #' @param label Label data points by sample name? Defaults to \code{FALSE}
@@ -133,6 +134,7 @@ plot_mds <- function(dat,
                          p = 2L,
                        top = 500L,
              filter_method = 'pairwise',
+                    center = FALSE,
                        pcs = c(1L, 2L),
                      label = FALSE,
                  pal_group = 'npg',
@@ -209,7 +211,7 @@ plot_mds <- function(dat,
   # Tidy data
   if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
-    dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
+    dm <- dist_mat(dat, dist, p, top, filter_method, center) %>% as.dist(.)
   } else {
     dm <- dat
   }
@@ -275,6 +277,9 @@ plot_mds <- function(dat,
         label, size, alpha, title, xlab, ylab, legend, hover, D3)
 
 }
+
+# Can't actaully handle dist input
+# Optional title?
 
 # Interactive options:
 # 1) filter probes

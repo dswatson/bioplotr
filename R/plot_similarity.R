@@ -21,6 +21,7 @@
 #'   be used for distance calculations.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}. See Details.
+#' @param center Center each probe prior to computing distances?
 #' @param hclustfun The agglomeration method to be used for hierarchical
 #'   clustering. Supports any method available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
@@ -90,6 +91,7 @@ plot_similarity <- function(dat,
                                 p = 2L,
                               top = NULL,
                     filter_method = 'pairwise',
+                           center = FALSE,
                         hclustfun = 'average',
                         pal_group = 'npg',
                         pal_covar = 'Blues',
@@ -141,7 +143,7 @@ plot_similarity <- function(dat,
   # Tidy data
   if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
-    dm <- dist_mat(dat, dist, p, top, filter_method)
+    dm <- dist_mat(dat, dist, p, top, filter_method, center)
   } else {
     dm <- dat
   }

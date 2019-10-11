@@ -401,11 +401,12 @@ var_filt <- function(dat,
 #'   be used for distance calculations.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
+#' @param center Center each probe prior to computing distances?
 #' @param robust Use robust probe centering?
 #'
 #' @details
-#' Data are centered by probe and samplewise distance calculated using one of
-#' the following methods:
+#' Data are optionally centered by probe and samplewise distance calculated 
+#' using one of the following methods:
 #'
 #' \itemize{
 #'   \item \code{"euclidean"}, \code{"maximum"}, \code{"manhattan"}, and \code{
@@ -440,6 +441,7 @@ dist_mat <- function(dat,
                      p,
                      top,
                      filter_method,
+                     center,
                      robust = FALSE) {
 
   # Preliminaries
@@ -450,11 +452,13 @@ dist_mat <- function(dat,
     dat <- var_filt(dat, top, robust = FALSE)
   }
 
-  # Center probes
-  if (robust) {
-    dat <- dat - rowMedians(dat)
-  } else {
-    dat <- dat - rowmeans(dat)
+  # Center probes?
+  if (center) {
+    if (robust) {
+      dat <- dat - rowMedians(dat)
+    } else {
+      dat <- dat - rowmeans(dat)
+    }
   }
 
   # Create distance matrix

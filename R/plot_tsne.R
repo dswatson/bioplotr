@@ -25,6 +25,7 @@
 #'   be used for t-SNE.
 #' @param filter_method String specifying whether to apply a \code{"pairwise"}
 #'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
+#' @param center Center each probe prior to computing distances?
 #' @param dims Vector specifying which dimensions to plot. Must be of length
 #'   two unless \code{D3 = TRUE}.
 #' @param perplexity How many nearest neighbors should the algorithm consider
@@ -131,6 +132,7 @@ plot_tsne <- function(dat,
                           p = 2L,
                         top = NULL,
               filter_method = 'pairwise',
+                     center = FALSE,
                        dims = c(1L, 2L),
                  perplexity = ncol(dat) / 4L,
                       theta = 0.1,
@@ -214,7 +216,7 @@ plot_tsne <- function(dat,
   # Tidy data
   if (!dat %>% is('dist')) {
     dat <- matrixize(dat)
-    dm <- dist_mat(dat, dist, p, top, filter_method) %>% as.dist(.)
+    dm <- dist_mat(dat, dist, p, top, filter_method, center) %>% as.dist(.)
   } else {
     dm <- dat
   }

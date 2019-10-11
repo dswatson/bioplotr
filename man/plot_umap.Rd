@@ -5,10 +5,11 @@
 \title{UMAP Plot}
 \usage{
 plot_umap(dat, group = NULL, covar = NULL, dist = "euclidean",
-  p = 2L, top = NULL, filter_method = "pairwise", dims = c(1L, 2L),
-  n_neighbors = 15L, label = FALSE, pal_group = "npg",
-  pal_covar = "Blues", size = NULL, alpha = NULL, title = "UMAP",
-  legend = "right", hover = FALSE, D3 = FALSE, ...)
+  p = 2L, top = NULL, filter_method = "pairwise", center = FALSE,
+  dims = c(1L, 2L), n_neighbors = 15L, label = FALSE,
+  pal_group = "npg", pal_covar = "Blues", size = NULL,
+  alpha = NULL, title = "UMAP", legend = "right", hover = FALSE,
+  D3 = FALSE, ...)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -38,6 +39,8 @@ be used for UMAP.}
 
 \item{filter_method}{String specifying whether to apply a \code{"pairwise"}
 or \code{"common"} filter if \code{top} is non-\code{NULL}.}
+
+\item{center}{Center each probe prior to computing distances?}
 
 \item{dims}{Vector specifying which dimensions to plot. Must be of length
 two unless \code{D3 = TRUE}.}
