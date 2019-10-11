@@ -13,9 +13,6 @@
 #' @param clin Data frame or matrix with rows correponding to samples and
 #'   columns to technical and/or biological features to test for associations
 #'   with omic data.
-#' @param index String specifying the name of the column in \code{clin}
-#'   containing sample names. Only samples in \code{index} with matching column
-#'   names in \code{dat} will be considered.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
 #' @param unblock Column name(s) of one or more features for which the 
@@ -107,7 +104,6 @@
 
 plot_drivers <- function(dat,
                          clin,
-                         index = 'Sample',
                          block = NULL,
                        unblock = NULL,
                         kernel = NULL,
@@ -125,32 +121,11 @@ plot_drivers <- function(dat,
   if (ncol(dat) < 3L) {
     stop('dat includes only ', ncol(dat), ' samples; need at least 3 for PCA.')
   }
+  if (ncol(dat) != nrow(clin)) {
+    stop('Number of columns in dat does not match number of rows in clin.')
+  }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
-  if (!index %in% colnames(clin)) {
-    stop('Column "', index, '" not found in clin.')
-  }
-  if (any(clin[[index]] %>% duplicated)) {
-    stop('Duplicate sample names detected in index.')
-  }
-  if (!any(clin[[index]] %in% colnames(dat))) {
-    stop('None of the samples in index match colnames in dat.')
-  }
-  overlap <- intersect(clin[[index]], colnames(dat))
-  n <- length(overlap)
-  if (!all(clin[[index]] %in% colnames(dat))) {
-    warning('The columns in dat correpond to a subset of the samples in ',
-            'index. Analysis will proceed with the ', n, ' samples  for ',
-            'which both omic and clinical data were detected.')
-  }
-  if (!all(colnames(dat) %in% clin[[index]])) {
-    warning('The samples in index correspond to a subset of the columns in ',
-            'dat. Analysis will proceed with the ', n, ' samples for ',
-            'which both omic and clinical data were detected.')
-  }
-  dat <- dat[, overlap]
-  clin <- clin[clin[[index]] %in% overlap, ] %>%
-    select(-index)
   if (!(block %>% is.null)) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -270,7 +245,7 @@ plot_drivers <- function(dat,
             summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
-                    PC = paste0('PC', seq_len(n.pc))) %>%
+                         PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC)) %>%   # Populate
     ungroup(.)
@@ -312,8 +287,7 @@ plot_drivers <- function(dat,
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
-# Some way to facet_grid?
-
-
+# Some way to facet_grid? A by argument
+# Use pData if available
 
 

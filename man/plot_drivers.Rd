@@ -4,10 +4,10 @@
 \alias{plot_drivers}
 \title{Plot Drivers of Omic Variation}
 \usage{
-plot_drivers(dat, clin, index = "Sample", block = NULL,
-  unblock = NULL, kernel = NULL, kpar = NULL, top = NULL,
-  n.pc = 5L, label = FALSE, alpha = NULL, p.adj = NULL,
-  title = "Variation By Feature", legend = "right", hover = FALSE)
+plot_drivers(dat, clin, block = NULL, unblock = NULL, kernel = NULL,
+  kpar = NULL, top = NULL, n.pc = 5L, label = FALSE,
+  alpha = NULL, p.adj = NULL, title = "Variation By Feature",
+  legend = "right", hover = FALSE)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -20,10 +20,6 @@ warning.}
 \item{clin}{Data frame or matrix with rows correponding to samples and
 columns to technical and/or biological features to test for associations
 with omic data.}
-
-\item{index}{String specifying the name of the column in \code{clin}
-containing sample names. Only samples in \code{index} with matching column
-names in \code{dat} will be considered.}
 
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
