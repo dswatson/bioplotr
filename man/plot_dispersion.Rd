@@ -40,9 +40,9 @@ estimates. Must be one of \code{"log"} or \code{"sqrt"}.}
 \code{"topleft"}, or \code{"topright"}.}
 
 \item{design}{Optional design matrix with rows corresponding to samples and
-columns to coefficients to be estimated. This will be extracted from \code{
-dat} if available and need not be set explicitly in the call. If provided,
-however, \code{design} will override the relevant slot of \code{dat}.}
+columns to model coefficients. This will be extracted from \code{dat} if 
+available and need not be set explicitly in the call. If provided, however, 
+\code{design} will override the relevant slot of \code{dat}.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

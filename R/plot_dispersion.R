@@ -12,9 +12,9 @@
 #'   genewise dispersions. A design matrix may be required to calculate adjusted
 #'   profile log-likelihoods. See Details.
 #' @param design Optional design matrix with rows corresponding to samples and
-#'   columns to coefficients to be estimated. This will be extracted from \code{
-#'   dat} if available and need not be set explicitly in the call. If provided,
-#'   however, \code{design} will override the relevant slot of \code{dat}.
+#'   columns to model coefficients. This will be extracted from \code{dat} if 
+#'   available and need not be set explicitly in the call. If provided, however, 
+#'   \code{design} will override the relevant slot of \code{dat}.
 #' @param trans Data transformation to be applied to genewise dispersion
 #'   estimates. Must be one of \code{"log"} or \code{"sqrt"}.
 #' @param pipeline Which package should be used to estimate normalization
