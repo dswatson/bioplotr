@@ -284,6 +284,7 @@ plot_drivers <- function(dat,
 }
 
 
+# Kernel PC labels are weird
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
