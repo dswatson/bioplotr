@@ -162,3 +162,9 @@ plot_similarity <- function(dat,
 
 
 ### REPLACE AHEATMAP WITH PHEATMAP ###
+# pal_covar and pal_group need to adapt to detect number of features 
+
+
+
+
+

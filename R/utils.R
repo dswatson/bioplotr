@@ -317,7 +317,8 @@ matrixize <- function(dat) {
     warning('Transforming raw counts to log2-CPM scale.')
   } else if (dat %>% is('DESeqDataSet')) {
     require(DESeq2)
-    if (sizeFactors(dat) %>% is.null & normalizationFactors(dat) %>% is.null) {
+    if (sizeFactors(dat) %>% is.null && 
+        normalizationFactors(dat) %>% is.null) {
       dat <- estimateSizeFactors(dat)            # Normalize counts
     }
     dat <- counts(dat, normalized = TRUE)

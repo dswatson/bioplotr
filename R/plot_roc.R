@@ -120,3 +120,4 @@ plot_roc <- function(obs,
 }
 
 # Confidence intervals?
+# Issue with class(obs) = 'character' (so format_binom I guess?)
