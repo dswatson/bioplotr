@@ -10,7 +10,15 @@
 #' @param covar Optional continuous covariate of length equal to sample size.
 #'   Alternatively, a data frame or list of such vectors, optionally named.
 #' @param dist Distance measure to be used. Supports all methods available in
-#'   \code{\link[stats]{dist}} and \code{\link[stats]{cor}}.
+#'   \code{\link[stats]{dist}}, \code{Rfast::\link[Rfast]{Dist}}, and \code{
+#'   \link[vegan]{vegdist}}, as well as those implemented in the \code{bioDist} 
+#'   package. See Details.
+#' @param p Power of the Minkowski distance.
+#' @param top Optional number (if > 1) or proportion (if < 1) of top probes to
+#'   be used for t-SNE.
+#' @param filter_method String specifying whether to apply a \code{"pairwise"}
+#'   or \code{"common"} filter if \code{top} is non-\code{NULL}.
+#' @param center Center each probe prior to computing distances?
 #' @param hclustfun The agglomeration method to be used for hierarchical
 #'   clustering. Supports all methods available in \code{\link[stats]{hclust}}.
 #' @param pal_group String specifying the color palette to use if \code{group}
@@ -42,6 +50,21 @@
 #' investigation. Hierarchical clustering dendrograms cluster both the rows and
 #' the columns, revealing latent structure in the data. Annotation tracks atop
 #' the figure may be used to investigate associations with phenotypic features.
+#' 
+#' Available distance measures include: \code{"euclidean"}, \code{"maximum"},
+#' \code{"manhattan"}, \code{"canberra"}, \code{"minkowski"}, \code{"cosine"},
+#' \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"bray"}, \code{
+#' "kulczynski"}, \code{"jaccard"}, \code{"gower"}, \code{"altGower"}, \code{
+#' "morisita"}, \code{"horn"}, \code{"mountford"}, \code{"raup"}, \code{
+#' "binomial"}, \code{"chao"}, \code{"cao"}, \code{"mahalanobis"}, \code{"MI"},
+#' or \code{"KLD"}. Some distance measures are unsuitable for certain types of
+#' data. See \code{\link{dist_mat}} for more details on these methods and links
+#' to documentation on each.
+#'
+#' The \code{top} argument optionally filters data using either probewise
+#' variance (if \code{filter_method = "common"}) or the leading fold change
+#' method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
+#' \link{plot_mds}} for more details.
 #'
 #' @examples
 #' mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
@@ -56,6 +79,10 @@ plot_heatmap <- function(dat,
                          group = NULL,
                          covar = NULL,
                           dist = 'pearson',
+                             p = 2L,
+                           top = NULL,
+                 filter_method = 'pairwise',
+                        center = FALSE,
                      hclustfun = 'average',
                      pal_group = 'npg',
                      pal_covar = 'Blues',
@@ -80,9 +107,15 @@ plot_heatmap <- function(dat,
     ann_cols <- c(grp_cols, cov_cols)
   }
   d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-         'pearson', 'kendall', 'spearman')
+         'bhattacharyya', 'hellinger', 'kullback_leibler', 'cosine', 
+         'bray', 'kulczynski', 'jaccard', 'gower', 'altGower', 'morisita', 
+         'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+         'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI')
   if (!dist %in% d) {
     stop('dist must be one of ', stringify(d, 'or'), '.')
+  }
+  if (!filter_method %in% c('pairwise', 'common')) {
+    stop('filter_method must be either "pairwise" or "common".')
   }
   hclusts <- c('ward.D', 'ward.D2', 'single', 'complete', 'average',
                'mcquitty', 'median', 'centroid')
@@ -94,14 +127,15 @@ plot_heatmap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
+  dm <- dist_mat(dat, dist, p, top, filter_method, center) %>% as.dist(.)
 
   # Plot
   suppressPackageStartupMessages(require(NMF))
   if (anno %>% is.null) {
-    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
+    aheatmap(dat, distfun = dm, hclustfun = hclustfun, scale = 'row',
              col = pal_tiles, main = title, border_color = 'grey60')
   } else {
-    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
+    aheatmap(dat, distfun = dm, hclustfun = hclustfun, scale = 'row',
              annCol = anno, annColors = ann_cols, col = pal_tiles,
              main = title, border_color = 'grey60')
   }

@@ -39,8 +39,9 @@ using one of the following methods:
   \item \code{"cosine"} and \code{"canberra"} are implemented and documented
     in \code{wordspace::\link[wordspace]{dist.matrix}}.
   \item \code{"pearson"}, \code{"kendall"}, and \code{"spearman"} correspond
-    to various forms of correlation distance, generally defined as 1 - the
-    correlation coefficient. See \code{\link[stats]{cor}} for more details.
+    to various forms of correlation distance, generally defined as 1 -- the
+    absolute value of the correlation coefficient. See 
+    \code{\link[stats]{cor}} for more details.
   \item \code{"bray"}, \code{"kulczynski"}, \code{"jaccard"}, \code{"gower"},
     \code{"altGower"}, \code{"morisita"}, \code{"horn"}, \code{"mountford"},
     \code{"raup"}, \code{"binomial"}, \code{"chao"}, \code{"cao"}, and

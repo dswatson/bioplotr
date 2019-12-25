@@ -58,12 +58,14 @@
 #' clustering on a Euclidean distance matrix, are mathematically straightforward
 #' and commonly used for omic EDA. Complete linkage is also fairly common.
 #'
-#' Pearson distance, defined as 1 - the Pearson correlation, is another popular
-#' method for evaluating sample similarity. Mutual information and
-#' Kullback-Leibler divergence are more complicated distance metrics that
-#' require some simplifying assumptions to be efficiently applied to continuous
-#' data distributions. See \code{\link[bioDist]{MIdist}} and \code{
-#' \link[bioDist]{KLdist.matrix}} for more info.
+#' Other available distance measures include: \code{"maximum"}, 
+#' \code{"manhattan"}, \code{"canberra"}, \code{"minkowski"}, \code{"cosine"},
+#' \code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"bray"}, \code{
+#' "kulczynski"}, \code{"jaccard"}, \code{"gower"}, \code{"altGower"}, \code{
+#' "morisita"}, \code{"horn"}, \code{"mountford"}, \code{"raup"}, \code{
+#' "binomial"}, \code{"chao"}, \code{"cao"}, \code{"mahalanobis"}, \code{"MI"},
+#' or \code{"KLD"}. See \code{\link{dist_mat}} for more details on these methods 
+#' and links to documentation on each.
 #'
 #' The \code{top} argument optionally filters data using either probewise
 #' variance (if \code{filter_method = "common"}) or the leading fold change
@@ -101,9 +103,10 @@ plot_similarity <- function(dat,
   # Preliminaries
   if (!dat %>% is('dist')) {
     d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
-           'cosine', 'bray', 'kulczynski', 'jaccard', 'gower', 'altGower',
-           'morisita', 'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
-           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI', 'KLD')
+           'bhattacharyya', 'hellinger', 'kullback_leibler', 'cosine', 
+           'bray', 'kulczynski', 'jaccard', 'gower', 'altGower', 'morisita', 
+           'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
+           'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI')
     if (!dist %in% d) {
       stop('dist must be one of ', stringify(d, 'or'), '.')
     }
@@ -165,8 +168,5 @@ plot_similarity <- function(dat,
 
 ### REPLACE AHEATMAP WITH PHEATMAP ###
 # pal_covar and pal_group need to adapt to detect number of features 
-
-
-
 
 

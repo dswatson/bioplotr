@@ -5,6 +5,7 @@
 \title{Omic Heatmap}
 \usage{
 plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
+  p = 2L, top = NULL, filter_method = "pairwise", center = FALSE,
   hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
   pal_tiles = "RdBu", title = "Omic Heatmap")
 }
@@ -20,7 +21,19 @@ named.}
 Alternatively, a data frame or list of such vectors, optionally named.}
 
 \item{dist}{Distance measure to be used. Supports all methods available in
-\code{\link[stats]{dist}} and \code{\link[stats]{cor}}.}
+\code{\link[stats]{dist}}, \code{Rfast::\link[Rfast]{Dist}}, and \code{
+\link[vegan]{vegdist}}, as well as those implemented in the \code{bioDist} 
+package. See Details.}
+
+\item{p}{Power of the Minkowski distance.}
+
+\item{top}{Optional number (if > 1) or proportion (if < 1) of top probes to
+be used for t-SNE.}
+
+\item{filter_method}{String specifying whether to apply a \code{"pairwise"}
+or \code{"common"} filter if \code{top} is non-\code{NULL}.}
+
+\item{center}{Center each probe prior to computing distances?}
 
 \item{hclustfun}{The agglomeration method to be used for hierarchical
 clustering. Supports all methods available in \code{\link[stats]{hclust}}.}
@@ -60,6 +73,21 @@ matrix, especially after top probes have been selected for closer
 investigation. Hierarchical clustering dendrograms cluster both the rows and
 the columns, revealing latent structure in the data. Annotation tracks atop
 the figure may be used to investigate associations with phenotypic features.
+
+Available distance measures include: \code{"euclidean"}, \code{"maximum"},
+\code{"manhattan"}, \code{"canberra"}, \code{"minkowski"}, \code{"cosine"},
+\code{"pearson"}, \code{"kendall"}, \code{"spearman"}, \code{"bray"}, \code{
+"kulczynski"}, \code{"jaccard"}, \code{"gower"}, \code{"altGower"}, \code{
+"morisita"}, \code{"horn"}, \code{"mountford"}, \code{"raup"}, \code{
+"binomial"}, \code{"chao"}, \code{"cao"}, \code{"mahalanobis"}, \code{"MI"},
+or \code{"KLD"}. Some distance measures are unsuitable for certain types of
+data. See \code{\link{dist_mat}} for more details on these methods and links
+to documentation on each.
+
+The \code{top} argument optionally filters data using either probewise
+variance (if \code{filter_method = "common"}) or the leading fold change
+method of Smyth et al. (if \code{filter_method = "pairwise"}). See \code{
+\link{plot_mds}} for more details.
 }
 \examples{
 mat <- matrix(rnorm(100 * 10), nrow = 100, ncol = 10)
