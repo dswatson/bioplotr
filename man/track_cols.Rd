@@ -9,6 +9,8 @@ track_cols(features, pal, var_type)
 \arguments{
 \item{features}{List output by \code{\link{format_features}}.}
 
+\item{pal}{Palette name or constituents.}
+
 \item{var_type}{Character string specifying whether features are categorical
 or continuous.}
 }
