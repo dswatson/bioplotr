@@ -187,7 +187,6 @@ plot_pca <- function(dat,
 }
 
 # Consider utility wrapper for embedding prelimz?
-# User ggpoint(aes(size, alpha))
 # Look for group and covar in pData
 
 
