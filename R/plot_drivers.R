@@ -78,7 +78,7 @@
 #' clin <- colData(airway) %>%
 #'   as_tibble(.) %>%
 #'   select(Run, cell, dex)
-#' plot_drivers(mat, clin, index = "Run")
+#' plot_drivers(mat, clin)
 #'
 #' @seealso
 #' \code{\link{plot_pca}}, \code{\link{plot_kpca}}
@@ -188,7 +188,7 @@ plot_drivers <- function(dat,
     pca <- prcomp(t(dat))                          # PCA, % variance explained
     pve <- seq_len(n.pc) %>% map_chr(function(pc) {
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
-      paste0('\n(', p, '%)')
+      paste0('PC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- pca$x
   } else {
@@ -231,7 +231,7 @@ plot_drivers <- function(dat,
     pca <- kpca(k_mat)                           # PCA, % variance explained
     pve <- seq_len(max(n.pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
-      paste0('KPC', pc, ' (', round(p, 2L), '%)')
+      paste0('KPC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- rotated(pca)
   }
@@ -269,7 +269,7 @@ plot_drivers <- function(dat,
     scale_fill_gradientn(colors = c('white', 'pink', 'orange', 'red', 'darkred'),
                            name = leg_lab) +
     scale_color_manual(values = c('grey90', 'black')) +
-    scale_x_discrete(labels = paste0(unique(df$PC), pve)) +
+    scale_x_discrete(labels = pve) +
     guides(color = FALSE) +
     labs(title = title, x = 'Principal Component') +
     theme_bw() +
@@ -284,7 +284,6 @@ plot_drivers <- function(dat,
 }
 
 
-# Kernel PC labels are weird
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping

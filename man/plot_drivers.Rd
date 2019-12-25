@@ -102,7 +102,7 @@ mat <- cpm(cnts[keep, ], log = TRUE)
 clin <- colData(airway) \%>\%
   as_tibble(.) \%>\%
   select(Run, cell, dex)
-plot_drivers(mat, clin, index = "Run")
+plot_drivers(mat, clin)
 
 }
 \seealso{
