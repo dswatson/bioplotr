@@ -102,15 +102,19 @@ format_binom <- function(vec,
       if (length(levels(vec)) != 2L) {
         stop('Response must be dichotomous.')
       } else {
-        warning('A positive outcome is hereby defined as obs == "',
-                levels(vec)[1], '". To change this to obs == "', levels(vec)[2],
-                '", either relevel the factor or recode response as numeric ',
-                '(1/0).')
-        vec <- ifelse(vec == levels(vec)[1L], 1L, 0L)
+        if (all.equal(levels(vec), c('0','1'))) {
+          vec <- if_else(vec == levels(vec)[1L], 0L, 1L)
+        } else {
+          warning('A positive outcome is hereby defined as obs == "',
+                  levels(vec)[1], '". To change this to obs == "', levels(vec)[2],
+                  '", either relevel the factor or recode response as numeric ',
+                  '(1/0).')
+          vec <- if_else(vec == levels(vec)[1L], 1L, 0L)
+        }
       }
     }
     if (vec %>% is.logical) {
-      vec <- ifelse(vec, 1L, 0L)
+      vec <- if_else(vec, 1L, 0L)
     }
     if (!all(vec %in% c(0L, 1L))) {
       stop('A numeric response can only take values of 1 or 0.')
