@@ -4,10 +4,23 @@
 \alias{plot_drivers}
 \title{Plot Drivers of Omic Variation}
 \usage{
-plot_drivers(dat, clin, block = NULL, unblock = NULL, kernel = NULL,
-  kpar = NULL, top = NULL, n.pc = 5L, label = FALSE,
-  alpha = NULL, p.adj = NULL, title = "Variation By Feature",
-  legend = "right", hover = FALSE)
+plot_drivers(
+  dat,
+  clin,
+  parametric = TRUE,
+  block = NULL,
+  unblock = NULL,
+  kernel = NULL,
+  kpar = NULL,
+  top = NULL,
+  n.pc = 5L,
+  label = FALSE,
+  alpha = NULL,
+  p.adj = NULL,
+  title = "Variation By Feature",
+  legend = "right",
+  hover = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
@@ -20,6 +33,9 @@ warning.}
 \item{clin}{Data frame or matrix with rows correponding to samples and
 columns to technical and/or biological features to test for associations
 with omic data.}
+
+\item{parametric}{Compute \emph{p}-values using parametric association tests?
+If \code{FALSE}, rank-based alternatives are used instead. See Details.}
 
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
@@ -69,17 +85,18 @@ features.
 }
 \details{
 Strength of association is measured by -log \emph{p}-values, optionally
-adjusted for multiple testing. When \code{block = NULL}, significance is
-derived from either Pearson correlation tests (for continuous features) or
-one-way ANOVA \emph{F}-tests (for categorical features).
+adjusted for multiple testing. When \code{parametric = TRUE}, significance
+is computed from Pearson correlation tests (for continuous features) or 
+ANOVA \emph{F}-tests (for categorical features). When 
+\code{parametric = FALSE}, significance is computed from Spearman correlation
+tests (for continuous features) or Kruskal-Wallis tests (for categorical
+features). 
 
 An optional blocking variable may be provided if samples violate the
 assumption of independence, e.g. for studies in which subjects are observed
 at multiple time points. If a blocking variable is identified, it will be
-factored into all subsequent measures of association, except those explicitly
-exempted by the \code{unblock} argument. Significance is evaluated using
-Pearson partial correlation tests (for continuous features) or repeated
-measures ANOVA \emph{F}-tests (for categorical features).
+regressed out prior to testing for all variables except those explicitly
+exempted by the \code{unblock} argument. 
 
 When supplying a blocking variable, be careful to consider potential
 confounding effects. For instance, features like sex and age are usually

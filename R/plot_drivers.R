@@ -13,6 +13,8 @@
 #' @param clin Data frame or matrix with rows correponding to samples and
 #'   columns to technical and/or biological features to test for associations
 #'   with omic data.
+#' @param parametric Compute \emph{p}-values using parametric association tests?
+#'   If \code{FALSE}, rank-based alternatives are used instead. See Details.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
 #' @param unblock Column name(s) of one or more features for which the 
@@ -45,17 +47,18 @@
 #'
 #' @details
 #' Strength of association is measured by -log \emph{p}-values, optionally
-#' adjusted for multiple testing. When \code{block = NULL}, significance is
-#' derived from either Pearson correlation tests (for continuous features) or
-#' one-way ANOVA \emph{F}-tests (for categorical features).
+#' adjusted for multiple testing. When \code{parametric = TRUE}, significance
+#' is computed from Pearson correlation tests (for continuous features) or 
+#' ANOVA \emph{F}-tests (for categorical features). When 
+#' \code{parametric = FALSE}, significance is computed from Spearman correlation
+#' tests (for continuous features) or Kruskal-Wallis tests (for categorical
+#' features). 
 #'
 #' An optional blocking variable may be provided if samples violate the
 #' assumption of independence, e.g. for studies in which subjects are observed
 #' at multiple time points. If a blocking variable is identified, it will be
-#' factored into all subsequent measures of association, except those explicitly
-#' exempted by the \code{unblock} argument. Significance is evaluated using
-#' Pearson partial correlation tests (for continuous features) or repeated
-#' measures ANOVA \emph{F}-tests (for categorical features).
+#' regressed out prior to testing for all variables except those explicitly
+#' exempted by the \code{unblock} argument. 
 #'
 #' When supplying a blocking variable, be careful to consider potential
 #' confounding effects. For instance, features like sex and age are usually
@@ -98,12 +101,14 @@
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
+#' @importFrom broom tidy
 #' @import dplyr
 #' @import ggplot2
 #'
 
 plot_drivers <- function(dat,
                          clin,
+                    parametric = TRUE,
                          block = NULL,
                        unblock = NULL,
                         kernel = NULL,
@@ -236,13 +241,27 @@ plot_drivers <- function(dat,
     pca <- rotated(pca)
   }
   sig <- function(j, pc) {                       # p-val fn
-    if (block %>% is.null || j %in% unblock || j == block) {
-      mod <- lm(pca[, pc] ~ clin[[j]])
+    if (!block %>% is.null & !j %in% unblock & j != block) {
+      x <- lm(pca[, pc] ~ clin[[block]]) %>% residuals(.)
+      y <- lm(pca[, pc] ~ clin[[j]]) %>% residuals(.)
     } else {
-      mod <- lm(pca[, pc] ~ clin[[j]] + clin[[block]])
+      x <- clin[[j]]
+      y <- pca[, pc]
     }
-    if_else(clin[[j]] %>% is.numeric,
-            summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
+    if (parametric) {
+      if (clin[[j]] %>% is.numeric) {
+        p_val <- cor.test(x, y, method = 'pearson')$p.value
+      } else {
+        p_val <- tidy(aov(y ~ x))$p.value[1]
+      }
+    } else {
+      if (clin[[j]] %>% is.numeric) {
+        p_val <- cor.test(x, y, method = 'spearman')$p.value
+      } else {
+        p_val <- kruskal.test(y ~ x)$p.value 
+      }
+    }
+   return(p_val) 
   }
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
