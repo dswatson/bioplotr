@@ -4,10 +4,22 @@
 \alias{plot_ica}
 \title{ICA Plot}
 \usage{
-plot_ica(dat, group = NULL, covar = NULL, top = NULL, dims = c(1L,
-  2L), label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  size = NULL, alpha = NULL, title = "ICA", legend = "right",
-  hover = FALSE, D3 = FALSE)
+plot_ica(
+  dat,
+  group = NULL,
+  covar = NULL,
+  top = NULL,
+  dims = c(1L, 2L),
+  label = FALSE,
+  pal_group = "npg",
+  pal_covar = "Blues",
+  size = NULL,
+  alpha = NULL,
+  title = "ICA",
+  legend = "right",
+  hover = FALSE,
+  D3 = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

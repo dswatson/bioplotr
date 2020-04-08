@@ -4,8 +4,14 @@
 \alias{plot_lorenz}
 \title{Lorenz Curve(s)}
 \usage{
-plot_lorenz(dat, pal_curves = "npg", title = NULL, leg.txt = NULL,
-  legend = "topleft", hover = FALSE)
+plot_lorenz(
+  dat,
+  pal_curves = "npg",
+  title = NULL,
+  leg.txt = NULL,
+  legend = "topleft",
+  hover = FALSE
+)
 }
 \arguments{
 \item{dat}{Numeric vector, or several such vectors organized into a list,

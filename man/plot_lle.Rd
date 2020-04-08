@@ -4,10 +4,23 @@
 \alias{plot_lle}
 \title{LLE Plot}
 \usage{
-plot_lle(dat, group = NULL, covar = NULL, k = ncol(dat)/4L,
-  top = NULL, dims = c(1L, 2L), label = FALSE, pal_group = "npg",
-  pal_covar = "Blues", size = NULL, alpha = NULL, title = "LLE",
-  legend = "right", hover = FALSE, D3 = FALSE)
+plot_lle(
+  dat,
+  group = NULL,
+  covar = NULL,
+  k = ncol(dat)/4L,
+  top = NULL,
+  dims = c(1L, 2L),
+  label = FALSE,
+  pal_group = "npg",
+  pal_covar = "Blues",
+  size = NULL,
+  alpha = NULL,
+  title = "LLE",
+  legend = "right",
+  hover = FALSE,
+  D3 = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

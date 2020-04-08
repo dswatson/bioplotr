@@ -4,11 +4,26 @@
 \alias{plot_som}
 \title{SOM}
 \usage{
-plot_som(dat, type = "model", design = NULL, coef = NULL,
-  stat = "lfc", sample = 1L, top = 0.5, grid_dims = NULL,
-  topo = "hexagonal", neighb = "gaussian", rlen = 1000,
-  parallel = TRUE, pal_tiles = NULL, title = NULL,
-  legend = "right", hover = FALSE, export = TRUE, ...)
+plot_som(
+  dat,
+  type = "model",
+  design = NULL,
+  coef = NULL,
+  stat = "lfc",
+  sample = 1L,
+  top = 0.5,
+  grid_dims = NULL,
+  topo = "hexagonal",
+  neighb = "gaussian",
+  rlen = 1000,
+  parallel = TRUE,
+  pal_tiles = NULL,
+  title = NULL,
+  legend = "right",
+  hover = FALSE,
+  export = TRUE,
+  ...
+)
 }
 \arguments{
 \item{dat}{Either a probe by sample omic data matrix or an object of class

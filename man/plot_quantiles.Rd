@@ -4,8 +4,15 @@
 \alias{plot_quantiles}
 \title{Plot Quantiles}
 \usage{
-plot_quantiles(x, y, method = "QQ", pts = 1000L, title = NULL,
-  xlab = NULL, ylab = NULL)
+plot_quantiles(
+  x,
+  y,
+  method = "QQ",
+  pts = 1000L,
+  title = NULL,
+  xlab = NULL,
+  ylab = NULL
+)
 }
 \arguments{
 \item{x}{Vector of numeric values.}

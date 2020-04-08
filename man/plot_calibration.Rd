@@ -4,8 +4,14 @@
 \alias{plot_calibration}
 \title{Probability Calibration Curve(s)}
 \usage{
-plot_calibration(obs, pred, pal_curves = "npg", title = NULL,
-  legend = "right", hover = FALSE)
+plot_calibration(
+  obs,
+  pred,
+  pal_curves = "npg",
+  title = NULL,
+  legend = "right",
+  hover = FALSE
+)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,

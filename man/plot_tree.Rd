@@ -4,8 +4,7 @@
 \alias{plot_tree}
 \title{Tree Plots}
 \usage{
-plot_tree(dat, labels = TRUE, leaf_labels = TRUE, rotate = FALSE,
-  title = NULL)
+plot_tree(dat, labels = TRUE, leaf_labels = TRUE, rotate = FALSE, title = NULL)
 }
 \arguments{
 \item{dat}{An object representing a dendrogram (e.g. of class \code{

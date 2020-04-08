@@ -4,8 +4,15 @@
 \alias{plot_pr}
 \title{Precision-Recall Curve(s)}
 \usage{
-plot_pr(obs, pred, pal_curves = "npg", title = NULL, leg.txt = NULL,
-  legend = "topright", hover = FALSE)
+plot_pr(
+  obs,
+  pred,
+  pal_curves = "npg",
+  title = NULL,
+  leg.txt = NULL,
+  legend = "topright",
+  hover = FALSE
+)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be numeric,

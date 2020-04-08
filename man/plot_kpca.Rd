@@ -4,11 +4,24 @@
 \alias{plot_kpca}
 \title{Kernel PCA Plot}
 \usage{
-plot_kpca(dat, group = NULL, covar = NULL, kernel = "rbfdot",
-  kpar = list(sigma = 1e-04), top = NULL, dims = c(1L, 2L),
-  label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  size = NULL, alpha = NULL, title = "Kernel PCA",
-  legend = "right", hover = FALSE, D3 = FALSE)
+plot_kpca(
+  dat,
+  group = NULL,
+  covar = NULL,
+  kernel = "rbfdot",
+  kpar = list(sigma = 1e-04),
+  top = NULL,
+  dims = c(1L, 2L),
+  label = FALSE,
+  pal_group = "npg",
+  pal_covar = "Blues",
+  size = NULL,
+  alpha = NULL,
+  title = "Kernel PCA",
+  legend = "right",
+  hover = FALSE,
+  D3 = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

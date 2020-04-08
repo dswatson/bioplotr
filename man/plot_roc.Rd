@@ -4,8 +4,15 @@
 \alias{plot_roc}
 \title{Reicever Operating Characteristic Curve(s)}
 \usage{
-plot_roc(obs, pred, pal_curves = "npg", title = NULL, leg.txt = NULL,
-  legend = "bottomright", hover = FALSE)
+plot_roc(
+  obs,
+  pred,
+  pal_curves = "npg",
+  title = NULL,
+  leg.txt = NULL,
+  legend = "bottomright",
+  hover = FALSE
+)
 }
 \arguments{
 \item{obs}{Vector of observed outcomes. Must be dichotomous. Can be logical,

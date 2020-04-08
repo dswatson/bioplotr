@@ -4,10 +4,20 @@
 \alias{plot_corr}
 \title{Correlation Plot}
 \usage{
-plot_corr(dat, method = "pearson", use = "everything", alpha = NULL,
-  p.adj = NULL, geom = "tile", label = FALSE, diag = FALSE,
-  title = "Correlation Plot", legend = "right", hover = FALSE,
-  export = FALSE)
+plot_corr(
+  dat,
+  method = "pearson",
+  use = "everything",
+  alpha = NULL,
+  p.adj = NULL,
+  geom = "tile",
+  label = FALSE,
+  diag = FALSE,
+  title = "Correlation Plot",
+  legend = "right",
+  hover = FALSE,
+  export = FALSE
+)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical

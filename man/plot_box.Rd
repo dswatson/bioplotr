@@ -4,8 +4,16 @@
 \alias{plot_box}
 \title{Box Plots by Sample}
 \usage{
-plot_box(dat, group = NULL, pal_group = "npg", type = NULL,
-  ylab = NULL, title = NULL, legend = "right", hover = FALSE)
+plot_box(
+  dat,
+  group = NULL,
+  pal_group = "npg",
+  type = NULL,
+  ylab = NULL,
+  title = NULL,
+  legend = "right",
+  hover = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

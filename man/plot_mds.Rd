@@ -4,12 +4,27 @@
 \alias{plot_mds}
 \title{MDS Plot}
 \usage{
-plot_mds(dat, group = NULL, covar = NULL, metric = TRUE,
-  dist = "euclidean", p = 2L, top = 500L,
-  filter_method = "pairwise", center = FALSE, pcs = c(1L, 2L),
-  label = FALSE, pal_group = "npg", pal_covar = "Blues",
-  size = NULL, alpha = NULL, title = "MDS", legend = "right",
-  hover = FALSE, D3 = FALSE)
+plot_mds(
+  dat,
+  group = NULL,
+  covar = NULL,
+  metric = TRUE,
+  dist = "euclidean",
+  p = 2L,
+  top = 500L,
+  filter_method = "pairwise",
+  center = FALSE,
+  pcs = c(1L, 2L),
+  label = FALSE,
+  pal_group = "npg",
+  pal_covar = "Blues",
+  size = NULL,
+  alpha = NULL,
+  title = "MDS",
+  legend = "right",
+  hover = FALSE,
+  D3 = FALSE
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

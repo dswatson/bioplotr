@@ -4,10 +4,21 @@
 \alias{plot_similarity}
 \title{Similarity Matrix Heatmap}
 \usage{
-plot_similarity(dat, group = NULL, covar = NULL, dist = "euclidean",
-  p = 2L, top = NULL, filter_method = "pairwise", center = FALSE,
-  hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
-  pal_tiles = "RdBu", title = "Sample Similarity Matrix")
+plot_similarity(
+  dat,
+  group = NULL,
+  covar = NULL,
+  dist = "euclidean",
+  p = 2L,
+  top = NULL,
+  filter_method = "pairwise",
+  center = FALSE,
+  hclustfun = "average",
+  pal_group = "npg",
+  pal_covar = "Blues",
+  pal_tiles = "RdBu",
+  title = "Sample Similarity Matrix"
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to

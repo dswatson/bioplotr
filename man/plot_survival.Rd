@@ -4,9 +4,17 @@
 \alias{plot_survival}
 \title{Survival Curve(s)}
 \usage{
-plot_survival(fit, fun = NULL, CI = FALSE, censor = TRUE,
-  pal_curves = "npg", title = NULL, leg.txt = NULL,
-  legend = "right", ...)
+plot_survival(
+  fit,
+  fun = NULL,
+  CI = FALSE,
+  censor = TRUE,
+  pal_curves = "npg",
+  title = NULL,
+  leg.txt = NULL,
+  legend = "right",
+  ...
+)
 }
 \arguments{
 \item{fit}{An object of class \code{\link[survival]{survfit}}.}

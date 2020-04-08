@@ -4,9 +4,18 @@
 \alias{plot_volcano}
 \title{Volcano Plot}
 \usage{
-plot_volcano(dat, y = "q", fdr = 0.05, lfc = NULL, probes = NULL,
-  size = NULL, alpha = NULL, title = "Volcano Plot",
-  legend = "right", hover = FALSE)
+plot_volcano(
+  dat,
+  y = "q",
+  fdr = 0.05,
+  lfc = NULL,
+  probes = NULL,
+  size = NULL,
+  alpha = NULL,
+  title = "Volcano Plot",
+  legend = "right",
+  hover = FALSE
+)
 }
 \arguments{
 \item{dat}{Data frame or similar object representing the results of a test

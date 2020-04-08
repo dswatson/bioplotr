@@ -4,10 +4,18 @@
 \alias{plot_consensus}
 \title{Consensus Matrix Heatmap}
 \usage{
-plot_consensus(cc, k, group = NULL, covar = NULL,
-  hclustfun = "average", pal_clust = "d3", pal_group = "npg",
-  pal_covar = "Blues", pal_tiles = "RdBu",
-  title = "Consensus Matrix")
+plot_consensus(
+  cc,
+  k,
+  group = NULL,
+  covar = NULL,
+  hclustfun = "average",
+  pal_clust = "d3",
+  pal_group = "npg",
+  pal_covar = "Blues",
+  pal_tiles = "RdBu",
+  title = "Consensus Matrix"
+)
 }
 \arguments{
 \item{cc}{A list created by a call to \code{

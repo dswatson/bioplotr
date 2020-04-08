@@ -7,18 +7,40 @@
 \alias{plot_dispersion.default}
 \title{Plot Dispersion Estimates}
 \usage{
-plot_dispersion(dat, trans = "log", title = "Mean-Dispersion Plot",
-  legend = "right", ...)
+plot_dispersion(
+  dat,
+  trans = "log",
+  title = "Mean-Dispersion Plot",
+  legend = "right",
+  ...
+)
 
-\method{plot_dispersion}{DGEList}(dat, design = NULL, trans = "log",
-  title = "Mean-Dispersion Plot", legend = "right", hover = FALSE)
+\method{plot_dispersion}{DGEList}(
+  dat,
+  design = NULL,
+  trans = "log",
+  title = "Mean-Dispersion Plot",
+  legend = "right",
+  hover = FALSE
+)
 
-\method{plot_dispersion}{DESeqDataSet}(dat, trans = "log",
-  title = "Mean-Dispersion Plot", legend = "right", hover = FALSE)
+\method{plot_dispersion}{DESeqDataSet}(
+  dat,
+  trans = "log",
+  title = "Mean-Dispersion Plot",
+  legend = "right",
+  hover = FALSE
+)
 
-\method{plot_dispersion}{default}(dat, design = NULL, trans = "log",
-  pipeline = NULL, title = "Mean-Dispersion Plot", legend = "right",
-  hover = FALSE)
+\method{plot_dispersion}{default}(
+  dat,
+  design = NULL,
+  trans = "log",
+  pipeline = NULL,
+  title = "Mean-Dispersion Plot",
+  legend = "right",
+  hover = FALSE
+)
 }
 \arguments{
 \item{dat}{A \code{\link[edgeR]{DGEList}} object or \code{\link[DESeq2]{

@@ -4,10 +4,20 @@
 \alias{plot_concordance}
 \title{Concordance Plot}
 \usage{
-plot_concordance(dat, method = "fisher", alpha = NULL, p.adj = NULL,
-  sim.p = FALSE, B = 2000L, label = FALSE, diag = FALSE,
-  title = "Concordance Plot", legend = "right", hover = FALSE,
-  export = FALSE)
+plot_concordance(
+  dat,
+  method = "fisher",
+  alpha = NULL,
+  p.adj = NULL,
+  sim.p = FALSE,
+  B = 2000L,
+  label = FALSE,
+  diag = FALSE,
+  title = "Concordance Plot",
+  legend = "right",
+  hover = FALSE,
+  export = FALSE
+)
 }
 \arguments{
 \item{dat}{A sample by feature data frame or matrix, e.g. of clinical
