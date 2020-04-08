@@ -453,8 +453,13 @@ dist_mat <- function(dat,
   pow <- p
   n <- ncol(dat)
   p <- nrow(dat)
-  if (!(top %>% is.null)) {
-    dat <- var_filt(dat, top, robust = FALSE)
+  if (!top %>% is.null) {
+    if (top <= 0 | top >= p) {
+      top <- NULL
+    }
+    if (filter_method == 'common') {
+      dat <- var_filt(dat, top, robust = FALSE)
+    }
   }
 
   # Center probes?
@@ -467,7 +472,7 @@ dist_mat <- function(dat,
   }
 
   # Create distance matrix
-  if (top %>% is.null || filter_method == 'common') {
+  if (top %>% is.null | filter_method == 'common') {
     if (dist %in% c('euclidean', 'manhattan', 'minimum', 'maximum', 'minkowski',
                     'bhattacharyya', 'hellinger', 'kullback_leibler')) {
       dm <- Dist(t(dat), method = dist, p = pow)
@@ -823,5 +828,11 @@ stringify <- function(x,
   }
   return(x)
 }
+
+
+# ADD: dist_mat should include all kernel options, 
+# as well as biweight midcorrelation. Also, rethink
+# dm <- 1L - abs(cor(dat, method = dist))
+# for correlation distance. Are anticorrelated vectors "close"?
 
 
