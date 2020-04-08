@@ -4,8 +4,23 @@
 \alias{embed}
 \title{Embed Manifold}
 \usage{
-embed(df, group, covar, group_cols, covar_cols, feature_names, label, size,
-  alpha, title, xlab, ylab, legend, hover, D3)
+embed(
+  df,
+  group,
+  covar,
+  group_cols,
+  covar_cols,
+  feature_names,
+  label,
+  size,
+  alpha,
+  title,
+  xlab,
+  ylab,
+  legend,
+  hover,
+  D3
+)
 }
 \arguments{
 \item{df}{Data frame formatted for \code{ggplot}ing.}
