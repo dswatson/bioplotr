@@ -101,7 +101,6 @@
 #' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
-#' @importFrom broom tidy
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -252,7 +251,7 @@ plot_drivers <- function(dat,
       if (clin[[j]] %>% is.numeric) {
         p_val <- cor.test(x, y, method = 'pearson')$p.value
       } else {
-        p_val <- tidy(aov(y ~ x))$p.value[1]
+        p_val <- anova(lm(y ~ x))[1, 5]
       }
     } else {
       if (clin[[j]] %>% is.numeric) {
