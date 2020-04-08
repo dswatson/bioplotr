@@ -166,7 +166,7 @@ plot_drivers <- function(dat,
     stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
   }
   if (!alpha %>% is.null) {
-    if (alpha <= 0L || alpha >= 1L) {
+    if (alpha <= 0L | alpha >= 1L) {
       stop('alpha must be numeric on (0, 1).')
     }
   } else {
@@ -275,7 +275,7 @@ plot_drivers <- function(dat,
            Association = -log(Association))
 
   # Build plot
-  if (!p.adj %>% is.null && p.adj %in% c('fdr', 'BH', 'BY')) {
+  if (!p.adj %>% is.null & p.adj %in% c('fdr', 'BH', 'BY')) {
     leg_lab <- expression(~-log(italic(q)))
   } else {
     leg_lab <- expression(~-log(italic(p)))
@@ -304,6 +304,7 @@ plot_drivers <- function(dat,
 
 # Fit multivariate model?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
+# Allow nonlinear conditioning?
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
 # Some way to facet_grid? A by argument
 # Use pData if available
