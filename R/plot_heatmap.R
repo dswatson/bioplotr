@@ -92,19 +92,19 @@ plot_heatmap <- function(dat,
   # Preliminaries
   if (!group %>% is.null) {
     group <-  dat %>% format_features(group, var_type = 'Categorical')
-    grp_cols <- group %>% track_cols(pal_group, var_type = 'Categorical')
+    grp_clrs <- group %>% track_cols(pal_group, var_type = 'Categorical')
   } else {
-    grp_cols <- NULL
+    grp_clrs <- NULL
   }
   if (!covar %>% is.null) {
     covar <- format_features(dat, covar, var_type = 'Continuous')
-    cov_cols <- track_cols(covar, pal_covar, var_type = 'Continuous')
+    cov_clrs <- track_cols(covar, pal_covar, var_type = 'Continuous')
   } else {
     cov_cols <- NULL
   }
   if (!c(group, covar) %>% is.null) {
     anno <- c(group, covar)
-    ann_cols <- c(grp_cols, cov_cols)
+    ann_clrs <- c(grp_clrs, cov_clrs)
   }
   d <- c('euclidean', 'maximum', 'manhattan', 'canberra', 'minkowski',
          'bhattacharyya', 'hellinger', 'kullback_leibler', 'cosine', 
@@ -136,13 +136,15 @@ plot_heatmap <- function(dat,
              col = pal_tiles, main = title, border_color = 'grey60')
   } else {
     aheatmap(dat, distfun = dm, hclustfun = hclustfun, scale = 'row',
-             annCol = anno, annColors = ann_cols, col = pal_tiles,
+             annCol = anno, annColors = ann_clrs, col = pal_tiles,
              main = title, border_color = 'grey60')
   }
 
 }
 
 
-### REPLACE AHEATMAP WITH PHEATMAP ###
-### Slash check out d3heatmap?
+### Check out d3heatmap?
+### The distfun = dm thing is broken. Row dendrogram can't deal.
+### Some good way to fix this?
+### ann_clrs should be a list
 

@@ -4,10 +4,21 @@
 \alias{plot_heatmap}
 \title{Omic Heatmap}
 \usage{
-plot_heatmap(dat, group = NULL, covar = NULL, dist = "pearson",
-  p = 2L, top = NULL, filter_method = "pairwise", center = FALSE,
-  hclustfun = "average", pal_group = "npg", pal_covar = "Blues",
-  pal_tiles = "RdBu", title = "Omic Heatmap")
+plot_heatmap(
+  dat,
+  group = NULL,
+  covar = NULL,
+  dist = "pearson",
+  p = 2L,
+  top = NULL,
+  filter_method = "pairwise",
+  center = FALSE,
+  hclustfun = "average",
+  pal_group = "npg",
+  pal_covar = "Blues",
+  pal_tiles = "RdBu",
+  title = "Omic Heatmap"
+)
 }
 \arguments{
 \item{dat}{Omic data matrix or matrix-like object with rows corresponding to
