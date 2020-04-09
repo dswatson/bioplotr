@@ -9,7 +9,7 @@ plot_corr(
   method = "pearson",
   use = "everything",
   alpha = NULL,
-  p.adj = NULL,
+  p_adj = NULL,
   geom = "tile",
   label = FALSE,
   diag = FALSE,
@@ -36,7 +36,7 @@ covariances in the presence of missing values. Must be one of \code{
 Those with \emph{p}-values (optionally adjusted) less than or equal to
 \code{alpha} are outlined in black.}
 
-\item{p.adj}{Optional \emph{p}-value adjustment for multiple testing. Options
+\item{p_adj}{Optional \emph{p}-value adjustment for multiple testing. Options
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}

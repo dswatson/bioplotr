@@ -14,7 +14,7 @@
 #' @param alpha Optional significance threshold to impose on correlations.
 #'   Those with \emph{p}-values (optionally adjusted) less than or equal to
 #'   \code{alpha} are outlined in black.
-#' @param p.adj Optional \emph{p}-value adjustment for multiple testing. Options
+#' @param p_adj Optional \emph{p}-value adjustment for multiple testing. Options
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
@@ -63,7 +63,7 @@ plot_corr <- function(dat,
                       method = 'pearson',
                          use = 'everything',
                        alpha = NULL,
-                       p.adj = NULL,
+                       p_adj = NULL,
                         geom = 'tile',
                        label = FALSE,
                         diag = FALSE,
@@ -102,10 +102,10 @@ plot_corr <- function(dat,
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!p.adj %>% is.null) {
-    p.adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p.adj %in% p.adjes) {
-      stop('p.adj must be one of ', stringify(p.adjes, 'or'), 
+  if (!p_adj %>% is.null) {
+    p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p_adj %in% p_adjes) {
+      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
            '. See ?p.adjust.')
     }
   }
@@ -141,14 +141,14 @@ plot_corr <- function(dat,
                                 method = method, use = use)$p.value
       }
     }
-    p <- p_mat %>% keep(lower.tri(.))
-    if (!p.adj %>% is.null) {
-      p <- p.adjust(p, method = p.adj)
+    p_val <- p_mat %>% keep(lower.tri(.))
+    if (!p_adj %>% is.null) {
+      p_val <- p.adjust(p_val, method = p_adj)
     }
     if (diag) {
       diag(p_mat) <- 1L
     }
-    df <- df %>% mutate(Significant = if_else(p <= alpha, TRUE, FALSE))
+    df <- df %>% mutate(Significant = if_else(p_val <= alpha, TRUE, FALSE))
   }
   if (export) {
     out <- list(Correlation = mat)

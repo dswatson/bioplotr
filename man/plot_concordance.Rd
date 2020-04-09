@@ -8,8 +8,8 @@ plot_concordance(
   dat,
   method = "fisher",
   alpha = NULL,
-  p.adj = NULL,
-  sim.p = FALSE,
+  p_adj = NULL,
+  sim_p = FALSE,
   B = 2000L,
   label = FALSE,
   diag = FALSE,
@@ -32,12 +32,12 @@ compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
 statistics. Those with \emph{p}-values (optionally adjusted) less than or
 equal to \code{alpha} are outlined in black.}
 
-\item{p.adj}{Optional \emph{p}-value adjustment for multiple testing. Options
+\item{p_adj}{Optional \emph{p}-value adjustment for multiple testing. Options
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
-\item{sim.p}{Calculate \emph{p}-values via Monte Carlo simulation?}
+\item{sim_p}{Calculate \emph{p}-values via Monte Carlo simulation?}
 
 \item{B}{Number of replicates or permutations to generate when computing
 \emph{p}-values.}
@@ -78,9 +78,9 @@ are useful when evaluating the dependencies between clinical factors and/or
 patient clusters.
 
 When \code{method = "fisher"}, concordance is measured by the negative
-logarithm of the test's \emph{p}-value. If \code{sim.p = FALSE}, then the
+logarithm of the test's \emph{p}-value. If \code{sim_p = FALSE}, then the
 function will attempt to calculate an exact \emph{p}-value. If this cannot be
-executed in the available workspace, or if \code{sim.p = TRUE}, then \emph{
+executed in the available workspace, or if \code{sim_p = TRUE}, then \emph{
 p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 
 When \code{method = "chisq"}, concordance is measured by the Pearson

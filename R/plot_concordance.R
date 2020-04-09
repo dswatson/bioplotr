@@ -11,11 +11,11 @@
 #' @param alpha Optional significance threshold to impose on association
 #'   statistics. Those with \emph{p}-values (optionally adjusted) less than or
 #'   equal to \code{alpha} are outlined in black.
-#' @param p.adj Optional \emph{p}-value adjustment for multiple testing. Options
+#' @param p_adj Optional \emph{p}-value adjustment for multiple testing. Options
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
-#' @param sim.p Calculate \emph{p}-values via Monte Carlo simulation?
+#' @param sim_p Calculate \emph{p}-values via Monte Carlo simulation?
 #' @param B Number of replicates or permutations to generate when computing
 #'   \emph{p}-values.
 #' @param label Print association statistic over tiles?
@@ -38,9 +38,9 @@
 #' patient clusters.
 #'
 #' When \code{method = "fisher"}, concordance is measured by the negative
-#' logarithm of the test's \emph{p}-value. If \code{sim.p = FALSE}, then the
+#' logarithm of the test's \emph{p}-value. If \code{sim_p = FALSE}, then the
 #' function will attempt to calculate an exact \emph{p}-value. If this cannot be
-#' executed in the available workspace, or if \code{sim.p = TRUE}, then \emph{
+#' executed in the available workspace, or if \code{sim_p = TRUE}, then \emph{
 #' p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 #'
 #' When \code{method = "chisq"}, concordance is measured by the Pearson
@@ -79,8 +79,8 @@
 plot_concordance <- function(dat,
                              method = 'fisher',
                               alpha = NULL,
-                              p.adj = NULL,
-                              sim.p = FALSE,
+                              p_adj = NULL,
+                              sim_p = FALSE,
                                   B = 2000L,
                               label = FALSE,
                                diag = FALSE,
@@ -121,10 +121,11 @@ plot_concordance <- function(dat,
       stop('alpha must be numeric on (0, 1).')
     }
   }
-  if (!p.adj %>% is.null) {
-    p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p.adj %in% p_adj) {
-      stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
+  if (!p_adj %>% is.null) {
+    p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p_adj %in% p_adjes) {
+      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
+           '. See ?p.adjust.')
     }
   }
   loc <- c('bottom', 'left', 'top', 'right',
@@ -145,7 +146,7 @@ plot_concordance <- function(dat,
       if (method == 'MI') {
         mat[i, j] <- mutinformation(tmp[[1]], tmp[[2]]) %>% natstobits(.)
       } else if (method == 'fisher') {
-        if (sim.p) {
+        if (sim_p) {
           p <- fisher.test(tmp[[1]], tmp[[2]],
                            simulate.p.value = TRUE, B = B)$p.value
         } else {
@@ -188,7 +189,7 @@ plot_concordance <- function(dat,
               natstobits(.)
             p_mat[i, j] <- (sum(null >= mat[i, j]) + 1L) / (B + 1L)
           } else if (method == 'chisq') {
-            if (sim.p) {
+            if (sim_p) {
               p_mat[i, j] <- chisq.test(tmp[[1]], tmp[[2]],
                                         simulate.p.value = TRUE, B = B)$p.value
             } else {
@@ -198,11 +199,11 @@ plot_concordance <- function(dat,
         }
       }
     }
-    p <- p_mat %>% keep(lower.tri(.))
-    if (!p.adjust %>% is.null) {
-      p <- p.adjust(p, method = p.adj)
+    p_val <- p_mat %>% keep(lower.tri(.))
+    if (!p_adj %>% is.null) {
+      p_val <- p.adjust(p, method = p_adj)
     }
-    df <- df %>% mutate(Significant = ifelse(p <= alpha, TRUE, FALSE))
+    df <- df %>% mutate(Significant = if_else(p_val <= alpha, TRUE, FALSE))
   }
   if (export) {
     out <- list(Concordance = mat)
