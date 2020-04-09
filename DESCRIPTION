@@ -33,8 +33,7 @@ Imports:
   infotheo,
   kernlab,
   umap,
-  JADE,
-  broom
+  JADE
 Suggests:
   plotly,
   bioDist,
