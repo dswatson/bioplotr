@@ -13,10 +13,10 @@ plot_drivers(
   kernel = NULL,
   kpar = NULL,
   top = NULL,
-  n.pc = 5L,
+  n_pc = 5L,
   label = FALSE,
   alpha = NULL,
-  p.adj = NULL,
+  p_adj = NULL,
   title = "Variation By Feature",
   legend = "right",
   hover = FALSE
@@ -55,7 +55,7 @@ function. Only relevant if \code{kernel} is not \code{NULL}. See Details.}
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for PCA.}
 
-\item{n.pc}{Number of principal components to include in the figure.}
+\item{n_pc}{Number of principal components to include in the figure.}
 
 \item{label}{Print association statistics over tiles?}
 
@@ -63,7 +63,7 @@ probes to be used for PCA.}
 Those with \emph{p}-values (optionally adjusted) less than or equal to 
 \code{alpha} are outlined in black.}
 
-\item{p.adj}{Optional \emph{p}-value adjustment for multiple testing. Options
+\item{p_adj}{Optional \emph{p}-value adjustment for multiple testing. Options
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
