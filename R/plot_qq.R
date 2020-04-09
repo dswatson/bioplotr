@@ -65,7 +65,7 @@ plot_qq <- function(dat,
   if (nrow(dat) == 0L) {
     stop('No non-missing p-values.')
   }
-  if (min(dat$p.value < 0L) || max(dat$p.value > 1L)) {
+  if (min(dat$p.value < 0L) | max(dat$p.value > 1L)) {
     stop('P-values must be on [0, 1].')
   }
 
