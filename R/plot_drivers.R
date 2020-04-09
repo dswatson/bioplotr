@@ -28,12 +28,12 @@
 #'   function. Only relevant if \code{kernel} is not \code{NULL}. See Details.
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for PCA.
-#' @param n.pc Number of principal components to include in the figure.
+#' @param n_pc Number of principal components to include in the figure.
 #' @param label Print association statistics over tiles?
 #' @param alpha Optional significance threshold to impose on associations. 
 #'   Those with \emph{p}-values (optionally adjusted) less than or equal to 
 #'   \code{alpha} are outlined in black.
-#' @param p.adj Optional \emph{p}-value adjustment for multiple testing. Options
+#' @param p_adj Optional \emph{p}-value adjustment for multiple testing. Options
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
@@ -89,16 +89,6 @@
 #' @export
 #' @importFrom limma is.fullrank
 #' @importFrom purrr map_chr
-#' @importFrom kernlab rbfdot
-#' @importFrom kernlab polydot
-#' @importFrom kernlab tanhdot
-#' @importFrom kernlab vanilladot
-#' @importFrom kernlab laplacedot
-#' @importFrom kernlab besseldot
-#' @importFrom kernlab anovadot
-#' @importFrom kernlab splinedot
-#' @importFrom kernlab kernelMatrix
-#' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
 #' @import dplyr
@@ -113,10 +103,10 @@ plot_drivers <- function(dat,
                         kernel = NULL,
                           kpar = NULL,
                            top = NULL,
-                          n.pc = 5L,
+                          n_pc = 5L,
                          label = FALSE,
                          alpha = NULL,
-                         p.adj = NULL,
+                         p_adj = NULL,
                          title = 'Variation By Feature',
                         legend = 'right',
                          hover = FALSE) {
@@ -172,10 +162,11 @@ plot_drivers <- function(dat,
   } else {
     alpha <- 0L
   }
-  if (!p.adj %>% is.null) {
-    p_adj <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p.adj %in% p_adj) {
-      stop('p.adj must be one of ', stringify(p_adj, 'or'), '. See ?p.adjust.')
+  if (!p_adj %>% is.null) {
+    p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
+    if (!p_adj %in% p_adjes) {
+      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
+           '. See ?p.adjust.')
     }
   }
   loc <- c('bottom', 'left', 'top', 'right',
@@ -183,69 +174,35 @@ plot_drivers <- function(dat,
   if (!legend %in% loc) {
     stop('legend must be one of ', stringify(loc, 'or'), '.')
   }
-  tibble(Feature = colnames(clin),                 # Be apprised
+  tibble(Feature = colnames(clin),               # Be apprised
            Class = clin %>% map_chr(class)) %>%
     print(n = nrow(.))
 
-  # Tidy data
+  # Compute PCs
   if (kernel %>% is.null) {
-    pca <- prcomp(t(dat))                          # PCA, % variance explained
+    pca <- prcomp(t(dat))                        
     pve <- seq_len(n.pc) %>% map_chr(function(pc) {
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
       paste0('PC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- pca$x
   } else {
-    if (kernel == 'rbfdot') {                      # Initialize kernel function
-      if (kpar %>% is.null) {
-        kpar <- list(sigma = 1e-4)
-      }
-      kf <- rbfdot(unlist(kpar))
-    } else if (kernel == 'polydot') {
-      if (kpar %>% is.null) {
-        kpar <- list(degree = 1L, scale = 1L, offset = 1L)
-      }
-      kf <- polydot(unlist(kpar))
-    } else if (kernel == 'tanhdot') {
-      if (kpar %>% is.null) {
-        kpar <- list(scale = 1L, offset = 1L)
-      }
-      kf <- tanhdot(unlist(kpar))
-    } else if (kernel == 'vanilladot') {
-      kf <- vanilladot()
-    } else if (kernel == 'laplacedot') {
-      if (kpar %>% is.null) {
-        kpar <- list(sigma = 1L)
-      }
-      kf <- laplacedot(unlist(kpar))
-    } else if (kernel == 'besseldot') {
-      if (kpar %>% is.null) {
-        kpar <- list(sigma = 1L, order = 1L, degree = 1L)
-      }
-      kf <- besseldot(unlist(kpar))
-    } else if (kernel == 'anovadot') {
-      if (kpar %>% is.null) {
-        kpar <- list(sigma = 1L, degree = 1L)
-      }
-      kf <- anovadot(unlist(kpar))
-    } else if (kernel == 'splinedot') {
-      kf <- splinedot()
-    }
-    k_mat <- kernelMatrix(kernel = kf, x = t(dat))
-    pca <- kpca(k_mat)                           # PCA, % variance explained
+    pca <- kpca_fn(kernel, kpar)                 
     pve <- seq_len(max(n.pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- rotated(pca)
   }
-  sig <- function(j, pc) {                       # p-val fn
-    if (!block %>% is.null & !j %in% unblock & j != block) {
-      x <- lm(pca[, pc] ~ clin[[block]]) %>% residuals(.)
-      y <- lm(pca[, pc] ~ clin[[j]]) %>% residuals(.)
-    } else {
+  
+  # P-value function
+  sig <- function(j, pc) {                       
+    if (block %>% is.null | j %in% unblock | j == block) {
       x <- clin[[j]]
       y <- pca[, pc]
+    } else {
+      x <- lm(clin[[j]] ~ clin[[block]]) %>% residuals(.)
+      y <- lm(pca[, pc] ~ clin[[block]]) %>% residuals(.)
     }
     if (parametric) {
       if (clin[[j]] %>% is.numeric) {
@@ -262,20 +219,22 @@ plot_drivers <- function(dat,
     }
    return(p_val) 
   }
+  
+  # Tidy data
   df <- expand.grid(Feature = colnames(clin),    # Melt
                          PC = paste0('PC', seq_len(n.pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC)) %>%   # Populate
     ungroup(.)
-  if (!p.adj %>% is.null) {
-    df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
+  if (!p_adj %>% is.null) {
+    df <- df %>% mutate(Association = p.adjust(Association, method = p_adj))
   }
   df <- df %>% 
     mutate(Significant = if_else(Association <= alpha, TRUE, FALSE),
            Association = -log(Association))
 
   # Build plot
-  if (!p.adj %>% is.null & p.adj %in% c('fdr', 'BH', 'BY')) {
+  if (!p_adj %>% is.null & p_adj %in% c('fdr', 'BH', 'BY')) {
     leg_lab <- expression(~-log(italic(q)))
   } else {
     leg_lab <- expression(~-log(italic(p)))
@@ -301,10 +260,10 @@ plot_drivers <- function(dat,
 
 }
 
-
-# Fit multivariate model?
+# Allow spline fits? 
+# Optionally summarise associations with R^2? MSE?
+# Fit multivariate models?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
-# Allow nonlinear conditioning?
 # Add limits argument to scale_fill_gradientn to fix number to color mapping
 # Some way to facet_grid? A by argument
 # Use pData if available
