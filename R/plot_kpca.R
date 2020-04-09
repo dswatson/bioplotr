@@ -90,16 +90,6 @@
 #'
 #' @export
 #' @importFrom purrr map_chr
-#' @importFrom kernlab rbfdot
-#' @importFrom kernlab polydot
-#' @importFrom kernlab tanhdot
-#' @importFrom kernlab vanilladot
-#' @importFrom kernlab laplacedot
-#' @importFrom kernlab besseldot
-#' @importFrom kernlab anovadot
-#' @importFrom kernlab splinedot
-#' @importFrom kernlab kernelMatrix
-#' @importFrom kernlab kpca
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
 #' @import dplyr
@@ -157,12 +147,6 @@ plot_kpca <- function(dat,
   } else {
     features <- feature_names <- NULL
   }
-  kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
-               'besseldot', 'anovadot', 'splinedot')
-  if (!kernel %in% kernels) {
-    stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
-         'For more info, see ?plot_kpca or ?kernlab::dots.')
-  }
   if (length(dims) > 2L & !D3) {
     stop('dims must be of length 2 when D3 = FALSE.')
   } else if (length(dims) > 3L) {
@@ -183,43 +167,7 @@ plot_kpca <- function(dat,
   if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  if (kernel == 'rbfdot') {                      # Initialize kernel function
-    if (kpar %>% is.null) {
-      kpar <- list(sigma = 1L)
-    }
-    kf <- rbfdot(unlist(kpar))
-  } else if (kernel == 'polydot') {
-    if (kpar %>% is.null) {
-      kpar <- list(degree = 1L, scale = 1L, offset = 1L)
-    }
-    kf <- polydot(unlist(kpar))
-  } else if (kernel == 'tanhdot') {
-    if (kpar %>% is.null) {
-      kpar <- list(scale = 1L, offset = 1L)
-    }
-    kf <- tanhdot(unlist(kpar))
-  } else if (kernel == 'vanilladot') {
-    kf <- vanilladot()
-  } else if (kernel == 'laplacedot') {
-    if (kpar %>% is.null) {
-      kpar <- list(sigma = 1L)
-    }
-    kf <- laplacedot(unlist(kpar))
-  } else if (kernel == 'besseldot') {
-    if (kpar %>% is.null) {
-      kpar <- list(sigma = 1L, order = 1L, degree = 1L)
-    }
-    kf <- besseldot(unlist(kpar))
-  } else if (kernel == 'anovadot') {
-    if (kpar %>% is.null) {
-      kpar <- list(sigma = 1L, degree = 1L)
-    }
-    kf <- anovadot(unlist(kpar))
-  } else if (kernel == 'splinedot') {
-    kf <- splinedot()
-  }
-  k_mat <- kernelMatrix(kernel = kf, x = t(dat))
-  pca <- kpca(k_mat)                             # PCA, % variance explained
+  pca <- kpca_fn(kernel, kpar)                   # PCA, % variance explained
   pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
     p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
     paste0('KPC', pc, ' (', round(p, 2L), '%)')

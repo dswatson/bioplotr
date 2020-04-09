@@ -536,6 +536,87 @@ dist_mat <- function(dat,
 
 }
 
+#' Compute kernel principal components
+#' 
+#' This utility function computes the kernel matrix and performs 
+#' eigendecomposition.
+#' 
+#' @param kernel The kernel generating function. Options include 
+#'   \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
+#'   \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
+#'   \code{"splinedot"}. 
+#' @param kpar A named list of arguments setting parameters for the kernel
+#'   function. 
+#' 
+#' @importFrom kernlab rbfdot
+#' @importFrom kernlab polydot
+#' @importFrom kernlab tanhdot
+#' @importFrom kernlab vanilladot
+#' @importFrom kernlab laplacedot
+#' @importFrom kernlab besseldot
+#' @importFrom kernlab anovadot
+#' @importFrom kernlab splinedot
+#' @importFrom kernlab kernelMatrix
+#' @importFrom kernlab kpca
+#' 
+
+kpca_fn <- function(kernel, 
+                    kpar) {
+  
+  # Preliminaries
+  kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
+               'besseldot', 'anovadot', 'splinedot')
+  if (!kernel %in% kernels) {
+    stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
+         'For more info, see ?plot_kpca or ?kernlab::dots.')
+  }
+  
+  # Initialize kernel function
+  if (kernel == 'rbfdot') {                      
+    if (kpar %>% is.null) {
+      kpar <- list(sigma = 1e-4)
+    }
+    kf <- rbfdot(unlist(kpar))
+  } else if (kernel == 'polydot') {
+    if (kpar %>% is.null) {
+      kpar <- list(degree = 1L, scale = 1L, offset = 1L)
+    }
+    kf <- polydot(unlist(kpar))
+  } else if (kernel == 'tanhdot') {
+    if (kpar %>% is.null) {
+      kpar <- list(scale = 1L, offset = 1L)
+    }
+    kf <- tanhdot(unlist(kpar))
+  } else if (kernel == 'vanilladot') {
+    kf <- vanilladot()
+  } else if (kernel == 'laplacedot') {
+    if (kpar %>% is.null) {
+      kpar <- list(sigma = 1L)
+    }
+    kf <- laplacedot(unlist(kpar))
+  } else if (kernel == 'besseldot') {
+    if (kpar %>% is.null) {
+      kpar <- list(sigma = 1L, order = 1L, degree = 1L)
+    }
+    kf <- besseldot(unlist(kpar))
+  } else if (kernel == 'anovadot') {
+    if (kpar %>% is.null) {
+      kpar <- list(sigma = 1L, degree = 1L)
+    }
+    kf <- anovadot(unlist(kpar))
+  } else if (kernel == 'splinedot') {
+    kf <- splinedot()
+  }
+  
+  # Compute kernel matrix, perform eigendecomposition
+  k_mat <- kernelMatrix(kernel = kf, x = t(dat)) # Computer kernel
+  pca <- kpca(k_mat)           
+  
+  # Output
+  return(pca)
+  
+}
+
 #' Size Data Points
 #'
 #' This utility function assigns a reasonable default point size parameter based 
