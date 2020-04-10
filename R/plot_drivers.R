@@ -49,22 +49,30 @@
 #' Strength of association is measured by -log \emph{p}-values, optionally
 #' adjusted for multiple testing. When \code{parametric = TRUE}, significance
 #' is computed from Pearson correlation tests (for continuous features) or 
-#' ANOVA \emph{F}-tests (for categorical features). When 
-#' \code{parametric = FALSE}, significance is computed from Spearman correlation
-#' tests (for continuous features) or Kruskal-Wallis tests (for categorical
-#' features). 
+#' ANOVA \emph{F}-tests (for categorical features). When \code{parametric =
+#' FALSE}, significance is computed from rank-based alternatives, i.e. Spearman 
+#' correlation tests (for continuous features) or Kruskal-Wallis tests (for 
+#' categorical features). 
 #'
 #' An optional blocking variable may be provided if samples violate the
 #' assumption of independence, e.g. for studies in which subjects are observed
 #' at multiple time points. If a blocking variable is identified, it will be
 #' regressed out prior to testing for all variables except those explicitly
-#' exempted by the \code{unblock} argument. 
+#' exempted by the \code{unblock} argument. Significance is then computed from
+#' partial correlation tests for continuous data (Pearson if \code{parametric = 
+#' TRUE}, Spearman if \code{parametric = FALSE}) or repeated measures ANOVA 
+#' \emph{F}-tests (under rank-transformation if \code{parametric = FALSE}).
 #'
 #' When supplying a blocking variable, be careful to consider potential
 #' confounding effects. For instance, features like sex and age are usually
 #' nested within subject, while subject may be nested within other variables
 #' like batch or treatment group. The \code{block} and \code{unblock} arguments
 #' are designed to help parse out these relationships.
+#' 
+#' Numeric and categorical features are tested differently. To protect against
+#' potential mistakes (e.g., one-hot encoding a Boolean variable), 
+#' \code{plot_drivers} automatically prints a data frame listing the class of
+#' each feature.
 #'
 #' If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
 #' \code{\link{plot_kpca}} for more info. Details on kernel functions and their
@@ -141,19 +149,12 @@ plot_drivers <- function(dat,
       }
     }
   }
-  if (!kernel %>% is.null) {
-    kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 
-                 'besseldot', 'anovadot', 'splinedot')
-    if (!kernel %in% kernels) {
-      stop('kernel must be one of ', stringify(kernels, 'or'), '. ', 
-           'For more info, see ?plot_kpca or ?kernlab::dots.')
-    }
-  }
+  clin[[block]] <- as.character(clin[[block]])
   if (!top %>% is.null) {                          # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  if (n.pc > max(nrow(dat), ncol(dat))) {
-    stop('n.pc cannot exceed max(nrow(dat), ncol(dat))')
+  if (n_pc > max(nrow(dat), ncol(dat))) {
+    stop('n_pc cannot exceed max(nrow(dat), ncol(dat))')
   }
   if (!alpha %>% is.null) {
     if (alpha <= 0L | alpha >= 1L) {
@@ -181,14 +182,14 @@ plot_drivers <- function(dat,
   # Compute PCs
   if (kernel %>% is.null) {
     pca <- prcomp(t(dat))                        
-    pve <- seq_len(n.pc) %>% map_chr(function(pc) {
+    pve <- seq_len(n_pc) %>% map_chr(function(pc) {
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
       paste0('PC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- pca$x
   } else {
     pca <- kpca_fn(kernel, kpar)                 
-    pve <- seq_len(max(n.pc)) %>% map_chr(function(pc) {
+    pve <- seq_len(max(n_pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, '\n(', round(p, 2L), '%)')
     })
@@ -196,33 +197,44 @@ plot_drivers <- function(dat,
   }
   
   # P-value function
-  sig <- function(j, pc) {                       
-    if (block %>% is.null | j %in% unblock | j == block) {
-      x <- clin[[j]]
-      y <- pca[, pc]
-    } else {
-      x <- lm(clin[[j]] ~ clin[[block]]) %>% residuals(.)
-      y <- lm(pca[, pc] ~ clin[[block]]) %>% residuals(.)
-    }
-    if (parametric) {
-      if (clin[[j]] %>% is.numeric) {
+  sig <- function(j, pc) {
+    if (is.numeric(clin[[j]])) {
+      if (block %>% is.null | j %in% unblock | j == block) {
+        x <- clin[[j]]
+        y <- pca[, pc]
+      } else {
+        x <- lm(clin[[j]] ~ clin[[block]], data = df) %>% residuals(.)
+        y <- lm(pca[, pc] ~ clin[[block]], data = df) %>% residuals(.)
+      }
+      if (parametric) {
         p_val <- cor.test(x, y, method = 'pearson')$p.value
       } else {
-        p_val <- anova(lm(y ~ x))[1, 5]
+        p_val <- cor.test(x, y, method = 'spearman')$p.value
       }
     } else {
-      if (clin[[j]] %>% is.numeric) {
-        p_val <- cor.test(x, y, method = 'spearman')$p.value
+      if (block %>% is.null | j %in% unblock | j == block) {
+        if (parametric) {
+          p_val <- anova(lm(pca[, pc] ~ clin[[j]]))[1, 5]
+        } else {
+          p_val <- kruskal.test(pca[, pc] ~ clin[[j]])$p.value 
+        }
       } else {
-        p_val <- kruskal.test(y ~ x)$p.value 
+        if (parametric) {
+          f0 <- lm(pca[, pc] ~ clin[[block]])
+          f1 <- lm(pca[, pc] ~ clin[[block]] + clin[[j]])
+        } else {
+          f0 <- lm(rank(pca[, pc]) ~ clin[[block]])
+          f1 <- lm(rank(pca[, pc]) ~ clin[[block]] + clin[[j]])
+        }
+        p_val <- anova(f0, f1)[2, 6]
       }
     }
-   return(p_val) 
+    return(p_val)
   }
   
   # Tidy data
   df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n.pc))) %>%
+                         PC = paste0('PC', seq_len(n_pc))) %>%
     rowwise(.) %>%
     mutate(Association = sig(Feature, PC)) %>%   # Populate
     ungroup(.)
@@ -262,6 +274,7 @@ plot_drivers <- function(dat,
 
 # Allow spline fits? 
 # Optionally summarise associations with R^2? MSE?
+# Allow parametric tests for some assocations and nonparametric for others?
 # Fit multivariate models?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Add limits argument to scale_fill_gradientn to fix number to color mapping

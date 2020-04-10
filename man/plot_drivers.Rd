@@ -87,22 +87,30 @@ features.
 Strength of association is measured by -log \emph{p}-values, optionally
 adjusted for multiple testing. When \code{parametric = TRUE}, significance
 is computed from Pearson correlation tests (for continuous features) or 
-ANOVA \emph{F}-tests (for categorical features). When 
-\code{parametric = FALSE}, significance is computed from Spearman correlation
-tests (for continuous features) or Kruskal-Wallis tests (for categorical
-features). 
+ANOVA \emph{F}-tests (for categorical features). When \code{parametric =
+FALSE}, significance is computed from rank-based alternatives, i.e. Spearman 
+correlation tests (for continuous features) or Kruskal-Wallis tests (for 
+categorical features). 
 
 An optional blocking variable may be provided if samples violate the
 assumption of independence, e.g. for studies in which subjects are observed
 at multiple time points. If a blocking variable is identified, it will be
 regressed out prior to testing for all variables except those explicitly
-exempted by the \code{unblock} argument. 
+exempted by the \code{unblock} argument. Significance is then computed from
+partial correlation tests for continuous data (Pearson if \code{parametric = 
+TRUE}, Spearman if \code{parametric = FALSE}) or repeated measures ANOVA 
+\emph{F}-tests (under rank-transformation if \code{parametric = FALSE}).
 
 When supplying a blocking variable, be careful to consider potential
 confounding effects. For instance, features like sex and age are usually
 nested within subject, while subject may be nested within other variables
 like batch or treatment group. The \code{block} and \code{unblock} arguments
 are designed to help parse out these relationships.
+
+Numeric and categorical features are tested differently. To protect against
+potential mistakes (e.g., one-hot encoding a Boolean variable), 
+\code{plot_drivers} automatically prints a data frame listing the class of
+each feature.
 
 If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
 \code{\link{plot_kpca}} for more info. Details on kernel functions and their
