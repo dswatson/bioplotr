@@ -167,7 +167,7 @@ plot_kpca <- function(dat,
   if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  pca <- kpca_fn(kernel, kpar)                   # PCA, % variance explained
+  pca <- kpca_fn(dat, kernel, kpar)              # PCA, % variance explained
   pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
     p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
     paste0('KPC', pc, ' (', round(p, 2L), '%)')

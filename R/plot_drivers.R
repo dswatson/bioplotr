@@ -188,7 +188,7 @@ plot_drivers <- function(dat,
     })
     pca <- pca$x
   } else {
-    pca <- kpca_fn(kernel, kpar)                 
+    pca <- kpca_fn(dat, kernel, kpar)                 
     pve <- seq_len(max(n_pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, '\n(', round(p, 2L), '%)')
@@ -198,13 +198,13 @@ plot_drivers <- function(dat,
   
   # P-value function
   sig <- function(j, pc) {
-    if (is.numeric(clin[[j]])) {
+    if (clin[[j]] %>% is.numeric) {
       if (block %>% is.null | j %in% unblock | j == block) {
         x <- clin[[j]]
         y <- pca[, pc]
       } else {
-        x <- lm(clin[[j]] ~ clin[[block]], data = df) %>% residuals(.)
-        y <- lm(pca[, pc] ~ clin[[block]], data = df) %>% residuals(.)
+        x <- residuals(lm(clin[[j]] ~ clin[[block]], data = df)) 
+        y <- residuals(lm(pca[, pc] ~ clin[[block]], data = df))
       }
       if (parametric) {
         p_val <- cor.test(x, y, method = 'pearson')$p.value

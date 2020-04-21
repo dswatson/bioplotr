@@ -541,6 +541,7 @@ dist_mat <- function(dat,
 #' This utility function computes the kernel matrix and performs 
 #' eigendecomposition.
 #' 
+#' @param dat Omic data matrix.
 #' @param kernel The kernel generating function. Options include 
 #'   \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
 #'   \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
@@ -560,7 +561,8 @@ dist_mat <- function(dat,
 #' @importFrom kernlab kpca
 #' 
 
-kpca_fn <- function(kernel, 
+kpca_fn <- function(dat, 
+                    kernel, 
                     kpar) {
   
   # Preliminaries
