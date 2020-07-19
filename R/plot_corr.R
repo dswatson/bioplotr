@@ -18,6 +18,8 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
+#' @param lim Optional vector of length two defining lower and upper bounds for 
+#'   the scale range. Default is observed maxima.
 #' @param geom String specifying whether to visualize correlation coefficients
 #'   as \code{"tile"} or \code{"circle"}.
 #' @param label Print correlation coefficient over \code{geom}?
@@ -64,6 +66,7 @@ plot_corr <- function(dat,
                          use = 'everything',
                        alpha = NULL,
                        p_adj = NULL,
+                         lim = NULL,
                         geom = 'tile',
                        label = FALSE,
                         diag = FALSE,
@@ -126,8 +129,8 @@ plot_corr <- function(dat,
   }
   df <- mat %>%                                  # Melt correlation matrix
     as_tibble(.) %>%
-    gather('x', 'Correlation') %>%
-    mutate(y = rep(rownames(mat), nrow(mat))) %>%
+    pivot_longer(everything(), names_to = 'x', values_to = 'Correlation') %>%
+    mutate(y = rep(rownames(mat), each = nrow(mat))) %>%
     mutate(x = factor(x, levels = unique(x)),
            y = factor(y, levels = rev(unique(x))),
            Significant = FALSE) %>%
@@ -167,7 +170,6 @@ plot_corr <- function(dat,
   if (geom == 'tile') {
     p <- p + geom_tile(aes(fill = Correlation, color = Significant),
                        size = 1L, width = 0.9, height = 0.9) +
-      scale_fill_gradientn(colors = brewer.pal(10L, 'RdBu')) +
       scale_color_manual(values = c('grey90', 'black')) +
       guides(color = FALSE)
   } else if (geom == 'circle') {
@@ -178,8 +180,12 @@ plot_corr <- function(dat,
                  aes(x, y, size = 1.25 * abs(Correlation)),
                  color = 'grey60', show.legend = FALSE) +
       geom_point(aes(color = Correlation, size = abs(Correlation))) +
-      scale_color_gradientn(colors = brewer.pal(10L, 'RdBu')) +
       guides(size = FALSE)
+  }
+  if (lim %>% is.null) {
+    scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'))
+  } else {
+    scale_color_gradientn(limits = lim, colors = brewer.pal(10L, 'RdBu'))
   }
   if (label) {
     p <- p + geom_text(aes(label = round(Correlation, 2)))
