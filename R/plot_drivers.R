@@ -90,7 +90,7 @@
 #' mat <- cpm(cnts[keep, ], log = TRUE)
 #' clin <- colData(airway) %>%
 #'   as_tibble(.) %>%
-#'   select(Run, cell, dex)
+#'   select(cell, dex)
 #' plot_drivers(mat, clin)
 #'
 #' @seealso
