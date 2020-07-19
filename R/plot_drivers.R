@@ -37,6 +37,8 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
+#' @param lim Optional vector of length two defining lower and upper bounds for 
+#'   the scale range. Default is observed maxima.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -115,6 +117,7 @@ plot_drivers <- function(dat,
                          label = FALSE,
                          alpha = NULL,
                          p_adj = NULL,
+                           lim = NULL,
                          title = 'Variation By Feature',
                         legend = 'right',
                          hover = FALSE) {
@@ -128,7 +131,7 @@ plot_drivers <- function(dat,
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
-  if (!(block %>% is.null)) {
+  if (!block %>% is.null) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
     } else {
@@ -148,8 +151,8 @@ plot_drivers <- function(dat,
         }
       }
     }
+    clin[[block]] <- as.character(clin[[block]])
   }
-  clin[[block]] <- as.character(clin[[block]])
   if (!top %>% is.null) {                          # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
@@ -199,7 +202,7 @@ plot_drivers <- function(dat,
   # P-value function
   sig <- function(j, pc) {
     if (clin[[j]] %>% is.numeric) {
-      if (block %>% is.null | j %in% unblock | j == block) {
+      if (block %>% is.null || j %in% unblock || j == block) {
         x <- clin[[j]]
         y <- pca[, pc]
       } else {
@@ -212,7 +215,7 @@ plot_drivers <- function(dat,
         p_val <- cor.test(x, y, method = 'spearman')$p.value
       }
     } else {
-      if (block %>% is.null | j %in% unblock | j == block) {
+      if (block %>% is.null || j %in% unblock || j == block) {
         if (parametric) {
           p_val <- anova(lm(pca[, pc] ~ clin[[j]]))[1, 5]
         } else {
@@ -246,8 +249,10 @@ plot_drivers <- function(dat,
            Association = -log(Association))
 
   # Build plot
-  if (!p_adj %>% is.null & p_adj %in% c('fdr', 'BH', 'BY')) {
-    leg_lab <- expression(~-log(italic(q)))
+  if (!p_adj %>% is.null) {
+    if (p_adj %in% c('fdr', 'BH', 'BY')) {
+      leg_lab <- expression(~-log(italic(q)))
+    }
   } else {
     leg_lab <- expression(~-log(italic(p)))
   }
