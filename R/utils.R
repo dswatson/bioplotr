@@ -205,12 +205,12 @@ colorize <- function(pal,
       stop('When passing individual colors to define a palette, each must ',
            'denote a valid color in R.')
     } else {
-      if (var_type == 'Categorical' && !pal %in% qual_pals) {
+      if (var_type == 'Categorical' & !pal %in% qual_pals) {
         stop('Invalid palette for categorical features. Must be either a ',
              'vector of valid R colors or one of the following palettes: ',
              stringify(group_pals, 'or'), '.')
       }
-      if (var_type == 'Continuous' && !pal %in% c(seq_pals, div_pals)) {
+      if (var_type == 'Continuous' & !pal %in% c(seq_pals, div_pals)) {
         stop('Invalid palette for continuous features. Must be either a ',
              'vector of valid R colors or one of the following palettes: ',
              stringify(c(seq_pals, div_pals), 'or'), '.')
@@ -917,5 +917,5 @@ stringify <- function(x,
 # as well as biweight midcorrelation. Also, rethink
 # dm <- 1L - abs(cor(dat, method = dist))
 # for correlation distance. Are anticorrelated vectors "close"?
-
+# colorize throws annoying warnings when pal is a vector of named colors
 
