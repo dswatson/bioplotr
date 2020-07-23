@@ -38,7 +38,7 @@
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
 #' @param lim Optional vector of length two defining lower and upper bounds for 
-#'   the scale range. Default is observed maxima.
+#'   the scale range. Default is observed extrema.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -69,7 +69,7 @@
 #' confounding effects. For instance, features like sex and age are usually
 #' nested within subject, while subject may be nested within other variables
 #' like batch or treatment group. The \code{block} and \code{unblock} arguments
-#' are designed to help parse out these relationships.
+#' are intended to help parse out these relationships.
 #' 
 #' Numeric and categorical features are tested differently. To protect against
 #' potential mistakes (e.g., one-hot encoding a Boolean variable), 
@@ -282,7 +282,6 @@ plot_drivers <- function(dat,
 # Allow parametric tests for some assocations and nonparametric for others?
 # Fit multivariate models?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
-# Add limits argument to scale_fill_gradientn to fix number to color mapping
 # Some way to facet_grid? A by argument
 # Use pData if available
 

@@ -19,7 +19,7 @@
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
 #' @param lim Optional vector of length two defining lower and upper bounds for 
-#'   the scale range. Default is observed maxima.
+#'   the scale range. Default is observed extrema.
 #' @param geom String specifying whether to visualize correlation coefficients
 #'   as \code{"tile"} or \code{"circle"}.
 #' @param label Print correlation coefficient over \code{geom}?
