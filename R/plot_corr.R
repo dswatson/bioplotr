@@ -183,9 +183,10 @@ plot_corr <- function(dat,
       guides(size = FALSE)
   }
   if (lim %>% is.null) {
-    scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'))
+    p <- p + scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'))
   } else {
-    scale_color_gradientn(limits = lim, colors = brewer.pal(10L, 'RdBu'))
+    p <- p + scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'),
+                                   limits = lim)
   }
   if (label) {
     p <- p + geom_text(aes(label = round(Correlation, 2)))

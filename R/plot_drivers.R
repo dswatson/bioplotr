@@ -260,14 +260,21 @@ plot_drivers <- function(dat,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
     coord_equal() +
-    scale_fill_gradientn(colors = c('white', 'pink', 'orange', 'red', 'darkred'),
-                           name = leg_lab) +
     scale_color_manual(values = c('grey90', 'black')) +
     scale_x_discrete(labels = pve) +
     guides(color = FALSE) +
     labs(title = title, x = 'Principal Component') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
+  if (lim %>% is.null) {
+    p <- p + scale_fill_gradientn(colors = c('white', 'pink', 'orange', 
+                                             'red', 'darkred'),
+                                  name = leg_lab)
+  } else {
+    p <- p + scale_fill_gradientn(colors = c('white', 'pink', 'orange', 
+                                             'red', 'darkred'),
+                                  name = leg_lab, limits = lim)
+  }
   if (label) {
     p <- p + geom_text(aes(label = round(Association, 2L)))
   }
