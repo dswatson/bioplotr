@@ -166,7 +166,7 @@ plot_similarity <- function(dat,
 }
 
 
-### REPLACE AHEATMAP WITH PHEATMAP ###
+# Replace aheatmap with pheatmap or similar?
 # pal_covar and pal_group need to adapt to detect number of features 
-
+# Can't actually take dist input
 
