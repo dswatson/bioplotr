@@ -259,7 +259,7 @@ plot_drivers <- function(dat,
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
-    coord_equal() +
+    #coord_equal() +
     scale_color_manual(values = c('grey90', 'black')) +
     scale_x_discrete(labels = pve) +
     guides(color = FALSE) +
