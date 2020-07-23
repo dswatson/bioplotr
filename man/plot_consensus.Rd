@@ -9,7 +9,7 @@ plot_consensus(
   k,
   group = NULL,
   covar = NULL,
-  hclustfun = "average",
+  hclustfun = "complete",
   pal_clust = "d3",
   pal_group = "npg",
   pal_covar = "Blues",

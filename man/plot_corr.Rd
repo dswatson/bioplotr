@@ -10,6 +10,7 @@ plot_corr(
   use = "everything",
   alpha = NULL,
   p_adj = NULL,
+  lim = NULL,
   geom = "tile",
   label = FALSE,
   diag = FALSE,
@@ -40,6 +41,9 @@ Those with \emph{p}-values (optionally adjusted) less than or equal to
 include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
+
+\item{lim}{Optional vector of length two defining lower and upper bounds for 
+the scale range. Default is observed extrema.}
 
 \item{geom}{String specifying whether to visualize correlation coefficients
 as \code{"tile"} or \code{"circle"}.}

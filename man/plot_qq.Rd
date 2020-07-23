@@ -39,7 +39,7 @@ positive rate, possibly due to some systematic and unaccounted for bias in
 the data.
 }
 \examples{
-df <- data.frame(p.value = runif(10000))
+df <- data.frame(p.value = runif(1e4))
 plot_qq(df, lambda = TRUE)
 
 library(DESeq2)

@@ -36,8 +36,10 @@ a QQ or an MD plot.
 }
 \details{
 Quantile-quantile (QQ) and mean-difference (MD) plots visualize the
-relationship between two numeric vectors. They are a quick and easy
-alternative to scatterplots when distributions are of unequal length.
+relationship between two numeric vectors, or between expected and observed 
+values for given variable. They are a quick and easy alternative to 
+scatterplots when variables are of unequal length. They can slso help 
+visually assess parametric goodness of fit.
 }
 \examples{
 x1 <- rnorm(100)

@@ -4,9 +4,11 @@
 \alias{kpca_fn}
 \title{Compute kernel principal components}
 \usage{
-kpca_fn(kernel, kpar)
+kpca_fn(dat, kernel, kpar)
 }
 \arguments{
+\item{dat}{Omic data matrix.}
+
 \item{kernel}{The kernel generating function. Options include 
 \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
 \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 

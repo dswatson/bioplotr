@@ -17,6 +17,7 @@ plot_drivers(
   label = FALSE,
   alpha = NULL,
   p_adj = NULL,
+  lim = NULL,
   title = "Variation By Feature",
   legend = "right",
   hover = FALSE
@@ -68,6 +69,9 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
+\item{lim}{Optional vector of length two defining lower and upper bounds for 
+the scale range. Default is observed extrema.}
+
 \item{title}{Optional plot title.}
 
 \item{legend}{Legend position. Must be one of \code{"bottom"}, \code{"left"},
@@ -105,7 +109,7 @@ When supplying a blocking variable, be careful to consider potential
 confounding effects. For instance, features like sex and age are usually
 nested within subject, while subject may be nested within other variables
 like batch or treatment group. The \code{block} and \code{unblock} arguments
-are designed to help parse out these relationships.
+are intended to help parse out these relationships.
 
 Numeric and categorical features are tested differently. To protect against
 potential mistakes (e.g., one-hot encoding a Boolean variable), 
@@ -126,7 +130,7 @@ keep <- rowSums(cpm(cnts) > 1) >= 4
 mat <- cpm(cnts[keep, ], log = TRUE)
 clin <- colData(airway) \%>\%
   as_tibble(.) \%>\%
-  select(Run, cell, dex)
+  select(cell, dex)
 plot_drivers(mat, clin)
 
 }
