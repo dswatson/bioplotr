@@ -203,7 +203,7 @@ plot_volcano <- function(dat,
             'differential expression, consider raising your fdr cutoff.')
     p <- p + geom_point(size = size, alpha = alpha, color = 'black')
   } else {                                       # Separate up- and down-regulated probes?
-    if (!(lfc %>% is.null) && any(df$Direction != 'None')) {
+    if (!(lfc %>% is.null) & any(df$Direction != 'None')) {
       suppressWarnings(
         p <- p + geom_point(data = filter(df, Direction != 'None'),
                             aes(logFC, Y, color = Direction, text = Probe),
