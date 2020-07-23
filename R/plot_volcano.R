@@ -59,7 +59,7 @@
 #'
 
 plot_volcano <- function(dat,
-                         y = 'q',
+                         y = 'p',
                        fdr = 0.05,
                        lfc = NULL,
                     probes = NULL,
