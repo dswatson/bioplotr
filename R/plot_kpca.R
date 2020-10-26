@@ -63,8 +63,10 @@
 #' Kernel PCA is a nonlinear variant of traditional PCA. Kernel methods are
 #' designed to uncover subtle structures in complex datasets, and are the basis
 #' of many supervised and unsupervised learning techniques, including support
-#' vector machines and spectral clustering. For more details on kernel functions
-#' and their input parameters, see \code{kernlab::\link[kernlab]{dots}}.
+#' vector machines and spectral clustering. By default, \code{plot_kpca} uses 
+#' a radial basis function kernel with bandwidth based on the median Euclidean
+#' distance between points. FFor more details on kernel functions and their 
+#' input parameters, see \code{kernlab::\link[kernlab]{dots}}.
 #'
 #' By default, \code{plot_kpca} maps the entire \code{dat} matrix into a
 #' corresponding Hilbert space. Limit the analysis to only the most variable
@@ -100,7 +102,7 @@ plot_kpca <- function(dat,
                       group = NULL,
                       covar = NULL,
                      kernel = 'rbfdot',
-                       kpar = list('sigma' = 1e-4),
+                       kpar = NULL,
                         top = NULL,
                        dims = c(1L, 2L),
                       label = FALSE,
@@ -167,7 +169,7 @@ plot_kpca <- function(dat,
   if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  pca <- kpca_fn(dat, kernel, kpar)              # PCA, % variance explained
+  pca <- kpca_fn(dat, kernel, kpar, max(dims))   # PCA, % variance explained
   pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
     p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
     paste0('KPC', pc, ' (', round(p, 2L), '%)')

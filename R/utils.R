@@ -548,8 +548,10 @@ dist_mat <- function(dat,
 #'   \code{"splinedot"}. 
 #' @param kpar A named list of arguments setting parameters for the kernel
 #'   function. 
+#' @param rank Number of principal components to return.
 #' 
 #' @importFrom kernlab rbfdot
+#' @importFrom kernlab sigest
 #' @importFrom kernlab polydot
 #' @importFrom kernlab tanhdot
 #' @importFrom kernlab vanilladot
@@ -576,7 +578,8 @@ kpca_fn <- function(dat,
   # Initialize kernel function
   if (kernel == 'rbfdot') {                      
     if (kpar %>% is.null) {
-      kpar <- list(sigma = 1e-4)
+      s <- sigest(dat)[2]
+      kpar <- list(sigma = s)
     }
     kf <- rbfdot(unlist(kpar))
   } else if (kernel == 'polydot') {
@@ -611,8 +614,8 @@ kpca_fn <- function(dat,
   }
   
   # Compute kernel matrix, perform eigendecomposition
-  k_mat <- kernelMatrix(kernel = kf, x = t(dat)) # Computer kernel
-  pca <- kpca(k_mat)           
+  k_mat <- kernelMatrix(kernel = kf, x = t(dat)) # Compute kernel
+  pca <- kpca(k_mat, features = rank)           
   
   # Output
   return(pca)
