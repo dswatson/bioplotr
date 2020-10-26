@@ -131,6 +131,9 @@ plot_drivers <- function(dat,
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
+  if (sum(is.na(clin)) > 0) {
+    stop('No NA values allowed in clin.')
+  }
   if (!block %>% is.null) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -184,14 +187,14 @@ plot_drivers <- function(dat,
 
   # Compute PCs
   if (kernel %>% is.null) {
-    pca <- prcomp(t(dat))                        
+    pca <- prcomp(t(dat), rank. = n_pc)                        
     pve <- seq_len(n_pc) %>% map_chr(function(pc) {
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
       paste0('PC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- pca$x
   } else {
-    pca <- kpca_fn(dat, kernel, kpar)                 
+    pca <- kpca_fn(dat, kernel, kpar, n_pc)                 
     pve <- seq_len(max(n_pc)) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, '\n(', round(p, 2L), '%)')
@@ -289,7 +292,7 @@ plot_drivers <- function(dat,
 # Allow parametric tests for some assocations and nonparametric for others?
 # Fit multivariate models?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
-# Some way to facet_grid? A by argument
+# Some way to facet_grid? A "by" argument
 # Use pData if available
 
 
