@@ -16,6 +16,8 @@ kpca_fn(dat, kernel, kpar)
 
 \item{kpar}{A named list of arguments setting parameters for the kernel
 function.}
+
+\item{rank}{Number of principal components to return.}
 }
 \description{
 This utility function computes the kernel matrix and performs 
