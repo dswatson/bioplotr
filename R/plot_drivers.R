@@ -206,8 +206,8 @@ plot_drivers <- function(dat,
         x <- clin[[j]]
         y <- pca[, pc]
       } else {
-        x <- residuals(lm(clin[[j]] ~ clin[[block]], data = df)) 
-        y <- residuals(lm(pca[, pc] ~ clin[[block]], data = df))
+        x <- residuals(lm(clin[[j]] ~ clin[[block]])) 
+        y <- residuals(lm(pca[, pc] ~ clin[[block]]))
       }
       if (parametric) {
         p_val <- cor.test(x, y, method = 'pearson')$p.value
