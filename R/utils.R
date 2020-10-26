@@ -565,7 +565,8 @@ dist_mat <- function(dat,
 
 kpca_fn <- function(dat, 
                     kernel, 
-                    kpar) {
+                    kpar,
+                    rank) {
   
   # Preliminaries
   kernels <- c('rbfdot', 'polydot', 'tanhdot', 'vanilladot', 'laplacedot', 

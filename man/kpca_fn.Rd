@@ -4,7 +4,7 @@
 \alias{kpca_fn}
 \title{Compute kernel principal components}
 \usage{
-kpca_fn(dat, kernel, kpar)
+kpca_fn(dat, kernel, kpar, rank)
 }
 \arguments{
 \item{dat}{Omic data matrix.}
