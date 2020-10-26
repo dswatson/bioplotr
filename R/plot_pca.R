@@ -159,7 +159,7 @@ plot_pca <- function(dat,
   if (!top %>% is.null) {                        # Filter by variance?
     dat <- var_filt(dat, top, robust = FALSE)
   }
-  pca <- prcomp(t(dat))                          # PCA, % variance explained
+  pca <- prcomp(t(dat), rank. = max(pcs))        # PCA, % variance explained
   pve <- seq_len(max(pcs)) %>% map_chr(function(pc) {
     p <- pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L
     paste0('PC', pc, ' (', round(p, 2L), '%)')
