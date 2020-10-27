@@ -551,7 +551,6 @@ dist_mat <- function(dat,
 #' @param rank Number of principal components to return.
 #' 
 #' @importFrom kernlab rbfdot
-#' @importFrom kernlab sigest
 #' @importFrom kernlab polydot
 #' @importFrom kernlab tanhdot
 #' @importFrom kernlab vanilladot
@@ -579,8 +578,7 @@ kpca_fn <- function(dat,
   # Initialize kernel function
   if (kernel == 'rbfdot') {                      
     if (kpar %>% is.null) {
-      s <- sigest(dat)[2]
-      kpar <- list(sigma = s)
+      kpar <- list(sigma = 1e-4)
     }
     kf <- rbfdot(unlist(kpar))
   } else if (kernel == 'polydot') {

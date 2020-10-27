@@ -9,7 +9,7 @@ plot_kpca(
   group = NULL,
   covar = NULL,
   kernel = "rbfdot",
-  kpar = NULL,
+  kpar = list(sigma = 1e-04),
   top = NULL,
   dims = c(1L, 2L),
   label = FALSE,
@@ -103,10 +103,8 @@ into a principal component subspace, which is visualized.
 Kernel PCA is a nonlinear variant of traditional PCA. Kernel methods are
 designed to uncover subtle structures in complex datasets, and are the basis
 of many supervised and unsupervised learning techniques, including support
-vector machines and spectral clustering. By default, \code{plot_kpca} uses 
-a radial basis function kernel with bandwidth based on the median Euclidean
-distance between points. FFor more details on kernel functions and their 
-input parameters, see \code{kernlab::\link[kernlab]{dots}}.
+vector machines and spectral clustering. For more details on kernel functions 
+and their input parameters, see \code{kernlab::\link[kernlab]{dots}}.
 
 By default, \code{plot_kpca} maps the entire \code{dat} matrix into a
 corresponding Hilbert space. Limit the analysis to only the most variable
