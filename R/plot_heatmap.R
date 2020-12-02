@@ -83,7 +83,7 @@ plot_heatmap <- function(dat,
                            top = NULL,
                  filter_method = 'pairwise',
                         center = FALSE,
-                     hclustfun = 'average',
+                     hclustfun = 'complete',
                      pal_group = 'npg',
                      pal_covar = 'Blues',
                      pal_tiles = 'RdBu',
@@ -127,15 +127,15 @@ plot_heatmap <- function(dat,
 
   # Tidy data
   dat <- matrixize(dat)
-  dm <- dist_mat(dat, dist, p, top, filter_method, center) %>% as.dist(.)
+  #dm <- dist_mat(dat, dist, p, top, filter_method, center) %>% as.dist(.)
 
   # Plot
   suppressPackageStartupMessages(require(NMF))
   if (anno %>% is.null) {
-    aheatmap(dat, distfun = dm, hclustfun = hclustfun, scale = 'row',
+    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
              col = pal_tiles, main = title, border_color = 'grey60')
   } else {
-    aheatmap(dat, distfun = dm, hclustfun = hclustfun, scale = 'row',
+    aheatmap(dat, distfun = dist, hclustfun = hclustfun, scale = 'row',
              annCol = anno, annColors = ann_clrs, col = pal_tiles,
              main = title, border_color = 'grey60')
   }
@@ -143,7 +143,7 @@ plot_heatmap <- function(dat,
 }
 
 
-### Check out d3heatmap?
+### Check out d3heatmap? complexheatmap?
 ### The distfun = dm thing is broken. Row dendrogram can't deal.
 ### Some good way to fix this?
 ### ann_clrs should be a list
