@@ -100,7 +100,7 @@ plot_heatmap <- function(dat,
     covar <- format_features(dat, covar, var_type = 'Continuous')
     cov_clrs <- track_cols(covar, pal_covar, var_type = 'Continuous')
   } else {
-    cov_cols <- NULL
+    cov_clrs <- NULL
   }
   if (!c(group, covar) %>% is.null) {
     anno <- c(group, covar)
