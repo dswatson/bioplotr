@@ -131,9 +131,6 @@ plot_drivers <- function(dat,
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
-  if (sum(is.na(clin)) > 0) {
-    stop('No NA values allowed in clin.')
-  }
   if (!block %>% is.null) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -184,6 +181,10 @@ plot_drivers <- function(dat,
   tibble(Feature = colnames(clin),               # Be apprised
            Class = clin %>% map_chr(class)) %>%
     print(n = nrow(.))
+  if (sum(is.na(clin)) > 0) {
+    warning(sum(is.na(clin)), ' NA values detected in clin. Association tests ',
+            'will proceed with pairwise deletion.')
+  }
 
   # Compute PCs
   if (kernel %>% is.null) {
@@ -204,13 +205,18 @@ plot_drivers <- function(dat,
   
   # P-value function
   sig <- function(j, pc) {
+    tmp <- data.frame(x = clin[[j]], y = pca[, pc])
+    if (!(block %>% is.null || j %in% unblock || j == block)) {
+      tmp <- tmp %>% mutate(z = clin[[block]])
+    }
+    tmp <- na.omit(tmp)
     if (clin[[j]] %>% is.numeric) {
       if (block %>% is.null || j %in% unblock || j == block) {
-        x <- clin[[j]]
-        y <- pca[, pc]
+        x <- tmp$x
+        y <- tmp$y
       } else {
-        x <- residuals(lm(clin[[j]] ~ clin[[block]])) 
-        y <- residuals(lm(pca[, pc] ~ clin[[block]]))
+        x <- residuals(lm(x ~ z, data = tmp)) 
+        y <- residuals(lm(y ~ z, data = tmp))
       }
       if (parametric) {
         p_val <- cor.test(x, y, method = 'pearson')$p.value
@@ -220,17 +226,17 @@ plot_drivers <- function(dat,
     } else {
       if (block %>% is.null || j %in% unblock || j == block) {
         if (parametric) {
-          p_val <- anova(lm(pca[, pc] ~ clin[[j]]))[1, 5]
+          p_val <- anova(lm(y ~ x, data = tmp))[1, 5]
         } else {
-          p_val <- kruskal.test(pca[, pc] ~ clin[[j]])$p.value 
+          p_val <- kruskal.test(y ~ x, data = tmp)$p.value 
         }
       } else {
         if (parametric) {
-          f0 <- lm(pca[, pc] ~ clin[[block]])
-          f1 <- lm(pca[, pc] ~ clin[[block]] + clin[[j]])
+          f0 <- lm(y ~ z, data = tmp)
+          f1 <- lm(y ~ z + x, data = tmp)
         } else {
-          f0 <- lm(rank(pca[, pc]) ~ clin[[block]])
-          f1 <- lm(rank(pca[, pc]) ~ clin[[block]] + clin[[j]])
+          f0 <- lm(rank(y) ~ z, data = tmp)
+          f1 <- lm(rank(y) ~ z + x, data = tmp)
         }
         p_val <- anova(f0, f1)[2, 6]
       }
