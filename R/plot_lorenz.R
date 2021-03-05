@@ -50,12 +50,14 @@
 #' @import ggplot2
 #'
 
-plot_lorenz <- function(dat,
-                        pal_curves = 'npg',
-                             title = NULL,
-                           leg.txt = NULL,
-                            legend = 'topleft',
-                             hover = FALSE) {
+plot_lorenz <- function(
+  dat,
+  pal_curves = 'npg',
+       title = ifelse(is.numeric(dat), 'Lorenz Curve', 'Lorenz Curves'),
+     leg.txt = NULL,
+      legend = 'topleft',
+       hover = FALSE
+) {
 
   # Preliminaries
   if (dat %>% is.data.frame) {
@@ -83,21 +85,12 @@ plot_lorenz <- function(dat,
   if (length(dat) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(dat))
   }
-  if (title %>% is.null) {
-    if (length(dat) == 1L) {
-      title <- 'Lorenz Curve'
-    } else {
-      title <- 'Lorenz Curves'
-    }
-  }
   if (leg.txt %>% is.null) {
     leg.txt <- 'Data'
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   dfs <- seq_along(dat) %>% map(function(j) {

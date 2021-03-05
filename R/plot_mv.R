@@ -113,10 +113,12 @@
 #' @import ggplot2
 #'
 
-plot_mv <- function(dat,
-                    trans = 'rank',
-                    title = 'Mean-Variance Plot',
-                   legend = 'right', ...) {
+plot_mv <- function(
+  dat,
+   trans = 'rank',
+   title = 'Mean-Variance Plot',
+  legend = 'right', ...
+) {
 
   # Preliminaries
   if (nrow(dat) < 2L) {
@@ -125,11 +127,9 @@ plot_mv <- function(dat,
   if (!trans %in% c('rank', 'log', 'sqrt')) {
     stop('trans must be one of "rank", "log", or "sqrt".')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Method
   UseMethod('plot_mv')
@@ -140,14 +140,16 @@ plot_mv <- function(dat,
 #' @rdname plot_mv
 #' @export
 
-plot_mv.MArrayLM <- function(dat,
-                             trans = 'log',
-                              span = 0.5,
-                             title = 'Mean-Variance Plot',
-                              xlab = NULL,
-                              ylab = NULL,
-                            legend = 'right',
-                             hover = FALSE) {
+plot_mv.MArrayLM <- function(
+  dat,
+   trans = 'log',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (dat %>% is('MArrayLM') && dat$t %>% is.null && dat$F %>% is.null) {
@@ -235,15 +237,17 @@ plot_mv.MArrayLM <- function(dat,
 #' @importFrom edgeR calcNormFactors estimateTagwiseDisp
 #'   estimateGLMTagwiseDisp cpm aveLogCPM
 
-plot_mv.DGEList <- function(dat,
-                            design = NULL,
-                             trans = 'sqrt',
-                              span = 0.5,
-                             title = 'Mean-Variance Plot',
-                              xlab = NULL,
-                              ylab = NULL,
-                            legend = 'right',
-                             hover = FALSE) {
+plot_mv.DGEList <- function(
+  dat,
+  design = NULL,
+   trans = 'sqrt',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Tidy data
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
@@ -310,14 +314,16 @@ plot_mv.DGEList <- function(dat,
 #' @rdname plot_mv
 #' @export
 
-plot_mv.DGELM <- function(dat,
-                          trans = 'sqrt',
-                           span = 0.5,
-                          title = 'Mean-Variance Plot',
-                           xlab = NULL,
-                           ylab = NULL,
-                         legend = 'right',
-                          hover = FALSE) {
+plot_mv.DGELM <- function(
+  dat,
+   trans = 'sqrt',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Tidy data
   keep <- rowSums(dat$counts) > 1L & !dat$failed      # Minimal count filter
@@ -370,15 +376,17 @@ plot_mv.DGELM <- function(dat,
 #' @export
 #' @importFrom edgeR cpm aveLogCPM
 
-plot_mv.DESeqDataSet <- function(dat,
-                                 resid = FALSE,
-                                 trans = 'rank',
-                                  span = 0.5,
-                                 title = 'Mean-Variance Plot',
-                                  xlab = NULL,
-                                  ylab = NULL,
-                                legend = 'right',
-                                 hover = FALSE) {
+plot_mv.DESeqDataSet <- function(
+  dat,
+   resid = FALSE,
+   trans = 'rank',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   require(SummarizedExperiment)
@@ -459,14 +467,16 @@ plot_mv.DESeqDataSet <- function(dat,
 #' @rdname plot_mv
 #' @export
 
-plot_mv.DESeqTransform <- function(dat,
-                                   trans = 'rank',
-                                    span = 0.5,
-                                   title = 'Mean-Variance Plot',
-                                    xlab = NULL,
-                                    ylab = NULL,
-                                  legend = 'right',
-                                   hover = FALSE) {
+plot_mv.DESeqTransform <- function(
+  dat,
+   trans = 'rank',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Tidy data
   require(SummarizedExperiment)
@@ -515,14 +525,16 @@ plot_mv.DESeqTransform <- function(dat,
 #' @rdname plot_mv
 #' @export
 
-plot_mv.default <- function(dat,
-                            trans = 'rank',
-                             span = 0.5,
-                            title = 'Mean-Variance Plot',
-                             xlab = NULL,
-                             ylab = NULL,
-                           legend = 'right',
-                            hover = FALSE) {
+plot_mv.default <- function(
+  dat,
+   trans = 'rank',
+    span = 0.5,
+   title = 'Mean-Variance Plot',
+    xlab = NULL,
+    ylab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Tidy data
   dat <- matrixize(dat)

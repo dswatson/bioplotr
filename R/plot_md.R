@@ -104,16 +104,16 @@
 #' @import ggplot2
 #'
 
-plot_md <- function(dat,
-                    title = 'Mean-Difference Plot',
-                   legend = 'right', ...) {
+plot_md <- function(
+  dat,
+   title = 'Mean-Difference Plot',
+  legend = 'right', ...
+) {
 
   # Preliminaries
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Method
   UseMethod('plot_md')
@@ -125,17 +125,19 @@ plot_md <- function(dat,
 #' @export
 #' @importFrom edgeR calcNormFactors aveLogCPM estimateDisp cpm
 
-plot_md.DGEList <- function(dat,
-                            design = NULL,
-                            sample = 1L,
-                             ctrls = NULL,
-                               lfc = NULL,
-                              size = NULL, 
-                             alpha = NULL,
-                             title = 'Mean-Difference Plot',
-                              xlab = NULL,
-                            legend = 'right',
-                             hover = FALSE) {
+plot_md.DGEList <- function(
+  dat,
+  design = NULL,
+  sample = 1L,
+   ctrls = NULL,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (sample %>% is.numeric && sample > ncol(dat)) {
@@ -231,16 +233,18 @@ plot_md.DGEList <- function(dat,
 #' @export
 #' @importFrom edgeR aveLogCPM cpm
 
-plot_md.DESeqDataSet <- function(dat,
-                                 sample = 1L,
-                                  ctrls = NULL,
-                                    lfc = NULL,
-                                   size = NULL, 
-                                  alpha = NULL,
-                                  title = 'Mean-Difference Plot',
-                                   xlab = NULL,
-                                 legend = 'right',
-                                  hover = FALSE) {
+plot_md.DESeqDataSet <- function(
+  dat,
+  sample = 1L,
+   ctrls = NULL,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (sample %>% is.null && sample > ncol(dat)) {
@@ -325,16 +329,18 @@ plot_md.DESeqDataSet <- function(dat,
 #' @rdname plot_md
 #' @export
 
-plot_md.DESeqTransform <- function(dat,
-                                   sample = 1L,
-                                    ctrls = NULL,
-                                      lfc = NULL,
-                                     size = NULL, 
-                                    alpha = NULL,
-                                    title = 'Mean-Difference Plot',
-                                     xlab = NULL,
-                                   legend = 'right',
-                                    hover = FALSE) {
+plot_md.DESeqTransform <- function(
+  dat,
+  sample = 1L,
+   ctrls = NULL,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (xlab %>% is.null) {
@@ -355,15 +361,17 @@ plot_md.DESeqTransform <- function(dat,
 #' @rdname plot_md
 #' @export
 
-plot_md.DESeqResults <- function(dat,
-                                 fdr = 0.05,
-                                 lfc = NULL,
-                                size = NULL, 
-                               alpha = NULL,
-                               title = 'Mean-Difference Plot',
-                                xlab = NULL,
-                              legend = 'right',
-                               hover = FALSE) {
+plot_md.DESeqResults <- function(
+  dat,
+     fdr = 0.05,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (xlab %>% is.null) {
@@ -438,15 +446,17 @@ plot_md.DESeqResults <- function(dat,
 #' @rdname plot_md
 #' @export
 
-plot_md.TopTags <- function(dat,
-                            fdr = 0.05,
-                            lfc = NULL,
-                           size = NULL,
-                          alpha = NULL,
-                          title = 'Mean-Difference Plot',
-                           xlab = NULL,
-                         legend = 'right',
-                          hover = FALSE) {
+plot_md.TopTags <- function(
+  dat,
+     fdr = 0.05,
+     lfc = NULL,
+    size = NULL,
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (xlab %>% is.null) {
@@ -464,16 +474,18 @@ plot_md.TopTags <- function(dat,
 #' @rdname plot_md
 #' @export
 
-plot_md.data.frame <- function(dat,
-                               probes = NULL,
-                                  fdr = 0.05,
-                                  lfc = NULL,
-                                 size = NULL, 
-                                alpha = NULL,
-                                title = 'Mean-Difference Plot',
-                                 xlab = NULL,
-                               legend = 'right',
-                                hover = FALSE) {
+plot_md.data.frame <- function(
+  dat,
+  probes = NULL,
+     fdr = 0.05,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (probes %>% is.null) {
@@ -596,16 +608,18 @@ plot_md.data.frame <- function(dat,
 #' @export
 #' @importFrom limma getEAWP
 
-plot_md.default <- function(dat,
-                            sample = 1L,
-                             ctrls = NULL,
-                               lfc = NULL,
-                              size = NULL, 
-                             alpha = NULL,
-                             title = 'Mean-Difference Plot',
-                              xlab = NULL,
-                            legend = 'right',
-                             hover = FALSE) {
+plot_md.default <- function(
+  dat,
+  sample = 1L,
+   ctrls = NULL,
+     lfc = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Mean-Difference Plot',
+    xlab = NULL,
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (sample %>% is.numeric && sample > ncol(dat)) {

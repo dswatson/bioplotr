@@ -86,19 +86,21 @@
 #' @importFrom RColorBrewer brewer.pal
 #'
 
-plot_similarity <- function(dat,
-                            group = NULL,
-                            covar = NULL,
-                             dist = 'euclidean',
-                                p = 2L,
-                              top = NULL,
-                    filter_method = 'pairwise',
-                           center = FALSE,
-                        hclustfun = 'complete',
-                        pal_group = 'npg',
-                        pal_covar = 'Blues',
-                        pal_tiles = 'RdBu',
-                            title = 'Sample Similarity Matrix') {
+plot_similarity <- function(
+  dat,
+          group = NULL,
+          covar = NULL,
+           dist = 'euclidean',
+              p = 2L,
+            top = NULL,
+  filter_method = 'pairwise',
+         center = FALSE,
+      hclustfun = 'complete',
+      pal_group = 'npg',
+      pal_covar = 'Blues',
+      pal_tiles = 'RdBu',
+          title = 'Sample Similarity Matrix'
+) {
 
   # Preliminaries
   if (!dat %>% is('dist')) {
@@ -107,12 +109,8 @@ plot_similarity <- function(dat,
            'bray', 'kulczynski', 'jaccard', 'gower', 'altGower', 'morisita', 
            'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
            'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI')
-    if (!dist %in% d) {
-      stop('dist must be one of ', stringify(d, 'or'), '.')
-    }
-    if (!filter_method %in% c('pairwise', 'common')) {
-      stop('filter_method must be either "pairwise" or "common".')
-    }
+    dist <- match.arg(dist, d)
+    filter_method <- match.arg(filter_method, c('pairwise', 'common'))
   }
   if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
@@ -134,10 +132,7 @@ plot_similarity <- function(dat,
   }
   hclusts <- c('ward.D', 'ward.D2', 'single', 'complete', 'average',
                'mcquitty', 'median', 'centroid')
-  if (!hclustfun %in% hclusts) {
-    stop('hclustfun must be one of ', stringify(hclusts, 'or'), '. ',
-         'See ?hclust.')
-  }
+  hclustfun <- match.arg(hclustfun, hclusts)
   pal_cols <- colorize(pal_tiles, var_type = 'Continuous')
   if (pal_tiles == 'RdBu') {
     pal_cols <- rev(pal_cols)

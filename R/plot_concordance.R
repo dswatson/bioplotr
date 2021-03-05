@@ -76,18 +76,20 @@
 #' @import ggplot2
 #'
 
-plot_concordance <- function(dat,
-                             method = 'fisher',
-                              alpha = NULL,
-                              p_adj = NULL,
-                              sim_p = FALSE,
-                                  B = 2000L,
-                              label = FALSE,
-                               diag = FALSE,
-                              title = 'Concordance Plot',
-                             legend = 'right',
-                              hover = FALSE,
-                             export = FALSE) {
+plot_concordance <- function(
+  dat,
+  method = 'fisher',
+   alpha = NULL,
+   p_adj = NULL,
+   sim_p = FALSE,
+       B = 2000L,
+   label = FALSE,
+    diag = FALSE,
+   title = 'Concordance Plot',
+  legend = 'right',
+   hover = FALSE,
+  export = FALSE
+) {
 
   # Preliminaries
   p <- ncol(dat)
@@ -113,9 +115,8 @@ plot_concordance <- function(dat,
   if (colnames(dat) %>% is.null) {
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
-  if (!method %in% c('fisher', 'chisq', 'MI')) {
-    stop('method must be one of "fisher", "chisq", or "MI".')
-  }
+  methods <- c('fisher', 'chisq', 'MI')
+  method <- match.arg(method, methods)
   if (!alpha %>% is.null) {
     if (alpha <= 0 || alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
@@ -123,16 +124,11 @@ plot_concordance <- function(dat,
   }
   if (!p_adj %>% is.null) {
     p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p_adj %in% p_adjes) {
-      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
-           '. See ?p.adjust.')
-    }
+    p_adj <- match.arg(p_adj, p_adjes)
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
 
   # Tidy Data

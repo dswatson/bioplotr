@@ -31,13 +31,15 @@
 #' @import ggplot2
 #'
 
-plot_quantiles <- function(x,
-                           y,
-                           method = 'QQ',
-                              pts = 1000L,
-                            title = NULL,
-                             xlab = NULL,
-                             ylab = NULL) {
+plot_quantiles <- function(
+  x,
+  y,
+  method = c('QQ', 'MD'),
+     pts = 1000L,
+   title = ifelse(method == 'QQ', 'QQ Plot', 'MD Plot'),
+    xlab = NULL,
+    ylab = NULL
+) {
 
   # Preliminaries
   x <- x %>% keep(is.finite)
@@ -48,16 +50,7 @@ plot_quantiles <- function(x,
   if (length(y) < 1L) {
     stop('y must have at least one finite, non-missing value.')
   }
-  if (!method %in% c('QQ', 'MD')) {
-    stop('method must be either "QQ" or "MD".')
-  }
-  if (title %>% is.null) {
-    if (method == 'QQ') {
-      title <- 'QQ Plot'
-    } else {
-      title <- 'MD Plot'
-    }
-  }
+  method <- match.arg(method, c('QQ', 'MD'))
   if (xlab %>% is.null) {
     xlab <- 'X'
   }

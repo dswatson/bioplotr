@@ -67,14 +67,16 @@
 #' @import ggplot2
 #'
 
-plot_survival <- function(fit,
-                          fun = NULL,
-                           CI = FALSE,
-                       censor = TRUE,
-                   pal_curves = 'npg',
-                        title = NULL,
-                      leg.txt = NULL,
-                       legend = 'right', ...) {
+plot_survival <- function(
+  fit,
+         fun = NULL,
+          CI = FALSE,
+      censor = TRUE,
+  pal_curves = 'npg',
+       title = ifelse(is.null(fit$strata), 'Survival Curve', 'Survival Curves'),
+     leg.txt = NULL,
+      legend = 'right', ...
+) {
   # Preliminaries
   if(!fit %>% inherits('survfit')) {
     stop('fit must be an object of class survfit. Load the survival package ',
@@ -93,24 +95,15 @@ plot_survival <- function(fit,
     cols <- colorize(pal_curves, var_type = 'Categorical',
                      n = length(fit$strata))
   }
-  if (title %>% is.null) {
-    if (fit$strata %>% is.null) {
-      title <- 'Survival Curve'
-    } else {
-      title <- 'Survival Curves'
-    }
-  }
   if (leg.txt %>% is.null && !fit$strata %>% is.null) {
     leg.txt <- gsub('=.*', '', names(fit$strata))[1]
     leg.lbl <- gsub('.*=', '', names(fit$strata))
   } else if (!(leg.txt %>% is.null) && !(fit$strata %>% is.null)) {
     leg.lbl <- names(fit$strata)
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
   if (legend == 'bottomright') {
     legend <- c(0.99, 0.01)
   } else if (legend == 'bottomleft') {

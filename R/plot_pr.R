@@ -62,13 +62,15 @@
 #' @import ggplot2
 #'
 
-plot_pr <- function(obs,
-                    pred,
-                    pal_curves = 'npg',
-                         title = NULL,
-                       leg.txt = NULL,
-                        legend = 'topright',
-                         hover = FALSE) {
+plot_pr <- function(
+  obs,
+  pred,
+  pal_curves = 'npg',
+       title = ifelse(is.numeric(pred), 'Precision-Recall Curve', 'Precision-Recall Curves'),
+     leg.txt = NULL,
+      legend = 'topright',
+       hover = FALSE
+) {
 
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
@@ -76,21 +78,12 @@ plot_pr <- function(obs,
   if (length(pred) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
-  if (title %>% is.null) {
-    if (length(pred) == 1L) {
-      title <- 'Precision-Recall Curve'
-    } else {
-      title <- 'Precision-Recall Curves'
-    }
-  }
   if (leg.txt %>% is.null) {
     leg.txt <- 'Classifier'
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   prcs <- evalmod(scores = pred, labels = obs)$prcs

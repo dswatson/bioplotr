@@ -61,19 +61,21 @@
 #' @import ggplot2
 #'
 
-plot_corr <- function(dat,
-                      method = 'pearson',
-                         use = 'everything',
-                       alpha = NULL,
-                       p_adj = NULL,
-                         lim = NULL,
-                        geom = 'tile',
-                       label = FALSE,
-                        diag = FALSE,
-                       title = 'Correlation Plot',
-                      legend = 'right',
-                       hover = FALSE,
-                      export = FALSE) {
+plot_corr <- function(
+  dat,
+  method = 'pearson',
+     use = 'everything',
+   alpha = NULL,
+   p_adj = NULL,
+     lim = NULL,
+    geom = 'tile',
+   label = FALSE,
+    diag = FALSE,
+   title = 'Correlation Plot',
+  legend = 'right',
+   hover = FALSE,
+  export = FALSE
+) {
 
   # Preliminaries
   if (ncol(dat) < 2L) {
@@ -92,14 +94,6 @@ plot_corr <- function(dat,
     colnames(dat) <- paste0('V', seq_len(ncol(dat)))
   }
   dat <- as_tibble(dat)
-  if (!method %in% c('pearson', 'kendall', 'spearman')) {
-    stop('method must be one of "pearson", "kendall", or "spearman". See ?cor.')
-  }
-  uses <- c('everything', 'all.obs', 'complete.obs', 'na.or.complete',
-            'pairwise.complete.obs')
-  if (!use %in% uses) {
-    stop('use must be one of ', stringify(uses, 'or'), '.')
-  }
   if (!alpha %>% is.null) {
     if (alpha <= 0 | alpha >= 1) {
       stop('alpha must be numeric on (0, 1).')
@@ -107,19 +101,13 @@ plot_corr <- function(dat,
   }
   if (!p_adj %>% is.null) {
     p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p_adj %in% p_adjes) {
-      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
-           '. See ?p.adjust.')
-    }
+    p_adj <- match.arg(p_adj, p_adjes)
   }
-  if (!geom %in% c('tile', 'circle')) {
-    stop('geom must be either "tile" or "circle".')
-  }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
+  geoms <- c('tile', 'circle')
+  geom <- match.arg(geom, geoms)
 
   # Tidy data
   mat <- cor(dat, method = method, use = use)

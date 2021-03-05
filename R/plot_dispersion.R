@@ -119,10 +119,12 @@
 #' @importFrom ggsci pal_d3
 #'
 
-plot_dispersion <- function(dat,
-                            trans = 'log',
-                            title = 'Mean-Dispersion Plot',
-                           legend = 'right', ...) {
+plot_dispersion <- function(
+  dat,
+   trans = 'log',
+   title = 'Mean-Dispersion Plot',
+  legend = 'right', ...
+) {
 
   # Preliminaries
   if (trans == 'log') {
@@ -134,11 +136,9 @@ plot_dispersion <- function(dat,
   } else {
     stop('trans must be either "log" or "sqrt".')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Method
   UseMethod('plot_dispersion')
@@ -150,12 +150,14 @@ plot_dispersion <- function(dat,
 #' @export
 #' @importFrom edgeR calcNormFactors estimateDisp aveLogCPM
 
-plot_dispersion.DGEList <- function(dat,
-                                    design = NULL,
-                                     trans = 'log',
-                                     title = 'Mean-Dispersion Plot',
-                                    legend = 'right',
-                                     hover = FALSE) {
+plot_dispersion.DGEList <- function(
+  dat,
+  design = NULL,
+   trans = 'log',
+   title = 'Mean-Dispersion Plot',
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   keep <- rowSums(dat$counts) > 1L               # Minimal count filter
@@ -221,11 +223,13 @@ plot_dispersion.DGEList <- function(dat,
 #' @export
 #' @importFrom edgeR aveLogCPM
 
-plot_dispersion.DESeqDataSet <- function(dat,
-                                         trans = 'log',
-                                         title = 'Mean-Dispersion Plot',
-                                        legend = 'right',
-                                         hover = FALSE) {
+plot_dispersion.DESeqDataSet <- function(
+  dat,
+   trans = 'log',
+   title = 'Mean-Dispersion Plot',
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   require(DESeq2)
@@ -278,13 +282,15 @@ plot_dispersion.DESeqDataSet <- function(dat,
 #' @export
 #' @importFrom edgeR aveLogCPM
 
-plot_dispersion.default <- function(dat,
-                                    design = NULL,
-                                     trans = 'log',
-                                  pipeline = NULL,
-                                     title = 'Mean-Dispersion Plot',
-                                    legend = 'right',
-                                     hover = FALSE) {
+plot_dispersion.default <- function(
+  dat,
+    design = NULL,
+     trans = 'log',
+  pipeline = NULL,
+     title = 'Mean-Dispersion Plot',
+    legend = 'right',
+     hover = FALSE
+) {
 
   if (pipeline == 'edgeR') {
     dat <- DGEList(dat)

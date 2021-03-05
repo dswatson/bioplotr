@@ -126,25 +126,27 @@
 #' @import ggplot2
 #'
 
-plot_mds <- function(dat,
-                     group = NULL,
-                     covar = NULL,
-                    metric = TRUE,
-                      dist = 'euclidean',
-                         p = 2L,
-                       top = 500L,
-             filter_method = 'pairwise',
-                    center = FALSE,
-                       pcs = c(1L, 2L),
-                     label = FALSE,
-                 pal_group = 'npg',
-                 pal_covar = 'Blues',
-                      size = NULL, 
-                     alpha = NULL, 
-                     title = 'MDS',
-                    legend = 'right',
-                     hover = FALSE,
-                        D3 = FALSE) {
+plot_mds <- function(
+  dat,
+          group = NULL,
+          covar = NULL,
+         metric = TRUE,
+           dist = 'euclidean',
+              p = 2L,
+            top = 500L,
+  filter_method = 'pairwise',
+         center = FALSE,
+            pcs = c(1L, 2L),
+          label = FALSE,
+      pal_group = 'npg',
+      pal_covar = 'Blues',
+           size = NULL, 
+          alpha = NULL, 
+          title = 'MDS',
+         legend = 'right',
+          hover = FALSE,
+             D3 = FALSE
+) {
 
   # Preliminaries
   if (!dat %>% is('dist')) {
@@ -156,12 +158,8 @@ plot_mds <- function(dat,
            'bray', 'kulczynski', 'jaccard', 'gower', 'altGower', 'morisita', 
            'horn', 'mountford', 'raup' , 'binomial', 'chao', 'cao',
            'mahalanobis', 'pearson', 'kendall', 'spearman', 'MI')
-    if (!dist %in% d) {
-      stop('dist must be one of ', stringify(d, 'or'), '.')
-    }
-    if (!filter_method %in% c('pairwise', 'common')) {
-      stop('filter_method must be either "pairwise" or "common".')
-    }
+    dist <- match.arg(dist, d)
+    filter_method <- match.arg(filter_method, c('pairwise', 'common'))
   }
   if (!group %>% is.null) {
     group <- dat %>% format_features(group, var_type = 'Categorical')
@@ -202,11 +200,9 @@ plot_mds <- function(dat,
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   if (!dat %>% is('dist')) {

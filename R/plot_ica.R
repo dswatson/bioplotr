@@ -86,20 +86,22 @@
 #' @import ggplot2
 #'
 
-plot_ica <- function(dat,
-                     group = NULL,
-                     covar = NULL,
-                       top = NULL,
-                      dims = c(1L, 2L),
-                     label = FALSE,
-                 pal_group = 'npg',
-                 pal_covar = 'Blues',
-                      size = NULL,
-                     alpha = NULL,
-                     title = 'ICA',
-                    legend = 'right',
-                     hover = FALSE,
-                        D3 = FALSE) {
+plot_ica <- function(
+  dat,
+      group = NULL,
+      covar = NULL,
+        top = NULL,
+       dims = c(1L, 2L),
+      label = FALSE,
+  pal_group = 'npg',
+  pal_covar = 'Blues',
+       size = NULL,
+      alpha = NULL,
+      title = 'ICA',
+     legend = 'right',
+      hover = FALSE,
+         D3 = FALSE
+) {
   
   # Preliminaries
   if (ncol(dat) < 3L) {
@@ -144,11 +146,9 @@ plot_ica <- function(dat,
     stop('If label is TRUE, then plot can render at most one phenotypic ',
          'feature.')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
   
   # Tidy data
   dat <- matrixize(dat)

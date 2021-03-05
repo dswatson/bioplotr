@@ -27,11 +27,13 @@
 #' @import ggplot2
 #'
 
-plot_tree <- function(dat,
-                      labels = TRUE,
-                 leaf_labels = TRUE,
-                      rotate = FALSE,
-                       title = NULL) {
+plot_tree <- function(
+  dat,
+       labels = TRUE,
+  leaf_labels = TRUE,
+       rotate = FALSE,
+        title = NULL
+) {
 
   # Preliminaries
   dat_class <- if_else(dat %>% inherits('dendro'), dat$class, class(dat))

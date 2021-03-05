@@ -40,10 +40,12 @@
 #' @importFrom purrr map_chr
 #'
 
-plot_taco <- function(dat,
-                      fdr = 0.05,
-                    title = 'Taco Plot',
-                   legend = 'right') {
+plot_taco <- function(
+  dat,
+     fdr = 0.05,
+   title = 'Taco Plot',
+  legend = 'right'
+) {
 
   # Preliminaries
   dat <- dat %>%
@@ -84,11 +86,9 @@ plot_taco <- function(dat,
          'colnames for this vector include ', stringify(q), '. Make sure that ',
          'dat includes exactly one such colname.')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   if (rownames(dat) %>% is.null) {

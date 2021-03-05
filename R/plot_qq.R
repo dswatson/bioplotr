@@ -1,4 +1,4 @@
-#' Q-Q Plot
+#' QQ Plot
 #'
 #' This function plots expected vs. observed \emph{p}-values following -log10
 #' transform.
@@ -14,7 +14,7 @@
 #'   from \code{dat}.
 #'
 #' @details
-#' Q-Q plots are a common way to visually assess the applicability of a
+#' QQ plots are a common way to visually assess the applicability of a
 #' statistical test to a given data set. If the black points deviate too sharply
 #' from the red line, especially at low expected values of -log10(\emph{p}),
 #' then it suggests a violation of the assumptions upon which the test was
@@ -42,10 +42,12 @@
 #' @import ggplot2
 #'
 
-plot_qq <- function(dat,
-                    lambda = FALSE,
-                     title = 'QQ Plot',
-                     hover = FALSE) {
+plot_qq <- function(
+  dat,
+  lambda = FALSE,
+   title = 'QQ Plot',
+   hover = FALSE
+) {
 
   # Preliminaries
   if (dat %>% is.numeric) {

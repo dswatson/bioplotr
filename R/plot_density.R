@@ -54,13 +54,15 @@
 #' @import ggplot2
 #'
 
-plot_density <- function(dat,
-                         group = NULL,
-                     pal_group = 'npg',
-                          xlab = NULL,
-                         title = NULL,
-                        legend = 'right',
-                         hover = FALSE) {
+plot_density <- function(
+  dat,
+      group = NULL,
+  pal_group = 'npg',
+       xlab = NULL,
+      title = 'Density Plot',
+     legend = 'right',
+      hover = FALSE
+) {
 
   # Preliminaries
   if (!group %>% is.null) {
@@ -68,18 +70,9 @@ plot_density <- function(dat,
     cols <- colorize(pal_group, var_type = 'Categorical',
                      n = length(levels(group[[1]])))
   }
-  if (title %>% is.null) {
-    if (group %>% is.null) {
-      title <- 'Density by Sample'
-    } else {
-      title <- paste('Density by', names(group))
-    }
-  }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   if (xlab %>% is.null) {
@@ -114,4 +107,4 @@ plot_density <- function(dat,
 
 }
 
-
+# TITLE OPTIONAL

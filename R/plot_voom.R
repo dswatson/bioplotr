@@ -68,24 +68,24 @@
 #' @importFrom ggsci pal_d3
 #'
 
-plot_voom <- function(dat,
-                      design = NULL,
-                    lib.size = NULL,
-            normalize.method = 'none',
-                        span = 0.5,
-                       title = 'Voom Plot',
-                      legend = 'right',
-                       hover = FALSE, ...) {
+plot_voom <- function(
+  dat,
+            design = NULL,
+          lib.size = NULL,
+  normalize.method = 'none',
+              span = 0.5,
+             title = 'Voom Plot',
+            legend = 'right',
+             hover = FALSE, ...
+) {
 
   # Preliminaries
   if (nrow(dat) < 2L) {
     stop('At least 2 probes required to fit a mean-variance trend.')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   if (dat %>% is('DGEList')) {

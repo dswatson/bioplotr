@@ -47,13 +47,15 @@
 #' @import ggplot2
 #'
 
-plot_roc <- function(obs,
-                     pred,
-                     pal_curves = 'npg',
-                          title = NULL,
-                        leg.txt = NULL,
-                         legend = 'bottomright',
-                          hover = FALSE) {
+plot_roc <- function(
+  obs,
+  pred,
+  pal_curves = 'npg',
+       title = ifelse(is.numeric(pred), 'ROC Curve', 'ROC Curves'),
+     leg.txt = NULL,
+      legend = 'bottomright',
+       hover = FALSE
+) {
 
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
@@ -61,21 +63,12 @@ plot_roc <- function(obs,
   if (length(pred) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
-  if (title %>% is.null) {
-    if (length(pred) == 1L) {
-      title <- 'ROC Curve'
-    } else {
-      title <- 'ROC Curves'
-    }
-  }
   if (leg.txt %>% is.null) {
     leg.txt <- 'Classifier'
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   rocs <- evalmod(scores = pred, labels = obs)$rocs

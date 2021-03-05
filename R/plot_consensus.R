@@ -79,16 +79,18 @@
 #' @import dplyr
 #'
 
-plot_consensus <- function(cc,
-                           k,
-                           group = NULL,
-                           covar = NULL,
-                       hclustfun = 'complete',
-                       pal_clust = 'd3',
-                       pal_group = 'npg',
-                       pal_covar = 'Blues',
-                       pal_tiles = 'RdBu',
-                           title = 'Consensus Matrix') {
+plot_consensus <- function(
+  cc,
+  k,
+      group = NULL,
+      covar = NULL,
+  hclustfun = 'complete',
+  pal_clust = 'd3',
+  pal_group = 'npg',
+  pal_covar = 'Blues',
+  pal_tiles = 'RdBu',
+      title = 'Consensus Matrix'
+) {
 
   # Preliminaries
   if (cc %>% is.list) {

@@ -58,16 +58,18 @@
 #' @importFrom ggsci pal_d3
 #'
 
-plot_volcano <- function(dat,
-                         y = 'p',
-                       fdr = 0.05,
-                       lfc = NULL,
-                    probes = NULL,
-                      size = NULL, 
-                     alpha = NULL,
-                     title = 'Volcano Plot',
-                    legend = 'right',
-                     hover = FALSE) {
+plot_volcano <- function(
+  dat,
+       y = 'p',
+     fdr = 0.05,
+     lfc = NULL,
+  probes = NULL,
+    size = NULL, 
+   alpha = NULL,
+   title = 'Volcano Plot',
+  legend = 'right',
+   hover = FALSE
+) {
 
   # Preliminaries
   dat <- as.data.frame(dat)
@@ -106,9 +108,7 @@ plot_volcano <- function(dat,
            'exactly one such colname.')
     }
   }
-  if (!y %in% c('p', 'q', 'B')) {
-    stop('y must be one of "p", "q", or "B".')
-  }
+  y <- match.arg(y, c('p', 'q', 'B'))
   if (probes %>% is.null) {
     if (rownames(dat) %>% is.null ||
         rownames(dat) %>% identical(as.character(seq_len(nrow(dat))))) {
@@ -151,11 +151,9 @@ plot_volcano <- function(dat,
   if (min(dat$q.value) < 0L || max(dat$q.value) > 1L) {
     stop('Q-values values must be on [0, 1].')
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
 
   # Tidy data
   if (y == 'p') {
@@ -240,3 +238,4 @@ plot_volcano <- function(dat,
 }
 
 # More elegant solution to probe column so we can get straight to tibble
+# OPTIONAL TITLE

@@ -44,12 +44,14 @@
 #' @import ggplot2
 #'
 
-plot_calibration <- function(obs,
-                             pred,
-                             pal_curves = 'npg',
-                                  title = NULL,
-                                 legend = 'right',
-                                  hover = FALSE) {
+plot_calibration <- function(
+  obs,
+  pred,
+  pal_curves = 'npg',
+       title = ifelse(is.numeric(pred), 'Calibration Curve', 'Calibration Curves'),
+      legend = 'right',
+       hover = FALSE
+) {
 
   # Preliminaries
   obs <- format_binom(obs, vec_type = 'obs')
@@ -60,18 +62,9 @@ plot_calibration <- function(obs,
   if (length(pred) > 1L) {
     cols <- colorize(pal_curves, var_type = 'Categorical', n = length(pred))
   }
-  if (title %>% is.null) {
-    if (length(pred) == 1L) {
-      title <- 'Calibration Curve'
-    } else {
-      title <- 'Calibration Curves'
-    }
-  }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, loc)
 
   # Tidy data
   brks <- seq(from = 0.05, to = 1L, by = 0.05)
@@ -111,3 +104,4 @@ plot_calibration <- function(obs,
 }
 
 # Use gganimate, tweenr, and shiny to toggle btw classifiers
+# Allow arbitrary bin breaks

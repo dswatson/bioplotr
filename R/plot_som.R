@@ -126,23 +126,25 @@
 #' @import ggplot2
 #'
 
-plot_som <- function(dat,
-                     type = 'model',
-                   design = NULL,
-                     coef = NULL,
-                     stat = 'lfc',
-                   sample = 1L,
-                      top = 0.5,
-                grid_dims = NULL,
-                     topo = 'hexagonal',
-                   neighb = 'gaussian',
-                     rlen = 1000,
-                 parallel = TRUE,
-                pal_tiles = NULL,
-                    title = NULL,
-                   legend = 'right',
-                    hover = FALSE,
-                   export = TRUE, ...) {
+plot_som <- function(
+  dat,
+       type = 'model',
+     design = NULL,
+       coef = NULL,
+       stat = 'lfc',
+     sample = 1L,
+        top = 0.5,
+  grid_dims = NULL,
+       topo = 'hexagonal',
+     neighb = 'gaussian',
+       rlen = 1000,
+   parallel = TRUE,
+  pal_tiles = NULL,
+      title = NULL,
+     legend = 'right',
+      hover = FALSE,
+     export = TRUE, ...
+) {
 
   # Preliminaries
   if (dat %>% is('kohonen')) {
