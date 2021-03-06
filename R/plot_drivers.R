@@ -10,11 +10,17 @@
 #'   \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects 
 #'   are automatically extracted and transformed to the log2-CPM scale, with a
 #'   warning.
-#' @param clin Data frame or matrix with rows correponding to samples and
+#' @param clin Data frame or matrix with rows corresponding to samples and
 #'   columns to technical and/or biological features to test for associations
-#'   with omic data.
+#'   with omic data. 
+#' @param bivariate Test associations in isolation, or after adjusting for
+#'   all remaining covariates? If \code{FALSE}, then \code{clin} is treated as 
+#'   a design matrix against which each PC is sequentially regressed. See 
+#'   Details.
 #' @param parametric Compute \emph{p}-values using parametric association tests?
-#'   If \code{FALSE}, rank-based alternatives are used instead. See Details.
+#'   If \code{FALSE}, rank-based alternatives are used instead. Must either be
+#'   a single Boolean, in which case it applies to all tests, or Boolean vector
+#'   of length equal to \code{ncol(clin)}. See Details.
 #' @param block String specifying the name of the column in which to find the
 #'   blocking variable, should one be accounted for. See Details.
 #' @param unblock Column name(s) of one or more features for which the 
@@ -29,7 +35,9 @@
 #' @param top Optional number (if > 1) or proportion (if < 1) of most variable
 #'   probes to be used for PCA.
 #' @param n_pc Number of principal components to include in the figure.
-#' @param label Print association statistics over tiles?
+#' @param stat Association statistic of choice. Currently supports \code{"p"} 
+#'   (-log \emph{p}-values) and \code{"r2"} (\eqn{R^2}). Interpretations vary 
+#'   depending on whether covariates are included. See Details.
 #' @param alpha Optional significance threshold to impose on associations. 
 #'   Those with \emph{p}-values (optionally adjusted) less than or equal to 
 #'   \code{alpha} are outlined in black.
@@ -37,6 +45,9 @@
 #'   include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 #'   "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 #'   \link[stats]{p.adjust}}.
+#' @param r_adj Return adjusted partial R-squared? Only relevant if \code{stat = 
+#'   "r2"}. 
+#' @param label Print association statistics over tiles?
 #' @param lim Optional vector of length two defining lower and upper bounds for 
 #'   the scale range. Default is observed extrema.
 #' @param title Optional plot title.
@@ -48,33 +59,46 @@
 #'   browser's graphic display or appear in the RStudio viewer.
 #'
 #' @details
-#' Strength of association is measured by -log \emph{p}-values, optionally
-#' adjusted for multiple testing. When \code{parametric = TRUE}, significance
-#' is computed from Pearson correlation tests (for continuous features) or 
-#' ANOVA \emph{F}-tests (for categorical features). When \code{parametric =
-#' FALSE}, significance is computed from rank-based alternatives, i.e. Spearman 
-#' correlation tests (for continuous features) or Kruskal-Wallis tests (for 
-#' categorical features). 
+#' If \code{bivariate = TRUE}, then association tests are performed between
+#' each PC and each clinical covariate, optionally adjusting for a blocking 
+#' variable (if \code{block} is non-\code{NULL}). If \code{bivariate = FALSE},
+#' then all tests are partial association tests, in the sense that they adjust 
+#' for all remaining covariates. 
+#' 
+#' When \code{bivariate = TRUE, block = NULL} and \code{parametric = TRUE}, 
+#' significance is computed from Pearson correlation tests (for continuous 
+#' features) or ANOVA \emph{F}-tests (for categorical features). When 
+#' \code{parametric = FALSE}, significance is computed from rank-based 
+#' alternatives, i.e. Spearman correlation tests (for continuous features) or 
+#' Kruskal-Wallis tests (for categorical features). 
+#' 
+#' When \code{bivariate = FALSE} or \code{block} is non-\code{NULL}, 
+#' significance is computed from partial correlation tests for continuous data 
+#' (Pearson if \code{parametric = TRUE}, Spearman if \code{parametric = FALSE}) 
+#' or repeated measures ANOVA \emph{F}-tests (under rank-transformation if 
+#' \code{parametric = FALSE}). In all cases, the alternative hypothesis assumes
+#' a monotonic relationship between variables.
+#' 
+#' Strength of association may be measured either by -log \emph{p}-values (if
+#' \code{stat = "p"}) or R-squared (if \code{stat = "r2"}). The former may be
+#' adjusted for multiple testing, while the latter can be adjusted for 
+#' covariates. 
 #'
-#' An optional blocking variable may be provided if samples violate the
-#' assumption of independence, e.g. for studies in which subjects are observed
-#' at multiple time points. If a blocking variable is identified, it will be
-#' regressed out prior to testing for all variables except those explicitly
-#' exempted by the \code{unblock} argument. Significance is then computed from
-#' partial correlation tests for continuous data (Pearson if \code{parametric = 
-#' TRUE}, Spearman if \code{parametric = FALSE}) or repeated measures ANOVA 
-#' \emph{F}-tests (under rank-transformation if \code{parametric = FALSE}).
-#'
-#' When supplying a blocking variable, be careful to consider potential
-#' confounding effects. For instance, features like sex and age are usually
-#' nested within subject, while subject may be nested within other variables
-#' like batch or treatment group. The \code{block} and \code{unblock} arguments
-#' are intended to help parse out these relationships.
+#' A blocking variable may be provided if samples violate the assumption of 
+#' independence, e.g. for studies in which subjects are observed at multiple 
+#' time points. If a blocking variable is identified, it will be regressed out 
+#' prior to testing for all variables except those explicitly exempted by the 
+#' \code{unblock} argument. When supplying a blocking variable, be careful to 
+#' consider potential collinearities in the data. For instance, clinical 
+#' features may be invariant with respect to subject, while subject may be 
+#' nested within other variables like batch or treatment group. The \code{block} 
+#' and \code{unblock} arguments are intended to help parse out these 
+#' relationships.
 #' 
 #' Numeric and categorical features are tested differently. To protect against
-#' potential mistakes (e.g., one-hot encoding a Boolean variable), 
-#' \code{plot_drivers} automatically prints a data frame listing the class of
-#' each feature.
+#' potential mistakes (e.g., one-hot encoding a Boolean variable), \code{
+#' plot_drivers} automatically prints a data frame listing the class of each 
+#' feature.
 #'
 #' If \code{kernel} is non-\code{NULL}, then KPCA is used instead of PCA. See
 #' \code{\link{plot_kpca}} for more info. Details on kernel functions and their
@@ -101,26 +125,32 @@
 #' @importFrom purrr map_chr
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
+#' @importFrom rsq rsq.partial
 #' @import dplyr
 #' @import ggplot2
 #'
 
-plot_drivers <- function(dat,
-                         clin,
-                    parametric = TRUE,
-                         block = NULL,
-                       unblock = NULL,
-                        kernel = NULL,
-                          kpar = NULL,
-                           top = NULL,
-                          n_pc = 5L,
-                         label = FALSE,
-                         alpha = NULL,
-                         p_adj = NULL,
-                           lim = NULL,
-                         title = 'Variation By Feature',
-                        legend = 'right',
-                         hover = FALSE) {
+plot_drivers <- function(
+  dat,
+  clin,
+   bivariate = TRUE,
+  parametric = TRUE,
+       block = NULL,
+     unblock = NULL,
+      kernel = NULL,
+        kpar = NULL,
+         top = NULL,
+        n_pc = 5L,
+        stat = 'p',
+       alpha = NULL,
+       p_adj = NULL,
+       r_adj = FALSE,
+       label = FALSE,
+         lim = NULL,
+       title = 'Variation By Feature',
+      legend = 'right',
+       hover = FALSE
+) {
 
   # Preliminaries
   if (ncol(dat) < 3L) {
@@ -128,6 +158,9 @@ plot_drivers <- function(dat,
   }
   if (ncol(dat) != nrow(clin)) {
     stop('Number of columns in dat does not match number of rows in clin.')
+  }
+  if (length(parametric) > 1 & length(parametric) != ncol(clin)) {
+    stop('parametric must be of length 1 or length ncol(clin).')
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
@@ -141,7 +174,7 @@ plot_drivers <- function(dat,
           mm <- model.matrix(~ clin[[block]] + clin[[j]])
           if (!mm %>% is.fullrank) {
             stop('"', block,  '"', ' and "', colnames(clin)[j], '" are ', 
-                 'perfectly confounded. Consider using the unblock argument.')
+                 'perfectly collinear. Consider using the unblock argument.')
           }
         }
       } else {
@@ -168,16 +201,11 @@ plot_drivers <- function(dat,
   }
   if (!p_adj %>% is.null) {
     p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
-    if (!p_adj %in% p_adjes) {
-      stop('p_adj must be one of ', stringify(p_adjes, 'or'), 
-           '. See ?p.adjust.')
-    }
+    p_adj <- match.arg(p_adj, p_adjes)
   }
-  loc <- c('bottom', 'left', 'top', 'right',
-           'bottomright', 'bottomleft', 'topleft', 'topright')
-  if (!legend %in% loc) {
-    stop('legend must be one of ', stringify(loc, 'or'), '.')
-  }
+  locations <- c('bottom', 'left', 'top', 'right',
+                 'bottomright', 'bottomleft', 'topleft', 'topright')
+  legend <- match.arg(legend, locations)
   tibble(Feature = colnames(clin),               # Be apprised
            Class = clin %>% map_chr(class)) %>%
     print(n = nrow(.))
@@ -203,59 +231,98 @@ plot_drivers <- function(dat,
     pca <- rotated(pca)
   }
   
-  # P-value function
-  sig <- function(j, pc) {
-    tmp <- data.frame(x = clin[[j]], y = pca[, pc])
-    if (!(block %>% is.null || j %in% unblock || j == block)) {
-      tmp <- tmp %>% mutate(z = clin[[block]])
+  # List full models if bivariate = FALSE
+  if (!bivariate) {
+    f1_list <- lapply(seq_len(n_pc), function(pc) {
+      if_else(parametric, lm(pca[, pc] ~ clin), lm(rank(pca[, pc]) ~ clin))
+    })
+  }
+  
+  # Association testing function
+  association_test <- function(j, pc) {
+    if (length(parametric) > 1) {
+      parametric <- parametric[which(colnames(clin) == j)]
     }
-    tmp <- na.omit(tmp)
-    if (clin[[j]] %>% is.numeric) {
-      if (block %>% is.null || j %in% unblock || j == block) {
-        x <- tmp$x
-        y <- tmp$y
-      } else {
-        x <- residuals(lm(x ~ z, data = tmp)) 
-        y <- residuals(lm(y ~ z, data = tmp))
+    if (bivariate) {
+      # The tmp data frame allows pairwise NA deletion
+      tmp <- data.frame(x = clin[[j]], y = pca[, pc])
+      if (!(block %>% is.null || j %in% unblock || j == block)) {
+        tmp <- tmp %>% mutate(z = clin[[block]])
       }
-      if (parametric) {
-        p_val <- cor.test(x, y, method = 'pearson')$p.value
+      tmp <- na.omit(tmp)
+      if (tmp$x %>% is.numeric) {
+        # Regress out blocking effects if necessary
+        if (!(block %>% is.null || j %in% unblock || j == block)) {
+          x <- residuals(lm(x ~ z, data = tmp)) 
+          y <- residuals(lm(y ~ z, data = tmp))
+          tmp <- tmp %>% mutate(x = x, y = y)
+        }
+        # For continuous data, tests are Pearson or Spearman correlations
+        # (optionally partial) depending on whether parametric = TRUE
+        tst <- if_else(parametric, 
+                       cor.test(tmp$x, tmp$y, method = 'pearson'),
+                       cor.test(tmp$x, tmp$y, method = 'spearman'))
+        p_value <- tst$p.value
+        est <- if_else(stat == 'r', tst$estimate^2, p_value)
       } else {
-        p_val <- cor.test(x, y, method = 'spearman')$p.value
+        if (block %>% is.null || j %in% unblock || j == block) {
+          # For categorical data with no blocking variable, options are 
+          # ANOVA or Kruskal-Wallis test
+          if (parametric) {
+            f <- lm(y ~ x, data = tmp)
+            p_value <- est <- anova(f)[1, 5]
+          } else {
+            f <- lm(rank(y) ~ x, data = tmp)
+            p_value <- est <- kruskal.test(y ~ x, data = tmp)$p.value
+          }
+          if (stat == 'r') {
+            est <- if_else(r_adj, summary(f)$adj.r.squared, summary(f)$r.squared)
+          }
+        } else {
+          # When blocking variable is present, we perform repeated measures 
+          # ANOVA, optionally on ranks (if parametric = FALSE)
+          if (parametric) {
+            f0 <- lm(y ~ z, data = tmp)
+            f1 <- lm(y ~ z + x, data = tmp)
+          } else {
+            f0 <- lm(rank(y) ~ z, data = tmp)
+            f1 <- lm(rank(y) ~ z + x, data = tmp)
+          }
+          p_value <- est <- anova(f0, f1)[2, 6]
+          if (stat == 'r') {
+            est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
+          }
+        }
       }
     } else {
-      if (block %>% is.null || j %in% unblock || j == block) {
-        if (parametric) {
-          p_val <- anova(lm(y ~ x, data = tmp))[1, 5]
-        } else {
-          p_val <- kruskal.test(y ~ x, data = tmp)$p.value 
-        }
-      } else {
-        if (parametric) {
-          f0 <- lm(y ~ z, data = tmp)
-          f1 <- lm(y ~ z + x, data = tmp)
-        } else {
-          f0 <- lm(rank(y) ~ z, data = tmp)
-          f1 <- lm(rank(y) ~ z + x, data = tmp)
-        }
-        p_val <- anova(f0, f1)[2, 6]
+      # For multivariate tests, we run simple ANOVA, optionally on ranks 
+      # (if parametric = FALSE)
+      f1 <- f1_list[[pc]]
+      f0 <- if_else(parametric, 
+                    lm(pca[, pc] ~ select(clin, -j)),
+                    lm(rank(pca[, pc]) ~ select(clin, -j)))
+      p_value <- est <- anova(f0, f1)[2, 6]
+      if (stat == 'r') {
+        est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
       }
     }
-    return(p_val)
+    out <- data.frame('Association' = est, 'p_value' = p_value)
+    return(out)
   }
   
   # Tidy data
   df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n_pc))) %>%
-    rowwise(.) %>%
-    mutate(Association = sig(Feature, PC)) %>%   # Populate
-    ungroup(.)
+                         PC = paste0('PC', seq_len(n_pc))) 
+  tst_out <- foreach(i = seq_len(nrow(df)), .combine = rbind) %do% 
+    association_test(df$Feature[i], df$PC[i])
+  df <- cbind(df, tst_out)
   if (!p_adj %>% is.null) {
-    df <- df %>% mutate(Association = p.adjust(Association, method = p_adj))
+    df <- df %>% mutate(p_value = p.adjust(p_value, method = p_adj))
   }
-  df <- df %>% 
-    mutate(Significant = if_else(Association <= alpha, TRUE, FALSE),
-           Association = -log(Association))
+  if (stat == 'p') {
+    df <- df %>% mutate(Association = -log(p_value))
+  }
+  df <- df %>% mutate(Significant = if_else(p_value <= alpha, TRUE, FALSE))
 
   # Build plot
   if (!p_adj %>% is.null) {
@@ -293,10 +360,9 @@ plot_drivers <- function(dat,
 
 }
 
-# Allow spline fits? 
-# Optionally summarise associations with R^2? MSE?
-# Allow parametric tests for some assocations and nonparametric for others?
-# Fit multivariate models?
+ 
+
+# Different color scheme for R^2?
 # Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Some way to facet_grid? A "by" argument
 # Use pData if available
