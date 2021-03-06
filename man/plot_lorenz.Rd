@@ -7,7 +7,7 @@
 plot_lorenz(
   dat,
   pal_curves = "npg",
-  title = NULL,
+  title = ifelse(is.numeric(dat), "Lorenz Curve", "Lorenz Curves"),
   leg.txt = NULL,
   legend = "topleft",
   hover = FALSE

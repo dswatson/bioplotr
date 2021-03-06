@@ -10,7 +10,7 @@ plot_survival(
   CI = FALSE,
   censor = TRUE,
   pal_curves = "npg",
-  title = NULL,
+  title = ifelse(is.null(fit$strata), "Survival Curve", "Survival Curves"),
   leg.txt = NULL,
   legend = "right",
   ...

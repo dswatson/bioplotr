@@ -8,7 +8,7 @@ plot_roc(
   obs,
   pred,
   pal_curves = "npg",
-  title = NULL,
+  title = ifelse(is.numeric(pred), "ROC Curve", "ROC Curves"),
   leg.txt = NULL,
   legend = "bottomright",
   hover = FALSE

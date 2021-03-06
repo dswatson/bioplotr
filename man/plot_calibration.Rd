@@ -8,7 +8,7 @@ plot_calibration(
   obs,
   pred,
   pal_curves = "npg",
-  title = NULL,
+  title = ifelse(is.numeric(pred), "Calibration Curve", "Calibration Curves"),
   legend = "right",
   hover = FALSE
 )

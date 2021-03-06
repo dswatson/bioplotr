@@ -7,9 +7,9 @@
 plot_quantiles(
   x,
   y,
-  method = "QQ",
+  method = c("QQ", "MD"),
   pts = 1000L,
-  title = NULL,
+  title = ifelse(method == "QQ", "QQ Plot", "MD Plot"),
   xlab = NULL,
   ylab = NULL
 )

@@ -13,7 +13,7 @@ plot_heatmap(
   top = NULL,
   filter_method = "pairwise",
   center = FALSE,
-  hclustfun = "average",
+  hclustfun = "complete",
   pal_group = "npg",
   pal_covar = "Blues",
   pal_tiles = "RdBu",

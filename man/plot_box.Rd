@@ -10,7 +10,7 @@ plot_box(
   pal_group = "npg",
   type = NULL,
   ylab = NULL,
-  title = NULL,
+  title = "Box Plot",
   legend = "right",
   hover = FALSE
 )

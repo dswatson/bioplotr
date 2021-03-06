@@ -8,7 +8,7 @@ plot_pr(
   obs,
   pred,
   pal_curves = "npg",
-  title = NULL,
+  title = ifelse(is.numeric(pred), "Precision-Recall Curve", "Precision-Recall Curves"),
   leg.txt = NULL,
   legend = "topright",
   hover = FALSE

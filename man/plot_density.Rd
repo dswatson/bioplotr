@@ -9,7 +9,7 @@ plot_density(
   group = NULL,
   pal_group = "npg",
   xlab = NULL,
-  title = NULL,
+  title = "Density Plot",
   legend = "right",
   hover = FALSE
 )
