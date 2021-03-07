@@ -21,6 +21,7 @@ plot_drivers(
   r_adj = FALSE,
   label = FALSE,
   lim = NULL,
+  coord_equal = TRUE,
   title = "Variation By Feature",
   legend = "right",
   hover = FALSE
@@ -88,6 +89,8 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 
 \item{lim}{Optional vector of length two defining lower and upper bounds for 
 the scale range. Default is observed extrema.}
+
+\item{coord_equal}{Plot tiles of equal width and height?}
 
 \item{title}{Optional plot title.}
 

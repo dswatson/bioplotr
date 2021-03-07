@@ -50,6 +50,7 @@
 #' @param label Print association statistics over tiles?
 #' @param lim Optional vector of length two defining lower and upper bounds for 
 #'   the scale range. Default is observed extrema.
+#' @param coord_equal Plot tiles of equal width and height?
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -126,6 +127,7 @@
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
 #' @importFrom rsq rsq.partial
+#' @import foreach
 #' @import dplyr
 #' @import ggplot2
 #'
@@ -133,23 +135,24 @@
 plot_drivers <- function(
   dat,
   clin,
-   bivariate = TRUE,
-  parametric = TRUE,
-       block = NULL,
-     unblock = NULL,
-      kernel = NULL,
-        kpar = NULL,
-         top = NULL,
-        n_pc = 5L,
-        stat = 'p',
-       alpha = NULL,
-       p_adj = NULL,
-       r_adj = FALSE,
-       label = FALSE,
-         lim = NULL,
-       title = 'Variation By Feature',
-      legend = 'right',
-       hover = FALSE
+    bivariate = TRUE,
+   parametric = TRUE,
+        block = NULL,
+      unblock = NULL,
+       kernel = NULL,
+         kpar = NULL,
+          top = NULL,
+         n_pc = 5L,
+         stat = 'p',
+        alpha = NULL,
+        p_adj = NULL,
+        r_adj = FALSE,
+        label = FALSE,
+          lim = NULL,
+  coord_equal = TRUE,
+        title = 'Variation By Feature',
+       legend = 'right',
+        hover = FALSE
 ) {
 
   # Preliminaries
@@ -325,17 +328,19 @@ plot_drivers <- function(
   df <- df %>% mutate(Significant = if_else(p_value <= alpha, TRUE, FALSE))
 
   # Build plot
-  if (!p_adj %>% is.null) {
-    if (p_adj %in% c('fdr', 'BH', 'BY')) {
-      leg_lab <- expression(~-log(italic(q)))
-    }
+  if (stat == 'p') {
+    leg_lab <- if_else(p_adj %in% c('fdr', 'BH', 'BY'),
+                       expression(~-log(italic(q))), 
+                       expression(~-log(italic(p))))
   } else {
-    leg_lab <- expression(~-log(italic(p)))
+    lim <- c(0, 1)
+    leg_lab <- if_else(bivariate, expression(italic(R)^2), 
+                       expression('Partial'~italic(R)^2))
   }
+
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
-    #coord_equal() +
     scale_color_manual(values = c('grey90', 'black')) +
     scale_x_discrete(labels = pve) +
     guides(color = FALSE) +
@@ -354,6 +359,9 @@ plot_drivers <- function(
   if (label) {
     p <- p + geom_text(aes(label = round(Association, 2L)))
   }
+  if (coord_equal) {
+    p <- p + coord_equal()
+  }
 
   # Output
   gg_out(p, hover, legend)
@@ -362,8 +370,6 @@ plot_drivers <- function(
 
  
 
-# Different color scheme for R^2?
-# Fages & Ferrari, 2014: https://link.springer.com/article/10.1007/s11306-014-0647-9
 # Some way to facet_grid? A "by" argument
 # Use pData if available
 
