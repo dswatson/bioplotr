@@ -27,6 +27,7 @@ Imports:
   ggsci,
   ggdendro,
   rsq,
+  foreach,
   Rtsne,
   lle,
   MASS,
