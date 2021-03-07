@@ -167,6 +167,9 @@ plot_drivers <- function(
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
+  if (length(parametric) > 1) {
+    parametric <- rep(parametric, ncol(clin))
+  }
   if (!block %>% is.null) {
     if (!block %in% colnames(clin)) {
       stop(paste0('Column "', block, '" not found in clin.'))
@@ -236,17 +239,34 @@ plot_drivers <- function(
   
   # List full models if bivariate = FALSE
   if (!bivariate) {
-    f1_list <- lapply(seq_len(n_pc), function(pc) {
-      if_else(parametric, lm(pca[, pc] ~ clin), lm(rank(pca[, pc]) ~ clin))
-    })
+    tmp <- clin
+    colnames(tmp) <- paste0('x', seq_len(ncol(tmp)))
+    # Only need n_pc models if all tests are of same class (parametric or non)
+    if (all(parametric) | all(!parametric)) {
+      f1_list <- lapply(seq_len(n_pc), function(pc) {
+        tmp <- tmp %>% 
+          mutate(y = if_else(parametric[1], pca[, pc], rank(pca[, pc])))
+        out <- lm(y ~ ., data = tmp)
+        return(out)
+      })
+    # Otherwise we need 2 * n_pc models (parametric and non)
+    } else {
+      f1_list <- lapply(seq_len(2 * n_pc), function(j) {
+        tmp <- tmp %>% mutate(y = pca[, pc])
+        f1 <- lm(y ~ ., data = tmp)
+        tmp <- tmp %>% mutate(y = rank(pca[, pc]))
+        f2 <- lm(y ~ ., data = tmp)
+        out <- list('parametric' = f1, 'nonparametric' = f2)
+        return(out)
+      })
+    }
   }
   
   # Association testing function
   association_test <- function(j, pc) {
-    if (length(parametric) > 1) {
-      parametric <- parametric[which(colnames(clin) == j)]
-    }
+    j_idx <- which(colnames(clin) == j)
     if (bivariate) {
+      parametric <- parametric[j_idx]
       # The tmp data frame allows pairwise NA deletion
       tmp <- data.frame(x = clin[[j]], y = pca[, pc])
       if (!(block %>% is.null || j %in% unblock || j == block)) {
@@ -262,9 +282,11 @@ plot_drivers <- function(
         }
         # For continuous data, tests are Pearson or Spearman correlations
         # (optionally partial) depending on whether parametric = TRUE
-        tst <- if_else(parametric, 
-                       cor.test(tmp$x, tmp$y, method = 'pearson'),
-                       cor.test(tmp$x, tmp$y, method = 'spearman'))
+        if (parametric) {
+          tst <- cor.test(tmp$x, tmp$y, method = 'pearson')
+        } else {
+          tst <- cor.test(tmp$x, tmp$y, method = 'spearman')
+        }
         p_value <- tst$p.value
         est <- if_else(stat == 'r', tst$estimate^2, p_value)
       } else {
@@ -284,13 +306,9 @@ plot_drivers <- function(
         } else {
           # When blocking variable is present, we perform repeated measures 
           # ANOVA, optionally on ranks (if parametric = FALSE)
-          if (parametric) {
-            f0 <- lm(y ~ z, data = tmp)
-            f1 <- lm(y ~ z + x, data = tmp)
-          } else {
-            f0 <- lm(rank(y) ~ z, data = tmp)
-            f1 <- lm(rank(y) ~ z + x, data = tmp)
-          }
+          tmp <- tmp %>% mutate(y = if_else(parametric, y, rank(y)))
+          f0 <- lm(y ~ z, data = tmp)
+          f1 <- lm(y ~ z + x, data = tmp)
           p_value <- est <- anova(f0, f1)[2, 6]
           if (stat == 'r') {
             est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
@@ -300,10 +318,22 @@ plot_drivers <- function(
     } else {
       # For multivariate tests, we run simple ANOVA, optionally on ranks 
       # (if parametric = FALSE)
-      f1 <- f1_list[[pc]]
-      f0 <- if_else(parametric, 
-                    lm(pca[, pc] ~ select(clin, -j)),
-                    lm(rank(pca[, pc]) ~ select(clin, -j)))
+      tmp <- clin
+      colnames(tmp) <- paste0('x', seq_len(ncol(tmp)))
+      # Need to take some care picking the right full model
+      if (all(parametric) | all(!parametric)) {
+        f1 <- f1_list[[pc]]
+      } else {
+        if (paramatric[j_idx]) {
+          f1 <- f1_list[[pc]]$parametric
+        } else {
+          f1 <- f1_list[[pc]]$nonparametric
+        }
+      }
+      # Fit reduced model, perform ANOVA
+      tmp <- tmp %>% 
+        mutate(y = if_else(parametric[j_idx], pca[, pc], rank(pca[, pc])))
+      f0 <- lm(y ~ ., data = tmp[, -j_idx])
       p_value <- est <- anova(f0, f1)[2, 6]
       if (stat == 'r') {
         est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
@@ -348,13 +378,14 @@ plot_drivers <- function(
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
   if (lim %>% is.null) {
-    p <- p + scale_fill_gradientn(colors = c('white', 'pink', 'orange', 
-                                             'red', 'darkred'),
-                                  name = leg_lab)
+    p <- p + scale_fill_gradientn(
+      colors = c('white', 'pink', 'orange', 'red', 'darkred'), name = leg_lab
+    )
   } else {
-    p <- p + scale_fill_gradientn(colors = c('white', 'pink', 'orange', 
-                                             'red', 'darkred'),
-                                  name = leg_lab, limits = lim)
+    p <- p + scale_fill_gradientn(
+      colors = c('white', 'pink', 'orange', 'red', 'darkred'),
+      name = leg_lab, limits = lim
+    )
   }
   if (label) {
     p <- p + geom_text(aes(label = round(Association, 2L)))
