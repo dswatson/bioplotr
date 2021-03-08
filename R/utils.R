@@ -196,10 +196,10 @@ colorize <- function(pal,
                  'futurama', 'rickandmorty', 'simpsons', 'gsea')
   seq_pals <- c('Blues', 'BuGn', 'BuPu', 'GnBu', 'Greens', 'Greys', 'Oranges',
                 'OrRd', 'PuBu', 'PuBuGn', 'PuRd', 'Purples', 'RdPu', 'Reds',
-                'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd')
+                'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd', 'PiRdBr',
+                'viridis', 'magma', 'plasma', 'inferno', 'cividis')
   div_pals <- c('BrBg', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu',
-                'RdYlGn', 'Spectral', 'viridis', 'magma', 'plasma', 'inferno',
-                'cividis')
+                'RdYlGn', 'Spectral')
   if (!(all(map_lgl(pal, is.color)))) {
     if (length(pal) > 1L) {
       stop('When passing individual colors to define a palette, each must ',
@@ -268,8 +268,6 @@ colorize <- function(pal,
       out <- pal_simpsons()(n)
     }
   } else if (pal %in% seq_pals) {
-    out <- colorRampPalette(brewer.pal(9, pal))(256)
-  } else if (pal %in% div_pals) {
     if (pal %in% c('viridis', 'magma', 'plasma', 'inferno', 'cividis')) {
       if (pal == 'viridis') {
         df <- viridis.map %>% filter(opt == 'A')
@@ -283,9 +281,13 @@ colorize <- function(pal,
         df <- viridis.map %>% filter(opt == 'E')
       }
       out <- rgb(df$R, df$G, df$B)
+    } else if (pal == 'PiRdBr') {
+      out <- c('white', 'pink', 'orange', 'red', 'darkred')
     } else {
-      out <- colorRampPalette(brewer.pal(11, pal))(256) %>% rev(.)
+      out <- colorRampPalette(brewer.pal(9, pal))(256)
     }
+  } else if (pal %in% div_pals) {
+    out <- colorRampPalette(brewer.pal(11, pal))(256) %>% rev(.)
   }
 
   # Output
@@ -764,12 +766,8 @@ embed <- function(df,
                   hover,
                   D3) {
 
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
