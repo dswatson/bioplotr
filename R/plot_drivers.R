@@ -48,6 +48,12 @@
 #' @param r_adj Adjust partial R-squared? Only relevant if \code{stat = "r2"} 
 #'   and either \code{bivariate = FALSE} or \code{block} is non-\code{NULL}. 
 #' @param label Print association statistics over tiles?
+#' @param pal_tiles String specifying the color palette to use for heatmap
+#'   tiles. Options include the complete collection of \code{\href{
+#'   https://bit.ly/2n7D6tF}{viridis}} palettes, as well as all sequential and
+#'   divergent color schemes available in \code{\href{
+#'   https://bit.ly/2ipuEjn}{RColorBrewer}}. Alternatively, a character vector 
+#'   of at least two colors.
 #' @param lim Optional vector of length two defining lower and upper bounds for 
 #'   the scale range. Default is observed extrema for \code{stat = "p"} and the
 #'   unit interval for \code{stat = "r2"}.
@@ -149,6 +155,7 @@ plot_drivers <- function(
         p_adj = NULL,
         r_adj = FALSE,
         label = FALSE,
+    pal_tiles = 'PiRdBr',
           lim = NULL,
   coord_equal = FALSE,
         title = 'Variation By Feature',
@@ -211,6 +218,7 @@ plot_drivers <- function(
     p_adjes <- c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr')
     p_adj <- match.arg(p_adj, p_adjes)
   }
+  pal_cols <- colorize(pal_tiles, var_type = 'Continuous')
   locations <- c('bottom', 'left', 'top', 'right',
                  'bottomright', 'bottomleft', 'topleft', 'topright')
   legend <- match.arg(legend, locations)
@@ -290,7 +298,7 @@ plot_drivers <- function(
         }
         # For continuous data, tests are Pearson or Spearman correlations
         # (optionally partial) depending on whether parametric = TRUE
-        tst <- cor.test(tmp$x, tmp$y, method = 'pearson')
+        tst <- cor.test(tmp$x, tmp$y)
         p_value <- tst$p.value
         est <- if_else(stat == 'r2', tst$estimate^2, p_value)
       } else {
@@ -368,26 +376,16 @@ plot_drivers <- function(
                        expression(italic(r)^2), 
                        expression('Partial'~italic(r)^2))
   }
-
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
     scale_color_manual(values = c('grey90', 'black')) +
     scale_x_discrete(labels = pve) +
     guides(color = FALSE) +
+    scale_fill_gradientn(colors = pal_cols, name = leg_lab, limits = lim) +
     labs(title = title, x = 'Principal Component') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (lim %>% is.null) {
-    p <- p + scale_fill_gradientn(
-      colors = c('white', 'pink', 'orange', 'red', 'darkred'), name = leg_lab
-    )
-  } else {
-    p <- p + scale_fill_gradientn(
-      colors = c('white', 'pink', 'orange', 'red', 'darkred'),
-      name = leg_lab, limits = lim
-    )
-  }
   if (label) {
     p <- p + geom_text(aes(label = round(Association, 2L)))
   }

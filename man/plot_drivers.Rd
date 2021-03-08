@@ -20,6 +20,7 @@ plot_drivers(
   p_adj = NULL,
   r_adj = FALSE,
   label = FALSE,
+  pal_tiles = "PiRdBr",
   lim = NULL,
   coord_equal = FALSE,
   title = "Variation By Feature",
@@ -86,6 +87,13 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 and either \code{bivariate = FALSE} or \code{block} is non-\code{NULL}.}
 
 \item{label}{Print association statistics over tiles?}
+
+\item{pal_tiles}{String specifying the color palette to use for heatmap
+tiles. Options include the complete collection of \code{\href{
+https://bit.ly/2n7D6tF}{viridis}} palettes, as well as all sequential and
+divergent color schemes available in \code{\href{
+https://bit.ly/2ipuEjn}{RColorBrewer}}. Alternatively, a character vector 
+of at least two colors.}
 
 \item{lim}{Optional vector of length two defining lower and upper bounds for 
 the scale range. Default is observed extrema for \code{stat = "p"} and the
