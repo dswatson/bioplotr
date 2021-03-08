@@ -137,7 +137,7 @@ plot_som <- function(
   grid_dims = NULL,
        topo = 'hexagonal',
      neighb = 'gaussian',
-       rlen = 1000,
+       rlen = 1000L,
    parallel = TRUE,
   pal_tiles = NULL,
       title = NULL,
