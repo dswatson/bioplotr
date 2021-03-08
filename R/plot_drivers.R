@@ -198,6 +198,7 @@ plot_drivers <- function(
   if (n_pc > max(nrow(dat), ncol(dat))) {
     stop('n_pc cannot exceed max(nrow(dat), ncol(dat))')
   }
+  stat <- match.arg(stat, c('p', 'r2'))
   if (!alpha %>% is.null) {
     if (alpha <= 0L | alpha >= 1L) {
       stop('alpha must be numeric on (0, 1).')
@@ -288,7 +289,7 @@ plot_drivers <- function(
           tst <- cor.test(tmp$x, tmp$y, method = 'spearman')
         }
         p_value <- tst$p.value
-        est <- if_else(stat == 'r', tst$estimate^2, p_value)
+        est <- if_else(stat == 'r2', tst$estimate^2, p_value)
       } else {
         if (block %>% is.null || j %in% unblock || j == block) {
           # For categorical data with no blocking variable, options are 
@@ -300,7 +301,7 @@ plot_drivers <- function(
             f <- lm(rank(y) ~ x, data = tmp)
             p_value <- est <- kruskal.test(y ~ x, data = tmp)$p.value
           }
-          if (stat == 'r') {
+          if (stat == 'r2') {
             est <- if_else(r_adj, summary(f)$adj.r.squared, summary(f)$r.squared)
           }
         } else {
@@ -310,7 +311,7 @@ plot_drivers <- function(
           f0 <- lm(y ~ z, data = tmp)
           f1 <- lm(y ~ z + x, data = tmp)
           p_value <- est <- anova(f0, f1)[2, 6]
-          if (stat == 'r') {
+          if (stat == 'r2') {
             est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
           }
         }
@@ -335,7 +336,7 @@ plot_drivers <- function(
         mutate(y = if_else(parametric[j_idx], pca[, pc], rank(pca[, pc])))
       f0 <- lm(y ~ ., data = tmp[, -j_idx])
       p_value <- est <- anova(f0, f1)[2, 6]
-      if (stat == 'r') {
+      if (stat == 'r2') {
         est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
       }
     }
