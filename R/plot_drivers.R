@@ -167,7 +167,7 @@ plot_drivers <- function(
   }
   dat <- matrixize(dat)
   clin <- as_tibble(clin)
-  if (length(parametric) > 1) {
+  if (length(parametric) == 1) {
     parametric <- rep(parametric, ncol(clin))
   }
   if (!block %>% is.null) {
@@ -267,8 +267,8 @@ plot_drivers <- function(
     j_idx <- which(colnames(clin) == j)
     if (bivariate) {
       parametric <- parametric[j_idx]
-      # The tmp data frame allows pairwise NA deletion
-      tmp <- data.frame(x = clin[[j]], y = pca[, pc])
+      # The tmp tibble allows pairwise NA deletion
+      tmp <- tibble(x = clin[[j]], y = pca[, pc])
       if (!(block %>% is.null || j %in% unblock || j == block)) {
         tmp <- tmp %>% mutate(z = clin[[block]])
       }
@@ -339,9 +339,10 @@ plot_drivers <- function(
         est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
       }
     }
+    # Export result
     out <- tibble(
-          'Feature' = colnames(clin)[j],
-               'PC' = paste0('PC', pc),
+          'Feature' = j,
+               'PC' = pc,
       'Association' = est, 
           'p_value' = p_value
     )
