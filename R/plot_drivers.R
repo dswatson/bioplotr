@@ -339,16 +339,19 @@ plot_drivers <- function(
         est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
       }
     }
-    out <- data.frame('Association' = est, 'p_value' = p_value)
+    out <- tibble(
+          'Feature' = colnames(clin)[j],
+               'PC' = paste0('PC', pc),
+      'Association' = est, 
+          'p_value' = p_value
+    )
     return(out)
   }
   
   # Tidy data
-  df <- expand.grid(Feature = colnames(clin),    # Melt
-                         PC = paste0('PC', seq_len(n_pc))) 
-  tst_out <- foreach(i = seq_len(nrow(df)), .combine = rbind) %do% 
-    association_test(df$Feature[i], df$PC[i])
-  df <- cbind(df, tst_out)
+  df <- foreach(x = colnames(clin), .combine = rbind) %:%
+    foreach(y = paste0('PC', seq_len(n_pc)), .combine = rbind) %do%
+    association_test(x, y)
   if (!p_adj %>% is.null) {
     df <- df %>% mutate(p_value = p.adjust(p_value, method = p_adj))
   }
