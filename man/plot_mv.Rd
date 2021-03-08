@@ -22,6 +22,8 @@ plot_mv(
   dat,
   trans = "log",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -34,6 +36,8 @@ plot_mv(
   design = NULL,
   trans = "sqrt",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -45,6 +49,8 @@ plot_mv(
   dat,
   trans = "sqrt",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -57,6 +63,8 @@ plot_mv(
   resid = FALSE,
   trans = "rank",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -68,6 +76,8 @@ plot_mv(
   dat,
   trans = "rank",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -79,6 +89,8 @@ plot_mv(
   dat,
   trans = "rank",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Variance Plot",
   xlab = NULL,
   ylab = NULL,
@@ -104,6 +116,10 @@ Details.}
 \code{"topleft"}, or \code{"topright"}.}
 
 \item{span}{Width of the LOWESS smoothing window as a proportion.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{xlab}{Optional label for x-axis.}
 

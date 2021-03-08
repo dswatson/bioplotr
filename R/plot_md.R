@@ -194,12 +194,8 @@ plot_md.DGEList <- function(
   }
 
   # Build plot
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -291,12 +287,8 @@ plot_md.DESeqDataSet <- function(
   }
 
   # Build plot
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -398,12 +390,8 @@ plot_md.DESeqResults <- function(
   }
 
   # Build plot
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     scale_x_log10() +
     geom_hline(yintercept = 0L, color = 'grey') +
@@ -560,12 +548,8 @@ plot_md.data.frame <- function(
   }
 
   # Build plot
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +
@@ -657,12 +641,8 @@ plot_md.default <- function(
   }
 
   # Build plot
-  if (size %>% is.null) {
-    size <- pt_size(df)
-  }
-  if (alpha %>% is.null) {
-    alpha <- pt_alpha(df)
-  }
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df, aes(Mean, Diff, text = Probe)) +
     geom_hline(yintercept = 0L, color = 'grey') +
     labs(title = title, x = xlab, y = expression(log[2]~'Fold Change')) +

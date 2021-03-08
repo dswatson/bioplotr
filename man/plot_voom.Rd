@@ -10,6 +10,8 @@ plot_voom(
   lib.size = NULL,
   normalize.method = "none",
   span = 0.5,
+  size = NULL,
+  alpha = NULL,
   title = "Voom Plot",
   legend = "right",
   hover = FALSE,
@@ -36,6 +38,10 @@ counts. Choices are the same as for the \code{method} argument of
 single-channel.}
 
 \item{span}{Width of the LOWESS smoothing window as a proportion.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{title}{Optional plot title.}
 

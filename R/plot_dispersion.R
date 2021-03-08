@@ -23,6 +23,8 @@
 #'   settings are applied at all steps. For greater control of internal
 #'   parameters, create the appropriate \code{DGEList} or \code{DESeqDataSet}
 #'   object with your preferred settings and pass it directly as \code{dat}.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -154,6 +156,8 @@ plot_dispersion.DGEList <- function(
   dat,
   design = NULL,
    trans = 'log',
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Dispersion Plot',
   legend = 'right',
    hover = FALSE
@@ -193,8 +197,8 @@ plot_dispersion.DGEList <- function(
             Tagwise = rep(TRUE, nrow(dat)))
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mean, Genewise, text = Gene, color = Tagwise),
@@ -226,6 +230,8 @@ plot_dispersion.DGEList <- function(
 plot_dispersion.DESeqDataSet <- function(
   dat,
    trans = 'log',
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Dispersion Plot',
   legend = 'right',
    hover = FALSE
@@ -253,8 +259,8 @@ plot_dispersion.DESeqDataSet <- function(
             Outlier = mcols(dat)$dispOutlier)
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mean, Genewise, text = Gene, color = Outlier),
@@ -287,6 +293,8 @@ plot_dispersion.default <- function(
     design = NULL,
      trans = 'log',
   pipeline = NULL,
+      size = NULL, 
+     alpha = NULL,
      title = 'Mean-Dispersion Plot',
     legend = 'right',
      hover = FALSE
@@ -309,12 +317,11 @@ plot_dispersion.default <- function(
     }
     dat <- estimateSizeFactors(dat)
     dat <- estimateDispersions(dat, quiet = TRUE, modelMatrix = design)
-    plot_dispersion(dat, trans = trans, title = title,
-                    legend = legend, hover = hover)
+    plot_dispersion(dat, trans = trans, size = size, alpha = alpha, 
+                    title = title, legend = legend, hover = hover)
   } else {
     stop('pipeline must be one of "edgeR" or "DESeq2".')
   }
 
 }
 
-# Size, alpha, title

@@ -19,6 +19,8 @@ plot_dispersion(
   dat,
   design = NULL,
   trans = "log",
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Dispersion Plot",
   legend = "right",
   hover = FALSE
@@ -27,6 +29,8 @@ plot_dispersion(
 \method{plot_dispersion}{DESeqDataSet}(
   dat,
   trans = "log",
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Dispersion Plot",
   legend = "right",
   hover = FALSE
@@ -37,6 +41,8 @@ plot_dispersion(
   design = NULL,
   trans = "log",
   pipeline = NULL,
+  size = NULL,
+  alpha = NULL,
   title = "Mean-Dispersion Plot",
   legend = "right",
   hover = FALSE
@@ -65,6 +71,10 @@ estimates. Must be one of \code{"log"} or \code{"sqrt"}.}
 columns to model coefficients. This will be extracted from \code{dat} if 
 available and need not be set explicitly in the call. If provided, however, 
 \code{design} will override the relevant slot of \code{dat}.}
+
+\item{size}{Point size.}
+
+\item{alpha}{Point transparency.}
 
 \item{hover}{Show probe name by hovering mouse over data point? If \code{
 TRUE}, the plot is rendered in HTML and will either open in your browser's

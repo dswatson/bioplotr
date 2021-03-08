@@ -18,6 +18,8 @@
 #'   "sqrt"}). Not all transformations are appropriate for all data types. See
 #'   Details.
 #' @param span Width of the LOWESS smoothing window as a proportion.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param xlab Optional label for x-axis.
 #' @param ylab Optional label for y-axis.
@@ -144,6 +146,8 @@ plot_mv.MArrayLM <- function(
   dat,
    trans = 'log',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -192,8 +196,8 @@ plot_mv.MArrayLM <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   p <- ggplot(df) +
     geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
     labs(title = title, x = xlab, y = ylab) +
@@ -242,6 +246,8 @@ plot_mv.DGEList <- function(
   design = NULL,
    trans = 'sqrt',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -293,8 +299,8 @@ plot_mv.DGEList <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -318,6 +324,8 @@ plot_mv.DGELM <- function(
   dat,
    trans = 'sqrt',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -354,8 +362,8 @@ plot_mv.DGELM <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -381,6 +389,8 @@ plot_mv.DESeqDataSet <- function(
    resid = FALSE,
    trans = 'rank',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -446,8 +456,8 @@ plot_mv.DESeqDataSet <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -471,6 +481,8 @@ plot_mv.DESeqTransform <- function(
   dat,
    trans = 'rank',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -504,8 +516,8 @@ plot_mv.DESeqTransform <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -529,6 +541,8 @@ plot_mv.default <- function(
   dat,
    trans = 'rank',
     span = 0.5,
+    size = NULL, 
+   alpha = NULL,
    title = 'Mean-Variance Plot',
     xlab = NULL,
     ylab = NULL,
@@ -561,8 +575,8 @@ plot_mv.default <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -578,7 +592,5 @@ plot_mv.default <- function(
 
 }
 
-
-# Add size, alpha arguments
 
 

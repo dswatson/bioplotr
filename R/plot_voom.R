@@ -18,6 +18,8 @@
 #'   \code{\link[limma]{normalizeBetweenArrays}} when the data is
 #'   single-channel.
 #' @param span Width of the LOWESS smoothing window as a proportion.
+#' @param size Point size. 
+#' @param alpha Point transparency.
 #' @param title Optional plot title.
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
@@ -74,6 +76,8 @@ plot_voom <- function(
           lib.size = NULL,
   normalize.method = 'none',
               span = 0.5,
+              size = NULL,
+             alpha = NULL,
              title = 'Voom Plot',
             legend = 'right',
              hover = FALSE, ...
@@ -128,8 +132,8 @@ plot_voom <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- pt_size(df)
-  alpha <- pt_alpha(df)
+  size <- if_else(size %>% is.null, pt_size(df), size)
+  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
