@@ -72,9 +72,10 @@ length equal to the number of continuous variables to visualize.}
 
 \item{pal_tiles}{String specifying the color palette to use for heatmap
 tiles. Options include the complete collection of \code{\href{
-https://bit.ly/2n7D6tF}{viridis}} palettes, as well all diverging color 
-schemes available in \code{\href{https://bit.ly/2ipuEjn}{RColorBrewer}}. 
-Alternatively, a character vector of at least two colors.}
+https://bit.ly/2n7D6tF}{viridis}} palettes, as well as all sequential and
+divergent color schemes available in \code{\href{
+https://bit.ly/2ipuEjn}{RColorBrewer}}. Alternatively, a character vector 
+of at least two colors.}
 
 \item{title}{Optional plot title.}
 }
