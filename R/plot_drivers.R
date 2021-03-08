@@ -370,8 +370,8 @@ plot_drivers <- function(
   } else {
     lim <- c(0, 1)
     leg_lab <- if_else(bivariate, 
-                       expression(italic(R)^2), 
-                       expression('Partial'~italic(R)^2))
+                       expression(italic(r)^2), 
+                       expression('Partial'~italic(r)^2))
   }
 
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
