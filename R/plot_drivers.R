@@ -149,7 +149,7 @@ plot_drivers <- function(
         r_adj = FALSE,
         label = FALSE,
           lim = NULL,
-  coord_equal = TRUE,
+  coord_equal = FALSE,
         title = 'Variation By Feature',
        legend = 'right',
         hover = FALSE
@@ -363,12 +363,13 @@ plot_drivers <- function(
 
   # Build plot
   if (stat == 'p') {
-    leg_lab <- if_else(p_adj %in% c('fdr', 'BH', 'BY'),
+    leg_lab <- if_else(!p_adj %>% is.null && p_adj %in% c('fdr', 'BH', 'BY'),
                        expression(~-log(italic(q))), 
                        expression(~-log(italic(p))))
   } else {
     lim <- c(0, 1)
-    leg_lab <- if_else(bivariate, expression(italic(R)^2), 
+    leg_lab <- if_else(bivariate, 
+                       expression(italic(R)^2), 
                        expression('Partial'~italic(R)^2))
   }
 
