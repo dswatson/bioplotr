@@ -7,21 +7,21 @@
 plot_drivers(
   dat,
   clin,
+  stat = "p",
   bivariate = TRUE,
-  parametric = TRUE,
   block = NULL,
   unblock = NULL,
+  parametric = TRUE,
   kernel = NULL,
   kpar = NULL,
   top = NULL,
   n_pc = 5L,
-  stat = "p",
   alpha = NULL,
   p_adj = NULL,
   r_adj = FALSE,
   label = FALSE,
   lim = NULL,
-  coord_equal = TRUE,
+  coord_equal = FALSE,
   title = "Variation By Feature",
   legend = "right",
   hover = FALSE
@@ -39,15 +39,14 @@ warning.}
 columns to technical and/or biological features to test for associations
 with omic data.}
 
+\item{stat}{Association statistic of choice. Currently supports \code{"p"} 
+(-log \emph{p}-values) and \code{"r2"} (R-squared). Interpretations vary 
+depending on whether covariates are included. See Details.}
+
 \item{bivariate}{Test associations in isolation, or after adjusting for
 all remaining covariates? If \code{FALSE}, then \code{clin} is treated as 
 a design matrix against which each PC is sequentially regressed. See 
 Details.}
-
-\item{parametric}{Compute \emph{p}-values using parametric association tests?
-If \code{FALSE}, rank-based alternatives are used instead. Must either be
-a single Boolean, in which case it applies to all tests, or Boolean vector
-of length equal to \code{ncol(clin)}. See Details.}
 
 \item{block}{String specifying the name of the column in which to find the
 blocking variable, should one be accounted for. See Details.}
@@ -56,22 +55,23 @@ blocking variable, should one be accounted for. See Details.}
 \code{block} covariate should not be applied, if one was supplied. See 
 Details.}
 
+\item{parametric}{Compute statistics using parametric association tests?
+If \code{FALSE}, rank-based alternatives are used instead. Either a single
+logical value, in which case it applies to all tests, or a logical vector
+of length equal to \code{ncol(clin)}. See Details.}
+
 \item{kernel}{The kernel generating function, if using KPCA. Options include
 \code{"rbfdot"}, \code{"polydot"}, \code{"tanhdot"}, \code{"vanilladot"}, 
 \code{"laplacedot"}, \code{"besseldot"}, \code{"anovadot"}, and 
-\code{"splinedot"}. To run normal PCA, set to \code{NULL}. See Details.}
+\code{"splinedot"}. To run normal PCA, set to \code{NULL}.}
 
 \item{kpar}{A named list of arguments setting parameters for the kernel
-function. Only relevant if \code{kernel} is not \code{NULL}. See Details.}
+function. Only relevant if \code{kernel} is not \code{NULL}.}
 
 \item{top}{Optional number (if > 1) or proportion (if < 1) of most variable
 probes to be used for PCA.}
 
 \item{n_pc}{Number of principal components to include in the figure.}
-
-\item{stat}{Association statistic of choice. Currently supports \code{"p"} 
-(-log \emph{p}-values) and \code{"r2"} (\eqn{R^2}). Interpretations vary 
-depending on whether covariates are included. See Details.}
 
 \item{alpha}{Optional significance threshold to impose on associations. 
 Those with \emph{p}-values (optionally adjusted) less than or equal to 
@@ -82,13 +82,14 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
-\item{r_adj}{Return adjusted partial R-squared? Only relevant if \code{stat = 
-"r2"}.}
+\item{r_adj}{Adjust partial R-squared? Only relevant if \code{stat = "r2"} 
+and either \code{bivariate = FALSE} or \code{block} is non-\code{NULL}.}
 
 \item{label}{Print association statistics over tiles?}
 
 \item{lim}{Optional vector of length two defining lower and upper bounds for 
-the scale range. Default is observed extrema.}
+the scale range. Default is observed extrema for \code{stat = "p"} and the
+unit interval for \code{stat = "r2"}.}
 
 \item{coord_equal}{Plot tiles of equal width and height?}
 
@@ -98,7 +99,7 @@ the scale range. Default is observed extrema.}
 \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 \code{"topleft"}, or \code{"topright"}.}
 
-\item{hover}{Show \emph{p}-values by hovering mouse over tiles? If 
+\item{hover}{Show association statistics by hovering mouse over tiles? If 
 \code{TRUE}, the plot is rendered in HTML and will either open in your 
 browser's graphic display or appear in the RStudio viewer.}
 }
@@ -108,15 +109,20 @@ components of an omic data matrix and a set of biological and/or technical
 features.
 }
 \details{
+Strength of association may be measured either by --log \emph{p}-values (if
+\code{stat = "p"}) or R-squared (if \code{stat = "r2"}). The former may be
+adjusted for multiple testing, while the latter can be adjusted for 
+covariates.
+
 If \code{bivariate = TRUE}, then association tests are performed between
 each PC and each clinical covariate, optionally adjusting for a blocking 
 variable (if \code{block} is non-\code{NULL}). If \code{bivariate = FALSE},
-then all tests are partial association tests, in the sense that they adjust 
+then all tests are partial association tests, in the sense that they control 
 for all remaining covariates. 
 
-When \code{bivariate = TRUE, block = NULL} and \code{parametric = TRUE}, 
-significance is computed from Pearson correlation tests (for continuous 
-features) or ANOVA \emph{F}-tests (for categorical features). When 
+When \code{bivariate = TRUE}, \code{block = NULL}, and \code{parametric = 
+TRUE}, significance is computed from Pearson correlation tests (for 
+continuous features) or ANOVA \emph{F}-tests (for categorical features). When 
 \code{parametric = FALSE}, significance is computed from rank-based 
 alternatives, i.e. Spearman correlation tests (for continuous features) or 
 Kruskal-Wallis tests (for categorical features). 
@@ -127,11 +133,6 @@ significance is computed from partial correlation tests for continuous data
 or repeated measures ANOVA \emph{F}-tests (under rank-transformation if 
 \code{parametric = FALSE}). In all cases, the alternative hypothesis assumes
 a monotonic relationship between variables.
-
-Strength of association may be measured either by -log \emph{p}-values (if
-\code{stat = "p"}) or R-squared (if \code{stat = "r2"}). The former may be
-adjusted for multiple testing, while the latter can be adjusted for 
-covariates. 
 
 A blocking variable may be provided if samples violate the assumption of 
 independence, e.g. for studies in which subjects are observed at multiple 
