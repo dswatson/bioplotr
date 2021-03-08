@@ -124,7 +124,7 @@
 #'
 #' @export
 #' @importFrom limma is.fullrank
-#' @importFrom purrr map_chr
+#' @importFrom purrr map_chr map_lgl map
 #' @importFrom kernlab eig
 #' @importFrom kernlab rotated
 #' @importFrom rsq rsq.partial
@@ -224,7 +224,7 @@ plot_drivers <- function(
 
   # Compute PCs
   if (kernel %>% is.null) {
-    pca <- prcomp(t(dat), rank. = n_pc)                        
+    pca <- prcomp(t(dat), rank. = n_pc)
     pve <- seq_len(n_pc) %>% map_chr(function(pc) {
       p <- round(pca$sdev[pc]^2L / sum(pca$sdev^2L) * 100L, 2L)
       paste0('PC', pc, '\n(', round(p, 2L), '%)')
@@ -232,20 +232,26 @@ plot_drivers <- function(
     pca <- pca$x
   } else {
     pca <- kpca_fn(dat, kernel, kpar, n_pc)                 
-    pve <- seq_len(max(n_pc)) %>% map_chr(function(pc) {
+    pve <- seq_len(n_pc) %>% map_chr(function(pc) {
       p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
       paste0('KPC', pc, '\n(', round(p, 2L), '%)')
     })
     pca <- rotated(pca)
   }
   
+  # Rank-transform continuous features if parametric = FALSE
+  tmp <- clin
+  colnames(tmp) <- paste0('x', seq_len(ncol(tmp)))
+  is_numeric <- clin %>% map_lgl(is.numeric)
+  for (j in which(is_numeric & !parametric)) {
+    tmp[, j] <- rank(tmp[, j])
+  }
+  
   # Precompute full models if bivariate = FALSE
   if (!bivariate) {
-    tmp <- clin
-    colnames(tmp) <- paste0('x', seq_len(ncol(tmp)))
     # Only need n_pc models if all tests are of same class (parametric or non)
     if (all(parametric) | all(!parametric)) {
-      f1_list <- lapply(seq_len(n_pc), function(pc) {
+      f1_list <- seq_len(n_pc) %>% map(function(pc) {
         tmp <- tmp %>% 
           mutate(y = if_else(parametric[1], pca[, pc], rank(pca[, pc])))
         out <- lm(y ~ ., data = tmp)
@@ -253,7 +259,7 @@ plot_drivers <- function(
       })
     # Otherwise we need 2 * n_pc models (parametric and non)
     } else {
-      f1_list <- lapply(seq_len(2 * n_pc), function(j) {
+      f1_list <- seq_len(2 * n_pc) %>% map(function(j) {
         tmp <- tmp %>% mutate(y = pca[, pc])
         f1 <- lm(y ~ ., data = tmp)
         tmp <- tmp %>% mutate(y = rank(pca[, pc]))
@@ -266,11 +272,11 @@ plot_drivers <- function(
   
   # Association testing function
   association_test <- function(j, pc) {
-    j_idx <- which(colnames(clin) == j)
+    tmp <- tmp %>% mutate(y = if_else(parametric[j], pca[, pc], rank(pca[, pc])))
     if (bivariate) {
-      parametric <- parametric[j_idx]
       # The tmp tibble allows pairwise NA deletion
-      tmp <- tibble(x = clin[[j]], y = pca[, pc])
+      tmp <- tmp %>% select(j, y) 
+      colnames(tmp)[1] <- 'x'
       if (!(block %>% is.null || j %in% unblock || j == block)) {
         tmp <- tmp %>% mutate(z = clin[[block]])
       }
@@ -284,31 +290,24 @@ plot_drivers <- function(
         }
         # For continuous data, tests are Pearson or Spearman correlations
         # (optionally partial) depending on whether parametric = TRUE
-        if (parametric) {
-          tst <- cor.test(tmp$x, tmp$y, method = 'pearson')
-        } else {
-          tst <- cor.test(tmp$x, tmp$y, method = 'spearman')
-        }
+        tst <- cor.test(tmp$x, tmp$y, method = 'pearson')
         p_value <- tst$p.value
         est <- if_else(stat == 'r2', tst$estimate^2, p_value)
       } else {
         if (block %>% is.null || j %in% unblock || j == block) {
           # For categorical data with no blocking variable, options are 
           # ANOVA or Kruskal-Wallis test
-          if (parametric) {
-            f <- lm(y ~ x, data = tmp)
+          f <- lm(y ~ x, data = tmp)
+          if (parametric[j]) {
             p_value <- est <- anova(f)[1, 5]
           } else {
-            f <- lm(rank(y) ~ x, data = tmp)
             p_value <- est <- kruskal.test(y ~ x, data = tmp)$p.value
           }
           if (stat == 'r2') {
             est <- if_else(r_adj, summary(f)$adj.r.squared, summary(f)$r.squared)
           }
         } else {
-          # When blocking variable is present, we perform repeated measures 
-          # ANOVA, optionally on ranks (if parametric = FALSE)
-          tmp <- tmp %>% mutate(y = if_else(parametric, y, rank(y)))
+          # When blocking variable is present, perform repeated measures ANOVA
           f0 <- lm(y ~ z, data = tmp)
           f1 <- lm(y ~ z + x, data = tmp)
           p_value <- est <- anova(f0, f1)[2, 6]
@@ -319,23 +318,18 @@ plot_drivers <- function(
       }
     } else {
       # For multivariate tests, we run simple ANOVA, optionally on ranks 
-      # (if parametric = FALSE)
-      tmp <- clin
-      colnames(tmp) <- paste0('x', seq_len(ncol(tmp)))
       # Pick the right full model
       if (all(parametric) | all(!parametric)) {
         f1 <- f1_list[[pc]]
       } else {
-        if (paramatric[j_idx]) {
+        if (paramatric[j]) {
           f1 <- f1_list[[pc]]$parametric
         } else {
           f1 <- f1_list[[pc]]$nonparametric
         }
       }
       # Fit reduced model, perform ANOVA
-      tmp <- tmp %>% 
-        mutate(y = if_else(parametric[j_idx], pca[, pc], rank(pca[, pc])))
-      f0 <- lm(y ~ ., data = tmp[, -j_idx])
+      f0 <- lm(y ~ ., data = tmp %>% select(-j))
       p_value <- est <- anova(f0, f1)[2, 6]
       if (stat == 'r2') {
         est <- rsq.partial(f1, f0, adj = r_adj, type = 'v')$partial.rsq
@@ -343,8 +337,8 @@ plot_drivers <- function(
     }
     # Export result
     out <- tibble(
-          'Feature' = j,
-               'PC' = pc,
+          'Feature' = colnames(clin)[j],
+               'PC' = paste0('PC', pc),
       'Association' = est, 
           'p_value' = p_value
     )
@@ -352,8 +346,8 @@ plot_drivers <- function(
   }
   
   # Tidy data
-  df <- foreach(x = colnames(clin), .combine = rbind) %:%
-    foreach(y = paste0('PC', seq_len(n_pc)), .combine = rbind) %do%
+  df <- foreach(x = seq_along(clin), .combine = rbind) %:%
+    foreach(y = seq_len(n_pc), .combine = rbind) %do%
     association_test(x, y)
   if (!p_adj %>% is.null) {
     df <- df %>% mutate(p_value = p.adjust(p_value, method = p_adj))
