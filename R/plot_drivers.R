@@ -260,8 +260,11 @@ plot_drivers <- function(
     # Only need n_pc models if all tests are of same class (parametric or non)
     if (all(parametric) | all(!parametric)) {
       f1_list <- seq_len(n_pc) %>% map(function(pc) {
-        tmp <- tmp %>% 
-          mutate(y = if_else(parametric[1], pca[, pc], rank(pca[, pc])))
+        if (parametric[1]) {
+          tmp <- tmp %>% mutate(y = pca[, pc])
+        } else {
+          tmp <- tmp %>% mutate(y = rank(pca[, pc]))
+        }
         out <- lm(y ~ ., data = tmp)
         return(out)
       })
@@ -280,7 +283,11 @@ plot_drivers <- function(
   
   # Association testing function
   association_test <- function(j, pc) {
-    tmp <- tmp %>% mutate(y = if_else(parametric[j], pca[, pc], rank(pca[, pc])))
+    if (parametric[j]) {
+      tmp <- tmp %>% mutate(y = pca[, pc])
+    } else {
+      tmp <- tmp %>% mutate(y = rank(pca[, pc]))
+    }
     if (bivariate) {
       # The tmp tibble allows pairwise NA deletion
       tmp <- tmp %>% select(j, y) 
