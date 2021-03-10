@@ -171,8 +171,12 @@ plot_volcano <- function(
   }
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df, aes(logFC, Y, text = Probe)) +
     labs(title = title, x = expression(log[2]~'Fold Change')) +
     theme_bw() +

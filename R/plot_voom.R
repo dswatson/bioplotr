@@ -132,8 +132,12 @@ plot_voom <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +

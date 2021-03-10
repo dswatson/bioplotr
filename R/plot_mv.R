@@ -196,8 +196,12 @@ plot_mv.MArrayLM <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   p <- ggplot(df) +
     geom_path(aes(Mu, lfit, color = 'LOWESS'), size = 0.5) +
     labs(title = title, x = xlab, y = ylab) +
@@ -299,8 +303,12 @@ plot_mv.DGEList <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -362,8 +370,12 @@ plot_mv.DGELM <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -456,8 +468,12 @@ plot_mv.DESeqDataSet <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -516,8 +532,12 @@ plot_mv.DESeqTransform <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +
@@ -575,8 +595,12 @@ plot_mv.default <- function(
     mutate(lfit = lo[['y']])
 
   # Build plot
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   suppressWarnings(
     p <- ggplot(df) +
       geom_point(aes(Mu, Sigma, text = Probe), size = size, alpha = alpha) +

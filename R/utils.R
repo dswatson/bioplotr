@@ -766,8 +766,12 @@ embed <- function(df,
                   hover,
                   D3) {
 
-  size <- if_else(size %>% is.null, pt_size(df), size)
-  alpha <- if_else(alpha %>% is.null, pt_alpha(df), alpha)
+  if (size %>% is.null) {
+    size <- pt_size(df)
+  }
+  if (alpha %>% is.null) {
+    alpha <- pt_alpha(df)
+  }
   if (!D3) {
     p <- ggplot(df, aes(PC1, PC2)) +
       geom_hline(yintercept = 0L, color = 'grey') +
