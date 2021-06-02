@@ -270,7 +270,7 @@ plot_drivers <- function(
       })
     # Otherwise we need 2 * n_pc models (parametric and non)
     } else {
-      f1_list <- seq_len(2 * n_pc) %>% map(function(j) {
+      f1_list <- seq_len(n_pc) %>% map(function(pc) {
         tmp <- tmp %>% mutate(y = pca[, pc])
         f1 <- lm(y ~ ., data = tmp)
         tmp <- tmp %>% mutate(y = rank(pca[, pc]))
