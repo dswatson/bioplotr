@@ -6,13 +6,14 @@
 \usage{
 plot_concordance(
   dat,
-  method = "fisher",
-  alpha = NULL,
+  method = "chisq",
+  alpha = 0.05,
   p_adj = NULL,
   sim_p = FALSE,
-  B = 2000L,
+  B = 1999L,
   label = FALSE,
   diag = FALSE,
+  pal_tiles = "PiRdBr",
   title = "Concordance Plot",
   legend = "right",
   hover = FALSE,
@@ -25,8 +26,8 @@ variables or patient cluster assignments. All columns are converted to
 factors with a warning, if possible.}
 
 \item{method}{String specifying which measure of association to
-compute. Currently supports \code{"fisher"}, \code{"chisq"}, and \code{
-"MI"}. See Details.}
+compute. Currently supports \code{"chisq"}, \code{USP}, \code{"fisher"}, 
+and \code{"MI"}. See Details.}
 
 \item{alpha}{Optional significance threshold to impose on association
 statistics. Those with \emph{p}-values (optionally adjusted) less than or
@@ -37,15 +38,23 @@ include \code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{
 "bonferroni"}, \code{"BH"}, \code{"BY"}, and \code{"fdr"}. See \code{
 \link[stats]{p.adjust}}.}
 
-\item{sim_p}{Calculate \emph{p}-values via Monte Carlo simulation?}
+\item{sim_p}{Calculate \emph{p}-values via Monte Carlo simulation? Only 
+relevant if \code{method = "chisq"} or \code{method = "fisher"}.}
 
-\item{B}{Number of replicates or permutations to generate when computing
+\item{B}{Number of replicates or permutations to sample when computing
 \emph{p}-values.}
 
 \item{label}{Print association statistic over tiles?}
 
 \item{diag}{Include principal diagonal of the concordance matrix? Only
 advisable if \code{method = "MI"}.}
+
+\item{pal_tiles}{String specifying the color palette to use for heatmap
+tiles. Options include the complete collection of \code{\href{
+https://bit.ly/2n7D6tF}{viridis}} palettes, as well as all sequential and
+divergent color schemes available in \code{\href{
+https://bit.ly/2ipuEjn}{RColorBrewer}}. Alternatively, a character vector 
+of at least two colors.}
 
 \item{title}{Optional plot title.}
 
@@ -77,18 +86,23 @@ Concordance plots visualize associations between categorical features. They
 are useful when evaluating the dependencies between clinical factors and/or
 patient clusters.
 
-When \code{method = "fisher"}, concordance is measured by the negative
-logarithm of the test's \emph{p}-value. If \code{sim_p = FALSE}, then the
-function will attempt to calculate an exact \emph{p}-value. If this cannot be
-executed in the available workspace, or if \code{sim_p = TRUE}, then \emph{
-p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
-
 When \code{method = "chisq"}, concordance is measured by the Pearson
 chi-squared statistic. This test is based on several assumptions that may not
 be met in practice (see \href{http://bit.ly/2te2u5h}{Wikipedia} for a quick
 overview). When one or several of these assumptions are violated, more
 accurate \emph{p}-values can be estimated via Monte Carlo simulation with
 \code{B} replicates.
+
+When \code{method = "USP"}, concordance is measured by the negative logarithm
+of the \emph{p}-value of a \emph{U}-statistic permutation test (Berrett et 
+al., 2021), which is minimax optimal under mild conditions. The test uses 
+\code{B} permutations.
+
+When \code{method = "fisher"}, concordance is measured by the negative
+logarithm of the test's \emph{p}-value. If \code{sim_p = FALSE}, then the
+function will attempt to calculate an exact \emph{p}-value. If this cannot be
+executed in the available workspace, or if \code{sim_p = TRUE}, then \emph{
+p}-values are estimated via Monte Carlo simulation with \code{B} replicates.
 
 When \code{method = "MI"}, concordance is measured by the mutual information
 statistic. If \code{alpha} is non-\code{NULL}, then \emph{p}-values are
@@ -100,4 +114,10 @@ df <- data.frame(A = sample.int(2, 20, replace = TRUE),
                  C = sample.int(4, 20, replace = TRUE))
 plot_concordance(df)
 
+}
+\references{
+Berrett, T.B., Kontoyiannis, I. & Samworth, R. (2021).
+\href{https://arxiv.org/pdf/2001.05513.pdf}{Optimal rates for independence
+testing via \emph{U}-statistic permutation tests}.
+\emph{Ann. Statist.}.
 }
