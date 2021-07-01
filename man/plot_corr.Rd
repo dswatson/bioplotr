@@ -69,7 +69,7 @@ non-\code{NULL}, then the \emph{p}-value matrix will also be returned.}
 \value{
 If \code{export = TRUE}, a list with up to two elements:
 \itemize{
-  \item The concordance matrix, computed via the chosen \code{method}.
+  \item The correlation matrix, computed via the chosen \code{method}.
   \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
   is non-\code{NULL}.
 }

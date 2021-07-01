@@ -44,7 +44,7 @@
 #' @return
 #' If \code{export = TRUE}, a list with up to two elements:
 #' \itemize{
-#'   \item The concordance matrix, computed via the chosen \code{method}.
+#'   \item The correlation matrix, computed via the chosen \code{method}.
 #'   \item The matrix of \emph{p}-values (optionally adjusted), if \code{alpha}
 #'   is non-\code{NULL}.
 #' }
@@ -55,7 +55,7 @@
 #'
 #' @export
 #' @importFrom purrr some keep
-#' @importFrom tidyr gather
+#' @importFrom tidyr pivot_longer
 #' @importFrom RColorBrewer brewer.pal
 #' @import dplyr
 #' @import ggplot2
@@ -142,10 +142,11 @@ plot_corr <- function(
     df <- df %>% mutate(Significant = if_else(p_val <= alpha, TRUE, FALSE))
   }
   if (export) {
-    out <- list(Correlation = mat)
-    if (!(alpha %>% is.null)) {
-      out$p.value <- p_mat
-    }
+    out <- list(
+      'Correlation' = mat,
+      'p.values' = p_mat,
+      'p_adj' = p_adj
+    )
   }
 
   # Build plot
@@ -170,11 +171,11 @@ plot_corr <- function(
       geom_point(aes(color = Correlation, size = abs(Correlation))) +
       guides(size = FALSE)
   }
+  cols <- brewer.pal(11L, 'RdBu')[c(11, 1)]
   if (lim %>% is.null) {
-    p <- p + scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'))
+    p <- p + scale_color_gradient2(low = cols[1], high = cols[2])
   } else {
-    p <- p + scale_color_gradientn(colors = brewer.pal(10L, 'RdBu'),
-                                   limits = lim)
+    p <- p + scale_color_gradient2(low = cols[1], high = cols[2], limits = lim)
   }
   if (label) {
     p <- p + geom_text(aes(label = round(Correlation, 2)))
