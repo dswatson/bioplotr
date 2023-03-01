@@ -169,7 +169,7 @@ plot_kpca <- function(
   }
   pca <- kpca_fn(dat, kernel, kpar, max(dims))   # PCA, % variance explained
   pve <- seq_len(max(dims)) %>% map_chr(function(pc) {
-    p <- as.numeric(eig(pca)[pc] / sum(eig(pca)) * 100L)
+    p <- as.numeric(eig(pca)[pc] * 100L)
     paste0('KPC', pc, ' (', round(p, 2L), '%)')
   })
   df <- tibble(Sample = colnames(dat))           # Melt
